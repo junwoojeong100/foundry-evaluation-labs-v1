@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:foundry-eval-v11:bootstrap-approval:1",
+  "title": "Private, exact-scope bootstrap approval",
+  "description": "Syntax only. lab.bootstrap.validate_approval additionally checks scope/template/models, operator, expiry and policy. This is not an Azure budget enforcement mechanism.",
+  "type": "object",
+  "required": [
+    "schema_version", "approved", "scope_sha256", "approved_by", "approved_at", "expires_at",
+    "currency", "budget_amount", "budget_policy", "acknowledge_no_monetary_cap",
+    "retention_days", "max_hosting_hours", "max_wait_seconds",
+    "allow_resource_creation", "allow_rbac_assignments", "allow_global_inference",
+    "allow_training", "allow_global_training", "max_calls", "max_candidates", "max_epochs",
+    "max_training_jobs", "accept_deprecated_models", "acknowledge_continuous_hosting",
+    "acknowledge_unknown_cost", "models"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "approved": {"const": true},
+    "scope_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "approved_by": {"type": "string", "minLength": 3},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "budget_amount": {"type": ["number", "null"], "exclusiveMinimum": 0},
+    "budget_policy": {"enum": ["BOUNDED", "NO_MONETARY_CAP_EXPLICITLY_APPROVED"]},
+    "acknowledge_no_monetary_cap": {"type": "boolean"},
+    "retention_days": {"type": "integer", "minimum": 30, "maximum": 730},
+    "max_hosting_hours": {"type": "integer", "minimum": 1},
+    "max_wait_seconds": {"type": "integer", "minimum": 1},
+    "allow_resource_creation": {"const": true},
+    "allow_rbac_assignments": {"const": true},
+    "allow_global_inference": {"const": true},
+    "allow_training": {"type": "boolean"},
+    "allow_global_training": {"type": "boolean"},
+    "max_calls": {"type": "integer", "minimum": 0},
+    "max_candidates": {"type": "integer", "minimum": 0},
+    "max_epochs": {"type": "integer", "minimum": 0},
+    "max_training_jobs": {"type": "integer", "minimum": 0},
+    "accept_deprecated_models": {"type": "boolean"},
+    "acknowledge_continuous_hosting": {"const": true},
+    "acknowledge_unknown_cost": {"const": true},
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "deployment", "sku", "capacity", "roles"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1},
+          "deployment": {"type": "string", "minLength": 1},
+          "sku": {"enum": ["GlobalStandard", "Standard"]},
+          "capacity": {"type": "integer", "minimum": 1},
+          "roles": {
+            "type": "array", "minItems": 1, "uniqueItems": true,
+            "items": {"enum": ["agent", "judge", "planner", "optimizer", "embedding"]}
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "request_evidence": {"type": "string", "description": "Private original approval-by-reference evidence; do not commit."},
+    "runtime_bounds": {
+      "type": "object",
+      "description": "Parent runtime must enforce these per-operation limits; bootstrap never runs these jobs.",
+      "properties": {
+        "prompt_optimizer_jobs": {"type": "integer", "minimum": 0},
+        "agent_optimizer_jobs": {"type": "integer", "minimum": 0},
+        "candidates_per_optimizer_job": {"type": "integer", "minimum": 0},
+        "training_rows": {"type": "integer", "minimum": 0},
+        "validation_rows": {"type": "integer", "minimum": 0},
+        "fresh_holdout_rows": {"type": "integer", "minimum": 0},
+        "max_wait_seconds_per_job": {"type": "integer", "minimum": 1},
+        "synthetic_data_only": {"type": "boolean"},
+        "allow_global_or_developer_training": {"type": "boolean"},
+        "preserve_resource_group": {"const": true},
+        "allow_deletion": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"budget_policy": {"const": "BOUNDED"}}},
+      "then": {
+        "properties": {
+          "budget_amount": {"type": "number", "exclusiveMinimum": 0},
+          "acknowledge_no_monetary_cap": {"const": false}
+        }
+      },
+      "else": {
+        "required": ["request_evidence"],
+        "properties": {
+          "budget_amount": {"const": null},
+          "acknowledge_no_monetary_cap": {"const": true},
+          "request_evidence": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"allow_training": {"const": false}}},
+      "then": {
+        "properties": {
+          "allow_global_training": {"const": false},
+          "max_epochs": {"const": 0},
+          "max_training_jobs": {"const": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "max_epochs": {"minimum": 1},
+          "max_training_jobs": {"minimum": 1}
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

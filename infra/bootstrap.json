@@ -1,0 +1,195 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "description": "New, lab-owned resource group only. Use lab.bootstrap; never deploy this template into an existing shared group.",
+    "sources": [
+      "https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects",
+      "https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/deployments",
+      "https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects/connections",
+      "https://learn.microsoft.com/azure/templates/microsoft.search/2025-05-01/searchservices",
+      "https://learn.microsoft.com/azure/templates/microsoft.operationalinsights/2023-09-01/workspaces",
+      "https://learn.microsoft.com/azure/templates/microsoft.insights/2020-02-02/components",
+      "https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-create-knowledge-base",
+      "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-setup",
+      "https://learn.microsoft.com/azure/foundry/observability/how-to/trace-ingestion-entra-authentication",
+      "https://github.com/Azure/azure-rest-api-specs/blob/main/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/CognitiveServices/stable/2026-07-01/cognitiveservices.json",
+      "https://github.com/Azure-Samples/azd-ai-starter-basic/blob/main/infra/core/ai/ai-project.bicep"
+    ]
+  },
+  "parameters": {
+    "location": {"type": "string", "allowedValues": ["northcentralus"]},
+    "names": {"type": "object"},
+    "tags": {"type": "object"},
+    "models": {"type": "array"},
+    "roles": {"type": "array"},
+    "operatorPrincipalId": {"type": "string"},
+    "retentionDays": {"type": "int", "minValue": 30, "maxValue": 730}
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2025-06-01",
+      "name": "[parameters('names').account]",
+      "location": "[parameters('location')]",
+      "kind": "AIServices",
+      "sku": {"name": "S0"},
+      "identity": {"type": "SystemAssigned"},
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "allowProjectManagement": true,
+        "customSubDomainName": "[parameters('names').account]",
+        "disableLocalAuth": true,
+        "dynamicThrottlingEnabled": false,
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/projects",
+      "apiVersion": "2025-06-01",
+      "name": "[format('{0}/{1}', parameters('names').account, parameters('names').project)]",
+      "location": "[parameters('location')]",
+      "identity": {"type": "SystemAssigned"},
+      "tags": "[parameters('tags')]",
+      "dependsOn": ["[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]"],
+      "properties": {
+        "displayName": "[parameters('names').project]",
+        "description": "Isolated Contoso learning-loop lab"
+      }
+    },
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2025-05-01",
+      "name": "[parameters('names').search]",
+      "location": "[parameters('location')]",
+      "sku": {"name": "basic"},
+      "identity": {"type": "SystemAssigned"},
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "disableLocalAuth": true,
+        "publicNetworkAccess": "Enabled",
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "default",
+        "semanticSearch": "free"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2023-09-01",
+      "name": "[parameters('names').workspace]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {"name": "PerGB2018"},
+        "retentionInDays": "[parameters('retentionDays')]",
+        "features": {
+          "disableLocalAuth": true,
+          "enableLogAccessUsingOnlyResourcePermissions": true
+        },
+        "workspaceCapping": {"dailyQuotaGb": 1},
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[parameters('names').insights]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "tags": "[parameters('tags')]",
+      "dependsOn": ["[resourceId('Microsoft.OperationalInsights/workspaces', parameters('names').workspace)]"],
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('names').workspace)]",
+        "IngestionMode": "LogAnalytics",
+        "DisableLocalAuth": true,
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2025-06-01",
+      "name": "[format('{0}/{1}', parameters('names').account, parameters('models')[copyIndex()].deployment)]",
+      "tags": "[parameters('tags')]",
+      "copy": {"name": "modelDeployments", "count": "[length(parameters('models'))]", "mode": "serial", "batchSize": 1},
+      "dependsOn": ["[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]"],
+      "sku": {
+        "name": "[parameters('models')[copyIndex()].sku]",
+        "capacity": "[parameters('models')[copyIndex()].capacity]"
+      },
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "[parameters('models')[copyIndex()].name]",
+          "version": "[parameters('models')[copyIndex()].version]"
+        },
+        "versionUpgradeOption": "NoAutoUpgrade"
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/projects/connections",
+      "apiVersion": "2025-06-01",
+      "name": "[format('{0}/{1}/lab-search', parameters('names').account, parameters('names').project)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]",
+        "[resourceId('Microsoft.Search/searchServices', parameters('names').search)]"
+      ],
+      "properties": {
+        "authType": "AAD",
+        "category": "CognitiveSearch",
+        "target": "[format('https://{0}.search.windows.net', parameters('names').search)]",
+        "isSharedToAll": false,
+        "useWorkspaceManagedIdentity": true,
+        "metadata": {
+          "ApiType": "Azure",
+          "ResourceId": "[resourceId('Microsoft.Search/searchServices', parameters('names').search)]",
+          "lab_instance": "[parameters('tags').lab_instance]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/projects/connections",
+      "apiVersion": "2026-07-01",
+      "name": "[format('{0}/{1}/lab-appinsights', parameters('names').account, parameters('names').project)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]",
+        "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
+        "labRoleAssignments"
+      ],
+      "properties": {
+        "authType": "ProjectManagedIdentity",
+        "category": "AppInsights",
+        "target": "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
+        "isSharedToAll": false,
+        "metadata": {
+          "ApiType": "Azure",
+          "ResourceId": "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
+          "lab_instance": "[parameters('tags').lab_instance]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[parameters('roles')[copyIndex()].assignment_name]",
+      "scope": "[parameters('roles')[copyIndex()].arm_scope]",
+      "copy": {"name": "labRoleAssignments", "count": "[length(parameters('roles'))]"},
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]",
+        "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]",
+        "[resourceId('Microsoft.Search/searchServices', parameters('names').search)]",
+        "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('names').workspace)]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roles')[copyIndex()].role_id)]",
+        "principalId": "[if(equals(parameters('roles')[copyIndex()].principal, 'operator'), parameters('operatorPrincipalId'), reference(parameters('roles')[copyIndex()].principal_resource_id, parameters('roles')[copyIndex()].principal_api_version, 'Full').identity.principalId)]",
+        "principalType": "[if(equals(parameters('roles')[copyIndex()].principal, 'operator'), 'User', 'ServicePrincipal')]",
+        "description": "[parameters('roles')[copyIndex()].description]"
+      }
+    }
+  ]
+}
