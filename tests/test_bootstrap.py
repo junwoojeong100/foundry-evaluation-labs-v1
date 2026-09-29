@@ -18,6 +18,18 @@ SUB = "11111111-1111-4111-8111-111111111111"
 TENANT = "22222222-2222-4222-8222-222222222222"
 OPERATOR = "33333333-3333-4333-8333-333333333333"
 USER = "operator@example.invalid"
+DEPRECATED_ERROR = {
+    "code": "InvalidTemplateDeployment",
+    "message": "The template deployment failed validation.",
+    "details": [{
+        "code": "ServiceModelDeprecated",
+        "message": (
+            "Model gpt-4o-mini version 2024-07-18 is deprecated since 03/31/2026. "
+            f"Operator {USER}; scope /subscriptions/{SUB}/resourceGroups/private-group. "
+            "Authorization: Bearer secret-token; api-key=private-key"
+        ),
+    }],
+}
 
 
 class FakeAzure:
@@ -37,15 +49,20 @@ class FakeAzure:
         self.permissions = {"value": [{"actions": ["*"], "notActions": []}]}
         self.provider_state = "Registered"
         self.fail_submit = False
+        self.fail_group = False
         self.fail_after_submit = False
+        self.fail_terminal = False
+        self.validation_error = None
+        self.validation_result = {"properties": {"provisioningState": "Succeeded"}, "error": None}
         self.running = False
         for model in self.config["models"]:
-            key = f"OpenAI.{model['sku']}.{model['name']}"
+            quota_model = "gpt4.1-mini" if model["name"] == "gpt-4.1-mini" else model["name"]
+            key = f"OpenAI.{model['sku']}.{quota_model}"
             self.catalog.append({
                 "kind": "AIServices",
                 "model": {
                     "format": "OpenAI", "name": model["name"], "version": model["version"],
-                    "lifecycleStatus": "Deprecating" if "agent" in model["roles"] else "GenerallyAvailable",
+                    "lifecycleStatus": "Legacy" if model["name"] == "gpt-4.1-mini" else "GenerallyAvailable",
                     "capabilities": {"fineTune": "true"},
                     "skus": [{
                         "name": model["sku"], "usageName": key,
@@ -147,6 +164,13 @@ class FakeAzure:
             return deepcopy(self.usage)
         if args[:2] == ["resource", "list"]:
             return [r for r in deepcopy(self.remote).values() if r.get("type") != "Microsoft.Resources/resourceGroups"]
+        if args[:3] == ["deployment", "group", "validate"]:
+            assert args[args.index("--validation-level") + 1] == "Provider"
+            assert args[args.index("--mode") + 1] == "Incremental"
+            assert Path(args[args.index("--template-file") + 1]).name == "template.json"
+            if self.validation_error:
+                raise b._azure_error("ERROR: " + json.dumps(self.validation_error), "", args)
+            return deepcopy(self.validation_result)
         if args[:3] == ["deployment", "group", "create"]:
             self.mutations.append(args)
             assert args[args.index("--mode") + 1] == "Incremental"
@@ -158,6 +182,13 @@ class FakeAzure:
                 raise b.AzureCommandError("DeploymentFailed")
             path = Path(args[args.index("--parameters") + 1].removeprefix("@"))
             self._populate(json.loads(path.read_text()))
+            if self.fail_terminal:
+                self.fail_terminal = False
+                spec = b._resources(self.config)["arm_deployment"]
+                self.remote[spec["id"].lower()]["properties"].update(
+                    provisioningState="Failed",
+                    error={"code": "DeploymentFailed", "message": "Provider failed this attempt."},
+                )
             if self.fail_after_submit:
                 self.fail_after_submit = False
                 raise b.BootstrapError("Submission result unknown")
@@ -192,6 +223,9 @@ class FakeAzure:
                 self.mutations.append(args)
                 self._receipt(parsed.path)
                 assert "If-None-Match=*" in args
+                if self.fail_group:
+                    self.fail_group = False
+                    raise b.AzureCommandError("CliTimeout", command=args, stderr="Group submission unknown")
                 if parsed.path.lower() in self.remote:
                     raise b.AzureCommandError("PreconditionFailed")
                 row = json.loads(args[args.index("--body") + 1])
@@ -271,7 +305,8 @@ class BootstrapTests(unittest.TestCase):
         for identity in (SUB, TENANT, OPERATOR, USER):
             self.assertNotIn(identity, json.dumps(report))
         self.assertEqual(report["models"][0]["free_available_units"], 100)
-        self.assertTrue(report["models"][0]["deprecated"])
+        self.assertFalse(report["models"][0]["deprecated"])
+        self.assertEqual(report["models"][0]["lifecycle"], ["Legacy"])
         self.assertIn("model-specific", report["models"][0]["capacity_unit"])
 
     def test_wrong_active_identity_stops_before_resource_queries(self):
@@ -315,18 +350,53 @@ class BootstrapTests(unittest.TestCase):
         path = Path(planned["config_path"])
         config = json.loads(path.read_text())
         agent = next(model for model in config["models"] if "agent" in model["roles"])
-        self.assertEqual((agent["name"], agent["version"], agent["sku"]), ("gpt-4o-mini", "2024-07-18", "Standard"))
+        self.assertEqual((agent["name"], agent["version"], agent["sku"]), ("gpt-4.1-mini", "2025-04-14", "Standard"))
         self.assertTrue(all(m["sku"] == "GlobalStandard" for m in config["models"] if "agent" not in m["roles"]))
         fake = FakeAzure(path)
         report = b.preflight(path, run=fake)
         self.assertEqual(report["readiness_status"], "READY")
         selected = next(m for m in report["models"] if "agent" in m["roles"])
-        self.assertEqual(selected["usage_name"], "OpenAI.Standard.gpt-4o-mini")
-        fake.usage[0]["name"]["value"] = "OpenAI.GlobalStandard.gpt-4o-mini"
+        self.assertEqual(selected["usage_name"], "OpenAI.Standard.gpt4.1-mini")
+        fake.usage[0]["name"]["value"] = "OpenAI.Standard.gpt-4.1-mini"
         self.assertEqual(b.preflight(path, run=fake)["status"], "BLOCKED")
-        self.assertEqual(self.config["models"][0]["sku"], "GlobalStandard")
+        self.assertEqual(self.config["models"][0]["sku"], "Standard")
         self.assertNotEqual(config["scope_sha256"], self.config["scope_sha256"])
         self.assertEqual(fake.mutations, [])
+
+    def test_explicit_catalog_quota_pin_preserves_non_model_name_spelling(self):
+        models = deepcopy(list(b.DEFAULT_MODELS))
+        models[0]["usage_name"] = "OpenAI.Standard.gpt4.1-mini"
+        planned = b.plan(
+            subscription_id=SUB, tenant_id=TENANT, expected_user=USER, root=self.root,
+            environment="lab-quota-pin", models=models,
+        )
+        fake = FakeAzure(planned["config_path"])
+        report = b.preflight(planned["config_path"], run=fake)
+        self.assertEqual(report["readiness_status"], "READY")
+        self.assertEqual(report["models"][0]["usage_name"], "OpenAI.Standard.gpt4.1-mini")
+        self.assertEqual(fake.mutations, [])
+
+    def test_invented_quota_pin_and_finetune_quota_are_not_accepted_as_base(self):
+        models = deepcopy(list(b.DEFAULT_MODELS))
+        models[0]["usage_name"] = "OpenAI.Standard.gpt-4.1-mini"
+        planned = b.plan(
+            subscription_id=SUB, tenant_id=TENANT, expected_user=USER, root=self.root,
+            environment="lab-bad-pin", models=models,
+        )
+        self.assertEqual(b.preflight(planned["config_path"], run=FakeAzure(planned["config_path"]))["status"], "BLOCKED")
+        models[0]["usage_name"] = "OpenAI.Standard.gpt4.1-mini-finetune"
+        with self.assertRaises(b.BootstrapError):
+            b.plan(
+                subscription_id=SUB, tenant_id=TENANT, expected_user=USER, root=self.root,
+                environment="lab-ft-pin", models=models,
+            )
+
+    def test_ambiguous_catalog_quota_requires_an_explicit_pin(self):
+        alternate = deepcopy(self.azure.catalog[0]["model"]["skus"][0])
+        alternate["usageName"] = "OpenAI.Standard.another-base-quota"
+        self.azure.catalog[0]["model"]["skus"].append(alternate)
+        self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")
+        self.assertEqual(self.azure.mutations, [])
 
     def test_available_quota_is_limit_minus_used_not_limit(self):
         self.azure.usage[0]["currentValue"] = 90
@@ -336,7 +406,7 @@ class BootstrapTests(unittest.TestCase):
     def test_combined_deployments_cannot_double_spend_one_quota_family(self):
         models = deepcopy(list(b.DEFAULT_MODELS))
         for model in models[:3]:
-            model["name"], model["version"] = "gpt-4o-mini", "2024-07-18"
+            model["name"], model["version"], model["sku"] = "gpt-4.1-mini", "2025-04-14", "Standard"
         planned = b.plan(
             subscription_id=SUB, tenant_id=TENANT, expected_user=USER, environment="lab-shared",
             root=self.root, models=models,
@@ -344,8 +414,8 @@ class BootstrapTests(unittest.TestCase):
         fake = FakeAzure(planned["config_path"])
         fake.usage[0]["limit"] = 50
         # Deduplicate catalog entries like the real regional catalog, preserving one lifecycle.
-        fake.catalog[1]["model"]["lifecycleStatus"] = "Deprecating"
-        fake.catalog[2]["model"]["lifecycleStatus"] = "Deprecating"
+        fake.catalog[1]["model"]["lifecycleStatus"] = "Legacy"
+        fake.catalog[2]["model"]["lifecycleStatus"] = "Legacy"
         report = b.preflight(planned["config_path"], run=fake)
         self.assertEqual(report["status"], "BLOCKED")
         self.assertIn("all requested", report["reason"])
@@ -384,6 +454,8 @@ class BootstrapTests(unittest.TestCase):
             {"allow_resource_creation": False}, {"allow_rbac_assignments": False},
             {"expires_at": "2020-01-01T00:00:00+00:00"}, {"expires_at": "2999-01-01T00:00:00+00:00"},
             {"expires_at": "2026-01-01T00:00:00"},
+            {"max_provisioning_retries": -1}, {"max_provisioning_retries": True},
+            {"max_provisioning_retries": None},
         )
         for changes in cases:
             with self.subTest(changes=changes):
@@ -400,6 +472,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(self.azure.calls, [])
 
     def test_deprecating_model_requires_explicit_acceptance(self):
+        self.azure.catalog[0]["model"]["lifecycleStatus"] = "Deprecating"
         with self.assertRaises(b.BootstrapError):
             b.apply(self.path, self.approve(accept_deprecated_models=False), run=self.azure)
         self.assertEqual(self.azure.mutations, [])
@@ -445,7 +518,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual((self.path.parent / ".env").read_bytes(), old_env)
         self.assertEqual(artifact.read_text(), "evidence")
 
-    def test_failed_submission_preserves_owned_scope_and_resumes(self):
+    def test_failed_submission_without_remote_deployment_is_not_blindly_repeated(self):
         self.azure.fail_submit = True
         with self.assertRaises(b.BootstrapError):
             self.apply()
@@ -453,10 +526,14 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(manifest["phase"], "interrupted")
         self.assertEqual(manifest["resources"]["account"]["status"], "pending")
         old_ids = {v["id"] for v in manifest["resources"].values()}
-        self.assertEqual(self.apply()["status"], "APPLIED")
+        self.azure.mutations.clear()
+        for retry in (False, True):
+            with self.subTest(retry=retry):
+                with self.assertRaises(b.ProvisioningRetryError) as caught:
+                    b.apply(self.path, self.approve(max_provisioning_retries=1), run=self.azure, retry=retry)
+                self.assertEqual(caught.exception.code, "UNKNOWN_SUBMISSION")
         self.assertEqual(old_ids, {v["id"] for v in self.azure.manifest()["resources"].values()})
-        puts = [a for a in self.azure.mutations if a[0] == "rest"]
-        self.assertEqual(len(puts), 1)
+        self.assertEqual(self.azure.mutations, [])
 
     def test_unknown_submission_result_reconciles_without_redeployment(self):
         self.azure.fail_after_submit = True
@@ -653,6 +730,163 @@ class BootstrapTests(unittest.TestCase):
                 self.assertEqual(caught.exception.code, code)
                 self.assertNotIn(USER, str(caught.exception))
                 self.assertEqual(caught.exception.stderr, stderr)
+
+    def test_nested_provider_deprecation_overrides_wrapper_and_scrubs_public_message(self):
+        bodies = (
+            DEPRECATED_ERROR,
+            {"error": DEPRECATED_ERROR},
+            {"error": {"code": "DeploymentFailed", "message": json.dumps(DEPRECATED_ERROR)}},
+            json.dumps({"error": DEPRECATED_ERROR}),
+        )
+        for body in bodies:
+            for output in ("stderr", "stdout"):
+                with self.subTest(body=body.get("code", "wrapped") if isinstance(body, dict) else "encoded", output=output):
+                    text = "ERROR: " + json.dumps(body)
+                    fake = subprocess.CompletedProcess(
+                        [], 1, text if output == "stdout" else "", text if output == "stderr" else "",
+                    )
+                    with patch.object(b.subprocess, "run", return_value=fake):
+                        with self.assertRaises(b.AzureCommandError) as caught:
+                            b.az_json(["deployment", "group", "validate"])
+                    exc = caught.exception
+                    self.assertEqual(exc.code, "ServiceModelDeprecated")
+                    self.assertIn("gpt-4o-mini", str(exc))
+                    self.assertIn("03/31/2026", str(exc))
+                    for private in (SUB, USER, "private-group", "secret-token", "private-key"):
+                        self.assertNotIn(private, str(exc))
+                    self.assertIn(USER, exc.raw_message)
+                    self.assertEqual(getattr(exc, output), text)
+
+    def test_real_validation_failure_shape_blocks_preflight_and_preserves_original_locally(self):
+        intent, created, _ = self.coordinator_receipts()
+        b.bind_created_group(self.path, intent, created, run=self.azure)
+        self.azure.validation_error = deepcopy(DEPRECATED_ERROR)
+        report = b.preflight(self.path, run=self.azure, approval_path=self.approve())
+        self.assertEqual(report["status"], "BLOCKED")
+        self.assertEqual(report["error_code"], "ServiceModelDeprecated")
+        self.assertEqual(report["arm_validation_status"], "FAILED")
+        self.assertEqual(report["live_status"], "BLOCKED_PROVIDER_VALIDATION")
+        self.assertEqual(report["approval_status"], "APPROVED")
+        self.assertNotIn(USER, json.dumps(report))
+        records = list((self.path.parent / "evidence").glob("validation-*.local.json"))
+        failures = [json.loads(path.read_text()) for path in records if not path.name.startswith("validation-parameters")]
+        self.assertEqual(failures[-1]["status"], "FAILED")
+        self.assertIn(USER, failures[-1]["failure"]["stderr"])
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_provider_validation_must_pass_before_any_child_creation(self):
+        intent, created, _ = self.coordinator_receipts()
+        b.bind_created_group(self.path, intent, created, run=self.azure)
+        self.azure.validation_error = deepcopy(DEPRECATED_ERROR)
+        with self.assertRaises(b.AzureCommandError) as caught:
+            self.apply()
+        self.assertEqual(caught.exception.code, "ServiceModelDeprecated")
+        self.assertEqual(self.azure.mutations, [])
+        manifest = self.azure.manifest()
+        self.assertFalse(any(item["phase"] == "deploying" for item in manifest["attempts"]))
+        self.assertTrue(all(r["status"] == "planned" for k, r in manifest["resources"].items() if k != "resource_group"))
+        self.assertEqual(manifest["last_validation"]["status"], "FAILED")
+        failure = self.path.parent / "evidence" / manifest["last_error_evidence_file"]
+        self.assertEqual(failure.stat().st_mode & 0o777, 0o600)
+        self.assertIn(USER, json.loads(failure.read_text())["stderr"])
+        self.assertNotIn(USER, manifest["last_error"])
+
+    def test_empty_or_failed_validation_response_is_not_success(self):
+        intent, created, _ = self.coordinator_receipts()
+        b.bind_created_group(self.path, intent, created, run=self.azure)
+        for response in (
+            None, {}, {"properties": None}, {"error": DEPRECATED_ERROR},
+            DEPRECATED_ERROR, {"properties": {"provisioningState": "Failed"}},
+        ):
+            with self.subTest(response=response):
+                self.azure.validation_result = response
+                with self.assertRaises(b.BootstrapError):
+                    self.apply()
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_create_uses_the_exact_provider_validated_parameters(self):
+        self.apply()
+        validation = next(args for args in self.azure.calls if args[:3] == ["deployment", "group", "validate"])
+        create = next(args for args in self.azure.calls if args[:3] == ["deployment", "group", "create"])
+        self.assertLess(self.azure.calls.index(validation), self.azure.calls.index(create))
+        self.assertEqual(validation[validation.index("--parameters") + 1], create[create.index("--parameters") + 1])
+        self.assertEqual(validation[validation.index("--template-file") + 1], create[create.index("--template-file") + 1])
+
+    def test_verified_failed_deployment_requires_explicit_flag_and_retry_allowance(self):
+        self.azure.fail_terminal = True
+        with self.assertRaises(b.AzureCommandError):
+            self.apply()
+        self.azure.mutations.clear()
+        for retry, budget, code in (
+            (False, 1, "RETRY_REQUIRED"), (True, 0, "RETRY_BUDGET_EXHAUSTED"),
+        ):
+            with self.subTest(retry=retry, budget=budget):
+                with self.assertRaises(b.ProvisioningRetryError) as caught:
+                    b.apply(self.path, self.approve(max_provisioning_retries=budget), run=self.azure, retry=retry)
+                self.assertEqual(caught.exception.code, code)
+        self.assertEqual(self.azure.mutations, [])
+        result = b.apply(self.path, self.approve(max_provisioning_retries=1), run=self.azure, retry=True)
+        self.assertEqual(result["status"], "APPLIED")
+        self.assertEqual(len(self.azure.mutations), 1)
+        self.assertEqual(self.azure.mutations[0][:3], ["deployment", "group", "create"])
+
+    def test_retry_allowance_is_consumed_by_recorded_arm_create_attempts(self):
+        approval = self.approve(max_provisioning_retries=1)
+        for retry in (False, True):
+            self.azure.fail_terminal = True
+            with self.assertRaises(b.AzureCommandError):
+                b.apply(self.path, approval, run=self.azure, retry=retry)
+        self.azure.mutations.clear()
+        with self.assertRaises(b.ProvisioningRetryError) as caught:
+            b.apply(self.path, approval, run=self.azure, retry=True)
+        self.assertEqual(caught.exception.code, "RETRY_BUDGET_EXHAUSTED")
+        self.assertEqual(self.azure.mutations, [])
+        self.assertEqual(len([item for item in self.azure.manifest()["attempts"] if item["phase"] == "deploying"]), 2)
+        self.assertEqual(len(self.azure.manifest()["failures"]), 3)
+        self.assertTrue(all(
+            (self.path.parent / "evidence" / failure["evidence_file"]).is_file()
+            for failure in self.azure.manifest()["failures"]
+        ))
+
+    def test_arm_terminal_failure_payload_is_preserved_not_just_summary(self):
+        self.azure.fail_terminal = True
+        with self.assertRaises(b.AzureCommandError):
+            self.apply()
+        manifest = self.azure.manifest()
+        record = json.loads((self.path.parent / "evidence" / manifest["last_error_evidence_file"]).read_text())
+        payload = json.loads(record["stdout"])
+        self.assertEqual(payload["properties"]["provisioningState"], "Failed")
+        self.assertEqual(payload["properties"]["error"]["code"], "DeploymentFailed")
+        self.assertIn(SUB, payload["id"])
+        self.assertNotIn(SUB, record["error"])
+
+    def test_cli_timeout_keeps_original_output_without_assuming_submission_failed(self):
+        timeout = subprocess.TimeoutExpired(["az"], 1, output=f"scope {SUB}".encode(), stderr=b"still waiting")
+        with patch.object(b.subprocess, "run", side_effect=timeout):
+            with self.assertRaises(b.AzureCommandError) as caught:
+                b.az_json(["deployment", "group", "create"], timeout=1)
+        self.assertEqual(caught.exception.code, "CliTimeout")
+        self.assertIn(SUB, caught.exception.stdout)
+        self.assertNotIn(SUB, str(caught.exception))
+
+    def test_auth_failure_is_never_reclassified_as_nested_not_found(self):
+        payload = {
+            "code": "AuthorizationFailed", "message": "Access denied.",
+            "details": [{"code": "ResourceNotFound", "message": "Hidden resource."}],
+        }
+        error = b._azure_error(json.dumps(payload), "", ["rest", "--method", "GET"])
+        self.assertEqual(error.code, "AuthorizationFailed")
+
+    def test_unknown_group_submission_is_not_retried_even_with_retry_allowance(self):
+        self.azure.fail_group = True
+        with self.assertRaises(b.AzureCommandError):
+            self.apply()
+        self.assertEqual(self.azure.manifest()["resources"]["resource_group"]["status"], "pending")
+        self.azure.mutations.clear()
+        with self.assertRaises(b.ProvisioningRetryError) as caught:
+            b.apply(self.path, self.approve(max_provisioning_retries=1), run=self.azure, retry=True)
+        self.assertEqual(caught.exception.code, "UNKNOWN_GROUP_SUBMISSION")
+        self.assertEqual(self.azure.mutations, [])
 
     def test_changed_pinned_template_blocks_before_azure_calls(self):
         (self.path.parent / "template.json").write_text("{}")

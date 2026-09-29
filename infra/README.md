@@ -7,8 +7,10 @@ provider registration, resource deletion, or subscription switch is performed.
 
 **Coordinated LIVE workflow: `PENDING_EXECUTION` (2026-09-30).**
 
-The coordinator reports explicit approval **by reference** of the bounded
-proposal: USD 50, at most 300 combined model/judge/planner requests, one job per
+The coordinator reports explicit approval **by reference**, followed by explicit
+removal of the monetary ceiling. **No monetary cap applies to this approved
+run**; its operational scale remains bounded: at most 300 combined
+model/judge/planner requests, one job per
 optimizer with at most two candidates, one SFT job using 56 train / 12 validation
 rows and one epoch, 12 fresh-holdout rows, and at most 60 minutes waiting per job.
 Only synthetic-data GlobalStandard / Global-or-Developer processing and minimum
@@ -63,35 +65,48 @@ Default choices are **candidates, not approval or availability guarantees**:
 
 | Use | Model | Pinned version | SKU | Requested ARM capacity |
 |---|---|---|---|---|
-| Agent / proposed SFT base | gpt-4o-mini | 2024-07-18 | GlobalStandard | 20 |
+| Agent / same-family SFT base | gpt-4.1-mini | 2025-04-14 | Standard | 20 |
 | Judge | gpt-5.4-mini | 2026-03-17 | GlobalStandard | 20 |
 | IQ planner + optimizer | gpt-5.5 | 2026-04-24 | GlobalStandard | 20 |
 | Embeddings | text-embedding-3-small | 1 | GlobalStandard | 10 |
 
-The 2026-09-30 regional catalog marked gpt-4o-mini **Deprecating**. Apply requires
-explicit acceptance of that fact, or a new plan selecting a different supported
-model. Pass `--models-json <file>` with `{"models": [...]}` to pin alternatives.
-Each entry has `name`, `version`, `sku`, `capacity`, `deployment`, and `roles`.
+The 2026-09-30 regional catalog marked gpt-4o-mini **Deprecating**, but actual
+Provider validation subsequently returned **`ServiceModelDeprecated`**, reporting
+deprecation since **03/31/2026**. This overrides catalog flags and available
+quota: the original gpt-4o-mini draft is **not a deployable selection**.
+`accept_deprecated_models` acknowledges a catalog warning; it cannot override
+service rejection. The coordinator subsequently **explicitly selected**
+`gpt-4.1-mini` version `2025-04-14` on `Standard`, and that is now the default
+draft agent/base choice. Its observed catalog lifecycle is **Legacy** with
+fine-tuning capabilities; Provider validation is still mandatory. Preserve the
+older failed plan/approval/attempt evidence. Pass `--models-json <file>` with
+`{"models": [...]}` to pin an explicit selection; no automatic family/region
+replacement is performed.
+Each entry has `name`, `version`, `sku`, `capacity`, `deployment`, and `roles`;
+optional `usage_name` pins the exact live base-SKU quota identifier.
 Exactly one mapping is required for each of `agent`, `judge`, `planner`,
 `optimizer`, and `embedding`; planner and optimizer may share a deployment.
 Floating versions and provisioned-throughput SKUs are intentionally unsupported.
 
-For the existing `lab.sft` exact paired comparator, explicitly select
+For the selected same-family SFT comparator, explicitly select
 `plan --agent-sku Standard` (or `sku: "Standard"` in the agent entry of
-`--models-json`). This retains **gpt-4o-mini 2024-07-18** and changes only its
-deployment SKU; judge/planner/optimizer/embedding stay unchanged. Preflight
-checks `OpenAI.Standard.gpt-4o-mini`, not GlobalStandard or `-finetune` quota.
+`--models-json`). The selected base is **gpt-4.1-mini 2025-04-14**;
+judge/planner/optimizer/embedding stay unchanged. Preflight checks the catalog's
+**`OpenAI.Standard.gpt4.1-mini`** (no hyphen after `gpt`), not a guessed
+`OpenAI.Standard.gpt-4.1-mini`, GlobalStandard, or `-finetune` quota.
 The later tuned Standard deployment separately requires
-`OpenAI.Standard.gpt-4o-mini-finetune` quota. Neither training mode nor deployment
+`OpenAI.Standard.gpt4.1-mini-finetune` quota. Neither training mode nor deployment
 SKU is automatically switched. The main bootstrap does not create tuned hosting.
 
-An already generated GlobalStandard plan is immutable: create a **new local
-environment** with `--agent-sku Standard` and the same explicitly named,
+An already generated plan is immutable: create a **new local
+environment** with the explicit new model/version/SKU and the same named,
 coordinator-created **empty** RG, then `bind-group` with its original receipts.
 Obtain a new exact-scope approval for that plan; do not edit an existing config
 or assume its old approval covers a new SKU/hash. Do not run both old and new
 plans. If child provisioning has started, stop rather than repointing the plan.
-Base and tuned SKU validation in `lab.sft` must still pass at execution time.
+The SFT adapter must pin the same selected model/version and verify base/tuned
+Standard deployments at execution time; changing bootstrap alone does not prove
+that adapter readiness or training access.
 
 Preflight verifies the active CLI subscription/tenant/UPN and independently checks
 the signed-in user's object ID. It never infers the MCP principal from tenant or
@@ -107,6 +122,27 @@ Regional model capacity is checked separately. ARM capacity is not universally
 1,000 TPM: live per-model constraints and rate limits are retained without
 inventing a conversion. Available quota means unallocated capacity, **not free
 inference**. No alternate-region retry occurs.
+Quota identifiers are read from the matching live SKU, never built by
+concatenating the display model name. If multiple base-SKU records are
+ambiguous, preflight stops; an explicit `usage_name` must match a real catalog
+record and cannot point at fine-tuning quota.
+
+When the owned RG exists, `preflight` additionally calls
+`az deployment group validate --validation-level Provider` with the pinned
+template and exact private parameters. `apply` must pass the same Provider
+validation before every child-resource create/retry and uses that **same
+parameter file** for creation. A catalog/quota pass is not deployability proof.
+If the new RG is still absent, read-only preflight explicitly reports
+`DEFERRED_RESOURCE_GROUP_ABSENT`; apply may create only the approved empty RG
+before Provider validation, not any child resource. Failed validation is
+`BLOCKED` / `BLOCKED_PROVIDER_VALIDATION`, never a success fallback.
+
+Validation requests/results and Azure failure stdout/stderr/nested error bodies
+are preserved in private `evidence/*.local.json` files. Public errors select the
+actionable nested code (for example `ServiceModelDeprecated`, not merely
+`InvalidTemplateDeployment`) and redact identities, resource scopes, URLs, and
+credential-like values from messages. Authorization failures are not reclassified
+as resource absence. Do not publish raw diagnostics.
 
 `*.local.json` contains original identities/resource IDs and remains local.
 `*.redacted.json` and the preflight/status return values use allowlisted derived
@@ -199,8 +235,9 @@ waiving a monetary ceiling**, record
 `acknowledge_no_monetary_cap: true`, and the original private `request_evidence`.
 All finite call/candidate/job/epoch/wait bounds, expiry, processing consent,
 new-resource-only RBAC, synthetic data, preservation, and no-deletion rules
-remain unchanged. Earlier USD 50 guidance is not silently rewritten into
-unlimited permission; the explicit later private authorization must be present.
+remain unchanged. The current run has that explicit later authorization; a
+missing or ambiguous amount in another environment must never be interpreted
+as unlimited permission.
 
 Disabled training requires zero training limits and no global-training consent.
 Zero call/candidate bounds do not authorize inference/optimization. Runtime code
@@ -226,8 +263,23 @@ with no creation receipt is never adopted, even if its tags happen to match.
 Provider errors and authorization failures are not treated as “resource absent.”
 
 Interrupted deployments retain the local manifest and ledger. Reuse the same
-config and valid approval to reconcile/poll the same deployment; failed deployments
-can be retried only after verifying owned resources. An unknown resource, changed
+config and valid approval to reconcile/poll a running or succeeded deployment.
+A verified terminal failed/cancelled **owned** ARM deployment can be resubmitted
+only with **both** explicit `apply --retry` and a current approval containing an
+unconsumed, nonnegative `max_provisioning_retries`. That optional allowance
+defaults to **zero**; removing a monetary ceiling does not permit unlimited
+retries. Every recorded ARM create beyond the first consumes one allowance.
+Provider validation still runs before an approved retry.
+
+If a creation attempt was recorded but the corresponding deployment is absent,
+its outcome is **`UNKNOWN_SUBMISSION`**: even `--retry` with budget cannot
+blindly resubmit. An unresolved pending RG create is similarly blocked as
+`UNKNOWN_GROUP_SUBMISSION`. Inspect original request/error/activity evidence;
+do not forge journal state, delete resources, or treat “not found” as proof no
+submission occurred. If the original deployment becomes observable as running
+or succeeded, ordinary apply reconciles it without another create.
+
+An unknown resource, changed
 role scope, changed model, or missing previously owned group blocks mutation.
 There is no automatic restore, rollback, delete, or “repair permissions” operation.
 After a process crash, a stale `.bootstrap.lock` must be investigated against its
@@ -324,7 +376,7 @@ before importing the normal SDK/config stack. Python functions return dictionari
 - `require_owned_resources(config_path, account_id, *, run=az_json)`
 - `preflight(config_path, *, run=az_json, persist=True, approval_path=None)`
 - `apply(config_path, approval_path=None, *, run=az_json, what_if=False,
-  sleep=time.sleep, clock=time.monotonic)`
+  retry=False, sleep=time.sleep, clock=time.monotonic)`
 - `status(config_path, *, run=az_json, approval_path=None)`
 - `validate_approval(config, approval, *, now=None)`
 

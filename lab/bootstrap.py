@@ -52,7 +52,7 @@ RESOURCE_TYPES = {
     "insights": ("Microsoft.Insights/components", "2020-02-02"),
 }
 DEFAULT_MODELS = (
-    {"roles": ["agent"], "name": "gpt-4o-mini", "version": "2024-07-18", "capacity": 20},
+    {"roles": ["agent"], "name": "gpt-4.1-mini", "version": "2025-04-14", "sku": "Standard", "capacity": 20},
     {"roles": ["judge"], "name": "gpt-5.4-mini", "version": "2026-03-17", "capacity": 20},
     {"roles": ["planner", "optimizer"], "name": "gpt-5.5", "version": "2026-04-24", "capacity": 20},
     {"roles": ["embedding"], "name": "text-embedding-3-small", "version": "1", "capacity": 10},
@@ -73,11 +73,107 @@ class ApprovalError(BootstrapError):
 
 
 class AzureCommandError(BootstrapError):
-    def __init__(self, code: str, *, stderr: str = "", command: list[str] | None = None):
+    def __init__(
+        self, code: str, *, stderr: str = "", stdout: str = "",
+        command: list[str] | None = None, message: str = "", payload: Any = None,
+    ):
         self.code = code
         self.stderr = stderr
+        self.stdout = stdout
         self.command = command
-        super().__init__(f"Azure CLI failed ({code}); no automatic retry, fallback, or cleanup.")
+        self.raw_message = message
+        self.payload = payload
+        self.safe_message = _scrub_azure_message(message)
+        guidance = {
+            "ServiceModelDeprecated": "Provider rejected the pinned model/version as deprecated. Select a supported replacement explicitly; catalog/quota do not override this error.",
+            "AuthorizationFailed": "Verify existing resource-scoped permissions; do not escalate or change subscriptions automatically.",
+            "CliTimeout": "Remote submission outcome is unknown. Inspect the recorded deployment before any retry.",
+        }.get(code, "Inspect the private failure record; no automatic retry, model/region fallback, or cleanup.")
+        detail = f" {self.safe_message}" if self.safe_message else ""
+        super().__init__(f"Azure CLI failed ({code}).{detail} {guidance}")
+
+
+class ProvisioningRetryError(BootstrapError):
+    def __init__(self, code: str, message: str):
+        self.code = code
+        super().__init__(message)
+
+
+def _scrub_azure_message(message: str) -> str:
+    text = re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", str(message))
+    text = re.sub(r"(?i)\bBearer\s+\S+", "<redacted-token>", text)
+    text = re.sub(
+        r"""(?ix)\b(api[-_ ]?key|client[-_ ]?secret|access[-_ ]?token|connection[-_ ]?string|authorization)
+        \s*[:=]\s*("[^"]*"|'[^']*'|[^,;\s]+)""",
+        r"\1=<redacted>", text,
+    )
+    text = re.sub(r"https?://[^\s'\"<>]+", "<url>", text, flags=re.I)
+    text = re.sub(r"/subscriptions/[^\s'\"<>]+", "<resource-scope>", text, flags=re.I)
+    text = re.sub(r"(?i)\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b", "<uuid>", text)
+    text = re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+", "<identity>", text)
+    text = re.sub(r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b", "<redacted-token>", text)
+    return " ".join(text.split())[:1000]
+
+
+def _azure_error(stderr: str, stdout: str, args: list[str]) -> AzureCommandError:
+    payloads, errors = [], []
+    decoder = json.JSONDecoder()
+
+    def collect(value: Any, depth: int = 0) -> None:
+        if depth > 12:
+            return
+        if isinstance(value, dict):
+            code = value.get("code")
+            if isinstance(code, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9]{0,127}", code):
+                errors.append((depth, code, str(value.get("message", ""))))
+            for key in ("error", "details", "innererror", "innerError", "properties", "message"):
+                if key in value:
+                    collect(value[key], depth + 1)
+        elif isinstance(value, list):
+            for item in value:
+                collect(item, depth + 1)
+        elif isinstance(value, str):
+            start = value.find("{")
+            if start >= 0:
+                try:
+                    parsed, _ = decoder.raw_decode(value[start:])
+                    collect(parsed, depth + 1)
+                except (json.JSONDecodeError, RecursionError):
+                    pass
+
+    for text in (stderr, stdout):
+        try:
+            parsed = json.loads(text.removeprefix("ERROR:").strip())
+            payloads.append(parsed)
+            collect(parsed)
+        except (json.JSONDecodeError, RecursionError):
+            pass
+        for match in list(re.finditer(r"\{", text))[:100]:
+            try:
+                parsed, _ = decoder.raw_decode(text[match.start():])
+            except (json.JSONDecodeError, RecursionError):
+                continue
+            payloads.append(parsed)
+            collect(parsed)
+    wrappers = {"DeploymentFailed", "InvalidTemplateDeployment", "ResourceDeploymentFailure", "BadRequest"}
+    authentication_errors = {
+        "AuthorizationFailed", "AuthenticationFailed", "InvalidAuthenticationToken",
+        "ExpiredAuthenticationToken", "Forbidden", "Unauthorized",
+    }
+    actionable = (
+        [item for item in errors if item[1] in authentication_errors]
+        or [item for item in errors if item[1] not in wrappers] or errors
+    )
+    if actionable:
+        _, code, message = max(actionable, key=lambda item: item[0])
+    else:
+        match = re.search(r"\(([A-Za-z][A-Za-z0-9]+)\)", stderr)
+        if match is None:
+            match = re.search(r"""(?i)["']?code["']?\s*[:=]\s*["']?([A-Za-z][A-Za-z0-9]+)""", stderr)
+        code, message = (match.group(1), "") if match else ("UnclassifiedError", "")
+    return AzureCommandError(
+        code, stderr=stderr, stdout=stdout, command=args, message=message, payload=payloads,
+    )
 
 
 def az_json(args: list[str], *, timeout: float = 120) -> Any:
@@ -90,25 +186,21 @@ def az_json(args: list[str], *, timeout: float = 120) -> Any:
     except FileNotFoundError as exc:
         raise BootstrapError("Azure CLI is required; install it separately and sign in explicitly.") from exc
     except subprocess.TimeoutExpired as exc:
-        raise BootstrapError("Azure CLI timed out; remote submission is unknown. Inspect status before resume.") from exc
+        def decoded(value: Any) -> str:
+            return value.decode(errors="replace") if isinstance(value, bytes) else (value or "")
+        raise AzureCommandError(
+            "CliTimeout", command=args, stdout=decoded(exc.stdout), stderr=decoded(exc.stderr),
+            message="Azure CLI timed out; remote submission may still be running.",
+        ) from exc
     if result.returncode:
-        match = re.search(r"\(([A-Za-z][A-Za-z0-9]+)\)", result.stderr)
-        code = match.group(1) if match else "UnclassifiedError"
-        # `az rest` wraps an ARM JSON error in "Not Found({...})", unlike typed CLI commands.
-        start = result.stderr.find("{")
-        if start >= 0:
-            try:
-                payload, _ = json.JSONDecoder().raw_decode(result.stderr[start:])
-                candidate = payload.get("error", {}).get("code")
-                if isinstance(candidate, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9]+", candidate):
-                    code = candidate
-            except (json.JSONDecodeError, AttributeError):
-                pass
-        raise AzureCommandError(code, stderr=result.stderr, command=args)
+        raise _azure_error(result.stderr, result.stdout, args)
     try:
         return json.loads(result.stdout) if result.stdout.strip() else None
     except json.JSONDecodeError as exc:
-        raise BootstrapError("Azure CLI returned invalid JSON.") from exc
+        raise AzureCommandError(
+            "InvalidCliResponse", command=args, stdout=result.stdout, stderr=result.stderr,
+            message="Azure CLI returned invalid JSON; submission outcome cannot be inferred.",
+        ) from exc
 
 
 def _now() -> datetime:
@@ -221,6 +313,13 @@ def _validate(config: dict) -> None:
             raise BootstrapError("Floating model versions are not reproducible.")
         if model.get("sku") not in {"GlobalStandard", "Standard"} or not _integer(model.get("capacity"), 1):
             raise BootstrapError("This bootstrap supports explicit positive Standard/GlobalStandard capacity units only.")
+        if "usage_name" in model and (
+            not isinstance(model["usage_name"], str)
+            or not re.fullmatch(r"OpenAI\.(Standard|GlobalStandard)\.[A-Za-z0-9_.-]+", model["usage_name"])
+            or not model["usage_name"].startswith(f"OpenAI.{model['sku']}.")
+            or model["usage_name"].endswith("-finetune")
+        ):
+            raise BootstrapError("An optional usage_name must pin the selected base-model SKU quota, not fine-tuning quota.")
         if not isinstance(model.get("roles"), list) or not all(isinstance(role, str) for role in model["roles"]):
             raise BootstrapError("Each deployment needs its explicit lab roles.")
         roles.extend(model["roles"])
@@ -466,6 +565,8 @@ def validate_approval(config: dict, approval: dict, *, now: datetime | None = No
     for field in ("max_calls", "max_candidates", "max_epochs", "max_training_jobs"):
         if not _integer(approval.get(field)):
             raise BootstrapError("Approval requires nonnegative integer call, candidate, epoch, and job limits.")
+    if not _integer(approval.get("max_provisioning_retries", 0)):
+        raise BootstrapError("Optional max_provisioning_retries must be a nonnegative integer; omitted means zero.")
     for field in ("max_wait_seconds", "max_hosting_hours"):
         if not _integer(approval.get(field), 1):
             raise BootstrapError("Approval requires bounded positive wait and hosting durations.")
@@ -1046,13 +1147,17 @@ def _model_checks(config: dict, catalog: list, usage: list, capacities: dict, ob
         ]
         if not matches:
             raise BootstrapError(f"Exact regional model/version unavailable: {model['name']}.")
-        usage_name = f"OpenAI.{model['sku']}.{model['name']}"
         skus = [sku for item in matches for sku in item.get("skus", [])
-                if sku.get("name") == model["sku"] and sku.get("usageName") == usage_name]
+                if sku.get("name") == model["sku"]
+                and isinstance(sku.get("usageName"), str)
+                and sku["usageName"].startswith(f"OpenAI.{model['sku']}.")
+                and not sku["usageName"].endswith("-finetune")
+                and (model.get("usage_name") is None or sku["usageName"] == model["usage_name"])]
         unique = {_digest(sku): sku for sku in skus}
         if len(unique) != 1:
             raise BootstrapError(f"Model SKU/quota mapping is absent or ambiguous: {model['name']}.")
         sku = next(iter(unique.values()))
+        usage_name = sku["usageName"]
         bounds = sku.get("capacity") or {}
         capacity = model["capacity"]
         low, high, step, allowed = (bounds.get(k) for k in ("minimum", "maximum", "step", "allowedValues"))
@@ -1158,14 +1263,20 @@ def preflight(
     """Read-only Azure preflight, independent of the existence of a Foundry account."""
     directory, config, manifest = _load(config_path)
     try:
-        report, raw, _ = _preflight(config, manifest, run)
+        report, raw, observed = _preflight(config, manifest, run)
+        if "resource_group" in observed:
+            validation = _validate_arm(directory, config, raw["identity"]["user"]["id"], run)
+            report["arm_validation_status"] = "PASSED"
+            raw["arm_validation"] = validation
+        else:
+            report["arm_validation_status"] = "DEFERRED_RESOURCE_GROUP_ABSENT"
+            report["not_verified"].append("Provider validation requires the new owned resource group and must pass before any child-resource create.")
     except BootstrapError as exc:
         report = {"status": "BLOCKED", "scope_sha256": config["scope_sha256"],
-                  "region": REGION, "reason": str(exc), "mutations_performed": False}
-        raw = {
-            "error": str(exc), "azure_cli_stderr": getattr(exc, "stderr", ""),
-            "azure_cli_command": getattr(exc, "command", None),
-        }
+                  "region": REGION, "reason": str(exc), "error_code": getattr(exc, "code", None),
+                  "arm_validation_status": "FAILED" if getattr(exc, "validation_evidence_file", None) else "NOT_RUN",
+                  "mutations_performed": False}
+        raw = _error_record(exc)
     report["readiness_status"] = report["status"]
     authorization = _authorization(
         config, approval_path, deprecated=any(model["deprecated"] for model in report.get("models", [])),
@@ -1175,6 +1286,8 @@ def preflight(
     else:
         report.update({key: value for key, value in authorization.items() if key != "status"})
     report["live_status"] = "PENDING_EXECUTION" if report["approval_status"] == "APPROVED" else "NOT_VERIFIED"
+    if report.get("arm_validation_status") == "FAILED":
+        report["live_status"] = "BLOCKED_PROVIDER_VALIDATION"
     if persist:
         token = uuid4().hex
         _write(directory / "evidence" / f"preflight-{token}.local.json", raw)
@@ -1202,6 +1315,95 @@ def _parameters(config: dict, principal: str) -> dict:
             "operatorPrincipalId": principal, "retentionDays": config["retention_days"],
         }.items()},
     }
+
+
+def _error_record(exc: BootstrapError) -> dict:
+    return {
+        "error": str(exc), "error_code": getattr(exc, "code", None),
+        "original_message": getattr(exc, "raw_message", ""),
+        "stdout": getattr(exc, "stdout", ""), "stderr": getattr(exc, "stderr", ""),
+        "command": getattr(exc, "command", None), "error_payload": getattr(exc, "payload", None),
+    }
+
+
+def _record_failure(directory: Path, stage: str, exc: BootstrapError, *, command: list[str] | None = None) -> str:
+    name = f"failure-{stage}-{uuid4().hex}.local.json"
+    _write(directory / "evidence" / name, {
+        "recorded_at": _stamp(), "stage": stage, **_error_record(exc),
+        "command": getattr(exc, "command", None) or command,
+    })
+    return name
+
+
+def _validate_arm(directory: Path, config: dict, principal: str, run: Run) -> dict:
+    """Provider validation is read-only; catalog lifecycle and free quota cannot replace it."""
+    token = uuid4().hex
+    parameter_path = directory / "evidence" / f"validation-parameters-{token}.local.json"
+    _write(parameter_path, _parameters(config, principal))
+    command = [
+        "deployment", "group", "validate", "--subscription", config["subscription_id"],
+        "--resource-group", config["names"]["resource_group"], "--name", config["deployment_name"],
+        "--template-file", str(directory / "template.json"), "--parameters", f"@{parameter_path}",
+        "--mode", "Incremental", "--validation-level", "Provider",
+    ]
+    evidence = directory / "evidence" / f"validation-{token}.local.json"
+    record = {
+        "requested_at": _stamp(), "status": "PENDING_READ_ONLY_VALIDATION",
+        "template_sha256": config["template_sha256"], "command": command,
+    }
+    _write(evidence, record)
+    try:
+        result = run(command)
+        record["result"] = result
+        if not isinstance(result, dict):
+            raise BootstrapError("ARM provider validation returned no verifiable JSON result; child creation is blocked.")
+        properties = result.get("properties")
+        error = result.get("error") or (properties.get("error") if isinstance(properties, dict) else None)
+        if not error and result.get("code") and result.get("message"):
+            error = result
+        if error:
+            raise _azure_error("", _json({"error": error}), command)
+        if not isinstance(properties, dict):
+            raise BootstrapError("ARM provider validation returned no properties; child creation is blocked.")
+        if properties.get("provisioningState") not in {None, "Succeeded"}:
+            raise AzureCommandError(
+                "ArmValidationFailed", command=command, stdout=_json(result), payload=result,
+                message="ARM provider validation did not succeed.",
+            )
+        record.update(status="PASSED", result=result, completed_at=_stamp())
+        _write(evidence, record, replace=True)
+        return {"status": "PASSED", "parameters_path": str(parameter_path), "evidence_file": evidence.name}
+    except BootstrapError as exc:
+        if getattr(exc, "command", None) is None:
+            exc.command = command
+        record.update(status="FAILED", completed_at=_stamp(), failure=_error_record(exc))
+        _write(evidence, record, replace=True)
+        exc.validation_evidence_file = evidence.name
+        raise
+
+
+def _submission_required(manifest: dict, observed: dict, approval: dict, retry: bool) -> bool:
+    attempts = [item for item in manifest["attempts"] if item.get("phase") == "deploying"]
+    deployment = observed.get("arm_deployment")
+    if deployment is None:
+        if attempts:
+            raise ProvisioningRetryError(
+                "UNKNOWN_SUBMISSION",
+                "A prior ARM create attempt exists but its deployment is absent. Submission is unresolved; "
+                "inspect the private failure/activity records. Even --retry does not permit blind resubmission.",
+            )
+        return True
+    state = deployment.get("properties", {}).get("provisioningState")
+    if state in {"Succeeded", "Running", "Accepted", "Creating", "Updating"}:
+        return False
+    if state not in {"Failed", "Canceled", "Cancelled"} or not attempts:
+        raise ProvisioningRetryError("UNRESOLVED_DEPLOYMENT_STATE", "Cannot prove a terminal owned deployment failure; do not resubmit.")
+    if retry is not True:
+        raise ProvisioningRetryError("RETRY_REQUIRED", "The owned deployment failed. Retry requires explicit --retry and a current approved max_provisioning_retries allowance.")
+    used = max(0, len(attempts) - 1)
+    if used >= approval.get("max_provisioning_retries", 0):
+        raise ProvisioningRetryError("RETRY_BUDGET_EXHAUSTED", "No approved provisioning retry remains; monetary no-cap permission does not authorize unbounded retries.")
+    return True
 
 
 def _env(config: dict, insights: dict, approval_path: Path | str) -> str:
@@ -1254,11 +1456,14 @@ def _pending(directory: Path, manifest: dict, keys: list[str], phase: str, appro
 
 def apply(
     config_path: Path | str, approval_path: Path | str | None = None, *,
-    run: Run = az_json, what_if: bool = False, sleep: Callable[[float], None] = time.sleep,
+    run: Run = az_json, what_if: bool = False, retry: bool = False,
+    sleep: Callable[[float], None] = time.sleep,
     clock: Callable[[], float] = time.monotonic,
 ) -> dict:
     """Provision only this plan's owned scope. Calling this function can incur cost."""
     directory, config, manifest = _load(config_path)
+    if what_if and retry:
+        raise BootstrapError("--retry cannot be combined with read-only --what-if.")
     if not what_if:
         approval = _approved_record(config, approval_path)
     else:
@@ -1266,7 +1471,11 @@ def apply(
     with _lock(directory):
         directory, config, manifest = _load(config_path)
         _check_outputs(directory, manifest)
-        report, raw, observed = _preflight(config, manifest, run)
+        try:
+            report, raw, observed = _preflight(config, manifest, run)
+        except BootstrapError as exc:
+            _record_failure(directory, "pre-apply", exc)
+            raise
         _write(directory / "evidence" / f"pre-apply-{uuid4().hex}.local.json", raw)
         if what_if:
             if "resource_group" not in observed:
@@ -1303,19 +1512,30 @@ def apply(
         manifest["approved_budget"] = approval["budget_amount"]
         manifest["approved_budget_policy"] = approval.get("budget_policy", "BOUNDED")
         initial_attempts = len(manifest["attempts"])
+        stage = "ownership"
+        active_command = None
+        submitted_attempt = None
         try:
             if "resource_group" not in observed:
                 if manifest["resources"]["resource_group"]["status"] not in {"planned", "pending"}:
                     raise BootstrapError("Previously owned resource group is missing; automatic restore/recreation is forbidden.")
+                if manifest["resources"]["resource_group"]["status"] == "pending":
+                    raise ProvisioningRetryError(
+                        "UNKNOWN_GROUP_SUBMISSION",
+                        "A pending resource-group creation intent exists but the group is absent. "
+                        "Inspect original submission/activity evidence; do not issue another create blindly.",
+                    )
                 # Recheck immediately before conditional create; az group create would silently upsert.
                 if _get(manifest["resources"]["resource_group"], bounded) is not None:
                     raise BootstrapError("Resource group name collision; no adoption or overwrite.")
                 _pending(directory, manifest, ["resource_group"], "creating_group", approval)
                 group = manifest["resources"]["resource_group"]
-                bounded([
+                stage = "group-create"
+                active_command = [
                     "rest", "--method", "PUT", "--url", f"{ARM}{group['id']}?api-version={group['api_version']}",
                     "--headers", "If-None-Match=*", "--body", _json({"location": REGION, "tags": _tags(config)}),
-                ])
+                ]
+                bounded(active_command)
                 remote = _get(group, bounded)
                 if remote is None:
                     raise BootstrapError("Group creation is not yet observable; use status before resume.")
@@ -1326,22 +1546,50 @@ def apply(
             if "resource_group" not in observed:
                 raise BootstrapError("Owned group must exist before any ARM deployment.")
             arm = observed.get("arm_deployment", {}).get("properties", {}).get("provisioningState")
-            if arm not in {"Succeeded", "Running", "Accepted", "Creating", "Updating"}:
-                parameter_path = directory / "evidence" / f"parameters-{uuid4().hex}.local.json"
-                _write(parameter_path, _parameters(config, principal))
+            stage, active_command = "arm-retry-check", None
+            if _submission_required(manifest, observed, approval, retry):
+                stage = "arm-validation"
+                validation = _validate_arm(directory, config, principal, bounded)
+                manifest["last_validation"] = validation
+                parameter_path = Path(validation["parameters_path"])
+                observed = _inspect(config, manifest, bounded)
+                if not _submission_required(manifest, observed, approval, retry):
+                    raise BootstrapError("Deployment state changed during validation; inspect status instead of issuing another create.")
                 _pending(directory, manifest, [k for k in manifest["resources"] if k != "resource_group"], "deploying", approval)
-                bounded([
+                submitted_attempt = manifest["attempts"][-1]
+                submitted_attempt.update(
+                    submission_outcome="pending", retry_requested=retry,
+                    validation_evidence_file=validation["evidence_file"],
+                )
+                _save(directory, manifest)
+                stage = "arm-create"
+                active_command = [
                     "deployment", "group", "create", "--subscription", config["subscription_id"],
                     "--resource-group", config["names"]["resource_group"], "--name", config["deployment_name"],
                     "--template-file", str(directory / "template.json"), "--parameters", f"@{parameter_path}",
                     "--mode", "Incremental", "--no-wait",
-                ])
+                ]
+                response = bounded(active_command)
+                submitted_attempt["submission_outcome"] = "submitted"
+                _save(directory, manifest)
+                _write(directory / "evidence" / f"create-{uuid4().hex}.local.json", {
+                    "command": active_command, "response": response, "recorded_at": _stamp(),
+                    "status": "SUBMITTED_NOT_VERIFIED",
+                })
                 arm = None
+            stage = "arm-status"
             while arm != "Succeeded":
                 deployment = _get(manifest["resources"]["arm_deployment"], bounded)
                 arm = (deployment or {}).get("properties", {}).get("provisioningState")
                 if arm in {"Failed", "Canceled", "Cancelled"}:
-                    raise BootstrapError("ARM deployment failed; owned state is preserved for inspection/resume.")
+                    payload = (deployment or {}).get("properties", {}).get("error")
+                    if payload:
+                        spec = manifest["resources"]["arm_deployment"]
+                        raise _azure_error("", _json(deployment), [
+                            "rest", "--method", "GET", "--url",
+                            f"{ARM}{spec['id']}?api-version={spec['api_version']}",
+                        ])
+                    raise AzureCommandError("DeploymentFailed", payload=deployment, message="ARM deployment failed; inspect saved results before an explicitly budgeted retry.")
                 if arm != "Succeeded":
                     remaining = deadline - clock()
                     if remaining <= 0:
@@ -1372,10 +1620,23 @@ def apply(
                 "trace_ingestion_verified": False,
             }
         except BootstrapError as exc:
+            if submitted_attempt is not None and submitted_attempt.get("submission_outcome") == "pending":
+                submitted_attempt["submission_outcome"] = "unknown"
+            evidence_file = _record_failure(directory, stage, exc, command=active_command)
+            if submitted_attempt is not None:
+                submitted_attempt["failure_evidence_file"] = evidence_file
+            manifest.setdefault("failures", []).append({
+                "recorded_at": _stamp(), "stage": stage, "error_code": getattr(exc, "code", None),
+                "evidence_file": evidence_file,
+            })
             if isinstance(exc, ApprovalError) and len(manifest["attempts"]) > initial_attempts:
                 exc.mutations_performed = None
             manifest["phase"] = "interrupted"
             manifest["last_error"] = str(exc)
+            manifest["last_error_code"] = getattr(exc, "code", None)
+            manifest["last_error_evidence_file"] = evidence_file
+            if getattr(exc, "validation_evidence_file", None):
+                manifest["last_validation"] = {"status": "FAILED", "evidence_file": exc.validation_evidence_file}
             _save(directory, manifest)
             raise
 
@@ -1430,6 +1691,7 @@ def main(argv: list[str] | None = None) -> int:
         sub.add_argument("--approval", type=Path)
         if command == "apply":
             sub.add_argument("--what-if", action="store_true")
+            sub.add_argument("--retry", action="store_true", help="Retry a verified terminal owned failure only within an explicit approval retry allowance")
     group_prepare = commands.add_parser("prepare-group", help="Read-only checks + local intent before external RG-only creation")
     group_prepare.add_argument("--config", type=Path, required=True)
     group_prepare.add_argument("--authorization", type=Path, required=True)
@@ -1451,7 +1713,7 @@ def main(argv: list[str] | None = None) -> int:
                 models=_read(args.models_json).get("models") if args.models_json else None,
             )
         elif args.command == "apply":
-            result = apply(args.config, args.approval, what_if=args.what_if)
+            result = apply(args.config, args.approval, what_if=args.what_if, retry=args.retry)
         elif args.command == "prepare-group":
             result = prepare_group_creation(args.config, args.authorization)
         elif args.command == "confirm-group":
@@ -1466,6 +1728,12 @@ def main(argv: list[str] | None = None) -> int:
         print(_json({
             "status": AWAITING_APPROVAL, "reason": str(exc),
             "live_status": "NOT_VERIFIED", "mutations_performed": exc.mutations_performed,
+        }), end="")
+        return 2
+    except (AzureCommandError, ProvisioningRetryError) as exc:
+        print(_json({
+            "status": "BLOCKED", "error_code": exc.code, "reason": str(exc),
+            "live_status": "NOT_VERIFIED", "mutations_performed": None,
         }), end="")
         return 2
     except (BootstrapError, OSError) as exc:
