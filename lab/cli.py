@@ -6,9 +6,6 @@ from pathlib import Path
 import subprocess
 import sys
 
-from azure.core.exceptions import AzureError
-from openai import OpenAIError
-
 from lab.config import LabError, load_config
 from lab.files import ARTIFACTS, ROOT, read_json, safe_run_dir
 from lab.preflight import run_preflight, save_json
@@ -21,8 +18,15 @@ def parser() -> argparse.ArgumentParser:
     )
     result.add_argument("--config", type=Path, default=ROOT / ".env")
     commands = result.add_subparsers(dest="command", required=True)
+    demo = commands.add_parser("demo", help="Free authored examples; no SDK, credentials, login or network")
+    demo.add_argument("--out", type=Path)
+    bootstrap = commands.add_parser("bootstrap", help="SDK-free new-environment plan/preflight/apply/status", add_help=False)
+    bootstrap.add_argument("bootstrap_args", nargs=argparse.REMAINDER)
     commands.add_parser("validate", help="Validate synthetic data and export freshness locally")
     commands.add_parser("preflight", help="Read-only Azure identity, region and deployment checks")
+    smoke = commands.add_parser("smoke", help="One real model response before Agent creation; not a quality score")
+    smoke.add_argument("--run-id", required=True)
+    smoke.add_argument("--confirm", action="store_true")
     create = commands.add_parser("agent", help="Create an owned, versioned prompt-agent candidate")
     create.add_argument("--stage", choices=("baseline", "iq", "optimized", "tuned"), required=True)
     create.add_argument("--prompt", type=Path)
@@ -33,6 +37,9 @@ def parser() -> argparse.ArgumentParser:
     batch.add_argument("--split", choices=("dev", "test"), required=True)
     batch.add_argument("--run-id", required=True)
     batch.add_argument("--limit", type=int)
+    batch.add_argument("--resume", action="store_true")
+    batch.add_argument("--freeze-id")
+    batch.add_argument("--holdout-id")
     batch.add_argument("--confirm", action="store_true")
     score = commands.add_parser("score", help="Score captured outputs locally without model calls")
     score.add_argument("--run-id", required=True)
@@ -41,13 +48,56 @@ def parser() -> argparse.ArgumentParser:
     compare.add_argument("--candidate", required=True)
     compare.add_argument("--out", type=Path, default=ARTIFACTS / "decision.json")
     iq = commands.add_parser("iq", help="Create or probe a real Search knowledge base")
-    iq.add_argument("action", choices=("prepare", "probe"))
+    iq.add_argument("action", choices=("prepare", "probe", "vectors"))
     iq.add_argument("--query", default="Contoso Atlas Cloud의 환불 조건을 알려주세요.")
     iq.add_argument("--confirm", action="store_true")
     evaluate = commands.add_parser("evaluate", help="Submit or inspect a managed Foundry evaluation")
     evaluate.add_argument("action", choices=("submit", "collect"))
     evaluate.add_argument("--run-id", required=True)
     evaluate.add_argument("--confirm", action="store_true")
+    judge = commands.add_parser("judge", help="Versioned business/retrieval Judge calibration and one-shot scoring")
+    judge_actions = judge.add_subparsers(dest="judge_action", required=True)
+    calibrate = judge_actions.add_parser("calibrate")
+    calibrate.add_argument("--calibration-id", required=True)
+    calibrate.add_argument("--fixtures", type=Path)
+    calibrate.add_argument("--confirm", action="store_true")
+    judge_score = judge_actions.add_parser("score")
+    judge_score.add_argument("--run-id", required=True)
+    judge_score.add_argument("--confirm", action="store_true")
+    review = commands.add_parser("review", help="AI advice or externally claimed, unverified manual review")
+    reviews = review.add_subparsers(dest="review_action", required=True)
+    ai_review = reviews.add_parser("ai")
+    ai_review.add_argument("--review-id", required=True)
+    ai_review.add_argument("--subject", type=Path, required=True)
+    ai_review.add_argument("--actor", required=True)
+    ai_review.add_argument("--notes", required=True)
+    manual_review = reviews.add_parser("import")
+    manual_review.add_argument("--path", type=Path, required=True)
+    freeze = commands.add_parser("freeze", help="Seal exact candidate/Judge/search/gates before fresh holdout")
+    freeze.add_argument("--freeze-id", required=True)
+    freeze.add_argument("--stage", choices=("baseline", "iq", "optimized", "tuned"), required=True)
+    freeze.add_argument("--calibration-id", required=True)
+    freeze.add_argument("--review-id", action="append", default=[])
+    freeze.add_argument("--mode", choices=("LIVE", "DEMO"), default="LIVE")
+    holdout = commands.add_parser("holdout", help="Create/register synthetic fresh cases only after a verified freeze")
+    holdouts = holdout.add_subparsers(dest="holdout_action", required=True)
+    for action in ("create", "register"):
+        child = holdouts.add_parser(action)
+        child.add_argument("--freeze-id", required=True)
+        child.add_argument("--holdout-id", required=True)
+        if action == "create":
+            child.add_argument("--count", type=int)
+        else:
+            child.add_argument("--source", type=Path, required=True)
+            child.add_argument("--generated-at", required=True)
+            child.add_argument("--provenance", required=True)
+    governance = commands.add_parser("governance", help="One-shot verdict and independent review/approval states")
+    governance.add_argument("action", choices=("finalize", "status"))
+    governance.add_argument("--freeze-id", required=True)
+    governance.add_argument("--run-id")
+    control = commands.add_parser("control-plane", help="Read actual traces; empty telemetry remains NOT_VERIFIED")
+    control.add_argument("--run-id", required=True)
+    control.add_argument("--app-insights-id", required=True)
     optimize = commands.add_parser("optimize", help="Prepare an Agent Optimizer handoff (not a service execution)")
     optimize.add_argument("--run-id", required=True)
     tune = commands.add_parser("tune-prepare", help="Prepare training artifacts, not a training job")
@@ -63,6 +113,49 @@ def require_confirmation(args: argparse.Namespace) -> None:
 
 
 def execute(args: argparse.Namespace) -> int:
+    if args.command == "bootstrap":
+        from lab.bootstrap import main as bootstrap_main
+
+        return bootstrap_main(args.bootstrap_args)
+    if args.command == "demo":
+        from lab.demo import run_demo
+
+        result = run_demo(args.out)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "review":
+        from lab.governance import import_manual_review, record_ai_review
+
+        result = (
+            record_ai_review(args.review_id, args.subject, actor=args.actor, notes=args.notes)
+            if args.review_action == "ai" else import_manual_review(args.path)
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "holdout":
+        from lab.governance import create_holdout, register_holdout
+
+        result = (
+            create_holdout(args.freeze_id, args.holdout_id, count=args.count)
+            if args.holdout_action == "create"
+            else register_holdout(
+                args.freeze_id, args.holdout_id, args.source,
+                generated_at=args.generated_at, provenance=args.provenance,
+            )
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "governance":
+        from lab.governance import finalize_holdout, governance_status
+
+        if args.action == "finalize" and not args.run_id:
+            raise LabError("governance finalize에는 --run-id가 필요합니다.")
+        result = (
+            finalize_holdout(args.freeze_id, args.run_id) if args.action == "finalize"
+            else governance_status(args.freeze_id)
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "validate":
         return subprocess.run(
             [sys.executable, str(ROOT / "scripts/build_datasets.py"), "--check"],
@@ -97,6 +190,52 @@ def execute(args: argparse.Namespace) -> int:
         print(prepare_tuning(args.kind))
         return 0
     config = load_config(args.config)
+    if args.command == "freeze":
+        from lab.governance import freeze_candidate
+
+        result = freeze_candidate(
+            config, args.freeze_id, args.stage, calibration_id=args.calibration_id,
+            review_ids=args.review_id, mode=args.mode,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    from azure.core.exceptions import AzureError
+    from openai import OpenAIError
+
+    try:
+        return execute_cloud(args, config)
+    except (AzureError, OpenAIError) as exc:
+        raise LabError(f"{type(exc).__name__}: {exc}") from exc
+
+
+def execute_cloud(args: argparse.Namespace, config) -> int:
+    if getattr(args, "confirm", False):
+        from lab.auth import require_owned_scope
+
+        require_owned_scope(config)
+    if args.command == "smoke":
+        from lab.agents import smoke_model
+
+        require_confirmation(args)
+        print(json.dumps(smoke_model(config, args.run_id), ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "judge":
+        from lab.calibration import run_calibration, score_captured_run
+
+        require_confirmation(args)
+        result = (
+            run_calibration(config, args.calibration_id, confirm=True, fixtures_path=args.fixtures)
+            if args.judge_action == "calibrate"
+            else score_captured_run(config, args.run_id, confirm=True)
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["execution_status"] == "completed" else 1
+    if args.command == "control-plane":
+        from lab.control_plane import collect
+
+        output = collect(config, args.run_id, args.app_insights_id)
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+        return 0 if output["status"] == "VERIFIED_TRACE_MODEL_TOOL_EVAL_LINKS" else 1
     if args.command == "preflight":
         report = run_preflight(config)
         save_json(ARTIFACTS / "preflight.json", report)
@@ -119,14 +258,21 @@ def execute(args: argparse.Namespace) -> int:
         from lab.batch import run_batch
 
         require_confirmation(args)
-        result = run_batch(config, args.stage, args.split, args.run_id, limit=args.limit)
+        result = run_batch(
+            config, args.stage, args.split, args.run_id, limit=args.limit, resume=args.resume,
+            freeze_id=args.freeze_id, holdout_id=args.holdout_id,
+        )
         print(safe_run_dir(args.run_id))
-        return 1 if result["status"] == "completed_with_errors" else 0
+        return 0 if result["status"] == "completed" else 1
     if args.command == "iq":
-        from lab.knowledge import prepare_knowledge, probe_knowledge
+        from lab.knowledge import prepare_knowledge, probe_knowledge, probe_vectors
 
         require_confirmation(args)
-        output = prepare_knowledge(config) if args.action == "prepare" else probe_knowledge(config, args.query)
+        output = (
+            prepare_knowledge(config) if args.action == "prepare"
+            else probe_vectors(config, args.query) if args.action == "vectors"
+            else probe_knowledge(config, args.query)
+        )
         print(json.dumps(output, ensure_ascii=False, indent=2))
         return 0
     if args.command == "evaluate":
@@ -152,7 +298,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
         return execute(args)
-    except (LabError, AzureError, OpenAIError, ValueError, OSError) as exc:
+    except (LabError, ValueError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

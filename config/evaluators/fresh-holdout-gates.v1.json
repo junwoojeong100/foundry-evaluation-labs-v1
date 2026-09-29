@@ -1,0 +1,24 @@
+{
+  "id": "contoso-atlas-fresh-holdout",
+  "version": "1.0.0",
+  "purpose": "post_freeze_workshop_final_test",
+  "minimum_rows": 12,
+  "legacy_gate_source": "config/gates.json",
+  "legacy_minimum_test_rows": 20,
+  "unchanged_gate_fields": [
+    "minimums",
+    "maximums",
+    "minimum_critical_rows",
+    "critical_tags",
+    "judge",
+    "business_policy",
+    "regression"
+  ],
+  "description": "A separate 12-row post-freeze synthetic workshop holdout, not a replacement for the original 20-row test. Only the sample-size contract differs; all rule, semantic, error, critical-case and regression thresholds are inherited unchanged from the pinned legacy gate snapshot.",
+  "limitations": [
+    "Twelve authored synthetic variants provide less statistical evidence than the original twenty-row test and do not establish production readiness.",
+    "The contract must be selected and hashed at freeze, before generating or evaluating the holdout.",
+    "A passing workshop result never grants human or operational approval; missing or erroneous scores and critical failures remain blocking.",
+    "Existing freezes, datasets and final results are immutable and cannot be migrated to this sample contract in place."
+  ]
+}

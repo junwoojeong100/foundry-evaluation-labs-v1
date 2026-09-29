@@ -1,9 +1,13 @@
 """Local artifact helpers shared by workshop commands."""
 
 import hashlib
+from importlib.metadata import PackageNotFoundError, version
 import json
+import os
 from pathlib import Path
 import re
+import subprocess
+import sys
 from uuid import uuid4
 
 from lab.config import Config, LabError
@@ -11,7 +15,38 @@ from lab.preflight import save_json
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACTS = ROOT / "artifacts"
+ARTIFACTS = Path(os.environ.get("LAB_ARTIFACTS_DIR", str(ROOT / "artifacts"))).expanduser().resolve()
+
+
+def artifact_reference(path: Path, *, root: Path = ROOT) -> str:
+    resolved = path.resolve()
+    root = root.resolve()
+    return str(resolved.relative_to(root)) if resolved.is_relative_to(root) else str(resolved)
+
+
+def code_provenance() -> dict:
+    sources = {str(path.relative_to(ROOT)): sha256_file(path) for path in sorted((ROOT / "lab").glob("*.py"))}
+    packages = {}
+    for name in ("azure-ai-projects", "azure-identity", "openai"):
+        try:
+            packages[name] = version(name)
+        except PackageNotFoundError:
+            packages[name] = "NOT_INSTALLED_IN_THIS_INTERPRETER"
+    record = {
+        "python_sources_sha256": hashlib.sha256(json.dumps(sources, sort_keys=True).encode()).hexdigest(),
+        "python_sources": sources, "git_commit": None, "worktree_dirty": None,
+        "source_mode": "distribution_without_git",
+        "runtime": {"python": sys.version.split()[0], "packages": packages},
+    }
+    if (ROOT / ".git").exists():
+        results = []
+        for arguments in (["rev-parse", "HEAD"], ["status", "--porcelain", "--untracked-files=all"]):
+            result = subprocess.run(["git", *arguments], cwd=ROOT, capture_output=True, text=True, timeout=30, check=False)
+            if result.returncode:
+                raise LabError("코드 커밋/변경 상태 확인 실패. 확인되지 않은 리비전을 기록하지 않습니다.")
+            results.append(result.stdout.strip())
+        record.update(git_commit=results[0], worktree_dirty=bool(results[1]), source_mode="git_worktree")
+    return record
 
 
 def sha256_file(path: Path) -> str:
@@ -52,6 +87,19 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
         "".join(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n" for row in rows),
         encoding="utf-8",
     )
+
+
+def write_once_json(path: Path, value: dict) -> None:
+    """Claim a paid operation before submission, including against concurrent processes."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with path.open("x", encoding="utf-8") as stream:
+            json.dump(value, stream, ensure_ascii=False, indent=2, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+    except FileExistsError as exc:
+        raise LabError("동시 또는 이전 실행의 요청 기록이 있습니다. 중복 제출하지 않고 중단합니다.") from exc
 
 
 def safe_run_dir(run_id: str) -> Path:

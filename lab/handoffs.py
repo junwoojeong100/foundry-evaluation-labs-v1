@@ -21,6 +21,8 @@ def validate_generated_data() -> None:
 
 
 def prepare_optimizer(run_id: str) -> Path:
+    from lab.governance import assert_dataset_use
+
     validate_generated_data()
     run_dir = safe_run_dir(run_id)
     metadata = read_json(run_dir / "metadata.json")
@@ -31,6 +33,8 @@ def prepare_optimizer(run_id: str) -> Path:
     if metadata.get("retrieval", {}).get("rows_with_tool_output", 0) == 0:
         raise LabError("실제 IQ 도구 출력이 없는 기준선입니다. 도구 연결·권한·지시를 고치고 새 dev 실행을 사용하세요.")
     source = ROOT / "data/splits/dev.jsonl"
+    assert_dataset_use(source, "optimization")
+    assert_dataset_use(ROOT / "data/optimizer/dev.jsonl", "optimization")
     if metadata["dataset_sha256"] != sha256_file(source):
         raise LabError("dev 데이터가 기준선 실행 이후 변경되었습니다.")
     prompt = ROOT / metadata["prompt_snapshot"]
@@ -62,6 +66,8 @@ def prepare_optimizer(run_id: str) -> Path:
 
 
 def prepare_tuning(kind: str) -> Path:
+    from lab.governance import assert_dataset_use
+
     if kind not in {"frontier", "sft"}:
         raise LabError("지원하는 준비 유형은 frontier 또는 sft입니다.")
     validate_generated_data()
@@ -96,6 +102,7 @@ def prepare_tuning(kind: str) -> Path:
             source = ROOT / "data/tuning" / f"sft-{split}.jsonl"
             destination = target / f"sft-{split}.jsonl"
             note = "General supervised fine-tuning messages format; NOT Frontier Tuning."
+        assert_dataset_use(source, "training")
         if kind == "sft":
             destination.write_text(source.read_text(encoding="utf-8-sig"), encoding="utf-8-sig")
         else:

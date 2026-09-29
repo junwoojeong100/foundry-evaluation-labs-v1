@@ -15,7 +15,7 @@ class ConfigTests(unittest.TestCase):
 
     def test_profile_is_explicit_ncus(self):
         self.assertEqual(self.config.location, "northcentralus")
-        self.assertTrue(self.config.project_id.endswith("/projects/mf15-project"))
+        self.assertTrue(self.config.project_id.endswith("/projects/contoso-eval"))
 
     def test_wrong_region_is_not_silently_replaced(self):
         with self.assertRaises(LabError):
@@ -51,4 +51,3 @@ class ConfigTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

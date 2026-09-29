@@ -67,6 +67,7 @@ class SftTests(unittest.TestCase):
             self.stack.enter_context(patch(name, value))
         self.validation = self.stack.enter_context(patch("lab.sft.validate_generated_data"))
         self.auth = self.stack.enter_context(patch("lab.sft.credential_for"))
+        self.stack.enter_context(patch("lab.sft.require_owned_scope"))
         self.project_class = self.stack.enter_context(patch("lab.sft.AIProjectClient"))
         self.credential = self.auth.return_value.__enter__.return_value
         self.project = self.project_class.return_value.__enter__.return_value
@@ -163,8 +164,8 @@ class SftTests(unittest.TestCase):
             "properties": {
                 "provisioningState": "Succeeded",
                 "model": {
-                    "format": "OpenAI", "name": "gpt-4o-mini" if base else TUNED_MODEL,
-                    "version": "2024-07-18" if base else "1",
+                    "format": "OpenAI", "name": "gpt-4.1-mini" if base else TUNED_MODEL,
+                    "version": "2025-04-14" if base else "1",
                 },
             },
         }
@@ -505,7 +506,7 @@ class SftTests(unittest.TestCase):
     def test_submission_contract_is_standard_supervised_one_epoch_and_once(self):
         self.prime_job()
         self.client.fine_tuning.jobs.create.assert_called_once_with(
-            model="gpt-4o-mini-2024-07-18", training_file="file-train", validation_file="file-validation",
+            model="gpt-4.1-mini-2025-04-14", training_file="file-train", validation_file="file-validation",
             seed=105, method={"type": "supervised", "supervised": {"hyperparameters": {"n_epochs": 1}}},
             extra_body={"trainingType": "Standard"},
         )

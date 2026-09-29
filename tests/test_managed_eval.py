@@ -1,10 +1,13 @@
 from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 import hashlib
 from itertools import repeat
 import json
 from pathlib import Path
 import shutil
+from threading import Barrier
+from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 from uuid import uuid4
@@ -16,9 +19,9 @@ from openai.types.evals.run_create_response import RunCreateResponse
 from openai.types.evals.run_retrieve_response import ResultCounts, RunRetrieveResponse
 from openai.types.evals.runs.output_item_list_response import OutputItemListResponse, Result
 
-from lab import managed_eval
+from lab import calibration, managed_eval
 from lab.config import Config, LabError
-from lab.files import read_jsonl, sha256_file, write_jsonl
+from lab.files import ROOT as REPOSITORY_ROOT, read_jsonl, sha256_file, write_jsonl
 from lab.preflight import save_json
 
 
@@ -200,24 +203,53 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.client.evals.runs.create.assert_not_called()
         self.client.responses.create.assert_not_called()
 
-    def test_submit_uses_only_captured_data_and_explicit_policy_mapping(self):
+    def prepare_business_judge(self):
+        shutil.copytree(REPOSITORY_ROOT / "config/evaluators", self.root / "config/evaluators")
+        self.start_patch("lab.calibration.ROOT", self.root)
+        self.start_patch("lab.batch.ROOT", self.root)
+        auth = self.start_patch("lab.calibration.credential_for", return_value=self.credential)
+        self.start_patch("lab.calibration.AIProjectClient", return_value=self.project)
+        self.start_patch("lab.calibration.model_snapshot", return_value={
+            "deployment": self.config.judge, "model": {"name": "unit-only-model", "version": "1"},
+        })
+
+        def create(**kwargs):
+            value = (
+                {"policy_correctness": 5, "relevance": 5, "critical_failure": False, "reason": "unit-only mock"}
+                if kwargs["text"]["format"]["name"] == "atlas_policy_v1"
+                else {"groundedness": 5, "reason": "unit-only mock"}
+            )
+            identifier = f"unit-judge-{self.client.responses.create.call_count}"
+            return SimpleNamespace(
+                id=identifier, output_text=json.dumps(value),
+                model_dump=lambda **kwargs: {"id": identifier, "status": "completed", "output": []},
+            )
+
+        self.client.responses.create.side_effect = create
+        return auth
+
+    def test_submit_strips_reference_labels_and_maps_only_actual_retrieval(self):
         original = self.read("metadata.json")
         result = self.submit()
         definition = self.client.evals.create.call_args.kwargs
         source = self.client.evals.runs.create.call_args.kwargs["data_source"]
         self.assertEqual(source["type"], "jsonl")
         self.assertEqual(source["source"]["type"], "file_content")
-        self.assertEqual(source["source"]["content"], [{"item": row} for row in self.rows])
+        self.assertEqual(source["source"]["content"], [
+            {"item": {key: row[key] for key in managed_eval.SERVICE_FIELDS}} for row in self.rows
+        ])
         self.assertEqual(source["source"]["content"][0]["item"]["response"], "캡처 응답 case-a")
-        self.assertEqual(source["source"]["content"][0]["item"]["ground_truth"], "참조 답변 a")
+        self.assertNotIn("ground_truth", source["source"]["content"][0]["item"])
+        self.assertNotIn("context", source["source"]["content"][0]["item"])
+        self.assertNotIn("참조 답변 a", json.dumps(source, ensure_ascii=False))
         self.assertNotIn("case-c", json.dumps(source))
         self.assertNotIn("target", source)
         self.assertNotIn("input_messages", source)
         self.assertFalse(definition["data_source_config"]["include_sample_schema"])
-        self.assertEqual(set(definition["data_source_config"]["item_schema"]["required"]), set(managed_eval.FIELDS))
+        self.assertEqual(set(definition["data_source_config"]["item_schema"]["required"]), set(managed_eval.SERVICE_FIELDS))
         criteria = {item["name"]: item for item in definition["testing_criteria"]}
         self.assertEqual(criteria["groundedness"]["data_mapping"], {
-            "query": "{{item.query}}", "response": "{{item.response}}", "context": "{{item.context}}",
+            "query": "{{item.query}}", "response": "{{item.response}}", "context": "{{item.retrieved_context}}",
         })
         self.assertEqual(criteria["relevance"]["data_mapping"], {
             "query": "{{item.query}}", "response": "{{item.response}}",
@@ -312,6 +344,143 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.auth.assert_not_called()
         self.assertEqual(self.client.evals.create.call_count, 1)
         self.assertEqual(self.client.evals.runs.create.call_count, 1)
+
+    def test_legacy_unfinished_business_judge_blocks_switching_to_managed_submission(self):
+        save_json(self.directory / "business-judge/raw/case-a.json", {
+            "id": "case-a", "requests": {"policy": {"status": "submitting", "response_id": None}},
+        })
+        with self.assertRaisesRegex(LabError, "business-judge|Judge attempt"):
+            self.submit()
+        self.auth.assert_not_called()
+        self.assert_no_paid_requests()
+
+    def test_interrupted_unknown_business_post_retains_shared_claim_and_blocks_managed(self):
+        self.prepare_business_judge()
+        self.client.responses.create.side_effect = KeyboardInterrupt("unit-only interruption after POST intent")
+        with self.assertRaises(KeyboardInterrupt):
+            calibration.score_captured_run(self.config, "local-run", confirm=True)
+        self.assertFalse((self.directory / "judge-scores.json").exists())
+        self.assertIsNone(self.read("metadata.json")["judge"])
+        saved = self.read("business-judge/raw/case-a.json")
+        self.assertEqual(saved["requests"]["policy"]["status"], "submitting")
+        self.assertIsNone(saved["requests"]["policy"]["response_id"])
+        claim_path = self.directory / calibration.JUDGE_ATTEMPT_CLAIM
+        original_claim = claim_path.read_bytes()
+        claim = self.read(calibration.JUDGE_ATTEMPT_CLAIM)
+        self.assertEqual(claim["evaluation_path"], "business-judge")
+        self.assertEqual(claim["run_directory"], str(self.directory.resolve()))
+        self.assertEqual(claim["evaluator_contract_sha256"], calibration.digest(self.read("business-judge/contract.json")))
+        with self.assertRaisesRegex(LabError, "Judge attempt"):
+            self.submit()
+        with self.assertRaisesRegex(LabError, "Judge attempt"):
+            calibration.score_captured_run(self.config, "local-run", confirm=True)
+        self.assertEqual(claim_path.read_bytes(), original_claim)
+        self.auth.assert_not_called()
+        self.management.assert_not_called()
+        self.client.responses.create.assert_called_once()
+        self.client.evals.create.assert_not_called()
+        self.client.evals.runs.create.assert_not_called()
+
+    def test_unknown_managed_post_blocks_business_path_without_claim_takeover(self):
+        business_auth = self.prepare_business_judge()
+        self.client.evals.runs.create.side_effect = APIError("unit-only unknown outcome", request=Mock(), body=None)
+        with self.assertLogs("lab.managed_eval", level="ERROR"), self.assertRaises(APIError):
+            self.submit()
+        claim_path = self.directory / calibration.JUDGE_ATTEMPT_CLAIM
+        original_claim = claim_path.read_bytes()
+        self.assertEqual(self.read(calibration.JUDGE_ATTEMPT_CLAIM)["evaluation_path"], "managed-eval")
+        with self.assertRaisesRegex(LabError, "Judge attempt"):
+            calibration.score_captured_run(self.config, "local-run", confirm=True)
+        business_auth.assert_not_called()
+        self.client.responses.create.assert_not_called()
+        self.assertEqual(claim_path.read_bytes(), original_claim)
+
+    def test_concurrent_managed_and_business_paths_allow_only_one_paid_judge_attempt(self):
+        self.prepare_business_judge()
+        barrier = Barrier(2)
+        original_claim = calibration.claim_judge_attempt
+
+        def synchronized_claim(*args, **kwargs):
+            barrier.wait(timeout=10)
+            return original_claim(*args, **kwargs)
+
+        self.start_patch("lab.calibration.claim_judge_attempt", side_effect=synchronized_claim)
+        self.start_patch("lab.managed_eval.claim_judge_attempt", side_effect=synchronized_claim)
+
+        def submit(path):
+            try:
+                result = (
+                    calibration.score_captured_run(self.config, "local-run", confirm=True)
+                    if path == "business-judge" else self.submit()
+                )
+                return path, result, None
+            except LabError as exc:
+                return path, None, str(exc)
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(submit, path) for path in ("business-judge", "managed-eval")]
+            results = [future.result(timeout=20) for future in futures]
+        winners = [result for result in results if result[2] is None]
+        self.assertEqual(len(winners), 1, results)
+        winner = winners[0][0]
+        claim = self.read(calibration.JUDGE_ATTEMPT_CLAIM)
+        self.assertEqual(claim["evaluation_path"], winner)
+        self.assertEqual(claim["evaluator_contract_sha256"], calibration.digest(claim["evaluator_contract"]))
+        self.assertEqual(claim["outputs_sha256"], sha256_file(self.directory / "outputs.jsonl"))
+        if winner == "business-judge":
+            self.assertEqual(self.client.responses.create.call_count, 4)
+            self.client.evals.create.assert_not_called()
+            self.client.evals.runs.create.assert_not_called()
+            self.assertFalse((self.directory / managed_eval.LEDGER).exists())
+        else:
+            self.client.evals.create.assert_called_once()
+            self.client.evals.runs.create.assert_called_once()
+            self.client.responses.create.assert_not_called()
+            self.assertFalse((self.directory / "business-judge").exists())
+            self.assertEqual(self.collect()["collection_status"], "collected")
+
+    def test_shared_claim_never_prevents_managed_read_only_collection_or_legacy_collection(self):
+        self.submit()
+        claim_path = self.directory / calibration.JUDGE_ATTEMPT_CLAIM
+        original_claim = claim_path.read_bytes()
+        self.client.evals.runs.retrieve.return_value = self.run_response(status="queued")
+        self.assertEqual(self.collect()["status"], "queued")
+        self.assertEqual(claim_path.read_bytes(), original_claim)
+        self.client.evals.runs.retrieve.return_value = self.run_response()
+        self.assertEqual(self.collect()["collection_status"], "collected")
+        self.assertEqual(claim_path.read_bytes(), original_claim)
+        claim_path.unlink()
+        self.assertEqual(self.collect()["collection_status"], "collected")
+        self.assertFalse(claim_path.exists())
+        self.client.evals.create.assert_called_once()
+        self.client.evals.runs.create.assert_called_once()
+        self.client.responses.create.assert_not_called()
+
+    def test_existing_claim_cannot_be_overwritten_or_collected_under_another_path(self):
+        self.submit()
+        path = self.directory / calibration.JUDGE_ATTEMPT_CLAIM
+        original = path.read_bytes()
+        for evaluation_path in ("business-judge", "managed-eval"):
+            with self.subTest(path=evaluation_path), self.assertRaisesRegex(LabError, "Judge attempt"):
+                calibration.claim_judge_attempt(
+                    self.directory, "local-run", project_endpoint=self.config.project_endpoint,
+                    evaluation_path=evaluation_path, contract={"version": "replacement"},
+                )
+        with self.assertRaisesRegex(LabError, "take over"):
+            calibration.validate_judge_claim(
+                self.directory, "local-run", project_endpoint=self.config.project_endpoint,
+                evaluation_path="business-judge", contract=self.read(managed_eval.CONTRACT),
+            )
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_observed_drift_rejects_managed_judgment_before_auth_even_if_marked_completed(self):
+        metadata = self.read("metadata.json")
+        metadata.update(model_snapshot={"version": "A"}, model_snapshot_after={"version": "B"})
+        save_json(self.directory / "metadata.json", metadata)
+        with self.assertRaisesRegex(LabError, "observed model drift"):
+            self.submit()
+        self.auth.assert_not_called()
+        self.assert_no_paid_requests()
 
     def test_metadata_ids_prevent_resubmission_when_the_ledger_is_missing(self):
         self.submit()
@@ -702,7 +871,8 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.collect()
         uploaded = self.client.evals.runs.create.call_args.kwargs["data_source"]["source"]["content"][0]["item"]
         self.assertEqual(uploaded["response"], answer)
-        self.assertEqual(uploaded["ground_truth"], reference)
+        self.assertNotIn("ground_truth", uploaded)
+        self.assertEqual(self.rows[0]["ground_truth"], reference)
         self.assertNotEqual(uploaded["response"], json.loads(answer)["answer"])
         self.assertEqual(self.read("judge-scores.json")["case-a"]["groundedness"], 4.0)
 
@@ -1102,6 +1272,54 @@ class ManagedEvaluationTests(unittest.TestCase):
         with self.assertRaisesRegex(LabError, "중복"):
             self.collect()
         self.assertFalse((self.directory / "judge-scores.json").exists())
+
+    def test_numeric_five_without_observed_retrieval_is_unavailable_not_policy_grounding(self):
+        self.records[0]["retrieved_context"] = ""
+        self.rows[0]["retrieved_context"] = ""
+        write_jsonl(self.directory / "outputs.jsonl", self.records)
+        write_jsonl(self.directory / "foundry-eval.jsonl", self.rows)
+        self.items = [self.output_item(row, groundedness=5) for row in self.rows]
+        self.submit()
+        self.collect()
+        score = self.read("judge-scores.json")["case-a"]
+        self.assertIsNone(score["groundedness"])
+        self.assertEqual(score["relevance"], 4)
+        self.assertEqual(score["metric_errors"]["groundedness"], "retrieval_not_observed")
+        request = self.client.evals.runs.create.call_args.kwargs["data_source"]["source"]["content"][0]["item"]
+        self.assertEqual(request["retrieved_context"], "")
+        self.assertNotIn("context", request)
+        self.assertNotIn("ground_truth", request)
+
+    def test_missing_scores_keep_full_capture_denominator_and_diagnostic_error(self):
+        self.submit()
+        self.items = [self.items[0]]
+        with self.assertRaisesRegex(LabError, "누락"):
+            self.collect()
+        self.assertFalse((self.directory / "judge-scores.json").exists())
+        diagnostics = self.read("judge-diagnostics.json")
+        self.assertEqual(diagnostics["total_attempted_captures"], 3)
+        self.assertEqual(diagnostics["accepted_score_count"], 0)
+        self.assertEqual(diagnostics["capture_ids"], ["case-a", "case-b", "case-c"])
+        self.assertTrue((self.directory / "managed-eval-output-items.json").is_file())
+
+    def test_old_policy_grounding_contract_cannot_be_silently_reinterpreted(self):
+        self.submit()
+        contract = self.read(managed_eval.CONTRACT)
+        contract["contract_version"] = "foundry-policy-reference-v3"
+        save_json(self.directory / managed_eval.CONTRACT, contract)
+        self.auth.reset_mock()
+        with self.assertRaisesRegex(LabError, "Legacy policy-reference"):
+            self.collect()
+        self.auth.assert_not_called()
+
+    def test_governed_final_holdout_cannot_use_unversioned_builtin_judge_instead(self):
+        metadata = self.read("metadata.json")
+        metadata["freeze_id"] = "unit-test-freeze"
+        save_json(self.directory / "metadata.json", metadata)
+        with self.assertRaisesRegex(LabError, "calibrated versioned"):
+            self.submit()
+        self.auth.assert_not_called()
+        self.assert_no_paid_requests()
 
 
 if __name__ == "__main__":

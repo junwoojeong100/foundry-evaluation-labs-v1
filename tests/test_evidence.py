@@ -265,6 +265,105 @@ class RowScoringTests(unittest.TestCase):
             strict_json_loads("[" * 2000 + "]" * 2000)
 
 
+class BusinessPolicyEvidenceTests(unittest.TestCase):
+    def governed(self, *, bad_policy=None, missing_retrieval=None):
+        rows = []
+        for index in range(20):
+            rows.append(scored(
+                f"business-{index}", tags=["critical"] if index == 19 else [],
+                judge={
+                    "groundedness": 5, "relevance": 5,
+                    "policy_correctness": 1 if index == bad_policy else 5,
+                    "critical_failure": False, "metric_errors": {},
+                },
+                retrieved_context="" if index == missing_retrieval else "unit-only observed retrieval",
+            ))
+        meta = metadata()
+        meta.update(
+            evaluation_contract_version="atlas-evaluation-v1", status="completed",
+            freeze_id="unit-only-freeze", freeze_sha256=digest("unit-only-freeze"), holdout_id="unit-only-holdout",
+        )
+        return summarize(rows, metadata=meta)
+
+    def test_policy_correctness_and_retrieval_grounding_are_independent(self):
+        summary = self.governed(bad_policy=19)
+        self.assertEqual(summary["metrics"]["judge"]["groundedness"]["mean"], 5)
+        self.assertEqual(summary["metrics"]["business_policy"]["mean"], 4.8)
+        gate = evaluate_gates(summary, load_gates())
+        self.assertEqual(gate["outcome"], "HOLD")
+        self.assertFalse(next(check for check in gate["checks"] if check["name"] == "critical_policy_correctness_floor")["passed"])
+        self.assertEqual(gate["manual_operational_approval"], "not_granted")
+
+    def test_empty_retrieval_cannot_be_scored_by_using_policy_or_numeric_five(self):
+        summary = self.governed(missing_retrieval=0)
+        measure = summary["metrics"]["judge"]["groundedness"]
+        self.assertEqual(measure["mean"], 5)
+        self.assertEqual(measure["scored_count"], 19)
+        self.assertEqual(measure["missing_count"], 1)
+        self.assertEqual(measure["coverage"], 19 / 20)
+        self.assertEqual(evaluate_gates(summary, load_gates())["quality_status"], "HOLD")
+
+    def test_one_metric_failure_does_not_erase_independent_valid_measurements(self):
+        row = scored(
+            judge={"groundedness": 5, "relevance": 4, "policy_correctness": 5,
+                   "metric_errors": {"groundedness": "unit-only retrieval judge timeout"}},
+            retrieved_context="actual context fixture",
+        )
+        summary = summarize([row], metadata=metadata())
+        self.assertEqual(summary["metrics"]["judge"]["relevance"]["scored_count"], 1)
+        self.assertEqual(summary["metrics"]["business_policy"]["scored_count"], 1)
+        self.assertIsNone(summary["metrics"]["judge"]["groundedness"]["mean"])
+        self.assertEqual(summary["metrics"]["judge_error_count"], 1)
+        with self.assertRaisesRegex(ValueError, "metric_errors"):
+            scored(judge={"metric_errors": {"undeclared": "not valid"}})
+
+    def test_new_contract_needs_fresh_freeze_not_the_exposed_original_test(self):
+        summary = self.governed()
+        self.assertEqual(evaluate_gates(summary, load_gates())["outcome"], "PASS_FOR_WORKSHOP")
+        del summary["metadata"]["freeze_id"]
+        self.assertEqual(evaluate_gates(summary, load_gates())["outcome"], "HOLD")
+
+    def test_prior_unsafe_turn_flag_is_not_hidden_by_perfect_final_answer(self):
+        summary = self.governed()
+        rows = deepcopy(summary["rows"])
+        rows[0]["judge"]["critical_failure"] = True
+        summary = summarize(rows, metadata=summary["metadata"])
+        self.assertEqual(summary["metrics"]["route_accuracy"], 1)
+        self.assertEqual(summary["metrics"]["business_policy"]["mean"], 5)
+        self.assertEqual(summary["metrics"]["business_policy"]["critical_failure_ids"], ["business-0"])
+        self.assertEqual(evaluate_gates(summary, load_gates())["outcome"], "HOLD")
+
+    def test_missing_critical_failure_decision_is_not_assumed_safe(self):
+        summary = self.governed()
+        rows = deepcopy(summary["rows"])
+        del rows[0]["judge"]["critical_failure"]
+        summary = summarize(rows, metadata=summary["metadata"])
+        self.assertEqual(evaluate_gates(summary, load_gates())["outcome"], "HOLD")
+
+    def test_observed_model_drift_blocks_gates_despite_completed_label_and_perfect_scores(self):
+        summary = self.governed()
+        for evidence in (
+            {"model_snapshot": {"version": "A"}, "model_snapshot_after": {"version": "B"}},
+            {"model_snapshot": {"version": "A"}, "model_snapshot_after": {"version": "A"}, "model_drift_detected": True},
+        ):
+            candidate = deepcopy(summary)
+            candidate["metadata"].update(evidence)
+            with self.subTest(evidence=evidence):
+                result = evaluate_gates(candidate, load_gates())
+                self.assertEqual(result["outcome"], "HOLD")
+                self.assertFalse(next(check for check in result["checks"] if check["name"] == "no_observed_model_drift")["passed"])
+
+    def test_comparison_cannot_use_drifted_baseline_as_valid_evidence(self):
+        baseline = self.governed()
+        candidate = deepcopy(baseline)
+        baseline["metadata"].update(model_snapshot={"version": "A"}, model_snapshot_after={"version": "B"})
+        result = compare_runs(baseline, candidate, load_gates())
+        self.assertEqual(result["candidate_gate"]["outcome"], "PASS_FOR_WORKSHOP")
+        self.assertEqual(result["outcome"], "HOLD")
+        self.assertTrue(result["model_comparison"]["baseline_drift_detected"])
+        self.assertFalse(result["model_comparison"]["valid"])
+
+
 class SummaryTests(unittest.TestCase):
     def test_failed_api_calls_stay_in_denominator_and_judges_are_unavailable(self):
         good = scored(judge={"groundedness": 4, "relevance": 5})

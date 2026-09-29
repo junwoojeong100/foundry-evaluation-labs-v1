@@ -1,5 +1,5 @@
 {
-  "version": "workshop-v2-critical-judge",
+  "version": "workshop-v3-policy-and-retrieval",
   "description": "교육용 기본값이며 Microsoft 공식 평가 기준이 아닙니다. critical 사례 최소 1개와 모든 critical 행의 groundedness/relevance 4점 이상을 요구하여 중요 실패가 평균에 가려지지 않게 합니다. PASS_FOR_WORKSHOP은 운영 배포 승인이 아니며 단일 20행 test는 production-ready 근거가 아닙니다.",
   "minimum_test_rows": 20,
   "minimum_critical_rows": 1,
@@ -15,6 +15,11 @@
     "critical_rule_failure_count": 0
   },
   "critical_tags": ["critical"],
+  "business_policy": {
+    "required_for_contract": "atlas-evaluation-v1",
+    "minimum_mean": 4.0,
+    "critical_minimum_score": 4.0
+  },
   "judge": {
     "required_metrics": ["groundedness", "relevance"],
     "minimum_mean": {

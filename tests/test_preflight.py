@@ -28,12 +28,12 @@ class PreflightTests(unittest.TestCase):
             if args[:3] == ["search", "service", "show"]:
                 return {"location": region}
             if args[:4] == ["cognitiveservices", "account", "deployment", "list"]:
-                names = [c.model, c.judge] if missing_model else [c.model, c.judge, c.optimizer]
+                names = [c.model, c.judge] if missing_model else [c.model, c.judge, c.optimizer, c.embedding]
                 return [{
                     "name": n,
                     "properties": {
                         "provisioningState": "Succeeded",
-                        "model": {"name": "gpt-5.5" if n == c.planner else "fixture-model"},
+                        "model": {"name": "gpt-5.5" if n == c.planner else "text-embedding-3-small" if n == c.embedding else "fixture-model"},
                     },
                     "sku": {"name": "GlobalStandard"},
                 } for n in names]

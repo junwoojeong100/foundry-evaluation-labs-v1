@@ -3,12 +3,19 @@
 The CLI owns consent for ``submit_evaluation``. ``collect_evaluation`` performs
 one status read, then bounded, paginated reads only when the run is completed.
 ``managed-eval.json`` is the submission/recovery ledger; do not delete it to
-retry an uncertain POST. ``judge-contract.json`` is immutable canonical judge
+retry an uncertain POST. The shared ``judge-attempt.json`` exclusively selects
+this path or the business judge before either can submit a paid request.
+Read-only collection validates that claim but never creates or replaces it.
+``judge-contract.json`` is immutable canonical judge
 provenance, not the inaccessible built-in evaluator's private prompt. Run IDs,
 timestamps and report URLs deliberately do not belong in that judge contract.
 They are mirrored under the top-level ``metadata.managed_evaluation`` key.
 The evidence importer receives a shared ``scale: [1, 5]`` and per-case
 ``{groundedness: float, relevance: float, error: null}`` scores.
+Groundedness v4 maps only observed retrieval; older policy-reference contracts
+must not be relabeled as retrieval measurements. Policy/reference labels remain
+local and are not sent to these two built-in evaluators. Governed final tests
+use lab.calibration's separate versioned business and retrieval judges.
 Catalog version selectors and a read-only judge deployment snapshot are public
 configuration evidence, not an attestation of the private managed rubric.
 ``judge.version`` therefore stays ``service-managed/unpinned`` and
@@ -35,28 +42,19 @@ import math
 from pathlib import Path
 import re
 
-from azure.ai.projects import AIProjectClient
-from azure.ai.projects.models import TestingCriterionAzureAIEvaluator
-from openai import APIError, BaseModel
-from openai.types.eval_create_params import DataSourceConfigCustom
-from openai.types.evals.create_eval_jsonl_run_data_source_param import (
-    CreateEvalJSONLRunDataSourceParam,
-    SourceFileContent,
-    SourceFileContentContent,
-)
-
-from lab.auth import credential_for
 from lab.config import Config, LabError
-from lab.evidence import score_row, strict_json_loads
+from lab.calibration import claim_judge_attempt, ensure_judge_unclaimed, validate_judge_claim
+from lab.evidence import observed_model_drift, score_row, strict_json_loads
 from lab.files import ROOT, safe_run_dir, sha256_file
 from lab.preflight import az_json, save_json
 
 
 METRICS = ("groundedness", "relevance")
 FIELDS = ("case_id", "query", "response", "context", "ground_truth", "retrieved_context")
+SERVICE_FIELDS = ("case_id", "query", "response", "retrieved_context")
 CONTEXT_DEFINITION = (
-    "Fixed reference policy excerpts, identical across candidates; "
-    "policy-groundedness, not evidence of agent retrieval."
+    "Authoritative policy reference stays local for a separate business evaluator; "
+    "it is not evidence of agent retrieval and is never a retrieved-context fallback."
 )
 RESPONSE_PROJECTION = (
     "Only answer from schema-valid captured response JSON and reference ground_truth JSON. "
@@ -77,6 +75,16 @@ FAILED = frozenset({"failed", "canceled", "cancelled"})
 LOGGER = logging.getLogger(__name__)
 
 
+def credential_for(config):
+    from lab.auth import credential_for as factory
+    return factory(config)
+
+
+def AIProjectClient(**kwargs):
+    from azure.ai.projects import AIProjectClient as factory
+    return factory(**kwargs)
+
+
 def _canonical(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
@@ -86,7 +94,7 @@ def _digest(value: object) -> str:
 
 
 def _object(value: object, label: str) -> dict:
-    if isinstance(value, BaseModel):
+    if callable(getattr(value, "model_dump", None)):
         value = value.model_dump(mode="json", exclude_unset=True)
     if not isinstance(value, Mapping):
         raise LabError(f"{label}: 객체 형식이 필요합니다.")
@@ -137,6 +145,8 @@ def _index(rows: list[dict], field: str, label: str) -> dict[str, dict]:
 def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
     directory = safe_run_dir(run_id)
     metadata = _read(directory / "metadata.json")
+    if observed_model_drift(metadata):
+        raise LabError("Cannot evaluate a capture with terminal observed model drift.")
     if metadata.get("run_id") != run_id:
         raise LabError("metadata.run_id와 요청한 run-id가 다릅니다.")
     if metadata.get("project_endpoint") != config.project_endpoint:
@@ -160,7 +170,11 @@ def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
     if len(set(row_ids)) != len(row_ids):
         raise LabError("metadata.row_ids에 중복 ID가 있습니다.")
 
-    dataset_path = ROOT / "data/splits" / f"{split}.jsonl"
+    if metadata.get("holdout_id"):
+        from lab.batch import dataset_for_metadata
+        dataset_path = dataset_for_metadata(metadata)
+    else:
+        dataset_path = ROOT / "data/splits" / f"{split}.jsonl"
     cases = _index(_read(dataset_path, jsonl=True), "id", "dataset")
     if sha256_file(dataset_path) != metadata["dataset_sha256"]:
         raise LabError("캡처 후 데이터셋이 변경되었습니다. 원본 근거를 복구하거나 새 실행을 만드세요.")
@@ -316,8 +330,8 @@ def _contract(config: Config, versions: dict, deployment: dict) -> dict:
     for metric in METRICS:
         mapping = {"query": "{{item.query}}", "response": "{{item.response}}"}
         if metric == "groundedness":
-            mapping["context"] = "{{item.context}}"
-        criterion = TestingCriterionAzureAIEvaluator(
+            mapping["context"] = "{{item.retrieved_context}}"
+        criterion = dict(
             type="azure_ai_evaluator",
             name=metric,
             evaluator_name=f"builtin.{metric}",
@@ -328,19 +342,19 @@ def _contract(config: Config, versions: dict, deployment: dict) -> dict:
             criterion["evaluator_version"] = versions[f"builtin.{metric}"]["version"]
         criteria.append(criterion)
     return {
-        "contract_version": "foundry-policy-reference-v3",
+        "contract_version": "foundry-agent-retrieval-v4",
         "api": "Foundry project /openai/v1/evals",
         "model_deployment": config.judge,
         "judge_deployment": deployment,
         "service_version_pinned": False,
         "reproducibility_limitation": REPRODUCIBILITY_LIMITATION,
-        "data_source_config": DataSourceConfigCustom(
+        "data_source_config": dict(
             type="custom",
             include_sample_schema=False,
             item_schema={
                 "type": "object",
-                "properties": {field: {"type": "string"} for field in FIELDS},
-                "required": list(FIELDS),
+                "properties": {field: {"type": "string"} for field in SERVICE_FIELDS},
+                "required": list(SERVICE_FIELDS),
                 "additionalProperties": False,
             },
         ),
@@ -349,7 +363,7 @@ def _contract(config: Config, versions: dict, deployment: dict) -> dict:
         "scale": [1, 5],
         "context_definition": CONTEXT_DEFINITION,
         "response_projection": RESPONSE_PROJECTION,
-        "retrieved_context_definition": "Unmodified observed MCP output; retained, not mapped to a judge.",
+        "retrieved_context_definition": "Actual captured non-error retrieval only; no policy/answer-key fallback. Empty retrieval is unavailable, never a passing score.",
         "sdk_versions": {name: version(name) for name in ("azure-ai-projects", "openai")},
     }
 
@@ -436,19 +450,28 @@ def _remember_run(directory: Path, state: dict, run: dict) -> None:
 
 def submit_evaluation(config: Config, run_id: str) -> dict:
     """Submit once, after CLI confirmation; never generate another agent output."""
+    from openai import APIError
+
     directory = safe_run_dir(run_id)
     if (directory / LEDGER).exists():
         state = _read(directory / LEDGER)
         raise LabError("기존 또는 불확실한 제출이 있어 중복 제출을 차단합니다. " + _recovery(directory, state))
     directory, metadata, rows, source = _load_source(config, run_id)
+    if metadata.get("freeze_id"):
+        raise LabError("Frozen final tests require the calibrated versioned business/retrieval judges; use judge score, not built-in diagnostic evaluation.")
     if metadata.get(MANAGED_METADATA) is not None:
         raise LabError("metadata에 기존 평가 기록이 있습니다. managed-eval.json을 복구하고 collect를 사용하세요.")
     if metadata.get("judge") is not None or (directory / "judge-scores.json").exists():
         raise LabError("이미 judge 근거가 있습니다. 기존 평가를 덮어쓰거나 다시 제출하지 않습니다.")
+    ensure_judge_unclaimed(directory)
     with credential_for(config) as credential:
         deployment = _judge_deployment(config)
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
             contract = _contract(config, _evaluator_versions(project), deployment)
+            claim_judge_attempt(
+                directory, run_id, project_endpoint=config.project_endpoint,
+                evaluation_path="managed-eval", contract=contract,
+            )
             state = {
                 "eval_id": None, "run_id": None, "report_url": None,
                 "status": "creating_evaluation", "collection_status": "not_collected",
@@ -480,11 +503,11 @@ def submit_evaluation(config: Config, run_id: str) -> dict:
                         eval_id=state["eval_id"],
                         name=f"{config.prefix}-{run_id}-captured",
                         metadata={"local_run_id": run_id, "judge_contract_sha256": _digest(contract)},
-                        data_source=CreateEvalJSONLRunDataSourceParam(
+                        data_source=dict(
                             type="jsonl",
-                            source=SourceFileContent(
+                            source=dict(
                                 type="file_content",
-                                content=[SourceFileContentContent(item=row) for row in rows.values()],
+                                content=[{"item": {key: row[key] for key in SERVICE_FIELDS}} for row in rows.values()],
                             ),
                         ),
                     ), "run")
@@ -521,7 +544,7 @@ def _parse_scores(items: list[dict], expected: dict, state: dict, contract: dict
         case_id = _text(source.get("case_id"), "output_item.datasource_item.case_id")
         if case_id not in expected or case_id in scores:
             raise LabError(f"알 수 없거나 중복된 case_id: {case_id}; 위치 기반 병합을 금지합니다.")
-        if any(source.get(key) != expected[case_id][key] for key in FIELDS):
+        if any(source.get(key) != expected[case_id][key] for key in SERVICE_FIELDS):
             raise LabError(f"{case_id}: 서비스 입력이 제출한 캡처와 다릅니다.")
         sample = item.get("sample")
         if sample is not None and not isinstance(sample, dict):
@@ -575,6 +598,9 @@ def _parse_scores(items: list[dict], expected: dict, state: dict, contract: dict
         if row_scores.keys() != set(METRICS):
             raise LabError(f"{case_id}: groundedness/relevance 점수가 모두 필요합니다.")
         row_scores["error"] = None
+        if not expected[case_id]["retrieved_context"].strip():
+            row_scores["groundedness"] = None
+            row_scores["metric_errors"] = {"groundedness": "retrieval_not_observed"}
         scores[case_id] = row_scores
     if scores.keys() != expected.keys():
         missing = sorted(expected.keys() - scores.keys())
@@ -591,8 +617,14 @@ def collect_evaluation(config: Config, run_id: str) -> dict:
     if _canonical(state.get("source")) != _canonical(source):
         raise LabError("제출 이후 캡처/정책/출처가 변경되었습니다. 원본 근거를 복구하세요.")
     contract = _read(directory / CONTRACT)
+    if contract.get("contract_version") != "foundry-agent-retrieval-v4":
+        raise LabError("Legacy policy-reference groundedness cannot be relabeled as retrieved-context groundedness. Preserve the original contract/results.")
     if state.get("judge_contract_sha256") != _digest(contract) or contract.get("model_deployment") != config.judge:
         raise LabError("평가 제출 후 judge 계약/배포가 변경되었습니다. 원래 JUDGE_DEPLOYMENT/계약으로 수집하세요.")
+    validate_judge_claim(
+        directory, run_id, project_endpoint=config.project_endpoint,
+        evaluation_path="managed-eval", contract=contract,
+    )
     if not state.get("eval_id") or not state.get("run_id"):
         raise LabError("평가 제출이 불완전하거나 결과가 불확실합니다. " + _recovery(directory, state))
     _text(state["eval_id"], "managed-eval.eval_id")
@@ -640,6 +672,13 @@ def collect_evaluation(config: Config, run_id: str) -> dict:
                     state["collection_status"] = "invalid_results"
                     state["collection_error"] = str(exc)
                     _save_state(directory, state)
+                    save_json(directory / "judge-diagnostics.json", {
+                        "status": "invalid_results", "error": str(exc),
+                        "total_attempted_captures": len(metadata["row_ids"]),
+                        "capture_ids": metadata["row_ids"], "submitted_ids": list(rows),
+                        "accepted_score_count": 0,
+                        "meaning": "Incomplete/invalid service results are not aggregated as a successful subset.",
+                    })
                     raise
     state.update(
         collection_status="collected",

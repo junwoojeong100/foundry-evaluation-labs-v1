@@ -12,7 +12,7 @@ from lab.sft import parser as sft_parser
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "print.html")
+PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "migration.html", "english.html", "print.html")
 
 
 class LinkParser(HTMLParser):
@@ -84,4 +84,3 @@ class DocumentationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

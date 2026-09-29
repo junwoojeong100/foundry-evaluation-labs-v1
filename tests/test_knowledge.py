@@ -35,6 +35,7 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(properties["authType"], "ProjectManagedIdentity")
         self.assertEqual(properties["category"], "RemoteTool")
         self.assertNotIn("credentials", properties)
+        self.assertFalse(properties["isSharedToAll"])
         self.assertIn(f"api-version={SEARCH_API}", properties["target"])
 
     def test_resources_are_namespaced_by_workspace_not_only_shared_prefix(self):
@@ -42,7 +43,16 @@ class KnowledgeTests(unittest.TestCase):
         url = search_url(self.config, "knowledgebases", self.names["base"], "/mcp")
         self.assertEqual(url, self.payloads["connection"]["properties"]["target"])
 
+    def test_real_vector_schema_and_query_vectorizer_are_bound(self):
+        index = self.payloads["index"]
+        vector = next(field for field in index["fields"] if field["name"] == "content_vector")
+        self.assertEqual(vector["dimensions"], 1536)
+        self.assertEqual(vector["vectorSearchProfile"], "contoso-vector")
+        vectorizer = index["vectorSearch"]["vectorizers"][0]["azureOpenAIParameters"]
+        self.assertEqual(vectorizer["deploymentId"], self.config.embedding)
+        self.assertEqual(vectorizer["modelName"], "text-embedding-3-small")
+        self.assertIn({"name": "content_vector"}, self.payloads["source"]["searchIndexParameters"]["searchFields"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

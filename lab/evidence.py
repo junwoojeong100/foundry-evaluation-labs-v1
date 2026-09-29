@@ -56,6 +56,7 @@ RUN_SPLITS = SPLITS | {"smoke"}
 HELDOUT_STAGES = frozenset({"baseline", "iq", "optimized", "tuned", "candidate", "test", "heldout", "release"})
 CHECKS = ("format", "route", "citations", "human_flag", "forbidden_claims")
 JUDGE_METRICS = ("groundedness", "relevance")
+POLICY_METRIC = "policy_correctness"
 RATE_METRICS = (
     "format_pass_rate",
     "route_accuracy",
@@ -151,6 +152,21 @@ def _same_json(left: Any, right: Any) -> bool:
     return type(left) is type(right) and left == right
 
 
+def observed_model_drift(metadata: dict) -> bool:
+    """Recorded drift is terminal evidence, not cleared by later restoration.
+
+    Older captures may lack the explicit marker, so contradictory before/after
+    snapshots still invalidate a subsequently rewritten ``completed`` status.
+    """
+    if metadata.get("model_drift_detected") is True or any(
+        metadata.get(field) == "invalid_model_drift"
+        for field in ("status", "execution_status", "judge_execution_status")
+    ):
+        return True
+    after = metadata.get("model_snapshot_after")
+    return after is not None and not _same_json(metadata.get("model_snapshot"), after)
+
+
 def _strings(value: Any, label: str) -> list[str]:
     if not isinstance(value, list):
         raise ValueError(f"{label} must be a list of strings")
@@ -214,6 +230,9 @@ def validate_case(case: dict) -> None:
         raise ValueError("case.expected_route is invalid")
     for field in ("required_citations", "tags", "forbidden_claims"):
         _strings(case.get(field, []), f"case.{field}")
+    if "follow_up" in case:
+        _text(case["follow_up"], "case.follow_up")
+        _text(case.get("scripted_user_source"), "case.scripted_user_source")
 
 
 def _usage(usage: dict | None) -> dict:
@@ -250,6 +269,21 @@ def _judge(judge: dict | None) -> dict:
     for metric in JUDGE_METRICS:
         value = judge.get(metric)
         result[metric] = None if value is None else _number(value, f"judge.{metric}")
+    if POLICY_METRIC in judge:
+        value = judge[POLICY_METRIC]
+        if value is not None:
+            value = _number(value, f"judge.{POLICY_METRIC}")
+            if not 1 <= value <= 5:
+                raise ValueError("policy_correctness must use the declared 1..5 scale")
+        result[POLICY_METRIC] = value
+    if "metric_errors" in judge:
+        errors = judge["metric_errors"]
+        if not isinstance(errors, dict) or not errors.keys() <= {*JUDGE_METRICS, POLICY_METRIC}:
+            raise ValueError("judge.metric_errors must use declared metric names")
+        for name, value in errors.items():
+            _text(value, f"judge.metric_errors.{name}")
+    if judge.get("critical_failure") is not None and type(judge["critical_failure"]) is not bool:
+        raise ValueError("judge.critical_failure must be boolean or null")
     result.setdefault("error", None)
     if result["error"] is not None:
         _text(result["error"], "judge.error")
@@ -357,6 +391,7 @@ def score_row(
     usage: dict | None = None,
     error: str | None = None,
     judge: dict | None = None,
+    retrieved_context: str | None = None,
 ) -> dict:
     """Score one attempt; failed API calls must still be passed here as rows.
 
@@ -384,6 +419,8 @@ def score_row(
     case_json = json.dumps(
         case, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
     )
+    if retrieved_context is not None:
+        _text(retrieved_context, "retrieved_context", empty=True)
     return {
         "id": case["id"],
         "group_id": case["group_id"],
@@ -396,6 +433,7 @@ def score_row(
         "latency_ms": latency_ms,
         "usage": _usage(usage),
         "judge": _judge(judge),
+        **({"retrieved_context": retrieved_context} if retrieved_context is not None else {}),
     }
 
 
@@ -423,7 +461,7 @@ def _scale(value: Any) -> list[float] | dict[str, list[float]] | None:
 
 
 def _metric_scale(value: Any, name: str) -> list[float] | None:
-    return value[name] if isinstance(value, dict) else value
+    return value.get(name) if isinstance(value, dict) else value
 
 
 def _metadata(metadata: dict, count: int) -> dict:
@@ -538,6 +576,8 @@ def _validate_row(row: dict) -> None:
         raise ValueError("row.usage must contain canonical measured token fields")
     if _judge(row["judge"]) != row["judge"]:
         raise ValueError("row.judge must contain groundedness, relevance and error")
+    if "retrieved_context" in row:
+        _text(row["retrieved_context"], "row.retrieved_context", empty=True)
 
 
 def wilson_interval(successes: int, total: int, confidence: float = 0.95) -> dict:
@@ -602,9 +642,13 @@ def _rates(rows: list[dict]) -> dict:
 
 
 def _usable_judge_score(row: dict, name: str) -> float | None:
-    if not row["checks"]["format"] or row["judge"]["error"] is not None:
+    if (
+        not row["checks"]["format"] or row["judge"]["error"] is not None
+        or row["judge"].get("metric_errors", {}).get(name)
+        or (name == "groundedness" and "retrieved_context" in row and not row["retrieved_context"].strip())
+    ):
         return None
-    return row["judge"][name]
+    return row["judge"].get(name)
 
 
 def _judge_measurements(rows: list[dict], name: str, scale: Any) -> dict:
@@ -645,6 +689,9 @@ def summarize(rows: list[dict], *, metadata: dict) -> dict:
                 metric_scale is None or not metric_scale[0] <= value <= metric_scale[1]
             ):
                 raise ValueError(f"row {row['id']} judge.{metric} is outside the declared scale")
+        value = row["judge"].get(POLICY_METRIC)
+        if value is not None and _metric_scale(scale, POLICY_METRIC) != [1, 5]:
+            raise ValueError("policy_correctness requires an explicit shared 1..5 judge scale")
     if "row_ids" in metadata and set(metadata["row_ids"]) != identifiers:
         raise ValueError("metadata.row_ids do not match all attempted row IDs")
     latencies = [row["latency_ms"] for row in rows if row["latency_ms"] is not None]
@@ -665,7 +712,11 @@ def summarize(rows: list[dict], *, metadata: dict) -> dict:
         "api_error_count": sum(row["api_error"] is not None for row in rows),
         "format_error_count": sum(not row["schema_valid"] for row in rows),
         "error_count": sum(row["api_error"] is not None or not row["schema_valid"] for row in rows),
-        "judge_error_count": sum(row["judge"]["error"] is not None for row in rows),
+        "judge_error_count": sum(
+            row["judge"]["error"] is not None or any(
+                value != "retrieval_not_observed" for value in row["judge"].get("metric_errors", {}).values()
+            ) for row in rows
+        ),
         "unknown_citation_row_count": sum(bool(row["unknown_citations"]) for row in rows),
         "forbidden_claim_row_count": sum(bool(row["forbidden_claim_hits"]) for row in rows),
         "critical": _rates(critical_rows),
@@ -678,6 +729,12 @@ def summarize(rows: list[dict], *, metadata: dict) -> dict:
         "judge": {
             name: _judge_measurements(rows, name, _metric_scale(judge_scale, name))
             for name in JUDGE_METRICS
+        },
+        "business_policy": {
+            **_judge_measurements(rows, POLICY_METRIC, _metric_scale(judge_scale, POLICY_METRIC)),
+            "critical_failure_count": sum(row["judge"].get("critical_failure") is True for row in rows),
+            "critical_failure_ids": [row["id"] for row in rows if row["judge"].get("critical_failure") is True],
+            "semantics": "authoritative_policy_and_expected_task/not_retrieval_support",
         },
         "latency_ms": {
             "measured_rows": len(latencies),
@@ -763,6 +820,22 @@ def _validate_gates(gates: dict) -> None:
     latency = regression["maximum_latency_p95_increase_ratio"]
     if latency is not None:
         _number(latency, "maximum_latency_p95_increase_ratio", minimum=0)
+    if "business_policy" in gates:
+        policy = gates["business_policy"]
+        _require_fields(policy, {"required_for_contract", "minimum_mean", "critical_minimum_score"}, "gates.business_policy")
+        _text(policy["required_for_contract"], "gates.business_policy.required_for_contract")
+        for name in ("minimum_mean", "critical_minimum_score"):
+            if not 1 <= _number(policy[name], f"gates.business_policy.{name}") <= 5:
+                raise ValueError("business policy floors must be on the 1..5 scale")
+    if "sample_contract" in gates:
+        sample = gates["sample_contract"]
+        _require_fields(sample, {"id", "version", "purpose", "minimum_rows"}, "gates.sample_contract")
+        for field in ("id", "version", "purpose"):
+            _text(sample[field], f"gates.sample_contract.{field}")
+        _strings(sample.get("limitations", []), "gates.sample_contract.limitations")
+        _integer(sample["minimum_rows"], "gates.sample_contract.minimum_rows", minimum=1)
+        if sample["minimum_rows"] != gates["minimum_test_rows"]:
+            raise ValueError("gate minimum must match its explicit sample contract")
 
 
 def load_gates(path: Path | None = None) -> dict:
@@ -808,6 +881,12 @@ def evaluate_gates(summary: dict, gates: dict) -> dict:
     if "status" in metadata:
         check("run_completed", metadata["status"] in {"completed", "completed_with_errors"},
               metadata["status"], "completed or completed_with_errors; every attempted row included")
+    check("no_observed_model_drift", not observed_model_drift(metadata), {
+        "model_drift_detected": metadata.get("model_drift_detected"),
+        "model_snapshot": metadata.get("model_snapshot"),
+        "model_snapshot_after": metadata.get("model_snapshot_after"),
+        "judge_execution_status": metadata.get("judge_execution_status"),
+    }, "no recorded drift; restoring a deployment never revalidates affected captures")
     check("judge_metadata_available", metadata["judge"] is not None,
           metadata["judge"] is not None, "declared judge metadata; null is unavailable")
     check("minimum_test_rows", len(run["rows"]) >= gates["minimum_test_rows"],
@@ -870,8 +949,51 @@ def evaluate_gates(summary: dict, gates: dict) -> dict:
             check("judge_provenance", False, str(exc), "explicit version, settings and provenance")
         else:
             check("judge_provenance", True, metadata["judge"], "explicit version, settings and provenance")
+    policy_gates = gates.get("business_policy")
+    if policy_gates and metadata.get("evaluation_contract_version") == policy_gates["required_for_contract"]:
+        policy = metrics["business_policy"]
+        check("policy_correctness_all_rows", policy["scored_count"] == len(run["rows"]),
+              policy["scored_count"], len(run["rows"]))
+        check("policy_correctness_mean",
+              policy["mean"] is not None and _at_least(policy["mean"], policy_gates["minimum_mean"]),
+              policy["mean"], policy_gates["minimum_mean"])
+        bad_ids = [
+            row["id"] for row in configured_critical
+            if (value := _usable_judge_score(row, POLICY_METRIC)) is None
+            or not _at_least(value, policy_gates["critical_minimum_score"])
+        ]
+        check("critical_policy_correctness_floor", bool(configured_critical) and not bad_ids,
+              bad_ids, policy_gates["critical_minimum_score"])
+        check("no_semantic_critical_failures", policy["critical_failure_count"] == 0,
+              policy["critical_failure_ids"], [])
+        check("semantic_critical_decisions_complete",
+              all(type(row["judge"].get("critical_failure")) is bool for row in run["rows"]),
+              sum(type(row["judge"].get("critical_failure")) is bool for row in run["rows"]), len(run["rows"]))
+        check("actual_retrieval_provenance", all("retrieved_context" in row for row in run["rows"]),
+              sum("retrieved_context" in row for row in run["rows"]), len(run["rows"]))
+        check("fresh_holdout_bound", bool(metadata.get("freeze_id") and metadata.get("freeze_sha256") and metadata.get("holdout_id")),
+              {"freeze_id": metadata.get("freeze_id"), "holdout_id": metadata.get("holdout_id")},
+              "one exact freeze and one post-freeze registered holdout attempt")
+    sample_contract = gates.get("sample_contract")
+    if sample_contract is not None:
+        sample_hash = hashlib.sha256(json.dumps(
+            sample_contract, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        check(
+            "fresh_sample_contract_bound",
+            metadata.get("sample_contract_sha256") == sample_hash
+            and bool(metadata.get("freeze_id") and metadata.get("freeze_sha256") and metadata.get("holdout_id"))
+            and bool(policy_gates)
+            and metadata.get("evaluation_contract_version") == policy_gates["required_for_contract"],
+            metadata.get("sample_contract_sha256"), sample_hash,
+        )
+    outcome = "PASS_FOR_WORKSHOP" if all(item["passed"] for item in checks) else "HOLD"
     return {
-        "outcome": "PASS_FOR_WORKSHOP" if all(item["passed"] for item in checks) else "HOLD",
+        "outcome": outcome,
+        "execution_status": metadata.get("status", "not_recorded"),
+        "quality_status": outcome,
+        "manual_operational_approval": "not_granted",
+        "access_blockers": deepcopy(metadata.get("access_blockers", [])),
         "scope": "workshop_only",
         "production_ready": False,
         "release_eligible": heldout,
@@ -879,7 +1001,11 @@ def evaluate_gates(summary: dict, gates: dict) -> dict:
         "critical_sample_count": len(configured_critical),
         "minimum_critical_rows": minimum_critical_rows,
         "critical_judge": critical_judge,
-        "limitations": list(LIMITATIONS),
+        "sample_contract": deepcopy(sample_contract),
+        "limitations": [
+            limitation for limitation in LIMITATIONS
+            if not sample_contract or "20개 단일 held-out test" not in limitation
+        ] + (list(sample_contract.get("limitations", [])) if sample_contract else []),
     }
 
 
@@ -918,6 +1044,7 @@ def compare_runs(baseline: dict, candidate: dict, gates: dict) -> dict:
         ):
             raise ValueError("changed citation catalog requires a recorded knowledge_sha256 change")
     gate = evaluate_gates(candidate, gates)
+    model_stable = not observed_model_drift(left) and not observed_model_drift(right)
     regression_checks = []
 
     def regression(name: str, old: float | None, new: float | None, margin: float) -> None:
@@ -970,7 +1097,7 @@ def compare_runs(baseline: dict, candidate: dict, gates: dict) -> dict:
     result = {
         "outcome": (
             "PASS_FOR_WORKSHOP"
-            if judge_comparable and gate["outcome"] == "PASS_FOR_WORKSHOP"
+            if judge_comparable and model_stable and gate["outcome"] == "PASS_FOR_WORKSHOP"
             and all(item["passed"] for item in regression_checks)
             else "HOLD"
         ),
@@ -987,6 +1114,11 @@ def compare_runs(baseline: dict, candidate: dict, gates: dict) -> dict:
             "candidate": deepcopy(right["judge"]),
             "comparable": judge_comparable,
             "status": "available" if judge_comparable else "unavailable",
+        },
+        "model_comparison": {
+            "baseline_drift_detected": observed_model_drift(left),
+            "candidate_drift_detected": observed_model_drift(right),
+            "valid": model_stable,
         },
         "experiment_variables": {
             name: {"baseline": left[name], "candidate": right[name], "changed": left[name] != right[name]}
@@ -1018,7 +1150,7 @@ def _cell(value: Any) -> str:
     return str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("`", "\\`").replace("|", "\\|").replace("\r", "").replace("\n", "<br>")
 
 
-def write_report(summary: dict, path: Path) -> None:
+def write_report(summary: dict, path: Path, *, gates: dict | None = None) -> None:
     """Write Korean Markdown using the current config/gates.json, not live data.
 
     The report states its gate source. A comparison with a different gate file
@@ -1026,7 +1158,7 @@ def write_report(summary: dict, path: Path) -> None:
     Raw model outputs stay in the JSON artifact; only failures are tabulated.
     """
     run = _validate_run(summary)
-    gate = evaluate_gates(run, load_gates())
+    gate = evaluate_gates(run, load_gates() if gates is None else gates)
     metadata, metrics = run["metadata"], run["metrics"]
     lines = [
         "# Foundry 워크숍 평가 근거 보고서", "",
@@ -1037,11 +1169,18 @@ def write_report(summary: dict, path: Path) -> None:
         f"- 모델 배포: `{_cell(metadata['model_deployment'])}`",
         f"- 프롬프트 SHA256: `{metadata['prompt_sha256']}`",
         f"- 지식 SHA256: `{metadata['knowledge_sha256']}`",
-        f"- 교육용 게이트: **{gate['outcome']}** (config/gates.json)",
+        f"- 교육용 게이트: **{gate['outcome']}** ({'config/gates.json' if gates is None else 'frozen gates snapshot'})",
         "- 운영 배포 승인: **아니오**. 비교·회귀 판정은 별도 compare 결과를 확인하세요.",
         "", "## 판정률과 실패", "",
         "| 지표 | 관측값 |", "|---|---:|",
     ]
+    if gate["sample_contract"]:
+        sample = gate["sample_contract"]
+        lines[1:1] = [
+            "",
+            f"- 별도 fresh 표본 계약: `{_cell(sample['id'])}@{_cell(sample['version'])}`; 최소 {sample['minimum_rows']}행.",
+            "- 원본 test20의 대체가 아닙니다. 표본 계약은 생성·평가 전에 동결하며 모든 점수·오류·critical 기준은 유지합니다.",
+        ]
     for name in (*RATE_METRICS, "citation_coverage_mean", "error_count", "api_error_count", "judge_error_count", "critical_rule_failure_count"):
         lines.append(f"| {name} | {_cell(metrics[name])} |")
     interval = metrics["route_accuracy_wilson_95"]

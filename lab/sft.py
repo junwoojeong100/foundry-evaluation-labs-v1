@@ -18,15 +18,19 @@ from azure.ai.projects import AIProjectClient
 from azure.core.exceptions import AzureError
 from openai import APIError, APIStatusError
 
-from lab.auth import credential_for
+from lab.auth import credential_for, require_owned_scope
 from lab.batch import export_evaluation, score_run
 from lab.config import Config, LabError, load_config
-from lab.files import ARTIFACTS, ROOT, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
+from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.handoffs import validate_generated_data
+from lab.http import ARM_SCOPE, CloudRequestError, JsonHttp
 from lab.preflight import az_json, save_json
 
 
-BASE_MODEL = "gpt-4o-mini-2024-07-18"
+BASE_MODEL_NAME = "gpt-4.1-mini"
+BASE_MODEL_VERSION = "2025-04-14"
+BASE_MODEL = f"{BASE_MODEL_NAME}-{BASE_MODEL_VERSION}"
+FINE_TUNE_USAGE = "OpenAI.Standard.gpt4.1-mini-finetune"
 TRAINING_TYPE = "Standard"
 TECHNIQUE = "Foundry SFT"
 TERMINAL = {"succeeded", "failed", "cancelled", "canceled"}
@@ -105,6 +109,7 @@ def _locked():
 
 @contextmanager
 def _client(config: Config):
+    require_owned_scope(config)
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
             with project.get_openai_client(max_retries=0, timeout=120.0) as client:
@@ -120,6 +125,8 @@ def model_messages(case: dict, system: str) -> list[dict]:
 
 
 def _preparation() -> dict:
+    from lab.governance import assert_dataset_use
+
     validate_generated_data()
     directory = _directory()
     manifest_path = directory / "manifest.json"
@@ -138,6 +145,7 @@ def _preparation() -> dict:
         path = directory / name
         info = manifest.get("files", {}).get(name, {})
         rows = read_jsonl(path)
+        assert_dataset_use(path, "training")
         if (
             not path.read_bytes().startswith(b"\xef\xbb\xbf")
             or path.stat().st_size >= 512 * 1024 * 1024
@@ -170,6 +178,7 @@ def _preparation() -> dict:
 def _new_state(config: Config, preparation: dict) -> dict:
     return {
         "kind": "foundry-sft", "technique": TECHNIQUE, "not_frontier_tuning": True,
+        "code": code_provenance(),
         "scope": _scope(config), "base_model": BASE_MODEL, "training_type": TRAINING_TYPE,
         "status": "PREPARED_NOT_SUBMITTED", "created_at": _now(), **preparation,
         "baseline": None, "baseline_history": [],
@@ -393,7 +402,7 @@ def _deployment(config: Config, name: str, *, tuned_model: str | None) -> dict:
     model = properties.get("model", {})
     expected_model = (
         {"format": "OpenAI", "name": tuned_model, "version": "1"} if tuned_model
-        else {"format": "OpenAI", "name": "gpt-4o-mini", "version": "2024-07-18"}
+        else {"format": "OpenAI", "name": BASE_MODEL_NAME, "version": BASE_MODEL_VERSION}
     )
     if (
         str(deployment.get("id", "")).lower() != expected_id.lower()
@@ -426,6 +435,75 @@ def _deployment_contract(deployment: dict) -> dict:
         "rai_policy_name": properties.get("raiPolicyName"),
         "version_upgrade_option": properties.get("versionUpgradeOption"),
     }
+
+
+def deploy_tuned_model(config: Config, name: str, *, capacity: int = 10, confirm: bool = False) -> dict:
+    """Only deploy the retrieved result of this owned SFT job; never update another deployment."""
+    _confirm(confirm)
+    require_owned_scope(config)
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", name) or type(capacity) is not int or not 1 <= capacity <= 20:
+        raise LabError("배포 이름과 1~20의 명시적인 Standard capacity가 필요합니다.")
+    with _locked():
+        state = _load_state(config)
+        with _client(config) as client:
+            if not state["job"]["id"]:
+                raise LabError("실제 학습 작업 ID가 없습니다.")
+            _observe_job(client.fine_tuning.jobs.retrieve(state["job"]["id"]), state, retrieved=True)
+        if state["job"]["status"] != "succeeded" or not state["job"]["terminal_verified"]:
+            raise LabError("서비스에서 종료 확인한 succeeded SFT 작업만 배포할 수 있습니다.")
+        _verify_account(config)
+        expected = {
+            "sku": {"name": "Standard", "capacity": capacity},
+            "properties": {
+                "model": {"format": "OpenAI", "name": state["job"]["fine_tuned_model"], "version": "1"},
+                "versionUpgradeOption": "NoAutoUpgrade",
+            },
+        }
+        deployments = state.setdefault("deployments", {})
+        record = deployments.get(name)
+        if record and record.get("request") != expected:
+            raise LabError("기록된 학습 모델 배포 계약과 다릅니다. 기존 배포를 덮어쓰지 않습니다.")
+        url = f"https://management.azure.com{config.account_id}/deployments/{name}?api-version=2025-06-01"
+        with credential_for(config) as credential:
+            http = JsonHttp(credential, scope=ARM_SCOPE, allowed_origin="https://management.azure.com")
+            try:
+                remote = http.request("GET", url).body
+            except CloudRequestError as exc:
+                if exc.status != 404:
+                    raise
+                remote = None
+            if remote is not None:
+                if record is None:
+                    raise LabError("동일 이름의 배포가 있지만 이 학습 실습의 소유 기록이 없습니다.")
+                observed = remote.get("properties", {})
+                if observed.get("model") != expected["properties"]["model"] or remote.get("sku") != expected["sku"]:
+                    raise LabError("원격 학습 모델/배포 SKU가 기록과 다릅니다.")
+                record.update(status=observed.get("provisioningState"), response=remote, observed_at=_now())
+                _persist(state)
+                return record
+            if record is not None:
+                raise LabError("이 배포 제출은 결과 불명입니다. ARM 상태를 확인하기 전 다시 생성하지 않습니다.")
+            models = _object(az_json([
+                "rest", "--method", "get", "--url",
+                f"https://management.azure.com/subscriptions/{config.subscription_id}/providers/"
+                f"Microsoft.CognitiveServices/locations/{config.location}/usages?api-version=2023-05-01",
+            ]))
+            quota = next((item for item in models.get("value", [])
+                          if item.get("name", {}).get("value") == FINE_TUNE_USAGE), None)
+            if not quota or quota.get("limit", 0) - quota.get("currentValue", 0) < capacity:
+                raise LabError(f"NCUS {FINE_TUNE_USAGE}의 여유 quota가 부족하거나 확인되지 않았습니다.")
+            record = {
+                "request": expected, "url": url, "status": "SUBMITTING", "requested_at": _now(),
+                "cost": {"status": "NOT_OBSERVED", "ongoing_hosting": True},
+                "retention": "No automatic deletion. Hosting charges continue until an approved cleanup.",
+            }
+            deployments[name] = record
+            _persist(state)
+            response = http.request("PUT", url, expected, create_only=True)
+            record.update(status=response.body.get("properties", {}).get("provisioningState", "SUBMITTED"),
+                          response=response.body, http_status=response.status)
+            _persist(state)
+            return record
 
 
 def capture_model(client, deployment: str, case: dict, system: str) -> dict:
@@ -485,10 +563,11 @@ def _capture_runs(
         snapshot.write_bytes(prompt.read_bytes())
         metadata[arm] = {
             "run_id": directory.name, "stage": "candidate" if arm == "base" else "tuned",
+            "code": code_provenance(),
             "split": split, "source_split": split, "dataset_sha256": sha256_file(dataset),
             "model_deployment": names[arm], "prompt_sha256": state["prompt_sha256"],
             "knowledge_sha256": state["knowledge_sha256"],
-            "prompt_snapshot": str(snapshot.relative_to(ROOT)),
+            "prompt_snapshot": artifact_reference(snapshot, root=ROOT),
             "project_endpoint": config.project_endpoint, "scope": state["scope"],
             "judge": None, "row_ids": [case["id"] for case in cases], "status": "running", "created_at": _now(),
             "parameters": {**INFERENCE, "retries": 0, "timeout_seconds": 120},
@@ -591,7 +670,7 @@ def _baseline_evidence(state: dict) -> dict:
         "model_deployment": reference["model_deployment"],
         "dataset_sha256": sha256_file(dataset), "prompt_sha256": state["prompt_sha256"],
         "knowledge_sha256": state["knowledge_sha256"],
-        "prompt_snapshot": str((directory / "prompt.txt").relative_to(ROOT)),
+        "prompt_snapshot": artifact_reference(directory / "prompt.txt", root=ROOT),
         "row_ids": [case["id"] for case in cases],
         "parameters": {**INFERENCE, "retries": 0, "timeout_seconds": 120},
     }
@@ -661,6 +740,7 @@ def status_summary(state: dict) -> dict:
         "terminal_verified_by_retrieve": job["terminal_verified"],
         "cancellation": job.get("cancellation"), "error": job.get("error"),
         "baseline": state.get("baseline"),
+        "deployments": state.get("deployments", {}),
     }
     if job["status"] == "succeeded" and job["fine_tuned_model"]:
         summary["fine_tuned_model"] = job["fine_tuned_model"]
@@ -681,6 +761,7 @@ def parser() -> argparse.ArgumentParser:
         ("status", "기록된 파일/작업을 한 번 조회 (클라우드 읽기 전용)"),
         ("cancel", "기록된 작업만 취소 요청; status로 종료 확인"),
         ("run-pair", "동일 기반/실제 학습 모델의 dev 또는 test 유료 추론"),
+        ("deploy", "종료 확인한 학습 모델만 새 Standard 배포로 생성; 지속 호스팅 비용 발생"),
     ):
         command = commands.add_parser(name, help=help_text)
         if name != "status":
@@ -693,6 +774,9 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--tuned-deployment", required=True)
             command.add_argument("--split", choices=("dev", "test"), required=True)
             command.add_argument("--run-prefix", required=True)
+        if name == "deploy":
+            command.add_argument("--deployment", required=True)
+            command.add_argument("--capacity", type=int, default=10)
     return result
 
 
@@ -711,6 +795,8 @@ def main(argv: list[str] | None = None) -> int:
             )
         elif args.command == "status":
             result = status_summary(job_status(config))
+        elif args.command == "deploy":
+            result = deploy_tuned_model(config, args.deployment, capacity=args.capacity, confirm=args.confirm)
         else:
             operation = {"upload": upload_files, "submit": submit_job, "cancel": cancel_job}[args.command]
             result = status_summary(operation(config, confirm=args.confirm))

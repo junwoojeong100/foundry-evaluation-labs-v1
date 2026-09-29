@@ -5,9 +5,6 @@ from pathlib import Path
 import re
 from uuid import UUID
 
-from dotenv import dotenv_values
-
-
 class LabError(Exception):
     """An actionable workshop error that is safe to show on the CLI."""
 
@@ -31,6 +28,8 @@ class Config:
     prefix: str
     planner: str = ""
     tuned_model: str = ""
+    embedding: str = ""
+    bootstrap_config: str = ""
 
     @property
     def account_id(self) -> str:
@@ -100,9 +99,13 @@ class Config:
         for name, value in (("model", self.model), ("judge", self.judge), ("optimizer", self.optimizer), ("planner", self.planner)):
             if not re.fullmatch(r"[A-Za-z0-9_.-]+", value):
                 raise LabError(f"{name}에 실제 모델 배포 이름을 지정하세요.")
+        if self.embedding and not re.fullmatch(r"[A-Za-z0-9_.-]+", self.embedding):
+            raise LabError("embedding에 실제 모델 배포 이름을 지정하세요.")
 
 
 def load_config(path: Path) -> Config:
+    from dotenv import dotenv_values
+
     if not path.is_file():
         raise LabError(f"설정 파일이 없습니다: {path}. 먼저 cp .env.example .env 를 실행하세요.")
     values = dotenv_values(path, interpolate=False)
@@ -131,6 +134,8 @@ def load_config(path: Path) -> Config:
     config = Config(
         **kwargs,
         tuned_model=(values.get("TUNED_MODEL_DEPLOYMENT") or "").strip(),
+        embedding=(values.get("EMBEDDING_DEPLOYMENT") or "").strip(),
+        bootstrap_config=(values.get("BOOTSTRAP_CONFIG") or "").strip(),
     )
     config.validate()
     return config

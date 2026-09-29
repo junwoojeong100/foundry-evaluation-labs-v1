@@ -86,7 +86,10 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
     })
     deployment_map = {d["name"]: d for d in deployments}
     model_evidence = {}
-    for role, name in (("agent", config.model), ("judge", config.judge), ("optimizer", config.optimizer), ("iq_planner", config.planner)):
+    for role, name in (
+        ("agent", config.model), ("judge", config.judge), ("optimizer", config.optimizer),
+        ("iq_planner", config.planner), ("embedding", config.embedding),
+    ):
         deployment = deployment_map.get(name)
         ready = deployment and deployment.get("properties", {}).get("provisioningState") == "Succeeded"
         checks.append({
@@ -106,6 +109,13 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
                 "status": "PASS" if observed_model == "gpt-5.5" else "BLOCKED",
                 "observed": observed_model,
                 "expected": "gpt-5.5",
+            })
+        if role == "embedding":
+            observed_model = (deployment or {}).get("properties", {}).get("model", {}).get("name")
+            checks.append({
+                "name": "embedding_supported_model",
+                "status": "PASS" if observed_model == "text-embedding-3-small" else "BLOCKED",
+                "observed": observed_model, "expected": "text-embedding-3-small",
             })
     public_access = account.get("properties", {}).get("publicNetworkAccess")
     if public_access == "Disabled":
