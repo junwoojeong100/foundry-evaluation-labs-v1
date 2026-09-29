@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{{TITLE}}</title>
+  <link rel="icon" type="image/svg+xml" href="web/assets/favicon.svg">
+  <link rel="stylesheet" href="web/styles.css">
+</head>
+<body class="print-book">
+  <a class="skip-link" href="#book-main">인쇄본 본문으로 바로 가기</a>
+  <div class="book-screen-tools no-print">
+    <a href="index.html">← 웹 가이드로 돌아가기</a>
+    <span>통합 인쇄본 · 브라우저의 인쇄 기능으로 A4 PDF를 저장하세요.</span>
+  </div>
+  <main id="book-main" class="book-main" tabindex="-1">
+    <header class="book-cover">
+      <p class="eyebrow">MICROSOFT FOUNDRY · PRINT EDITION</p>
+      <h1>{{TITLE}}</h1>
+      <p>참가자 가이드와 부록을 한 권으로 모았습니다. 문서 간 링크는 책 안으로 연결되며, 실습 파일은 패키지 내 경로로 표시됩니다.</p>
+      <p class="book-date">문서 기준 <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></p>
+    </header>
+    <nav class="book-toc" aria-labelledby="book-toc-title">
+      <h2 id="book-toc-title">수록 문서</h2>
+      {{BOOK_TOC}}
+    </nav>
+    {{CONTENT}}
+  </main>
+</body>
+</html>

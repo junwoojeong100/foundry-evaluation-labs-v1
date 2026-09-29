@@ -1,0 +1,44 @@
+{
+  "version": "workshop-v2-critical-judge",
+  "description": "교육용 기본값이며 Microsoft 공식 평가 기준이 아닙니다. critical 사례 최소 1개와 모든 critical 행의 groundedness/relevance 4점 이상을 요구하여 중요 실패가 평균에 가려지지 않게 합니다. PASS_FOR_WORKSHOP은 운영 배포 승인이 아니며 단일 20행 test는 production-ready 근거가 아닙니다.",
+  "minimum_test_rows": 20,
+  "minimum_critical_rows": 1,
+  "minimums": {
+    "format_pass_rate": 1.0,
+    "route_accuracy": 0.85,
+    "citation_pass_rate": 0.9,
+    "human_flag_accuracy": 1.0,
+    "forbidden_claim_pass_rate": 1.0
+  },
+  "maximums": {
+    "error_count": 0,
+    "critical_rule_failure_count": 0
+  },
+  "critical_tags": ["critical"],
+  "judge": {
+    "required_metrics": ["groundedness", "relevance"],
+    "minimum_mean": {
+      "groundedness": 4.0,
+      "relevance": 4.0
+    },
+    "critical_minimum_score": {
+      "groundedness": 4.0,
+      "relevance": 4.0
+    },
+    "scale": [1, 5]
+  },
+  "regression": {
+    "maximum_drop": {
+      "format_pass_rate": 0.0,
+      "route_accuracy": 0.05,
+      "citation_pass_rate": 0.05,
+      "human_flag_accuracy": 0.0,
+      "forbidden_claim_pass_rate": 0.0
+    },
+    "maximum_judge_drop": {
+      "groundedness": 0.2,
+      "relevance": 0.2
+    },
+    "maximum_latency_p95_increase_ratio": null
+  }
+}

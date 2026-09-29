@@ -1,0 +1,330 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:foundry-workshop:run:v1",
+  "title": "Offline workshop run evidence",
+  "description": "Persist summarize() output as UTF-8 JSON with allow_nan=false. Runtime validation also verifies unique IDs, row source-split equality, sample counts, metadata.row_ids when declared, raw-output-derived checks, declared judge score bounds, and recomputed aggregate metrics. These cross-field constraints are not expressible here. Artifacts are evidence supplied by the caller, not proof that a live API was invoked.",
+  "type": "object",
+  "required": ["metadata", "rows", "metrics"],
+  "properties": {
+    "metadata": {"$ref": "#/$defs/metadata"},
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/row"}
+    },
+    "metrics": {"$ref": "#/$defs/metrics"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "text": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "texts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/text"}
+    },
+    "nullableText": {"anyOf": [{"$ref": "#/$defs/text"}, {"type": "null"}]},
+    "count": {"type": "integer", "minimum": 0},
+    "rate": {"type": "number", "minimum": 0, "maximum": 1},
+    "nullableRate": {"anyOf": [{"$ref": "#/$defs/rate"}, {"type": "null"}]},
+    "nullableMeasurement": {"type": ["number", "null"], "minimum": 0},
+    "nullableTokens": {"type": ["integer", "null"], "minimum": 0},
+    "scaleRange": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"type": "number"}
+    },
+    "scale": {
+      "anyOf": [
+        {"$ref": "#/$defs/scaleRange"},
+        {"type": "null"}
+      ]
+    },
+    "declaredScales": {
+      "description": "Prefer a per-metric scale declaration; a shared [low,high] remains supported for backward compatibility. No range conversion or score rescaling is performed.",
+      "anyOf": [
+        {"$ref": "#/$defs/scale"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["groundedness", "relevance"],
+          "properties": {
+            "groundedness": {"$ref": "#/$defs/scaleRange"},
+            "relevance": {"$ref": "#/$defs/scaleRange"}
+          }
+        }
+      ]
+    },
+    "route": {"enum": ["answer", "clarify", "escalate", "refuse"]},
+    "split": {"enum": ["train", "validation", "dev", "test"]},
+    "judgeMetadata": {
+      "type": "object",
+      "description": "Declare deployment/prompt/scale together, or explicitly set all three to null for a disabled judge. compare_runs additionally requires version, settings, provenance and equality of this entire object. This includes judge version/settings/provenance, never merely the judge name. Metadata.judge itself may be null before managed evaluation, in which case comparisons HOLD and judge means remain unavailable.",
+      "required": ["model_deployment", "prompt_sha256", "scale"],
+      "properties": {
+        "model_deployment": {"$ref": "#/$defs/nullableText"},
+        "prompt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "scale": {"$ref": "#/$defs/declaredScales"},
+        "version": {"$ref": "#/$defs/nullableText"},
+        "settings": {"type": "object"},
+        "provenance": {
+          "anyOf": [
+            {"$ref": "#/$defs/text"},
+            {"type": "object", "minProperties": 1}
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "run_id", "stage", "split", "dataset_sha256", "sample_count",
+        "model_deployment", "prompt_sha256", "knowledge_sha256", "judge"
+      ],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/text"},
+        "stage": {
+          "allOf": [{"$ref": "#/$defs/text"}],
+          "description": "Only baseline, iq, optimized, tuned, candidate, test, heldout, release stages with split=test can support a workshop release gate. smoke/dev and all other stages HOLD."
+        },
+        "split": {"enum": ["train", "validation", "dev", "test", "smoke"]},
+        "source_split": {
+          "allOf": [{"$ref": "#/$defs/split"}],
+          "description": "Required for split=smoke; score rows retain this actual dataset split. For non-smoke runs this must equal metadata.split when present."
+        },
+        "row_ids": {
+          "allOf": [{"$ref": "#/$defs/texts"}],
+          "description": "If present, must match every attempted row ID and sample_count. A managed-evaluation subset must not drop failed rows from local evidence."
+        },
+        "status": {
+          "allOf": [{"$ref": "#/$defs/text"}],
+          "description": "When present, only completed or completed_with_errors supports a passing workshop gate."
+        },
+        "dataset_sha256": {
+          "allOf": [{"$ref": "#/$defs/sha256"}],
+          "description": "SHA256 of the exact dataset artifact bytes, supplied by the runner; paired comparisons require equality."
+        },
+        "sample_count": {"type": "integer", "minimum": 1},
+        "model_deployment": {"$ref": "#/$defs/text"},
+        "prompt_sha256": {"$ref": "#/$defs/sha256"},
+        "knowledge_sha256": {"$ref": "#/$defs/sha256"},
+        "judge": {"anyOf": [{"$ref": "#/$defs/judgeMetadata"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"split": {"const": "smoke"}}, "required": ["split"]},
+          "then": {"required": ["source_split"]}
+        }
+      ]
+    },
+    "expected": {
+      "type": "object",
+      "required": ["route", "required_citations", "forbidden_claims"],
+      "properties": {
+        "route": {"$ref": "#/$defs/route"},
+        "required_citations": {"$ref": "#/$defs/texts"},
+        "forbidden_claims": {
+          "allOf": [{"$ref": "#/$defs/texts"}],
+          "description": "Case-sensitive literal answer substring checks only. This is not semantic groundedness, factuality, or a complete safety assessment."
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "route", "citations", "human_flag", "forbidden_claims"],
+      "properties": {
+        "format": {"type": "boolean"},
+        "route": {"type": "boolean"},
+        "citations": {"type": "boolean"},
+        "human_flag": {"type": "boolean"},
+        "forbidden_claims": {"type": "boolean"}
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical measured token counts. Null means unmeasured, not zero. API prompt_tokens/completion_tokens aliases are normalized at score_row input. No synthesized totals or estimated USD.",
+      "required": ["input_tokens", "output_tokens", "total_tokens"],
+      "properties": {
+        "input_tokens": {"$ref": "#/$defs/nullableTokens"},
+        "output_tokens": {"$ref": "#/$defs/nullableTokens"},
+        "total_tokens": {"$ref": "#/$defs/nullableTokens"}
+      }
+    },
+    "rowJudge": {
+      "type": "object",
+      "description": "Preserved per-row judge scores. The pedagogical default critical-case gate requires BOTH scores >=4 on declared 1..5 scales for EVERY critical-tagged row, plus at least one critical row. Null/error/schema-invalid response is unavailable, never a pass. These workshop gates are not Microsoft official criteria and are independent of aggregate means.",
+      "required": ["groundedness", "relevance", "error"],
+      "properties": {
+        "groundedness": {"type": ["number", "null"]},
+        "relevance": {"type": ["number", "null"]},
+        "error": {"$ref": "#/$defs/nullableText"}
+      }
+    },
+    "row": {
+      "type": "object",
+      "required": [
+        "id", "group_id", "split", "tags", "case_sha256", "expected",
+        "known_citations", "raw_output", "response", "api_error", "parse_error",
+        "schema_errors", "json_valid", "schema_valid", "checks", "citation_coverage",
+        "missing_citations", "unknown_citations", "forbidden_claim_hits",
+        "rule_failures", "latency_ms", "usage", "judge"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/text"},
+        "group_id": {"$ref": "#/$defs/text"},
+        "split": {"$ref": "#/$defs/split"},
+        "tags": {
+          "allOf": [{"$ref": "#/$defs/texts"}],
+          "description": "critical, critical:* and gates.critical_tags select rows for both deterministic and per-row judge gates. The educational default requires at least one selected row; an empty subset cannot establish release evidence."
+        },
+        "case_sha256": {
+          "allOf": [{"$ref": "#/$defs/sha256"}],
+          "description": "SHA256 of the entire input case as UTF-8 canonical JSON: ensure_ascii=false, sort_keys=true, separators=(',', ':'), allow_nan=false."
+        },
+        "expected": {"$ref": "#/$defs/expected"},
+        "known_citations": {"$ref": "#/$defs/texts"},
+        "raw_output": {
+          "type": "string",
+          "description": "Unmodified model output, including malformed JSON or fences. Retained even on API failure."
+        },
+        "response": {
+          "description": "Any strictly parsed JSON value, or null on parse failure. A schema-invalid value is retained for forensic inspection, not treated as a valid response."
+        },
+        "api_error": {"$ref": "#/$defs/nullableText"},
+        "parse_error": {"$ref": "#/$defs/nullableText"},
+        "schema_errors": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "json_valid": {"type": "boolean"},
+        "schema_valid": {"type": "boolean"},
+        "checks": {"$ref": "#/$defs/checks"},
+        "citation_coverage": {
+          "allOf": [{"$ref": "#/$defs/rate"}],
+          "description": "Required source-ID fraction. Empty required set is vacuously 1 only with a valid citation array and no API/parse failure. Unknown extra IDs independently fail checks.citations."
+        },
+        "missing_citations": {"$ref": "#/$defs/texts"},
+        "unknown_citations": {"$ref": "#/$defs/texts"},
+        "forbidden_claim_hits": {"$ref": "#/$defs/texts"},
+        "rule_failures": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["format", "route", "citations", "human_flag", "forbidden_claims"]}
+        },
+        "latency_ms": {"$ref": "#/$defs/nullableMeasurement"},
+        "usage": {"$ref": "#/$defs/usage"},
+        "judge": {"$ref": "#/$defs/rowJudge"}
+      }
+    },
+    "subset": {
+      "type": "object",
+      "description": "All rule rates use every attempted row in this subset as denominator. Empty subsets have null rates, not perfect rates.",
+      "required": [
+        "sample_count", "format_pass_rate", "route_accuracy", "citation_pass_rate",
+        "human_flag_accuracy", "forbidden_claim_pass_rate", "rule_failure_count"
+      ],
+      "properties": {
+        "sample_count": {"$ref": "#/$defs/count"},
+        "format_pass_rate": {"$ref": "#/$defs/nullableRate"},
+        "route_accuracy": {"$ref": "#/$defs/nullableRate"},
+        "citation_pass_rate": {"$ref": "#/$defs/nullableRate"},
+        "human_flag_accuracy": {"$ref": "#/$defs/nullableRate"},
+        "forbidden_claim_pass_rate": {"$ref": "#/$defs/nullableRate"},
+        "rule_failure_count": {"$ref": "#/$defs/count"}
+      }
+    },
+    "judgeMeasurement": {
+      "type": "object",
+      "description": "Mean uses only available scores on schema-valid, successful responses without judge errors; never replaces missing scores with zero. Gates require all-row coverage on declared [1,5] scales.",
+      "required": ["mean", "scored_count", "missing_count", "coverage", "status", "scale"],
+      "properties": {
+        "mean": {"type": ["number", "null"]},
+        "scored_count": {"$ref": "#/$defs/count"},
+        "missing_count": {"$ref": "#/$defs/count"},
+        "coverage": {"$ref": "#/$defs/rate"},
+        "status": {"enum": ["unavailable", "partial", "complete"]},
+        "scale": {"$ref": "#/$defs/scale"}
+      }
+    },
+    "tokenMeasurement": {
+      "type": "object",
+      "required": ["sum", "measured_rows", "missing_rows"],
+      "properties": {
+        "sum": {"$ref": "#/$defs/nullableTokens"},
+        "measured_rows": {"$ref": "#/$defs/count"},
+        "missing_rows": {"$ref": "#/$defs/count"}
+      }
+    },
+    "metrics": {
+      "allOf": [{"$ref": "#/$defs/subset"}],
+      "type": "object",
+      "required": [
+        "citation_coverage_mean", "route_accuracy_wilson_95", "api_error_count",
+        "format_error_count", "error_count", "judge_error_count",
+        "unknown_citation_row_count", "forbidden_claim_row_count", "critical",
+        "critical_rule_failure_count", "critical_subsets", "by_tag", "judge",
+        "latency_ms", "tokens"
+      ],
+      "properties": {
+        "citation_coverage_mean": {"$ref": "#/$defs/rate"},
+        "route_accuracy_wilson_95": {
+          "type": "object",
+          "required": ["lower", "upper", "confidence", "method"],
+          "properties": {
+            "lower": {"$ref": "#/$defs/rate"},
+            "upper": {"$ref": "#/$defs/rate"},
+            "confidence": {"const": 0.95},
+            "method": {"const": "Wilson score, two-sided; independent Bernoulli assumption"}
+          }
+        },
+        "api_error_count": {"$ref": "#/$defs/count"},
+        "format_error_count": {"$ref": "#/$defs/count"},
+        "error_count": {
+          "allOf": [{"$ref": "#/$defs/count"}],
+          "description": "Rows with API errors or invalid JSON/schema. A row failing both counts once; judge errors are reported separately and reduce judge coverage."
+        },
+        "judge_error_count": {"$ref": "#/$defs/count"},
+        "unknown_citation_row_count": {"$ref": "#/$defs/count"},
+        "forbidden_claim_row_count": {"$ref": "#/$defs/count"},
+        "critical": {
+          "allOf": [{"$ref": "#/$defs/subset"}],
+          "description": "Deterministic subset rates only, not a semantic pass. evaluate_gates separately checks every critical judge score against judge.critical_minimum_score (default groundedness=4, relevance=4) and minimum_critical_rows (default 1). These optional configuration fields use the pedagogical defaults when omitted."
+        },
+        "critical_rule_failure_count": {"$ref": "#/$defs/count"},
+        "critical_subsets": {
+          "type": "object",
+          "description": "Per-tag metrics for critical and critical:* tags. evaluate_gates also honors additional gates.critical_tags, without mutating the summary.",
+          "additionalProperties": {"$ref": "#/$defs/subset"}
+        },
+        "by_tag": {"type": "object", "additionalProperties": {"$ref": "#/$defs/subset"}},
+        "judge": {
+          "type": "object",
+          "required": ["groundedness", "relevance"],
+          "properties": {
+            "groundedness": {"$ref": "#/$defs/judgeMeasurement"},
+            "relevance": {"$ref": "#/$defs/judgeMeasurement"}
+          }
+        },
+        "latency_ms": {
+          "type": "object",
+          "required": ["measured_rows", "missing_rows", "p50", "p95", "method"],
+          "properties": {
+            "measured_rows": {"$ref": "#/$defs/count"},
+            "missing_rows": {"$ref": "#/$defs/count"},
+            "p50": {"$ref": "#/$defs/nullableMeasurement"},
+            "p95": {"$ref": "#/$defs/nullableMeasurement"},
+            "method": {"const": "Hyndman-Fan type 7: linear interpolation at (n - 1) * q"}
+          }
+        },
+        "tokens": {
+          "type": "object",
+          "required": ["input_tokens", "output_tokens", "total_tokens"],
+          "properties": {
+            "input_tokens": {"$ref": "#/$defs/tokenMeasurement"},
+            "output_tokens": {"$ref": "#/$defs/tokenMeasurement"},
+            "total_tokens": {"$ref": "#/$defs/tokenMeasurement"}
+          }
+        }
+      }
+    }
+  }
+}

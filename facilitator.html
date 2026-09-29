@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
+  <title>강사용 운영 가이드 · Foundry 실습 가이드</title>
+  <link rel="icon" type="image/svg+xml" href="web/assets/favicon.svg">
+  <link rel="stylesheet" href="web/styles.css">
+  <script src="web/app.js" defer></script>
+</head>
+<body data-document-id="facilitator.html">
+  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a class="brand" href="index.html" aria-label="Foundry 실습 가이드 처음으로">
+        <span class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30"><path d="M7 25V7h18M7 16h13"/><circle cx="24" cy="24" r="4"/></svg>
+        </span>
+        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+      </a>
+      <span class="header-context">한국어 · 오프라인 문서</span>
+      <div class="header-actions">
+        <button class="search-trigger" type="button" data-search-open aria-haspopup="dialog" aria-controls="search-dialog" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <span>본문 검색</span><kbd aria-hidden="true">/</kbd>
+        </button>
+        <button class="icon-button print-trigger" type="button" data-print aria-label="가이드 인쇄 또는 PDF로 저장" title="인쇄 또는 PDF로 저장" hidden>
+          <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M6 8V3h12v5M6 17H3V8h18v9h-3M6 13h12v8H6zM17 11h1"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
+      <div class="sidebar-inner">
+        <div class="sidebar-heading">
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">학습 목차</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
+          <div class="toc">
+<ul>
+<li><a href="#수업-전날">수업 전날</a></li>
+<li><a href="#권장-수업-진행">권장 수업 진행</a></li>
+<li><a href="#제품과-실습-도구의-경계">제품과 실습 도구의 경계</a></li>
+<li><a href="#결과가-좋아지지-않았을-때">결과가 좋아지지 않았을 때</a></li>
+<li><a href="#고객의-다음-30일로-연결">고객의 다음 30일로 연결</a></li>
+<li><a href="#이-패키지를-설계할-때-사용한-확장-프롬프트">이 패키지를 설계할 때 사용한 확장 프롬프트</a></li>
+</ul>
+</div>
+
+        </nav>
+        <details class="related-documents">
+          <summary>함께 보는 문서</summary>
+          <nav aria-label="실습 문서 모음"><ul>
+<li><a href="index.html">참가자 실습 가이드</a></li>
+<li><a href="facilitator.html" aria-current="page">강사용 진행 가이드</a></li>
+<li><a href="admin.html">관리자 사전 준비</a></li>
+<li><a href="sft.html">SFT 심화 부록</a></li>
+<li><a href="verification.html">검증 기록</a></li>
+<li><a href="data-guide.html">데이터 설명</a></li>
+<li><a href="print.html">전체 인쇄본</a></li></ul></nav>
+        </details>
+
+        <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
+          <div class="panel-heading"><h2 id="progress-title">내 학습 기록</h2><span class="local-badge">로컬</span></div>
+          <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
+          <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
+          <details class="progress-details">
+            <summary>장별 완료 표시</summary>
+            <div id="progress-checklist" class="progress-checklist"></div>
+          </details>
+          <div class="progress-bottom"><span>직접 체크한 장만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">이 문서의 완료 표시는 이 브라우저에만 저장됩니다.</p>
+        </section>
+
+        <details class="keyboard-help" data-keyboard-help hidden>
+          <summary>키보드 사용 안내</summary>
+          <dl>
+            <div><dt><kbd>/</kbd></dt><dd>본문 검색</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>검색·모바일 목차 닫기</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장으로 이동</dd></div>
+          </dl>
+        </details>
+        <p class="sidebar-note">본문을 차례로 읽거나 필요한 장부터 시작하세요. 검색과 학습 기록은 외부로 전송되지 않습니다.</p>
+      </div>
+    </aside>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
+
+    <main id="main-content" class="main-content" tabindex="-1">
+      <a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+      <div class="reading-toolbar no-print">
+        <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
+        <span class="document-date">문서 기준 <time datetime="2026-09-29">2026-09-29</time></span>
+      </div>
+      <noscript><p class="noscript-note">본문과 목차는 JavaScript 없이도 읽을 수 있습니다. 검색은 브라우저의 찾기 기능을 이용하세요. 학습 기록과 코드 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
+      <article id="guide-start" class="guide-content" aria-label="강사용 운영 가이드">
+        <h1 id="강사용-운영-가이드">강사용 운영 가이드</h1>
+<p>이 문서는 실습 본문을 대신하지 않습니다. 참가자는 <code>index.html</code>의 한 경로를 따릅니다.</p>
+<h2 id="수업-전날">수업 전날</h2>
+<ol>
+<li>패키지를 새 디렉터리에 풀어 Python 설치와 <code>python -m lab validate</code>를 확인합니다.</li>
+<li>참가자별 로그인 계정·역할·<code>LAB_PREFIX</code>를 배정합니다. 개인 암호나 액세스 토큰을 배포하지 않습니다.</li>
+<li>Foundry, Search, 평가 모델, 최적화 기능, Frontier Tuning의 <strong>각각의 접근 조건</strong>을 확인합니다.</li>
+<li>관리형 평가와 Preview 기능의 지원 리전·모델·버전을 다시 확인합니다. NCUS에서 안 되면 다른 리전으로 임의 전환하지 않습니다.</li>
+<li>실습용 합성 데이터만 업로드하도록 안내합니다. 실제 고객 데이터 사용은 별도의 승인·비식별화·접근 통제 대상입니다.</li>
+<li>유료 호출·최적화·학습·상시 배포별 예산과 승인자를 정합니다. Azure Budget 알림을 자동 지출 상한으로 설명하지 않습니다.</li>
+<li>기준선 smoke를 실제 실행해 포털에서 에이전트와 결과가 보이는지 확인합니다. 이 작업의 실제 비용은 강사 예산에 포함합니다.</li>
+</ol>
+<p><strong>준비 실패의 정직한 처리:</strong> Frontier 접근이 없다면 수업 안내에 “접근·데이터 준비까지, 실제 학습 미실행”이라고 미리 표시합니다. SFT를 보여주면서 Frontier Tuning을 완료했다고 안내하지 않습니다.</p>
+<h2 id="권장-수업-진행">권장 수업 진행</h2>
+<table>
+<thead>
+<tr>
+<th>구간</th>
+<th>강사가 설명할 한 문장</th>
+<th>참가자가 보여줄 근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>시작</td>
+<td>평가 기준을 먼저 고정합니다.</td>
+<td>응답 계약과 데이터 분할</td>
+</tr>
+<tr>
+<td>기준선</td>
+<td>실패를 숨기지 않아야 개선할 수 있습니다.</td>
+<td>실패한 실제 응답 1건</td>
+</tr>
+<tr>
+<td>IQ</td>
+<td>최신 지식은 모델의 기억 대신 검색으로 공급합니다.</td>
+<td>실제 검색 호출과 출처</td>
+</tr>
+<tr>
+<td>Optimizer</td>
+<td>좋은 후보는 제안이지 운영 승인이 아닙니다.</td>
+<td>서비스 작업 기록과 프롬프트 diff</td>
+</tr>
+<tr>
+<td>Tuning</td>
+<td>안정적인 행동 문제만 학습 대상으로 삼습니다.</td>
+<td>데이터 계보·접근 상태·학습 작업 상태</td>
+</tr>
+<tr>
+<td>최종 비교</td>
+<td>본 적 없는 질문에서 같은 기준으로 비교합니다.</td>
+<td>paired holdout 보고서</td>
+</tr>
+<tr>
+<td>운영</td>
+<td>다음 실패가 다음 평가 데이터가 됩니다.</td>
+<td>추적·담당자·회귀 사례</td>
+</tr>
+<tr>
+<td>종료</td>
+<td>공유 리소스는 건드리지 않고 내 작업만 정리합니다.</td>
+<td>삭제 대상 목록과 비용 확인</td>
+</tr>
+</tbody>
+</table>
+<p>설명은 5분 안쪽으로 하고, 매 구간마다 실제 증거를 하나씩 확인합니다. “이 버튼을 눌렀다”보다 “이 파일·화면이 무엇을 증명하는가”를 묻습니다.</p>
+<h2 id="제품과-실습-도구의-경계">제품과 실습 도구의 경계</h2>
+<p><code>python -m lab</code>는 이 패키지의 <strong>교육용 도구</strong>입니다. Azure CLI나 Microsoft 공식 명령이 아닙니다. 파일 이름, 상태 이름, 합성 정책, 수업용 통과 기준 역시 실습 설계입니다.</p>
+<p>Microsoft 제품 이름, 공개 API 계약, 지원 조건은 본문 출처를 기준으로 확인합니다. 이 도구가 출력하는 <code>PASS_FOR_WORKSHOP</code>는 Microsoft 인증·서비스 보증·운영 승인서가 아닙니다.</p>
+<p><code>prompts/candidate.txt</code>는 강사가 읽어 볼 수 있는 <strong>수작업 예시</strong>입니다. 공식 Optimizer가 만든 프롬프트가 아닙니다. 실제 서비스 작업에서 선택한 프롬프트와 섞지 않습니다.</p>
+<h2 id="결과가-좋아지지-않았을-때">결과가 좋아지지 않았을 때</h2>
+<p>결과를 고치지 말고 가설을 고칩니다.</p>
+<ul>
+<li>IQ를 추가했는데도 실패했다면 문서가 들어갔는지보다 <strong>필요한 문서가 실제 반환되었는지</strong> 확인합니다.</li>
+<li>Optimizer 후보가 dev에서는 좋아도 test에서 나쁘다면 과적합 또는 우연을 의심합니다.</li>
+<li>튜닝이 지연·토큰을 줄여도 중요한 거절·전달 동작이 나빠졌다면 채택하지 않습니다.</li>
+<li>judge와 사람이 다르게 판단하면 이유를 기록하고 rubric을 고정한 새 실험을 만듭니다. 기존 결과를 새 rubric 점수처럼 덮어쓰지 않습니다.</li>
+<li>test를 보고 수정했으면 해당 test는 더 이상 미노출 holdout이 아닙니다. 독립된 새 질문으로 다음 주기를 준비합니다.</li>
+</ul>
+<h2 id="고객의-다음-30일로-연결">고객의 다음 30일로 연결</h2>
+<table>
+<thead>
+<tr>
+<th>기간</th>
+<th>고객 팀의 행동</th>
+<th>남길 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1주차</td>
+<td>실제 업무의 대표 질문과 위험 경계를 합의</td>
+<td>업무 성공 기준·데이터 담당자</td>
+</tr>
+<tr>
+<td>2주차</td>
+<td>승인된 데이터로 기준선 수집·실패 분류</td>
+<td>실패 유형별 우선순위</td>
+</tr>
+<tr>
+<td>3주차</td>
+<td>가장 큰 실패 원인 한 가지 개선</td>
+<td>IQ 또는 지시 개선의 비교 증거</td>
+</tr>
+<tr>
+<td>4주차</td>
+<td>운영 감시·회귀 평가·변경 승인 정착</td>
+<td>주간 평가 회의와 변경 게이트</td>
+</tr>
+</tbody>
+</table>
+<p>목표는 서비스 호출 수를 억지로 늘리는 것이 아닙니다. <strong>운영 중인 에이전트마다 검증 가능한 개선 루프를 만드는 것</strong>입니다. 그 루프를 Foundry의 Agent, IQ, Evaluation, 최적화, Control Plane에 연결합니다.</p>
+<h2 id="이-패키지를-설계할-때-사용한-확장-프롬프트">이 패키지를 설계할 때 사용한 확장 프롬프트</h2>
+<p>아래 문장은 다른 산업 시나리오로 가이드를 확장할 때 재사용할 수 있습니다. 내부 추론 기록이 아니라, 사용자의 요구를 실행 가능한 제작 조건으로 정리한 브리프입니다.</p>
+<blockquote>
+<p>한국어 고객 대상 Microsoft Foundry 실습을 설계하라. 하나의 가상 고객지원 에이전트와 하나의 데이터 계약을 끝까지 유지하라. 평가의 의미부터 기준선, 실패 분석, Foundry IQ, 공식 Optimizer, Frontier Tuning의 실제 접근·학습 경로, 미노출 평가, Control Plane 운영, 자원 정리까지 연결하라.</p>
+<p>North Central US를 고정하고 리소스 위치·처리 위치·쿼터·테넌트 접근 권한을 구분하라. Preview와 비공개 기능의 지원 여부를 공식 자료로 확인하고, 일반 기능을 같은 브랜드의 실습으로 바꿔 부르지 마라.</p>
+<p>모든 실습 단계에 목적, 정확한 조작, 예상 산출물, 다음 단계로 넘어갈 조건, 대표적인 실패 복구를 제공하라. 실제 실행 결과와 설명용 예시를 명시적으로 분리하라. 데이터 분할, 프롬프트·모델·지식·평가기의 계보, 비용과 사람의 승인 경계를 남겨라.</p>
+<p>인터넷 없이도 읽을 수 있는 접근성 좋은 웹 가이드와 인쇄본, 합성 데이터, 실행 코드, 로컬 검사를 제공하라. 전문 에이전트로 독립적인 제품 조사·데이터 설계·화면 구현·평가 엔진·품질 검토를 수행하되, 결과는 하나의 일관된 경로로 통합하라. 막힌 기능은 성공으로 포장하지 말고 필요한 접근 조건과 재개 지점을 설명하라.</p>
+</blockquote>
+      </article>
+
+      <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 읽는 장의 완료 여부를 직접 기록하세요.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">이 장 완료 표시</button>
+      </section>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="장 이동" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 장</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
+      </nav>
+      <footer class="document-footer">
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-29">2026-09-29</time></p>
+        <div class="footer-links"><a href="print.html">전체 인쇄본</a><a href="#guide-start">처음으로 ↑</a></div>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="search-dialog" class="search-dialog" aria-labelledby="search-title" aria-describedby="search-help">
+    <div class="dialog-heading">
+      <div><p class="eyebrow">FIND IN GUIDE</p><h2 id="search-title">본문 검색</h2></div>
+      <button class="icon-button" type="button" data-search-close aria-label="검색 닫기">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <form id="guide-search-form" role="search" aria-label="가이드 본문">
+      <label for="search-input">찾을 내용</label>
+      <input id="search-input" type="search" placeholder="예: 지식 기반, 평가 지표, fine-tuning" autocomplete="off" spellcheck="false" aria-controls="search-results" aria-describedby="search-help search-status">
+      <p id="search-help">여러 단어를 띄어 쓰면 모두 포함된 위치를 찾습니다. 결과를 선택하면 해당 제목으로 이동합니다.</p>
+    </form>
+    <p id="search-status" class="search-status" role="status" aria-live="polite" aria-atomic="true">검색어를 입력하세요.</p>
+    <ol id="search-results" class="search-results"></ol>
+    <p class="dialog-footnote"><kbd>↓</kbd> 결과로 이동 <span aria-hidden="true">·</span> <kbd>Tab</kbd> 탐색 <span aria-hidden="true">·</span> <kbd>Esc</kbd> 닫기</p>
+  </dialog>
+
+  <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <p class="eyebrow">LEARNING RECORD</p>
+    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
+    <p id="reset-description">이 문서에서 표시한 모든 장의 완료 표시를 지웁니다. 다른 문서의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <form method="dialog" class="dialog-actions">
+      <button class="secondary-button" value="cancel" autofocus>취소</button>
+      <button class="danger-button" value="reset">완료 표시 초기화</button>
+    </form>
+  </dialog>
+  <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

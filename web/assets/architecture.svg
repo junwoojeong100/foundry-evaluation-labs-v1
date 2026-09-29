@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="830" viewBox="0 0 1200 830" role="img" aria-labelledby="architecture-title architecture-desc">
+  <title id="architecture-title">Foundry 에이전트, 지식, 평가와 운영 제어의 연결 구조</title>
+  <desc id="architecture-desc">사용자 요청을 처리하는 Foundry Agent는 Foundry IQ 지식 기반을 사용합니다. 지식 기반의 검색과 인덱스는 Azure AI Search가 뒷받침합니다. 에이전트 실행 결과와 추적을 평가 지표로 확인하고, 원인에 따라 Prompt optimizer 또는 지원 조건이 충족된 Frontier 모델 튜닝을 선택합니다. 개선 후보는 에이전트에 적용해 다시 평가합니다. Foundry Control Plane은 이 전 과정의 권한, 정책, 관찰과 추적을 관리합니다.</desc>
+  <defs>
+    <marker id="architecture-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10z" fill="#52708f"/></marker>
+    <marker id="architecture-return" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#096e69"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+      .title { fill: #192b43; font-size: 27px; font-weight: 750; }
+      .name { fill: #192b43; font-size: 23px; font-weight: 750; }
+      .label { fill: #304b65; font-size: 18px; }
+      .detail { fill: #52667e; font-size: 15px; }
+      .flow { fill: none; stroke: #52708f; stroke-width: 2.3; marker-end: url(#architecture-arrow); }
+      .return { fill: none; stroke: #096e69; stroke-width: 2; stroke-dasharray: 6 5; marker-end: url(#architecture-return); }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1198" height="828" rx="20" fill="#f7fafc" stroke="#dce4eb"/>
+  <text x="48" y="55" class="title">에이전트·지식·평가를 연결하는 구조</text>
+  <text x="48" y="89" fill="#52667e" font-size="17">지식 보완과 행동 개선은 서로 다른 경로입니다. 변경 후에는 실행 결과를 다시 검증합니다.</text>
+  <rect x="30" y="120" width="1140" height="638" rx="17" fill="#f0f5fb" stroke="#aebfd2" stroke-width="1.5" stroke-dasharray="7 5"/>
+  <text x="52" y="153" fill="#254767" font-size="20" font-weight="750">Foundry Control Plane</text>
+  <text x="345" y="153" fill="#52667e" font-size="16">권한 · 정책 · 관찰 · 추적</text>
+
+  <path d="M295 289H373" class="flow"/>
+  <text x="316" y="272" class="detail">요청</text>
+  <path d="M716 258H844" class="flow"/>
+  <text x="741" y="241" class="detail">지식 요청</text>
+  <path d="M857 306H729" class="flow"/>
+  <text x="738" y="330" class="detail">근거·검색 결과</text>
+  <path d="M992 414V353" class="flow"/>
+  <text x="1006" y="383" class="detail">검색·인덱스</text>
+  <path d="M551 360V412" class="flow"/>
+  <text x="567" y="399" class="detail">응답·호출·추적</text>
+  <path d="M460 555V586H242V612" class="flow"/>
+  <text x="281" y="608" class="detail">지침 개선</text>
+  <path d="M633 555V586H831V612" class="flow"/>
+  <text x="675" y="608" class="detail">행동 학습이 필요할 때</text>
+  <path d="M72 671H47V182H446V194" class="return"/>
+  <text x="146" y="174" fill="#096e69" font-size="14">후보 지침 → 재평가</text>
+  <path d="M1036 671H1145V182H663V194" class="return"/>
+  <text x="889" y="174" fill="#096e69" font-size="14">후보 모델 → 재평가</text>
+
+  <g>
+    <rect x="65" y="230" width="230" height="120" rx="12" fill="#fff" stroke="#c6d5e3"/>
+    <text x="87" y="274" class="name">사용자</text>
+    <text x="87" y="304" class="label">애플리케이션 · 요청</text>
+    <text x="87" y="329" class="detail">질문과 작업 목표</text>
+  </g>
+  <g>
+    <rect x="386" y="205" width="330" height="155" rx="13" fill="#192f49"/>
+    <text x="413" y="242" fill="#a5ded4" font-size="14" font-weight="700" letter-spacing="1">실행</text>
+    <text x="413" y="281" fill="#fff" font-size="27" font-weight="750">Foundry Agent</text>
+    <text x="413" y="314" fill="#e3edf9" font-size="18">모델 · 지침 · 도구 · 지식 사용</text>
+    <text x="413" y="339" fill="#bfcee0" font-size="15">사용자 요청에 따라 작업 수행</text>
+  </g>
+  <g>
+    <rect x="857" y="205" width="270" height="135" rx="12" fill="#e9f5f1" stroke="#a6cebf"/>
+    <text x="879" y="249" class="name">Foundry IQ</text>
+    <text x="879" y="280" class="label">지식 기반</text>
+    <text x="879" y="307" class="detail">관련 지식과 근거 제공</text>
+  </g>
+  <g>
+    <rect x="857" y="414" width="270" height="113" rx="12" fill="#fff" stroke="#c6d5e3"/>
+    <text x="879" y="457" class="name">Azure AI Search</text>
+    <text x="879" y="489" class="label">지식 기반의 검색·인덱스 계층</text>
+    <text x="879" y="511" class="detail">문서 · 검색 인덱스</text>
+  </g>
+  <g>
+    <rect x="386" y="425" width="330" height="130" rx="12" fill="#edf4ff" stroke="#abc4e5"/>
+    <text x="413" y="468" class="name">평가 · Metrics</text>
+    <text x="413" y="501" class="label">품질 · 안전 · 에이전트 지표</text>
+    <text x="413" y="529" class="detail">보류 평가셋과 실패 사례로 판단</text>
+  </g>
+  <g>
+    <rect x="72" y="625" width="340" height="92" rx="12" fill="#fff" stroke="#a6cebf"/>
+    <text x="95" y="663" class="name">Prompt optimizer</text>
+    <text x="95" y="693" class="label">평가 근거로 지침·프롬프트 개선</text>
+  </g>
+  <g>
+    <rect x="626" y="625" width="410" height="92" rx="12" fill="#fcf8ef" stroke="#c9ac77" stroke-dasharray="6 4"/>
+    <text x="649" y="663" class="name">Frontier 튜닝 · 조건부</text>
+    <text x="649" y="693" fill="#715329" font-size="15">모델·지역·권한·학습 방식이 지원될 때만 실행</text>
+  </g>
+  <text x="48" y="794" fill="#52667e" font-size="17">Control Plane은 전 과정의 권한·정책을 관리하고, 실행 추적과 운영 관찰을 지원합니다.</text>
+</svg>

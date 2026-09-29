@@ -1,0 +1,202 @@
+{
+  "counts": {
+    "dev": 12,
+    "test": 20,
+    "train": 56,
+    "validation": 12
+  },
+  "critical_counts": {
+    "dev": 4,
+    "test": 9,
+    "train": 13,
+    "validation": 3
+  },
+  "dataset": "contoso-atlas-cloud-ko-v1",
+  "documents": 8,
+  "exports": {
+    "data/optimizer/dev.jsonl": {
+      "purpose": "프롬프트 에이전트 Agent Optimizer 포털 평가 JSONL",
+      "rows": 12,
+      "sha256": "fdaf4260e8a2ad823375e5d03e990e1ecc24e4ed115e094166f5cb571ac5b233",
+      "source_splits": [
+        "dev"
+      ]
+    },
+    "data/splits/dev.jsonl": {
+      "purpose": "로컬 평가 사례",
+      "rows": 12,
+      "sha256": "2e134e76e31a1653c40b64df73c7a2be5e2ccaa640b5326f70a6e7b4ea63ce86",
+      "source_splits": [
+        "dev"
+      ]
+    },
+    "data/splits/test.jsonl": {
+      "purpose": "로컬 평가 사례",
+      "rows": 20,
+      "sha256": "cac21b873bf936266f575cc37f83bcd73031fe75943ef179628d3ff81cc7d1da",
+      "source_splits": [
+        "test"
+      ]
+    },
+    "data/splits/train.jsonl": {
+      "purpose": "로컬 평가 사례",
+      "rows": 56,
+      "sha256": "ac334df7f47fec1430405a6df00cef8405cb954825b15fdee375bbd2ec0665db",
+      "source_splits": [
+        "train"
+      ]
+    },
+    "data/splits/validation.jsonl": {
+      "purpose": "로컬 평가 사례",
+      "rows": 12,
+      "sha256": "16ab139a0d534f4446af531155a2ad5ba5207f35d65024090ab118a36861a7e3",
+      "source_splits": [
+        "validation"
+      ]
+    },
+    "data/tuning/sft-train.jsonl": {
+      "purpose": "지도 미세조정용 messages",
+      "rows": 56,
+      "sha256": "dee9fd3680f8b4fdd3c2f9087173cbf58b55bca37d976aa42ed37419a56b8040",
+      "source_splits": [
+        "train"
+      ]
+    },
+    "data/tuning/sft-validation.jsonl": {
+      "purpose": "지도 미세조정용 messages",
+      "rows": 12,
+      "sha256": "31dd31affa7e81e656e049497c2e00763a3cf6253f2bf7286d86d1b1029ad5d5",
+      "source_splits": [
+        "validation"
+      ]
+    }
+  },
+  "group_counts": {
+    "dev": 12,
+    "test": 20,
+    "train": 54,
+    "validation": 12
+  },
+  "holdout_checks": {
+    "optimizer_source_splits": [
+      "dev"
+    ],
+    "sft_source_splits": [
+      "train",
+      "validation"
+    ],
+    "test_ids_in_tuning_or_optimizer": 0,
+    "test_queries_in_tuning_or_optimizer": 0
+  },
+  "master_rows": 100,
+  "provenance": {
+    "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답",
+    "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아님",
+    "network_or_model_calls": false,
+    "optimizer_export": {
+      "agent_input_columns": [
+        "query"
+      ],
+      "authored_locally": true,
+      "column_mapping_supported": false,
+      "columns": [
+        "query",
+        "ground_truth",
+        "context"
+      ],
+      "evaluator_only_columns": [
+        "ground_truth",
+        "context"
+      ],
+      "lane": "prompt-agent-portal",
+      "query_includes_reference_context": false,
+      "schema_reference": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites",
+      "service": "Agent Optimizer"
+    },
+    "paraphrase_review": "상황·판단 과제별 수동 분리; 식별자 검사만으로 의미 중복을 보증하지 않음",
+    "performance_metrics": "포함하지 않음; 실제 평가를 별도로 실행해야 함"
+  },
+  "route_counts": {
+    "dev": {
+      "answer": 8,
+      "clarify": 2,
+      "escalate": 1,
+      "refuse": 1
+    },
+    "test": {
+      "answer": 12,
+      "clarify": 2,
+      "escalate": 3,
+      "refuse": 3
+    },
+    "train": {
+      "answer": 42,
+      "clarify": 3,
+      "escalate": 8,
+      "refuse": 3
+    },
+    "validation": {
+      "answer": 8,
+      "clarify": 2,
+      "escalate": 1,
+      "refuse": 1
+    }
+  },
+  "schema_version": 1,
+  "sources_sha256": {
+    "data/cases.jsonl": "0a9ff15f638a19b01b3204b91dde50ec7c6a1ad04c8ff2f46c93eb734913734b",
+    "data/knowledge/documents.json": "ece0354afaf28f1c0f42cfe926805c33d63eed5c478ee1b5899e0549bc63d004",
+    "prompts/baseline.txt": "4119e5248a12885ae1cae4e8b06d6bf2fdff16216caeb19995d7d455796ce806",
+    "prompts/candidate.txt": "569111f702af439fadc362ce3ff652e5b6b9eeb6b2d36c559bbfdc46339f69e0",
+    "prompts/rubric.txt": "7dae41b39c454ffda6a4ab27ced302d6c0c1d13cbc172564646cffb26e960b26",
+    "prompts/tuning-system.txt": "2444883642e190d27bcf4c4d893808618c0678760c0a33acf8bdf7453b0e2d2d"
+  },
+  "split_disjointness": {
+    "pairs": [
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "validation"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "dev"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "validation",
+        "normalized_query_overlap_count": 0,
+        "right": "dev"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "validation",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "dev",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      }
+    ],
+    "passed": true
+  },
+  "synthetic": true
+}

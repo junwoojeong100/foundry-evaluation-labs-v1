@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:foundry-workshop:response:v1",
+  "title": "Workshop agent response",
+  "description": "Exactly one unfenced JSON object. Citation IDs are lexical references, not proof of semantic groundedness. Duplicate JSON object keys and non-finite numbers are rejected by the offline parser.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer", "citations", "route", "needs_human"],
+  "properties": {
+    "answer": {"type": "string"},
+    "citations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "pattern": "\\S"}
+    },
+    "route": {"enum": ["answer", "clarify", "escalate", "refuse"]},
+    "needs_human": {"type": "boolean"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"route": {"const": "escalate"}}, "required": ["route"]},
+      "then": {"properties": {"needs_human": {"const": true}}},
+      "else": {"properties": {"needs_human": {"const": false}}}
+    }
+  ]
+}

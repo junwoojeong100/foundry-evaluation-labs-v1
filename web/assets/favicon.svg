@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="favicon-title">
+  <title id="favicon-title">Foundry 실습 가이드</title>
+  <rect width="32" height="32" rx="7" fill="#192b43"/>
+  <path d="M8 25V7h17M8 16h12" fill="none" stroke="#a5e1d5" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="24" cy="24" r="3.5" fill="none" stroke="#a5e1d5" stroke-width="2.5"/>
+</svg>

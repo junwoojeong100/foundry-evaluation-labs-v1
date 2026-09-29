@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680" role="img" aria-labelledby="loop-title loop-desc">
+  <title id="loop-title">정의부터 운영 데이터 피드백까지 이어지는 학습 루프</title>
+  <desc id="loop-desc">Define에서 목표와 평가 기준을 정하고, Build에서 에이전트와 지식을 연결합니다. Evaluate에서 측정하고 Analyze에서 실패 원인을 나눕니다. Optimize 또는 Tune으로 개선한 뒤 Operate에서 운영합니다. 운영 데이터와 실패 사례는 다음 정의와 데이터 보완에 반영합니다. 학습 데이터와 보류 평가셋은 분리합니다.</desc>
+  <defs>
+    <marker id="loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#52708f"/></marker>
+    <marker id="feedback-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10z" fill="#096e69"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+      .title { fill: #192b43; font-size: 27px; font-weight: 750; }
+      .subtitle { fill: #52667e; font-size: 17px; }
+      .name { fill: #192b43; font-size: 25px; font-weight: 750; }
+      .label { fill: #304b65; font-size: 18px; }
+      .detail { fill: #52667e; font-size: 15px; }
+      .number { fill: #096e69; font-size: 14px; font-weight: 750; letter-spacing: 1px; }
+      .flow { fill: none; stroke: #52708f; stroke-width: 2.5; marker-end: url(#loop-arrow); }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1118" height="678" rx="20" fill="#f7fafc" stroke="#dce4eb"/>
+  <text x="48" y="57" class="title">평가를 중심으로 이어지는 학습 루프</text>
+  <text x="48" y="92" class="subtitle">한 번의 구현으로 끝내지 않고, 관찰한 근거를 다음 개선에 연결합니다.</text>
+
+  <path d="M344 227H401M704 227H761M919 296V389M774 473H717M414 473H357" class="flow"/>
+  <text x="939" y="351" class="detail">측정 결과</text>
+
+  <g>
+    <rect x="54" y="156" width="290" height="140" rx="13" fill="#fff" stroke="#cbd9e4"/>
+    <text x="75" y="187" class="number">01 · 정의</text>
+    <text x="75" y="226" class="name">Define</text>
+    <text x="75" y="256" class="label">목표와 성공 기준을 정하기</text>
+    <text x="75" y="279" class="detail">사용 사례 · 평가 기준 · 보류 평가셋</text>
+  </g>
+  <g>
+    <rect x="414" y="156" width="290" height="140" rx="13" fill="#fff" stroke="#cbd9e4"/>
+    <text x="435" y="187" class="number">02 · 구현</text>
+    <text x="435" y="226" class="name">Build</text>
+    <text x="435" y="256" class="label">에이전트의 실행 경로 만들기</text>
+    <text x="435" y="279" class="detail">모델 · 도구 · 지식 연결</text>
+  </g>
+  <g>
+    <rect x="774" y="156" width="290" height="140" rx="13" fill="#edf4ff" stroke="#afc8e6"/>
+    <text x="795" y="187" class="number">03 · 평가</text>
+    <text x="795" y="226" class="name">Evaluate</text>
+    <text x="795" y="256" class="label">같은 조건에서 품질 측정하기</text>
+    <text x="795" y="279" class="detail">품질 · 안전 · 에이전트 동작</text>
+  </g>
+  <g>
+    <rect x="774" y="402" width="290" height="140" rx="13" fill="#fff" stroke="#cbd9e4"/>
+    <text x="795" y="433" class="number">04 · 분석</text>
+    <text x="795" y="472" class="name">Analyze</text>
+    <text x="795" y="502" class="label">실패 사례와 원인 구분하기</text>
+    <text x="795" y="525" class="detail">지식 부족 · 지침 문제 · 행동 패턴</text>
+  </g>
+  <g>
+    <rect x="414" y="402" width="290" height="140" rx="13" fill="#eaf5f1" stroke="#a9d2c7"/>
+    <text x="435" y="433" class="number">05 · 개선</text>
+    <text x="435" y="472" class="name">Optimize / Tune</text>
+    <text x="435" y="502" class="label">원인에 맞는 대상만 바꾸기</text>
+    <text x="435" y="525" class="detail">지식 · 프롬프트 · 조건부 모델 튜닝</text>
+  </g>
+  <g>
+    <rect x="54" y="402" width="290" height="140" rx="13" fill="#fff" stroke="#cbd9e4"/>
+    <text x="75" y="433" class="number">06 · 운영</text>
+    <text x="75" y="472" class="name">Operate</text>
+    <text x="75" y="502" class="label">검증한 변경을 운영에 반영하기</text>
+    <text x="75" y="525" class="detail">추적 · 모니터링 · 품질 관리</text>
+  </g>
+
+  <path d="M199 542V601H28V226H46" fill="none" stroke="#096e69" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#feedback-arrow)"/>
+  <path d="M199 601H352" fill="none" stroke="#096e69" stroke-width="2" stroke-dasharray="7 6"/>
+  <rect x="352" y="579" width="712" height="44" rx="10" fill="#eaf5f1" stroke="#bdded3"/>
+  <text x="372" y="607" fill="#075e59" font-size="17" font-weight="650">데이터 피드백 · 운영 데이터와 실패 사례를 다음 정의·데이터 보완에 반영</text>
+  <text x="54" y="653" class="detail">학습·개선에 쓰는 데이터와 최종 보류 평가셋은 분리합니다. 개선 후보는 운영 반영 전에 다시 평가합니다.</text>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="830" viewBox="0 0 1120 830" role="img" aria-labelledby="decision-title decision-desc">
+  <title id="decision-title">실패 원인에 따라 IQ, 프롬프트 최적화, 미세 조정을 선택하는 의사결정 지도</title>
+  <desc id="decision-desc">평가와 실행 추적으로 실패 사례를 분석합니다. 지식이 부족하거나 최신성이 문제라면 Foundry IQ로 지식과 검색을 보완합니다. 지침이나 작업 순서가 모호하다면 Prompt optimizer로 프롬프트를 개선합니다. 반복되는 행동을 안정적으로 학습해야 한다면 지원 조건과 데이터 품질을 확인한 후 fine-tuning을 검토합니다. 세 경로 모두 학습에 사용하지 않은 보류 평가셋으로 돌아가 변경 전후를 비교합니다.</desc>
+  <defs>
+    <marker id="decision-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10z" fill="#52708f"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+      .title { fill: #192b43; font-size: 27px; font-weight: 750; }
+      .name { fill: #192b43; font-size: 24px; font-weight: 750; }
+      .question { fill: #233d58; font-size: 20px; font-weight: 700; }
+      .label { fill: #304b65; font-size: 18px; }
+      .detail { fill: #52667e; font-size: 15px; }
+      .flow { fill: none; stroke: #52708f; stroke-width: 2.3; marker-end: url(#decision-arrow); }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1118" height="828" rx="20" fill="#f7fafc" stroke="#dce4eb"/>
+  <text x="48" y="55" class="title">실패 원인에 맞는 개선 경로</text>
+  <text x="48" y="90" fill="#52667e" font-size="17">먼저 사례를 확인하고, 바꿀 대상을 최소화합니다. 도구 선택보다 원인 구분이 먼저입니다.</text>
+
+  <rect x="370" y="126" width="380" height="98" rx="13" fill="#192f49"/>
+  <text x="560" y="166" fill="#fff" font-size="24" font-weight="750" text-anchor="middle">실패 사례 분석</text>
+  <text x="560" y="198" fill="#d4e2f4" font-size="17" text-anchor="middle">보류 평가와 실행 추적으로 원인 확인</text>
+  <path d="M560 224V251H200V278M560 251V278M560 251H920V278" class="flow"/>
+
+  <g>
+    <rect x="45" y="291" width="310" height="118" rx="12" fill="#fff" stroke="#c6d5e3"/>
+    <text x="67" y="328" class="question">지식이 없거나</text>
+    <text x="67" y="356" class="question">최신성이 부족한가?</text>
+    <text x="67" y="386" class="detail">사실 · 근거 · 검색 범위의 문제</text>
+  </g>
+  <g>
+    <rect x="405" y="291" width="310" height="118" rx="12" fill="#fff" stroke="#c6d5e3"/>
+    <text x="427" y="328" class="question">지침이나 작업 순서가</text>
+    <text x="427" y="356" class="question">모호한가?</text>
+    <text x="427" y="386" class="detail">명세 · 출력 형식 · 도구 선택 문제</text>
+  </g>
+  <g>
+    <rect x="765" y="291" width="310" height="118" rx="12" fill="#fff" stroke="#c6d5e3"/>
+    <text x="787" y="328" class="question">안정적인 행동 학습이</text>
+    <text x="787" y="356" class="question">필요한가?</text>
+    <text x="787" y="386" class="detail">반복되는 패턴 · 일관성의 문제</text>
+  </g>
+  <path d="M200 409V459M560 409V459M920 409V459" class="flow"/>
+
+  <g>
+    <rect x="45" y="472" width="310" height="132" rx="12" fill="#e9f5f1" stroke="#a6cebf"/>
+    <text x="67" y="514" class="name">Foundry IQ</text>
+    <text x="67" y="546" class="label">지식·검색을 보완</text>
+    <text x="67" y="579" class="detail">문서 품질 · 색인 · 권한 점검</text>
+  </g>
+  <g>
+    <rect x="405" y="472" width="310" height="132" rx="12" fill="#edf4ff" stroke="#abc4e5"/>
+    <text x="427" y="514" class="name">Prompt optimizer</text>
+    <text x="427" y="546" class="label">지침·프롬프트를 개선</text>
+    <text x="427" y="579" class="detail">실패 사례와 평가 기준 사용</text>
+  </g>
+  <g>
+    <rect x="765" y="472" width="310" height="132" rx="12" fill="#fcf8ef" stroke="#c9ac77" stroke-dasharray="6 4"/>
+    <text x="787" y="514" class="name">Fine-tuning</text>
+    <text x="976" y="511" fill="#715329" font-size="14" font-weight="750">조건부</text>
+    <text x="787" y="546" class="label">학습 데이터로 행동 조정</text>
+    <text x="787" y="579" class="detail">지원 조건 · 데이터 품질 확인</text>
+  </g>
+  <path d="M200 604V647H490V683M560 604V683M920 604V647H630V683" class="flow"/>
+
+  <rect x="338" y="696" width="444" height="90" rx="13" fill="#fff" stroke="#8bafc7" stroke-width="1.5"/>
+  <text x="560" y="733" fill="#192b43" font-size="24" font-weight="750" text-anchor="middle">Held-out evaluation</text>
+  <text x="560" y="765" fill="#304b65" font-size="17" text-anchor="middle">학습에 쓰지 않은 평가셋으로 변경 전후 비교</text>
+  <text x="48" y="813" class="detail">모든 개선 경로는 재평가로 돌아옵니다. 품질·안전·비용을 확인한 뒤 채택 여부를 결정합니다.</text>
+</svg>
