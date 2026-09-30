@@ -18,9 +18,8 @@ if __package__:
 else:
     import build_guide as guide
 
-BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide", "english")
+BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide")
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
-BOOK_TITLE = "Foundry 학습 루프 실습 · 통합 인쇄본"
 
 
 class _Anchors(HTMLParser):
@@ -54,6 +53,7 @@ class _BookContent(guide.HtmlRewriter):
         self.anchors = anchors
         self.documents = documents
         self.output_base = output_base
+        self.text = guide.locale(document.language)["book"]
         self.links: list[str | None] = []
 
     def _target(self, document: guide.Document, fragment: str) -> str:
@@ -77,7 +77,7 @@ class _BookContent(guide.HtmlRewriter):
         document = self.documents.get(path)
         if document:
             return self._target(document, parsed.fragment), None
-        label = path if path != "." else "패키지 루트"
+        label = path if path != "." else self.text["PACKAGE_ROOT"]
         if parsed.fragment:
             label += "#" + unquote(parsed.fragment)
         return None, label
@@ -118,21 +118,27 @@ class _BookContent(guide.HtmlRewriter):
             label = self.links.pop() if self.links else None
             if label is not None:
                 self.parts.append(
-                    f'<span class="book-file-label"> (파일: <code>{html.escape(label)}</code>)</span></span>'
+                    f'<span class="book-file-label"> ({self.text["FILE_LABEL"]}: <code>{html.escape(label)}</code>)</span></span>'
                 )
                 return
         super().handle_endtag(tag)
 
 
 def render_book(
-    sources: Mapping[str, str], template: str, *, output_base: str = guide.SITE_DIRECTORY
+    sources: Mapping[str, str], template: str, *,
+    output_base: str | None = None, language: str = "en",
 ) -> str:
     """Assemble all source documents with book-local IDs and portable links."""
     guide.require_sources(sources)
-    specifications = {document.key: document for document in guide.DOCUMENTS}
+    text = guide.locale(language)["book"]
+    if output_base is None:
+        output_base = posixpath.dirname(
+            posixpath.join(guide.SITE_DIRECTORY, guide.localized_filename("print.html", language))
+        )
+    specifications = {document.key: document for document in guide.documents_for(language)}
     documents = {
         path: document
-        for document in guide.DOCUMENTS
+        for document in guide.documents_for(language)
         for path in (
             document.source, document.output,
             posixpath.join(guide.SITE_DIRECTORY, document.output),
@@ -147,6 +153,7 @@ def render_book(
             relative_base=posixpath.dirname(document.source),
             link_map=guide.DOCUMENT_LINKS,
             output_base=output_base,
+            language=language,
         )
         rendered[key] = part
         parser = _Anchors(document.source)
@@ -160,10 +167,10 @@ def render_book(
         parser = _BookContent(document, anchors, documents, output_base)
         parser.feed(rendered[key].content)
         parser.close()
-        label = document.label if index == 0 else f"부록 {index} · {document.label}"
+        label = document.label if index == 0 else f'{text["APPENDIX"]} {index} · {document.label}'
         section_class = "book-section guide-content" + (" book-appendix" if index else "")
         sections.append(
-            f'<section id="{_anchor(document)}" class="{section_class}" lang="{"en" if key == "english" else "ko"}" aria-label="{html.escape(label)}">\n'
+            f'<section id="{_anchor(document)}" class="{section_class}" lang="{language}" aria-label="{html.escape(label)}">\n'
             f'<p class="book-part-label">{html.escape(label)}</p>\n'
             + "".join(parser.parts)
             + "\n</section>"
@@ -173,11 +180,17 @@ def render_book(
     return guide.fill_template(
         template,
         {
-            "TITLE": BOOK_TITLE,
+            **{key: html.escape(value, quote=True) for key, value in text.items()},
+            "CONTENT_LANGUAGE": language,
+            "LANGUAGE_NAV_LABEL": guide.locale(language)["shell"]["LANGUAGE_NAV_LABEL"],
+            "LANGUAGE_LINKS": guide.language_links("print.html", language, output_base),
             "BUILD_DATE": guide.BUILD_DATE,
             "WEB_PATH": html.escape(guide.output_relative("web", output_base), quote=True),
             "HOME_HREF": html.escape(
-                guide.output_relative(posixpath.join(guide.SITE_DIRECTORY, "index.html"), output_base),
+                guide.output_relative(
+                    posixpath.join(guide.SITE_DIRECTORY, guide.localized_filename("index.html", language)),
+                    output_base,
+                ),
                 quote=True,
             ),
             "CONTENT": "\n".join(sections),
@@ -189,14 +202,18 @@ def render_book(
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="필수 문서를 모아 통합 인쇄본 HTML을 만듭니다. PDF는 생성하지 않습니다.")
-    parser.add_argument("--output", type=Path, default=guide.PROJECT_ROOT / guide.SITE_DIRECTORY / "print.html")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--language", choices=guide.LANGUAGES, default="en")
     parser.add_argument("--template", type=Path, default=guide.PROJECT_ROOT / "web" / "print-template.html")
     parser.add_argument("--check", action="store_true", help="파일을 쓰지 않고 인쇄본의 최신 상태 확인")
     args = parser.parse_args(argv)
+    if args.output is None:
+        args.output = guide.PROJECT_ROOT / guide.SITE_DIRECTORY / guide.localized_filename("print.html", args.language)
     try:
         rendered = render_book(
             guide.read_sources(), args.template.read_text(encoding="utf-8"),
             output_base=os.path.relpath(args.output.resolve().parent, guide.PROJECT_ROOT).replace(os.sep, "/"),
+            language=args.language,
         )
         return guide.check_or_write({args.output: rendered}, check=args.check)
     except (OSError, ValueError) as error:

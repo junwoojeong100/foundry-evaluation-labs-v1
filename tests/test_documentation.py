@@ -12,11 +12,12 @@ from urllib.parse import unquote, urlsplit
 
 from lab.cli import parser as lab_parser
 from lab.sft import parser as sft_parser
+from scripts.build_guide import DOCUMENTS, SITE_URL, documents_for
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "docs"
-PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "english.html", "print.html")
+PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "print.html", "ko/print.html")
 
 
 class LinkParser(HTMLParser):
@@ -145,17 +146,46 @@ class PortalFigureParser(HTMLParser):
             self.current = None
 
 
+class ArticleTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.in_article = False
+        self.in_code = False
+        self.text = []
+        self.alt = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "article" and attrs.get("id") == "guide-start":
+            self.in_article = True
+        if self.in_article and tag == "pre":
+            self.in_code = True
+        if self.in_article and tag == "img":
+            self.alt.append(attrs.get("alt", ""))
+
+    def handle_endtag(self, tag):
+        if tag == "pre":
+            self.in_code = False
+        if tag == "article":
+            self.in_article = False
+
+    def handle_data(self, data):
+        if self.in_article and not self.in_code:
+            self.text.append(data)
+
+
 class DocumentationTests(unittest.TestCase):
     def test_generated_files_are_grouped_behind_a_small_root_entry(self):
         self.assertEqual({path.name for path in ROOT.glob("*.html")}, {"index.html"})
         self.assertFalse(list(ROOT.glob("*.pdf")))
-        for name in (*PAGES, "Foundry-Learning-Loop-Lab-KO.pdf"):
+        for name in (*PAGES, "Foundry-Learning-Loop-Lab-EN.pdf", "Foundry-Learning-Loop-Lab-KO.pdf"):
             self.assertTrue((SITE / name).is_file(), name)
         entry = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('"docs/index.html" + window.location.search + window.location.hash', entry)
         self.assertIn('<noscript><meta http-equiv="refresh"', entry)
         self.assertIn('href="docs/index.html"', entry)
         self.assertNotIn('class="guide-content"', entry)
+        self.assertIn('<html lang="en">', entry)
 
     def test_only_the_latest_verification_and_current_guides_are_retained(self):
         evidence = ROOT / "evidence"
@@ -165,7 +195,7 @@ class DocumentationTests(unittest.TestCase):
         )
         latest = json.loads((evidence / "latest.json").read_text(encoding="utf-8"))
         self.assertEqual(latest["schema_version"], 1)
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.en.md", "README.ko.md"):
             self.assertIn("evidence/latest.json", (ROOT / name).read_text(encoding="utf-8"))
         self.assertFalse((ROOT / "guide/integration-migration.md").exists())
         self.assertFalse((ROOT / "migration.html").exists())
@@ -173,7 +203,7 @@ class DocumentationTests(unittest.TestCase):
     def test_pages_entry_uses_the_public_static_project_site(self):
         url = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
         self.assertTrue((ROOT / ".nojekyll").is_file())
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ko.md"):
             source = (ROOT / name).read_text(encoding="utf-8")
             self.assertIn(f"{url}#start", source)
             self.assertIn(".nojekyll", source)
@@ -243,7 +273,7 @@ class DocumentationTests(unittest.TestCase):
                 self.assertGreater(len(image["alt"]), 20)
                 self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
                 self.assertIn(image["src"], figure["links"])
-                self.assertIn("원본 크기로 보기", figure["caption"])
+                self.assertIn("View full-size image", figure["caption"])
                 self.assertGreater(len(figure["caption"]), 80)
         book = PortalFigureParser()
         book.feed((SITE / "print.html").read_text(encoding="utf-8"))
@@ -269,8 +299,9 @@ class DocumentationTests(unittest.TestCase):
 
     def test_guide_version_labels_are_v1_without_rewriting_judge_history(self):
         sources = [
-            ROOT / "README.md", ROOT / "README.en.md", ROOT / "data/README.md",
-            ROOT / "infra/README.md", *(ROOT / "guide").glob("*.md"),
+            ROOT / "README.md", ROOT / "README.en.md", ROOT / "README.ko.md",
+            ROOT / "data/README.md", ROOT / "data/README.en.md",
+            ROOT / "infra/README.md", *(ROOT / "guide").rglob("*.md"),
         ]
         for path in [*sources, *(SITE / name for name in PAGES)]:
             with self.subTest(document=path.name):
@@ -523,7 +554,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_workshop_cli_commands_in_markdown_are_parseable(self):
         checked = 0
-        for path in (ROOT / "guide").glob("*.md"):
+        for path in (ROOT / "guide").rglob("*.md"):
             source = path.read_text(encoding="utf-8")
             for block in re.findall(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL):
                 for line in block.replace("\\\n", " ").splitlines():
@@ -546,6 +577,83 @@ class DocumentationTests(unittest.TestCase):
                             self.assertEqual(exc.code, 0, f"Documented CLI syntax is invalid: {line}")
                     checked += 1
         self.assertGreaterEqual(checked, 40)
+
+    def test_complete_translations_preserve_all_sections_and_code_examples(self):
+        english = {document.key: document for document in documents_for("en")}
+        self.assertEqual(set(english), {document.key for document in documents_for("ko")})
+        for korean in documents_for("ko"):
+            with self.subTest(document=korean.key):
+                counterpart = english[korean.key]
+                en_source = (ROOT / counterpart.source).read_text(encoding="utf-8")
+                ko_source = (ROOT / korean.source).read_text(encoding="utf-8")
+                blocks = r"```(\w+)\s*\n(.*?)```"
+                self.assertEqual(
+                    re.findall(blocks, en_source, re.DOTALL),
+                    re.findall(blocks, ko_source, re.DOTALL),
+                )
+                en_page, ko_page = LearningPathParser(), LearningPathParser()
+                en_page.feed((SITE / counterpart.output).read_text(encoding="utf-8"))
+                ko_page.feed((SITE / korean.output).read_text(encoding="utf-8"))
+                self.assertEqual(en_page.ids, ko_page.ids)
+                self.assertEqual(en_page.chapters, ko_page.chapters)
+                self.assertEqual(en_page.subchapters, ko_page.subchapters)
+                self.assertEqual(en_page.sharing_checkpoints, ko_page.sharing_checkpoints)
+                self.assertEqual(en_page.next_links, ko_page.next_links)
+
+    def test_english_prose_and_image_descriptions_are_translated_not_just_the_shell(self):
+        originals = {
+            document.key: (ROOT / document.source).read_text(encoding="utf-8")
+            for document in documents_for("ko")
+        }
+        for document in documents_for("en"):
+            with self.subTest(document=document.key):
+                page = ArticleTextParser()
+                page.feed((SITE / document.output).read_text(encoding="utf-8"))
+                text = "".join(page.text)
+                self.assertGreater(len(text), 2000)
+                self.assertNotRegex(text + "".join(page.alt), r"[가-힣]")
+                if "HOLD" in originals[document.key]:
+                    self.assertIn("HOLD", text)
+
+    def test_language_links_are_reciprocal_and_each_page_declares_its_language(self):
+        pages = [(document.output, document.language) for document in DOCUMENTS]
+        pages += [("print.html", "en"), ("ko/print.html", "ko")]
+        for output, language in pages:
+            with self.subTest(page=output):
+                path = SITE / output
+                rendered = path.read_text(encoding="utf-8")
+                self.assertIn(f'<html lang="{language}">', rendered)
+                links = re.findall(
+                    r'<a href="([^"]+)" lang="(en|ko)" hreflang="\2" data-language-link([^>]*)>',
+                    rendered,
+                )
+                self.assertEqual(len(links), 2)
+                for href, code, attributes in links:
+                    prefix = "ko/" if code == "ko" else ""
+                    self.assertEqual((path.parent / href).resolve(), SITE / prefix / path.name)
+                    self.assertEqual('aria-current="page"' in attributes, code == language)
+                if path.name != "print.html":
+                    self.assertIn(f'rel="canonical" href="{SITE_URL}docs/{output}"', rendered)
+                    self.assertIn(f'hreflang="x-default" href="{SITE_URL}docs/{path.name}"', rendered)
+                    self.assertIn(
+                        f'Foundry-Learning-Loop-Lab-{language.upper()}.pdf', rendered
+                    )
+
+    def test_all_readme_html_links_open_published_pages(self):
+        for name in ("README.md", "README.en.md", "README.ko.md"):
+            source = (ROOT / name).read_text(encoding="utf-8")
+            links = re.findall(r"\]\(([^)\s]+\.html[^)\s]*)\)", source)
+            self.assertTrue(links)
+            for href in links:
+                with self.subTest(readme=name, href=href):
+                    self.assertTrue(href.startswith(SITE_URL), href)
+                    relative = urlsplit(href.removeprefix(SITE_URL)).path
+                    self.assertTrue((ROOT / relative).is_file(), relative)
+        for name in ("README.md", "README.ko.md"):
+            source = (ROOT / name).read_text(encoding="utf-8")
+            for output in PAGES:
+                if output != "english.html":
+                    self.assertIn(SITE_URL + "docs/" + output, source)
 
 
 if __name__ == "__main__":

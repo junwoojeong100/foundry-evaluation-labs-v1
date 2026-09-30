@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "scope": "Generated guide layout and distribution; no new Azure execution.",
+  "scope": "English-first bilingual guide content, navigation, PDF, and offline distribution; no new Azure execution.",
   "new_azure_calls": false,
   "last_known_live_result": {
     "reported_date": "2026-09-30",
@@ -22,25 +22,26 @@
       "test_demo",
       "test_live_summary"
     ],
-    "count": 105,
+    "count": 114,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
-  "verified_at": "2026-09-30T09:46:12.695100+00:00",
+  "verified_at": "2026-09-30T10:32:50.802572+00:00",
   "layout": {
     "root_files": [
       ".env.example",
       ".gitignore",
       ".nojekyll",
       "README.en.md",
+      "README.ko.md",
       "README.md",
       "index.html",
       "pyproject.toml",
       "requirements-verification.lock",
       "requirements.lock"
     ],
-    "root_file_count": 9,
+    "root_file_count": 10,
     "generated_directory": "docs",
     "root_entry": "index.html",
     "guide_entry": "docs/index.html",
@@ -48,108 +49,149 @@
   },
   "html": {
     "pages": [
-      "index.html",
-      "docs/index.html",
-      "docs/facilitator.html",
       "docs/admin.html",
-      "docs/sft.html",
-      "docs/verification.html",
       "docs/data-guide.html",
       "docs/english.html",
-      "docs/print.html"
+      "docs/facilitator.html",
+      "docs/index.html",
+      "docs/ko/admin.html",
+      "docs/ko/data-guide.html",
+      "docs/ko/facilitator.html",
+      "docs/ko/index.html",
+      "docs/ko/print.html",
+      "docs/ko/sft.html",
+      "docs/ko/verification.html",
+      "docs/print.html",
+      "docs/sft.html",
+      "docs/verification.html",
+      "index.html"
     ],
     "sha256": {
-      "index.html": "f11f08f98292c79608500d8e49e65e1d2beb8875ceffb2024ffeaba6329fc603",
-      "docs/index.html": "f4abfcf93fda494058f93ede77bce72bde617616529c25b66bfc63d6004aedb8",
-      "docs/facilitator.html": "2652a66fe3e7c6f87ba5b06c4c883546f1f20385dc504c7ebc5eef4a157c9edf",
-      "docs/admin.html": "969df8724b920fdb35580e9ece454bcbd5872e2f049105be90f8d9c4142674ca",
-      "docs/sft.html": "62049099a0942e9b1141723fb03e9436d83593710e6b5ce4c549b949dac0746d",
-      "docs/verification.html": "37cb4dcd299a65758e9afde187c36def5d9c239a13f676dd109d7053d393fb37",
-      "docs/data-guide.html": "402e5d121aa9460654000014fdcc6d6d6e93938eb01bf3f5472a4861bc39219e",
-      "docs/english.html": "57eb03b598b4e40ea712851cd5d5e82c3a23f63f78100c515e7ff42053d2237c",
-      "docs/print.html": "ae96636449b6f0ffb55402977187c810fb76f220800175684a32ce7a7a863f96"
+      "docs/admin.html": "94f39a87e01603cfd7c4203e1e773d6d4f671f339899f21254bb2f62228d8776",
+      "docs/data-guide.html": "c0c3c41553f878762ca33e30009ed5aa80554bef49deec1b2fcf021083243b29",
+      "docs/english.html": "0174e93a4de5ecc9366ff321fc15a42c37a840b3500f6c0e9b88f5a5205645b6",
+      "docs/facilitator.html": "c94b14778cd91a788e3744f59b482d6328279b7b2d004b1d0b51258012b3f448",
+      "docs/index.html": "9a7ac3113e600525bff9e503f0f146a6bac2fbcbe9001762811a3c1d6725ae75",
+      "docs/ko/admin.html": "09bd89550b401fc72943741088daffb15841788ac1cfe019246cd548f4bcca49",
+      "docs/ko/data-guide.html": "e571393123500767c0b5ea1c98378d531de4cc50d795b0dea05ac5c39b9291fd",
+      "docs/ko/facilitator.html": "9f3e4b059222d3f73900df0deb8b8d278815835f26749c5ed6df637fc5f13521",
+      "docs/ko/index.html": "b88301a9a4e3e53d380dc2055a5408ec573a0cc6f924701c2b0f947ab71496ac",
+      "docs/ko/print.html": "34fc0c78c545768d1bf36d82e4590bb6971952969b2ad46eb904c46f31ab467e",
+      "docs/ko/sft.html": "60b8d20af151e5dc60c2a72297c2261e7377f038229f7ec721815d1d2c5cb81b",
+      "docs/ko/verification.html": "e506966abb060828b06f05f693c99f8f2d4f2093593f8f6acc464fbc12f4429d",
+      "docs/print.html": "53efd5faeee65ea9abac13661ba57845da670609921dad02869216e8b6b01264",
+      "docs/sft.html": "ac54ef6b77fa38b56d0e63c97268042675490e99d0d510b1e06939c15c45742d",
+      "docs/verification.html": "7af73d9faabc6914f953cca64acc3984828dc4b07af774f351a6ad832483841e",
+      "index.html": "5b2d6f0358fd6cee3028422c249a907dc82feed7b9c775d9b40066dbacf3b385"
+    },
+    "assets_sha256": {
+      "web/styles.css": "98f0876b9b19366e6135fe0f25c142b0b5b20e1b001b9f3266ceb8f62a2075b8",
+      "web/app.js": "576799fb43a8dd1a3451579c83f6218aab633614e4d1422380fed2892d9b670c",
+      "web/theme.js": "bee47defa55575e3e1c7d53c8bddcbabf4ca3d997012fb08d6854991bd3dc39c",
+      "web/locales.json": "d0254f1eab0637da82d8d5e66fec9fab0188fcc0ee28c7a5eb3de3cef6cfbbc5"
     }
   },
   "browser": {
     "status": "PASS",
     "engine": "playwright-headless",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "english_default_with_korean_browser_locale": true,
     "root_query_fragment_preserved": true,
-    "explicit_index_redirect": true,
+    "language_query_fragment_preserved": true,
+    "manually_scrolled_section_preserved": true,
+    "shared_reading_progress": true,
+    "shared_theme": true,
     "no_javascript_fallback": true,
-    "document_id_preserved": "index.html",
+    "clipboard_exact": true,
+    "section_print_restored": true,
+    "explicit_localized_storage_errors": true,
+    "mobile_navigation": true,
+    "keyboard_navigation": true,
+    "legacy_english_redirect": true,
     "participant_steps": 6,
     "total_portal_photos": 14,
     "viewports": [
       1440,
-      390
+      1024,
+      768,
+      480,
+      390,
+      375,
+      320
     ],
     "themes": [
       "light",
       "dark"
     ],
     "horizontal_overflow": false,
-    "mobile_navigation": true,
-    "verification_links": [
-      "../evidence/latest.json"
-    ],
-    "print_scripts": 0,
-    "print_local_links": 0
+    "full_guide_page_viewports": 28,
+    "responsive_header_checks": 12,
+    "unbroken_step_number_checks": 4,
+    "unobscured_section_headings": true,
+    "javascript_errors": [],
+    "failed_local_requests": [],
+    "print_scripts": 0
   },
   "pdf": {
-    "file": "Foundry-Learning-Loop-Lab-KO.pdf",
-    "sha256": "e5355b96c615222a7005f85214cdc95f017dbd5d832a9bfc8fee8f21234830b5",
-    "pages": 82,
-    "bytes": 4378354,
-    "korean_characters": 43896,
-    "minimum_page_characters": 234,
+    "file": "Foundry-Learning-Loop-Lab-EN.pdf",
+    "language": "en",
+    "sha256": "4722f5cef3a0384200092a13eff2712424c2a13fde4df0641d6f1750b766f5b4",
+    "pages": 91,
+    "bytes": 4288641,
+    "korean_characters": 346,
+    "latin_characters": 141396,
+    "minimum_page_characters": 285,
     "missing_required_text": [],
     "almost_empty_pages": [],
     "local_machine_links": [],
     "out_of_page_text": [],
     "status": "PASS",
-    "path": "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+    "path": "docs/Foundry-Learning-Loop-Lab-EN.pdf",
     "exact_portal_image_pixel_matches": {
+      "08-optimizer-dataset.png": [
+        26
+      ],
+      "04-baseline-playground.png": [
+        14
+      ],
+      "06-iq-agent-knowledge.png": [
+        21
+      ],
+      "05-knowledge-base.png": [
+        20
+      ],
+      "14-sft-job.png": [
+        46
+      ],
+      "03-agent-versions.png": [
+        13
+      ],
       "01-project-overview.png": [
         5
       ],
-      "02-model-deployments.png": [
-        8
-      ],
-      "03-agent-versions.png": [
-        12
-      ],
-      "04-baseline-playground.png": [
-        12
-      ],
-      "05-knowledge-base.png": [
-        18
-      ],
-      "06-iq-agent-knowledge.png": [
-        19
-      ],
-      "07-optimizer-target.png": [
-        23
-      ],
-      "08-optimizer-dataset.png": [
-        24
+      "13-trace-tool-call.png": [
+        36
       ],
       "09-optimizer-results.png": [
-        25
-      ],
-      "10-optimizer-changes.png": [
-        26
-      ],
-      "11-evaluation-results.png": [
         27
       ],
+      "10-optimizer-changes.png": [
+        28
+      ],
+      "02-model-deployments.png": [
+        9
+      ],
+      "07-optimizer-target.png": [
+        25
+      ],
       "12-trace-lookup.png": [
-        33
+        36
       ],
-      "13-trace-tool-call.png": [
-        34
-      ],
-      "14-sft-job.png": [
-        42
+      "11-evaluation-results.png": [
+        29
       ]
     }
   },
@@ -159,14 +201,89 @@
     "branch": "main",
     "path": "/",
     "nojekyll": true,
-    "root_entry_redirects_to": "docs/index.html"
+    "root_entry_redirects_to": "docs/index.html",
+    "default_language": "en"
   },
   "package": {
     "status": "PASS",
     "file": "dist/foundry-evaluation-labs-v1.1.zip",
-    "files": 138,
+    "files": 154,
+    "html_pages": 16,
     "verification_records": 1,
-    "resolved_local_links": 238,
+    "resolved_local_links": 744,
     "bytes_match_source": true
+  },
+  "bilingual": {
+    "default_language": "en",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "english_entry": "docs/index.html",
+    "korean_entry": "docs/ko/index.html",
+    "translated_source_documents": 6,
+    "preserved_command_and_output_blocks": 65,
+    "runtime_scenario_language": "ko",
+    "shared_section_ids": true
+  },
+  "pdf_ko": {
+    "file": "Foundry-Learning-Loop-Lab-KO.pdf",
+    "language": "ko",
+    "sha256": "b5463d84095d193c26f2570d4e3595580a57d5bd000bf308bd35184030de29aa",
+    "pages": 80,
+    "bytes": 5239690,
+    "korean_characters": 43901,
+    "latin_characters": 28915,
+    "minimum_page_characters": 234,
+    "missing_required_text": [],
+    "almost_empty_pages": [],
+    "local_machine_links": [],
+    "out_of_page_text": [],
+    "status": "PASS",
+    "path": "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+    "exact_portal_image_pixel_matches": {
+      "08-optimizer-dataset.png": [
+        24
+      ],
+      "04-baseline-playground.png": [
+        12
+      ],
+      "06-iq-agent-knowledge.png": [
+        19
+      ],
+      "05-knowledge-base.png": [
+        18
+      ],
+      "14-sft-job.png": [
+        42
+      ],
+      "03-agent-versions.png": [
+        12
+      ],
+      "01-project-overview.png": [
+        5
+      ],
+      "13-trace-tool-call.png": [
+        34
+      ],
+      "09-optimizer-results.png": [
+        25
+      ],
+      "10-optimizer-changes.png": [
+        26
+      ],
+      "02-model-deployments.png": [
+        8
+      ],
+      "07-optimizer-target.png": [
+        23
+      ],
+      "12-trace-lookup.png": [
+        33
+      ],
+      "11-evaluation-results.png": [
+        27
+      ]
+    }
   }
 }

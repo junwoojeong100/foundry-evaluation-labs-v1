@@ -10,6 +10,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from scripts.build_guide import render_guide
+
 ROOT = Path(__file__).resolve().parents[1]
 ICON_PATH = "web/assets/foundry.svg"
 ICON_SHA256 = "fab039a771f72780ae34e59065d61c66a02d3c347d50923ef2956f34912ea02c"
@@ -53,7 +55,7 @@ class BrandingTests(unittest.TestCase):
         cls.css = (ROOT / "web/styles.css").read_text(encoding="utf-8")
         cls.notice = (ROOT / "web/assets/NOTICE.txt").read_text(encoding="utf-8")
         cls.page = BrandingParser()
-        cls.page.feed(cls.template.replace("{{WEB_PATH}}", "web"))
+        cls.page.feed(render_guide("# Guide\n\n## Start", cls.template))
 
     def test_header_and_favicon_reference_the_same_local_svg(self) -> None:
         images = [attrs for tag, attrs in self.page.brand_elements if tag == "img"]

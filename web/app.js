@@ -3,6 +3,8 @@
 
   const article = document.getElementById("guide-start");
   if (!article) return;
+  const messages = JSON.parse(document.getElementById("guide-messages").textContent);
+  const t = (key, values = {}) => messages[key].replace(/\{(\w+)\}/g, (_, name) => values[name]);
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -45,10 +47,23 @@
     announcementTimer = window.setTimeout(() => { live.textContent = message; }, 30);
   }
 
-  function idFromLink(link) {
-    const value = link.getAttribute("href") || "";
+  function idFromHash(value) {
     if (!value.startsWith("#")) return null;
     try { return decodeURIComponent(value.slice(1)); } catch { return value.slice(1); }
+  }
+
+  function idFromLink(link) {
+    return idFromHash(link.getAttribute("href") || "");
+  }
+
+  function chapterForHeading(heading) {
+    let result = chapters[0] || null;
+    for (const chapter of chapters) {
+      if (chapter.heading === heading || (chapter.heading.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+        result = chapter;
+      }
+    }
+    return result;
   }
 
   function isPlainClick(event) {
@@ -67,7 +82,7 @@
     document.body.classList.remove("scroll-locked");
     backdrop.hidden = true;
     menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.setAttribute("aria-label", "학습 목차 열기");
+    menuToggle.setAttribute("aria-label", t("menuOpen"));
     main.removeAttribute("inert");
     header.removeAttribute("inert");
     sidebar.removeAttribute("role");
@@ -91,7 +106,7 @@
     sidebar.setAttribute("aria-modal", "true");
     sidebar.setAttribute("aria-labelledby", "contents-heading");
     menuToggle.setAttribute("aria-expanded", "true");
-    menuToggle.setAttribute("aria-label", "학습 목차 닫기");
+    menuToggle.setAttribute("aria-label", t("menuClose"));
     document.documentElement.classList.add("drawer-open");
     document.body.classList.add("scroll-locked");
     backdrop.hidden = false;
@@ -111,12 +126,7 @@
       catch { window.location.hash = hash; }
     }
     heading.focus({ preventScroll: true });
-    let destinationChapter = chapters[0];
-    for (const chapter of chapters) {
-      if (chapter.heading === heading || (chapter.heading.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-        destinationChapter = chapter;
-      }
-    }
+    const destinationChapter = chapterForHeading(heading);
     if (destinationChapter) updateChapter(destinationChapter);
     heading.scrollIntoView({ block: "start", behavior: reducedMotion.matches ? "auto" : "smooth" });
     requestReadingUpdate();
@@ -135,7 +145,7 @@
   });
 
   const documentId = document.body.dataset.documentId || window.location.pathname.split("/").pop() || "index.html";
-  const chapterUnit = documentId === "index.html" ? "단계" : "장";
+  const chapterUnit = t(documentId === "index.html" ? "step" : "chapter");
   const progressRevision = document.body.dataset.progressRevision;
   const baseStorageKey = `foundry-evaluation-guide:progress:v2:${encodeURIComponent(documentId)}`;
   const storageKey = progressRevision ? `${baseStorageKey}:${encodeURIComponent(progressRevision)}` : baseStorageKey;
@@ -147,7 +157,7 @@
       stored = window.localStorage.getItem("foundry-evaluation-guide:progress:v1");
     }
     if (stored === null && progressRevision && window.localStorage.getItem(baseStorageKey) !== null) {
-      storageFeedback.textContent = "새 6단계의 읽음 표시는 이전 장별 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.";
+      storageFeedback.textContent = t("progressMigrated");
     }
     if (stored) {
       const record = JSON.parse(stored);
@@ -157,7 +167,7 @@
       completed = new Set(record.completed.filter((id) => chapterIds.has(id)));
     }
   } catch {
-    storageFeedback.textContent = "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.";
+    storageFeedback.textContent = t("storageReadError");
     storageFeedback.classList.add("is-warning");
   }
 
@@ -184,11 +194,11 @@
         version: 1,
         completed: chapters.filter((chapter) => completed.has(chapter.id)).map((chapter) => chapter.id),
       }));
-      storageFeedback.textContent = "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.";
+      storageFeedback.textContent = t("storageSaved");
       storageFeedback.classList.remove("is-warning");
       return true;
     } catch {
-      storageFeedback.textContent = "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.";
+      storageFeedback.textContent = t("storageWriteError");
       storageFeedback.classList.add("is-warning");
       return false;
     }
@@ -207,7 +217,7 @@
     const progress = $("#reading-progress");
     progress.max = chapters.length || 1;
     progress.value = completed.size;
-    const summary = `읽음 ${completed.size} / ${chapters.length}개 ${chapterUnit}`;
+    const summary = t("progressSummary", { completed: completed.size, total: chapters.length });
     if ($("#progress-summary").textContent !== summary) $("#progress-summary").textContent = summary;
     progressInputs.forEach((input, id) => { input.checked = completed.has(id); });
     tocLinks.forEach(({ link, id }) => link.classList.toggle("is-complete", completed.has(id)));
@@ -215,8 +225,8 @@
     if (currentChapter) {
       const done = completed.has(currentChapter.id);
       markChapter.setAttribute("aria-pressed", String(done));
-      markChapter.textContent = done ? "읽음 표시 취소" : `이 ${chapterUnit} 읽음 표시`;
-      markChapter.setAttribute("aria-label", `${currentChapter.label}: ${done ? "읽음 표시 취소" : "읽음 표시"}`);
+      markChapter.textContent = done ? t("markUnread") : t("markUnitRead", { unit: chapterUnit });
+      markChapter.setAttribute("aria-label", `${currentChapter.label}: ${t(done ? "markUnread" : "markRead")}`);
     }
   }
 
@@ -225,14 +235,14 @@
     else completed.delete(chapter.id);
     const saved = saveProgress();
     updateProgress();
-    announce(`${chapter.label}: ${isComplete ? "읽음으로 표시했습니다." : "읽음 표시를 취소했습니다."}${saved ? "" : " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다."}`);
+    announce(`${chapter.label}: ${t(isComplete ? "markedRead" : "markedUnread")}${saved ? "" : t("currentWindowOnly")}`);
   }
 
   function resetProgress() {
     completed.clear();
     const saved = saveProgress();
     updateProgress();
-    announce(saved ? `모든 ${chapterUnit}의 읽음 표시를 초기화했습니다.` : "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.");
+    announce(t(saved ? "progressReset" : "progressResetError"));
     $(".progress-details summary").focus({ preventScroll: true });
   }
 
@@ -243,7 +253,7 @@
     if (typeof resetDialog.showModal === "function") {
       resetDialog.returnValue = "";
       resetDialog.showModal();
-    } else if (window.confirm(`이 문서의 모든 ${chapterUnit} 읽음 표시를 초기화할까요?`)) resetProgress();
+    } else if (window.confirm(t("confirmReset"))) resetProgress();
   });
   resetDialog.addEventListener("close", () => {
     if (resetDialog.returnValue === "reset") resetProgress();
@@ -251,6 +261,21 @@
 
   const previousChapter = $("[data-previous-chapter]");
   const nextChapter = $("[data-next-chapter]");
+  function updateLanguageLinks() {
+    const hashId = idFromHash(window.location.hash);
+    const anchor = hashId ? document.getElementById(hashId) : null;
+    const anchoredChapter = anchor && article.contains(anchor) ? chapterForHeading(anchor) : null;
+    const fragment = anchor && anchoredChapter === currentChapter
+      ? window.location.hash
+      : currentChapter ? `#${encodeURIComponent(currentChapter.id)}` : "";
+    $$("[data-language-link]").forEach((link) => {
+      const target = new URL(link.href);
+      target.search = window.location.search;
+      target.hash = fragment;
+      link.href = target.href;
+    });
+  }
+  window.addEventListener("hashchange", updateLanguageLinks);
   function setChapterLink(link, chapter) {
     link.hidden = !chapter;
     if (!chapter) { link.removeAttribute("href"); return; }
@@ -265,6 +290,7 @@
     setChapterLink(previousChapter, chapters[index - 1]);
     setChapterLink(nextChapter, chapters[index + 1]);
     tocLinks.forEach(({ link, id }) => link.classList.toggle("is-current-chapter", id === chapter.id));
+    updateLanguageLinks();
     updateProgress();
   }
 
@@ -275,13 +301,13 @@
     if (!next || next.heading.parentElement !== article || authoredNextTargets.has(next.id)) return;
     const nav = document.createElement("nav");
     nav.className = "section-pagination no-print";
-    nav.setAttribute("aria-label", `${chapter.label} — ${chapterUnit} 이동`);
+    nav.setAttribute("aria-label", t("sectionNavigation", { label: chapter.label, unit: chapterUnit }));
     [chapters[index - 1], next].forEach((target, direction) => {
       if (!target) return;
       const link = document.createElement("a");
       link.href = `#${encodeURIComponent(target.id)}`;
       link.rel = direction ? "next" : "prev";
-      link.textContent = direction ? `다음 ${chapterUnit}: ${target.label} →` : `← 이전 ${chapterUnit}: ${target.label}`;
+      link.textContent = t(direction ? "nextSection" : "previousSection", { unit: chapterUnit, label: target.label });
       nav.append(link);
     });
     article.insertBefore(nav, next.heading);
@@ -371,7 +397,7 @@
     if (!code) return;
     if (pre.previousElementSibling?.classList.contains("output-label")) {
       pre.tabIndex = 0;
-      pre.setAttribute("aria-label", "설명용 출력 예시. 실행 명령이나 실제 성공 기록이 아닙니다.");
+      pre.setAttribute("aria-label", t("exampleLabel"));
       return;
     }
     const wrapper = document.createElement("div");
@@ -384,8 +410,8 @@
     const button = document.createElement("button");
     button.className = "copy-button";
     button.type = "button";
-    button.textContent = "코드 복사";
-    button.setAttribute("aria-label", `${index + 1}번째 ${language.textContent} 코드 복사`);
+    button.textContent = t("copyCode");
+    button.setAttribute("aria-label", t("copyCodeLabel", { index: index + 1, language: language.textContent }));
     const feedback = document.createElement("span");
     feedback.id = `copy-feedback-${index + 1}`;
     feedback.className = "copy-feedback no-print";
@@ -397,7 +423,7 @@
     pre.before(wrapper);
     wrapper.append(toolbar, pre, feedback);
     pre.tabIndex = 0;
-    pre.setAttribute("aria-label", `${language.textContent} 코드. 긴 줄은 가로로 스크롤할 수 있습니다.`);
+    pre.setAttribute("aria-label", t("codeLabel", { language: language.textContent }));
     let feedbackTimer;
     button.addEventListener("click", async () => {
       if (button.getAttribute("aria-busy") === "true") return;
@@ -407,11 +433,11 @@
       const success = await copyText(code.textContent);
       button.removeAttribute("aria-busy");
       button.dataset.copyState = success ? "success" : "error";
-      button.textContent = success ? "복사됨 ✓" : "복사 실패";
-      feedback.textContent = success ? "코드를 클립보드에 복사했습니다." : "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사하세요.";
+      button.textContent = t(success ? "copied" : "copyFailed");
+      feedback.textContent = t(success ? "copySuccess" : "copyError");
       if (success) {
         feedbackTimer = window.setTimeout(() => {
-          button.textContent = "코드 복사";
+          button.textContent = t("copyCode");
           button.removeAttribute("data-copy-state");
           feedback.textContent = "";
         }, 3000);
@@ -425,7 +451,9 @@
     wrapper.tabIndex = 0;
     wrapper.setAttribute("role", "region");
     const caption = $("caption", table);
-    wrapper.setAttribute("aria-label", `${caption ? cleanText(caption.textContent) : `${index + 1}번째 표`}. 넓은 표는 가로로 스크롤할 수 있습니다.`);
+    wrapper.setAttribute("aria-label", t("tableScroll", {
+      label: caption ? cleanText(caption.textContent) : t("tableLabel", { index: index + 1 }),
+    }));
     table.before(wrapper);
     wrapper.append(table);
     $$("thead th", table).forEach((cell) => {
@@ -437,7 +465,7 @@
     wrapper.className = "diagram-frame";
     wrapper.tabIndex = 0;
     wrapper.setAttribute("role", "region");
-    wrapper.setAttribute("aria-label", `${image.alt || "도식"}. 가로로 스크롤하여 볼 수 있습니다.`);
+    wrapper.setAttribute("aria-label", t("diagramScroll", { label: image.alt || t("diagram") }));
     image.before(wrapper);
     wrapper.append(image);
     const source = document.createElement("a");
@@ -445,8 +473,8 @@
     source.href = image.getAttribute("src");
     source.target = "_blank";
     source.rel = "noopener";
-    source.textContent = "도식 원본 보기 ↗";
-    source.setAttribute("aria-label", `${image.alt || "도식"} 원본 보기 (새 탭)`);
+    source.textContent = t("diagramSource");
+    source.setAttribute("aria-label", t("diagramSourceLabel", { label: image.alt || t("diagram") }));
     wrapper.after(source);
   });
 
@@ -518,7 +546,7 @@
       window.print();
     } catch (error) {
       restorePrint();
-      announce("인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용하세요.");
+      announce(t("printError"));
       console.error("Guide printing failed:", error);
     }
   }

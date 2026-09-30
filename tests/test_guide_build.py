@@ -87,11 +87,11 @@ class GuideBuildTests(unittest.TestCase):
     def test_all_shell_placeholders_are_replaced(self) -> None:
         rendered = build_guide.render_guide("# 임시 가이드\n\n## 첫 장\n\n본문입니다.", self.template)
         self.assertNotRegex(rendered, r"\{\{[A-Z_]+\}\}")
-        self.assertIn("<title>임시 가이드 · Foundry 실습 가이드</title>", rendered)
+        self.assertIn("<title>임시 가이드 · Foundry Lab Guide</title>", rendered)
 
     def test_title_is_escaped_and_inline_markup_is_not_in_the_title(self) -> None:
         rendered = build_guide.render_guide('# 평가 & <em>검증</em> "안내"\n\n## 본문', self.template)
-        self.assertIn("<title>평가 &amp; 검증 &quot;안내&quot; · Foundry 실습 가이드</title>", rendered)
+        self.assertIn("<title>평가 &amp; 검증 &quot;안내&quot; · Foundry Lab Guide</title>", rendered)
         self.assertIn('aria-label="평가 &amp; 검증 &quot;안내&quot;"', rendered)
 
     def test_fenced_code_is_escaped_without_changing_code_or_template_literals(self) -> None:
@@ -154,8 +154,8 @@ class GuideBuildTests(unittest.TestCase):
             source, self.template, relative_base="guide", link_map=build_guide.DOCUMENT_LINKS
         )
         for href in (
-            "docs/facilitator.html#준비", "docs/admin.html?mode=read#rbac", "docs/sft.html",
-            "docs/verification.html", "docs/data-guide.html", "docs/index.html#start",
+            "docs/ko/facilitator.html#준비", "docs/ko/admin.html?mode=read#rbac", "docs/ko/sft.html",
+            "docs/ko/verification.html", "docs/ko/data-guide.html", "docs/ko/index.html#start",
         ):
             self.assertIn(f'href="{href}"', rendered)
         self.assertIn('src="web/assets/example-diagram.svg"', rendered)
@@ -171,10 +171,10 @@ class GuideBuildTests(unittest.TestCase):
             link_map=build_guide.DOCUMENT_LINKS, output_base="docs",
         )
         for value in (
-            'href="facilitator.html#start"', 'href="../data/knowledge/documents.json"',
+            'href="ko/facilitator.html#start"', 'href="../data/knowledge/documents.json"',
             'src="../web/assets/portal/01-project-overview.png"',
             'src="../web/theme.js"', 'href="../web/styles.css"', 'src="../web/app.js"',
-            'href="Foundry-Learning-Loop-Lab-KO.pdf"',
+            'href="Foundry-Learning-Loop-Lab-EN.pdf"',
         ):
             self.assertIn(value, rendered)
         self.assertIn("python -m lab validate", rendered)
@@ -220,7 +220,8 @@ class GuideBuildTests(unittest.TestCase):
         self.assertEqual(pages, self._site_pages())
         self.assertEqual(
             set(pages),
-            {"docs/" + document.output for document in build_guide.DOCUMENTS} | {"docs/print.html"},
+            {"docs/" + document.output for document in build_guide.DOCUMENTS}
+            | {"docs/print.html", "docs/ko/print.html", "docs/english.html"},
         )
         identities = []
         for document in build_guide.DOCUMENTS:
@@ -228,13 +229,14 @@ class GuideBuildTests(unittest.TestCase):
             rendered = pages["docs/" + document.output]
             page.feed(rendered)
             identity = next(attrs["data-document-id"] for tag, attrs in page.elements if tag == "body")
-            self.assertEqual(identity, document.output)
+            self.assertEqual(identity, Path(document.output).name)
             identities.append(identity)
-            if document.output != "index.html":
+            if document.key != "index":
                 self.assertIn('class="back-to-main no-print" href="index.html"', rendered)
-            self.assertIn('href="../web/styles.css"', rendered)
-            self.assertIn('src="../web/app.js"', rendered)
-        self.assertEqual(len(identities), len(set(identities)))
+            prefix = "../../" if document.language == "ko" else "../"
+            self.assertIn(f'href="{prefix}web/styles.css"', rendered)
+            self.assertIn(f'src="{prefix}web/app.js"', rendered)
+        self.assertEqual(len(identities), 2 * len(set(identities)))
         app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
         self.assertIn("document.body.dataset.documentId", app)
         self.assertIn("progress:v2:${encodeURIComponent(documentId)}", app)
@@ -248,14 +250,16 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_single_path_progress_is_separate_from_old_chapters_and_reference_pages(self) -> None:
         pages = self._site_pages()
-        for name in ("index.html", "facilitator.html", "admin.html", "english.html"):
+        for name in ("index.html", "facilitator.html", "admin.html", "ko/index.html", "ko/admin.html"):
             page = PageInspector()
             page.feed(pages["docs/" + name])
             body = next(attrs for tag, attrs in page.elements if tag == "body")
-            self.assertEqual(body["data-document-id"], name)
-            self.assertEqual(body["data-progress-revision"], "single-path-6" if name == "index.html" else "")
-        self.assertIn("실습 순서", pages["docs/index.html"])
-        self.assertIn("참고 문서 목차", pages["docs/admin.html"])
+            self.assertEqual(body["data-document-id"], Path(name).name)
+            self.assertEqual(body["data-progress-revision"], "single-path-6" if Path(name).name == "index.html" else "")
+        self.assertIn("Lab steps", pages["docs/index.html"])
+        self.assertIn("In this reference guide", pages["docs/admin.html"])
+        self.assertIn("실습 순서", pages["docs/ko/index.html"])
+        self.assertIn("참고 문서 목차", pages["docs/ko/admin.html"])
         app = (ROOT / "web/app.js").read_text(encoding="utf-8")
         self.assertIn("document.body.dataset.progressRevision", app)
         self.assertIn('stored === null && documentId === "index.html" && !progressRevision', app)
@@ -270,7 +274,7 @@ class GuideBuildTests(unittest.TestCase):
                 def read_output(path: Path) -> bytes:
                     if stale == "missing:" + path.name:
                         raise FileNotFoundError(path)
-                    self.assertEqual(path.parent, ROOT / "docs")
+                    self.assertIn(path.parent, (ROOT / "docs", ROOT / "docs/ko"))
                     return b"stale\n" if path.name == stale else pages[path.relative_to(ROOT).as_posix()].encode("utf-8")
 
                 with patch.object(build_guide, "read_sources", return_value=self._site_sources()), \
@@ -327,7 +331,7 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn('class="chapter-pagination no-print"', self.rendered)
         self.assertIn('method="dialog"', self.rendered)
         self.assertIn("<noscript>", self.rendered)
-        self.assertIn('<html lang="ko">', self.rendered)
+        self.assertIn('<html lang="en">', self.rendered)
         for _, attrs in self.page.elements:
             for attribute in ("aria-labelledby", "aria-describedby", "aria-controls"):
                 for target in (attrs.get(attribute) or "").split():
@@ -352,7 +356,7 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_runtime_dependencies_are_local(self) -> None:
         for tag, attrs in self.page.elements:
-            if tag == "script" or (tag == "link" and attrs.get("rel") == "stylesheet"):
+            if (tag == "script" and attrs.get("type") != "application/json") or (tag == "link" and attrs.get("rel") == "stylesheet"):
                 path = attrs.get("src") or attrs.get("href") or ""
                 self.assertTrue(path.startswith("web/"), path)
                 self.assertNotIn("://", path)
@@ -381,6 +385,10 @@ class GuideBuildTests(unittest.TestCase):
         self.assertRegex(self.css, r"\.share-checkpoint[^{}]*\{[^}]*scroll-margin-top:")
         self.assertNotRegex(self.css, r"scroll-padding-top:\s*calc\(")
 
+    def test_step_numbers_do_not_shrink_or_wrap_with_translated_labels(self) -> None:
+        self.assertRegex(self.css, r"\.guide-content \.learning-path strong\s*\{[^}]*flex: 0 0 auto")
+        self.assertRegex(self.css, r"\.guide-content \.learning-path strong\s*\{[^}]*white-space: nowrap")
+
     def test_missing_or_unknown_template_placeholders_fail_clearly(self) -> None:
         for placeholder in build_guide.REQUIRED_PLACEHOLDERS:
             with self.subTest(placeholder=placeholder):
@@ -393,7 +401,35 @@ class GuideBuildTests(unittest.TestCase):
     def test_heading_free_markdown_remains_readable(self) -> None:
         rendered = build_guide.render_guide("제목 없는 짧은 메모입니다.", self.template)
         self.assertIn("<p>제목 없는 짧은 메모입니다.</p>", rendered)
-        self.assertIn('href="#guide-start">본문 읽기</a>', rendered)
+        self.assertIn('href="#guide-start">Read the guide</a>', rendered)
+
+    def test_explicit_korean_shell_remains_fully_localized(self) -> None:
+        rendered = build_guide.render_guide(
+            FIXTURE, self.template, document_id="ko/index.html",
+            language="ko", output_base="docs/ko",
+        )
+        self.assertIn('<html lang="ko">', rendered)
+        self.assertIn("실습 순서", rendered)
+        self.assertIn('aria-label="학습 목차 열기"', rendered)
+        self.assertIn('href="../Foundry-Learning-Loop-Lab-KO.pdf"', rendered)
+        self.assertIn('href="../index.html" lang="en" hreflang="en" data-language-link', rendered)
+        self.assertIn('href="index.html" lang="ko" hreflang="ko" data-language-link aria-current="page"', rendered)
+
+    def test_translations_have_matching_keys_and_reject_unknown_languages(self) -> None:
+        for section in ("shell", "messages", "book"):
+            self.assertEqual(
+                set(build_guide.LOCALES["en"][section]),
+                set(build_guide.LOCALES["ko"][section]),
+            )
+        with self.assertRaisesRegex(ValueError, "Unsupported guide language"):
+            build_guide.render_guide(FIXTURE, self.template, language="fr")
+
+    def test_english_alias_preserves_query_and_fragment_with_a_static_fallback(self) -> None:
+        alias = self._site_pages()["docs/english.html"]
+        self.assertIn('"index.html" + window.location.search + window.location.hash', alias)
+        self.assertIn('<html lang="en">', alias)
+        self.assertIn('<noscript><meta http-equiv="refresh" content="0; url=index.html">', alias)
+        self.assertIn('href="ko/index.html"', alias)
 
     def _read_fixture(self, path: Path, *args: object, **kwargs: object) -> str:
         if path.name == "fixture.md":

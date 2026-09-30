@@ -71,7 +71,11 @@ button { color: var(--ink); }
 .brand-text strong { font-size: 1.1rem; letter-spacing: -0.02em; }
 .brand-text > span { margin-top: 0.15rem; color: var(--muted); font-size: 0.73rem; }
 .header-context { margin-left: 1.1rem; padding-left: 1.65rem; border-left: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; }
-.header-actions { margin-left: auto; display: flex; align-items: center; gap: 0.65rem; }
+.header-actions { display: flex; align-items: center; gap: 0.65rem; }
+.language-switcher { display: flex; align-items: center; gap: 0.2rem; margin-left: auto; flex-shrink: 0; }
+.language-switcher a { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0.45rem 0.6rem; border: 1px solid transparent; border-radius: 0.4rem; color: var(--muted); font-size: 0.8rem; text-decoration: none; white-space: nowrap; }
+.language-switcher a:hover, .language-switcher a[aria-current="page"] { border-color: var(--line); background: var(--teal-soft); color: var(--teal); }
+.language-switcher a[aria-current="page"] { font-weight: 750; }
 .icon-button { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; min-height: 2.75rem; padding: 0.6rem; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; }
 .icon-button:hover { border-color: var(--line); background: var(--canvas); }
 .toolbar-button { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0.5rem 0.8rem; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--paper); color: var(--ink); font-size: 0.8rem; font-weight: 650; text-decoration: none; white-space: nowrap; }
@@ -164,7 +168,7 @@ summary { cursor: pointer; }
 .guide-content .learning-path li { margin: 0; padding: 0; }
 .learning-path a { display: flex; align-items: center; gap: 0.65rem; min-height: 3.5rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--canvas); color: var(--ink); font-size: 0.85rem; text-decoration: none; }
 .learning-path a:hover { border-color: var(--teal); background: var(--teal-soft); }
-.guide-content .learning-path strong { color: var(--teal); font-variant-numeric: tabular-nums; }
+.guide-content .learning-path strong { flex: 0 0 auto; white-space: nowrap; color: var(--teal); font-variant-numeric: tabular-nums; }
 .guide-content .step-next { margin: 2rem 0 0; }
 .step-next a { display: inline-block; min-height: 2.75rem; padding: 0.65rem 1rem; border-radius: 0.5rem; background: var(--teal); color: #fff; font-size: 0.9rem; font-weight: 700; text-decoration: none; }
 .step-next a:hover { background: #075b57; color: #fff; }
@@ -298,6 +302,7 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .brand-symbol { width: 2.2rem; height: 2.2rem; }
   .brand-text strong { font-size: 1rem; }
   .brand-text > span { font-size: 0.65rem; }
+  .language-switcher a { padding: 0.4rem 0.35rem; font-size: 0.75rem; }
   .header-actions { flex-basis: 100%; justify-content: flex-end; gap: 0.35rem; margin-left: 0; }
   .toolbar-button { padding: 0.45rem 0.65rem; font-size: 0.75rem; }
   .theme-feedback { margin: 0.75rem 1.1rem; }
@@ -332,6 +337,10 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .book-screen-tools { padding: 0.75rem 1.1rem; }
   .book-toc ol { grid-template-columns: minmax(0, 1fr); }
   dialog { max-width: calc(100vw - 1.2rem); max-height: calc(100dvh - 1.5rem); padding: 1.25rem; border-radius: 0.8rem; }
+}
+
+@media (max-width: 30rem) {
+  .site-header .brand-text > span { display: none; }
 }
 
 @media screen {

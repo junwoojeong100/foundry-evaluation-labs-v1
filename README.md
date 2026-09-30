@@ -1,43 +1,51 @@
-# Foundry Learning Loop Lab v1 · 한국어
+# Foundry Learning Loop Lab v1
 
-**[브라우저에서 실습 시작 → GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)**
+**[Start the lab in English → GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)** · **[한국어로 시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)** · [한국어 README](README.ko.md)
 
-Contoso 고객지원 에이전트의 평가·지식 연결·지시 개선을 경험하는 한국어 실습입니다. **약 3–4시간**, 한 페이지의 6단계를 순서대로 진행합니다. 기능 설명, CLI 해설과 실제 포털 스크린샷 14장이 포함되어 있습니다.
+An evidence-first, hands-on workshop for evaluating and improving a Contoso support agent with **Microsoft Foundry**. Follow **six steps in approximately 3–4 hours**, including result discussions, command explanations, and 14 actual portal screenshots.
 
-> 예시 이해 → 환경 연결 → 기준선 평가 → Foundry IQ → Agent Optimizer → 최종 판정·종료
+> Understand the example → connect the environment → evaluate the baseline → Foundry IQ → Agent Optimizer → decide and finish
 
-## 시작하기
+**English is the default.** Every guide, reference, and complete print edition is available in English and Korean. Use **English / 한국어** in the header to switch the same document; section links and reading progress are preserved. No sign-in, installation, or JavaScript is needed to read the guides.
 
-- **온라인:** 위 GitHub Pages 링크를 엽니다. 문서 열람에는 설치나 로그인이 필요 없습니다.
-- **오프라인:** 저장소 전체를 내려받아 [실습 가이드](docs/index.html#start)를 엽니다. [통합 PDF](docs/Foundry-Learning-Loop-Lab-KO.pdf)도 제공합니다.
-- **CLI 실습:** Python 3.11 이상(3.12 권장)과 bash·zsh 또는 Windows WSL2를 사용합니다. 설치·인증은 [가이드 02](docs/index.html#prepare)를 따릅니다.
+The lab's policies, prompts, CLI output, and agent responses remain **Korean** to preserve the existing experiment and evaluation contracts. English guides explain these original examples without changing the data, commands, or reported LIVE outcomes.
 
-저장소 루트에서 실행하는 첫 DEMO입니다.
+## Getting started
+
+- **Online:** Open the GitHub Pages link above. All HTML guide links below open the published site, not GitHub's source-file viewer.
+- **Offline:** Download the complete repository and open `index.html` for English or `docs/ko/index.html` for Korean. Keep `docs/`, `web/`, and the other package directories together.
+- **CLI labs:** Use Python 3.11+ (3.12 recommended), with bash/zsh or Windows WSL2. Follow [step 02](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#prepare) for installation and authentication.
+
+Run the first offline demo from the repository root:
 
 ```bash
 python3 -S -m lab demo
 ```
 
-`-S`는 Python의 `site` 초기화를 생략하며, `demo`는 작성된 예시만 출력합니다. SDK·Azure 로그인·네트워크·유료 모델 호출이 필요 없습니다.
+`-S` skips Python's `site` initialization. `demo` prints authored examples without SDKs, Azure sign-in, network access, or paid model calls.
 
-## 문서
+## Guides on GitHub Pages
 
-| 내용 | 문서 |
-|---|---|
-| 환경 준비 | [운영자 안내](docs/admin.html) |
-| 진행·오류 대응 | [강사 안내](docs/facilitator.html) |
-| 선택 심화 | [SFT 부록](docs/sft.html) |
-| 합성 데이터·평가 계약 | [데이터 설명](docs/data-guide.html) |
-| 최신 검증·출처 | [검증 안내](docs/verification.html) · [결과 JSON](evidence/latest.json) |
-| English | [README.en.md](README.en.md) |
+| Guide | English | 한국어 |
+|---|---|---|
+| Six-step participant lab | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start) | [실습 시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start) |
+| Operator setup | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) | [운영자 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) |
+| Facilitation and recovery | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [강사 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
+| Optional SFT and Frontier appendix | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/sft.html) | [SFT 부록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/sft.html) |
+| Synthetic data and evaluation contracts | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터 설명](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |
+| Latest verification and sources | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) | [검증·출처](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) |
+| Complete print edition | [Open](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) | [통합 인쇄본](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) |
+| Downloadable PDF | [English PDF](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) | [한국어 PDF](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) |
 
-## 주의사항
+Machine-readable documentation verification: [evidence/latest.json](evidence/latest.json).
 
-- 데이터는 가상 Contoso 정책 8개·사례 100건입니다. 마지막 LIVE 품질 판정은 **HOLD**이며 실행 완료가 운영 승인은 아닙니다.
-- 유료 실습은 전용 North Central US 환경과 본인의 권한·비용 승인 범위에서만 진행합니다. 환경 신규 구축·SFT는 기본 예상 시간에 포함되지 않습니다.
-- `.env`·`.lab/`·인증·원본 실행 자료는 공개하지 않습니다. 저장소 정리가 Azure 자원 삭제·과금 중단을 뜻하지 않습니다.
+## Boundaries
 
-## 문서 갱신
+- Eight policies and 100 cases are synthetic. The last reported LIVE quality verdict is **HOLD**; execution success is not production approval.
+- Paid labs require a dedicated **North Central US** environment and your own access/cost authorization. New infrastructure and SFT are outside the core time estimate.
+- Never publish `.env`, `.lab/`, credentials, or raw run data. Repository cleanup does not delete Azure resources or stop hosting costs.
+
+## Updating the guides
 
 ```bash
 python scripts/build_guide.py
@@ -45,6 +53,17 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 ```
 
-HTML·PDF 생성물은 `docs/`, 원문은 `guide/`에 둡니다. 위 명령은 저장소 루트에서 순서대로 HTML 생성, 최신 상태 확인, 로컬 테스트를 수행합니다. PDF·ZIP은 별도 갱신합니다.
+Run these from the repository root after installing `requirements.lock`. The builder generates **both languages and both print editions**; `--check` verifies all generated HTML without writing.
 
-GitHub Pages는 `main`의 루트와 `.nojekyll`을 사용하며 루트 `index.html`은 가이드로 연결하는 진입 파일입니다. `python -m lab`는 교육용 도구이며 Microsoft 공식 CLI가 아닙니다.
+| Content | English source | Korean source |
+|---|---|---|
+| Participant, operator, facilitator, SFT, verification | `guide/en/*.md` | `guide/*.md` |
+| Data guide | `data/README.en.md` | `data/README.md` |
+| Shared interface text | `web/locales.json` → `en` | `web/locales.json` → `ko` |
+| Generated HTML | `docs/*.html` | `docs/ko/*.html` |
+
+Keep counterpart section IDs and executable examples identical, including existing Korean IDs, so deep links and reading records remain compatible. Translate prose, navigation, accessibility labels, and screenshot captions—not original evidence or runtime data.
+
+To refresh PDFs, open each complete print edition and save it as an A4 PDF with background graphics, using `docs/Foundry-Learning-Loop-Lab-EN.pdf` and `docs/Foundry-Learning-Loop-Lab-KO.pdf`. With the verification dependencies from `requirements-verification.lock` installed, run `python scripts/verify_pdf.py docs/Foundry-Learning-Loop-Lab-EN.pdf --language en` (use the Korean filename and `--language ko` for Korean). Then run `python scripts/package_lab.py` to rebuild the offline distribution ZIP.
+
+GitHub Pages serves the **`main` branch root** with `.nojekyll`, making every generated HTML and its local assets accessible. Root `index.html` forwards to the English guide while preserving query strings and fragments. The former `docs/english.html` quickstart also forwards to the full English guide. `python -m lab` is an educational tool, not an official Microsoft CLI.

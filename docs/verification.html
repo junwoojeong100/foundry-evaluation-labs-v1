@@ -1,190 +1,196 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
-  <title>최신 검증 기록과 한계 · Foundry 실습 가이드</title>
+  <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
+  <title>Latest verification record and limitations · Foundry Lab Guide</title>
+  <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
+  <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
+  <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html">
+  <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The six-step reading record is separate from earlier chapter records. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
 </head>
 <body data-document-id="verification.html" data-progress-revision="">
-  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
     <div class="header-inner">
-      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="Open contents" hidden>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+      <a class="brand" href="index.html" aria-label="Microsoft Foundry lab guide home">
         <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+        <span class="brand-text"><strong>Foundry</strong><span>Evaluation and improvement labs</span></span>
       </a>
-      <span class="header-context">한국어 · 오프라인 문서</span>
+      <span class="header-context">English · Offline-ready</span>
+      <nav class="language-switcher" aria-label="Guide language"><a href="verification.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
+<a href="ko/verification.html" lang="ko" hreflang="ko" data-language-link>한국어</a></nav>
       <div class="header-actions">
-        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
-        <button class="toolbar-button" type="button" data-print-one title="현재 읽는 장만 인쇄" hidden>현재 인쇄</button>
-        <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
-        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-KO.pdf">전체 PDF</a></noscript>
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
+        <button class="toolbar-button" type="button" data-print-one title="Print the current chapter only" hidden>Print section</button>
+        <button class="toolbar-button" type="button" data-print-all title="Print this document or save it as a PDF" hidden>Save PDF</button>
+        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-EN.pdf">Save PDF</a></noscript>
       </div>
     </div>
   </header>
   <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
 
   <div class="workspace">
-    <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="Document navigation">
       <div class="sidebar-inner">
         <div class="sidebar-heading">
-          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">참고 문서 목차</h2></div>
-          <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">In this reference guide</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="Close contents" hidden>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#local">확인 범위</a></li>
-<li><a href="#status">LIVE 결과와 구분하기</a></li>
-<li><a href="#checks">보존 기준</a></li>
-<li><a href="#sources">출처</a></li>
-<li><a href="#update">로컬 재검증</a></li>
+<li><a href="#local">What is checked</a></li>
+<li><a href="#status">Keep verification separate from LIVE outcomes</a></li>
+<li><a href="#checks">Retention boundaries</a></li>
+<li><a href="#sources">Sources</a></li>
+<li><a href="#update">Recheck locally</a></li>
 </ul>
 </div>
 
         </nav>
         <details class="related-documents">
-          <summary>참고 자료 · 운영자/심화</summary>
-          <nav aria-label="실습 문서 모음"><ul>
-<li><a href="index.html">참가자 실습 가이드</a></li>
-<li><a href="facilitator.html">강사용 진행 가이드</a></li>
-<li><a href="admin.html">관리자 사전 준비</a></li>
-<li><a href="sft.html">SFT 심화 부록</a></li>
-<li><a href="verification.html" aria-current="page">최신 검증·출처</a></li>
-<li><a href="data-guide.html">데이터 설명</a></li>
-<li><a href="english.html">English quickstart</a></li>
-<li><a href="print.html">전체 인쇄본</a></li></ul></nav>
+          <summary>Reference guides and appendices</summary>
+          <nav aria-label="Lab documents"><ul>
+<li><a href="index.html">Participant guide</a></li>
+<li><a href="facilitator.html">Facilitator guide</a></li>
+<li><a href="admin.html">Operator setup</a></li>
+<li><a href="sft.html">SFT appendix</a></li>
+<li><a href="verification.html" aria-current="page">Verification and sources</a></li>
+<li><a href="data-guide.html">Data guide</a></li>
+<li><a href="print.html">Print edition with appendices</a></li></ul></nav>
         </details>
 
         <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
-          <div class="panel-heading"><h2 id="progress-title">내 학습 기록</h2><span class="local-badge">로컬</span></div>
+          <div class="panel-heading"><h2 id="progress-title">My reading progress</h2><span class="local-badge">Local</span></div>
           <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
           <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
           <details class="progress-details">
-            <summary>장별 읽음 표시</summary>
+            <summary>Mark each chapter as read</summary>
             <div id="progress-checklist" class="progress-checklist"></div>
           </details>
-          <div class="progress-bottom"><span>직접 체크한 장만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
-          <p id="storage-feedback" class="storage-note" role="status">이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.</p>
+          <div class="progress-bottom"><span>Only the chapters you check are recorded.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">Reset</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">Reading progress for this document is saved only in this browser.</p>
         </section>
 
         <details class="keyboard-help" data-keyboard-help hidden>
-          <summary>키보드 사용 안내</summary>
+          <summary>Keyboard shortcuts</summary>
           <dl>
-            <div><dt><kbd>Esc</kbd></dt><dd>모바일 목차·확인 창 닫기</dd></div>
-            <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
-            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>Close the mobile contents or confirmation dialog</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>Move to the next link or button</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">Read this reference only when needed. The participant lab ends after the six main steps. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
-    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
-        <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-09-30">2026-09-30</time></span>
+        <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
+        <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
       </div>
-      <noscript><p class="noscript-note">본문·목차·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="ko" aria-label="최신 검증 기록과 한계">
-        <h1 id="최신-검증-기록과-한계">최신 검증 기록과 한계</h1>
-<p><strong><a href="../evidence/latest.json">최신 결과 JSON</a></strong>에 현재 배포물의 검증 시각·대상·결과를 기록합니다. 공개 저장소에는 이 검증 파일 하나만 유지합니다. 이전 검증·이관·임시 증빙 파일은 Git 이력에 남아 있으며 현재 배포 묶음에는 포함하지 않습니다.</p>
-<h2 id="local">확인 범위</h2>
+      <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Latest verification record and limitations">
+        <h1 id="최신-검증-기록과-한계">Latest verification record and limitations</h1>
+<p>The <strong><a href="../evidence/latest.json">latest result JSON</a></strong> records the verification time, targets, and outcomes for the current distribution. This is the only verification record retained in the public package. Earlier verification, migration, and temporary evidence files remain in Git history, not in the current distribution.</p>
+<h2 id="local">What is checked</h2>
 <table>
 <thead>
 <tr>
-<th>대상</th>
-<th>확인할 내용</th>
+<th>Target</th>
+<th>Checks</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>원본 데이터</td>
-<td>정책 8개·사례 100건과 train 56 / validation 12 / dev 12 / test 20 유지</td>
+<td>Source data</td>
+<td>Eight policies, 100 cases, and unchanged splits: train 56 / validation 12 / dev 12 / test 20</td>
 </tr>
 <tr>
-<td>가이드</td>
-<td><code>docs/</code>의 6단계 가이드, 루트 진입 연결, CLI 문법·명령 해설과 상대 링크</td>
+<td>Guides</td>
+<td>Complete English/Korean guides in <code>docs/</code>, English-default root entry, language navigation, CLI syntax/explanations, and relative links</td>
 </tr>
 <tr>
-<td>포털 사진</td>
-<td>실제 화면 14장, 출처·가림·치수·해시, 이미지 표시와 확대 링크</td>
+<td>Portal screenshots</td>
+<td>Fourteen actual screens: provenance, redactions, dimensions, hashes, display, and full-size links</td>
 </tr>
 <tr>
-<td>웹·인쇄</td>
-<td>데스크톱·모바일, 밝은/어두운 화면, 인쇄 목차와 링크</td>
+<td>Web and print</td>
+<td>Desktop/mobile, light/dark themes, localized controls, print contents, and links</td>
 </tr>
 <tr>
 <td>PDF</td>
-<td>한국어 텍스트·필수 내용·빈 페이지·잘림·로컬 머신 링크·사진 포함</td>
+<td>English/Korean text and required content; no blank/clipped pages or local-machine links; screenshots included</td>
 </tr>
 <tr>
-<td>패키지</td>
-<td>최신 파일과 검증 하나만 포함, 비공개 환경·인증·원본 실행 자료 제외</td>
+<td>Package</td>
+<td>Current files and one verification record only; no private environments, authentication data, or raw run records</td>
 </tr>
 </tbody>
 </table>
-<p>검증 JSON의 <code>status: PASS</code>는 <strong>그 파일에 명시한 로컬 문서·패키지 검사가 통과했다는 뜻</strong>입니다. Azure 실행 성공, 에이전트 품질 합격이나 사람의 운영 승인을 뜻하지 않습니다. GitHub Pages는 생성된 정적 가이드를 제공하며 CLI나 모델을 실행하지 않습니다.</p>
-<h2 id="status">LIVE 결과와 구분하기</h2>
-<p>마지막으로 보고된 <strong>2026-09-30 LIVE 품질 판정은 HOLD</strong>입니다. 교정 불일치·중요 실패가 남았고, 최종 fresh 시험은 차단되었으며 사람의 운영 승인은 없었습니다. 현재 <strong>검색 Judge 1.1.0</strong>을 포함한 평가 정의·게이트·실습 데이터는 그대로 유지합니다.</p>
-<p>이번 문서 정리에서는 유료 모델·평가·최적화·학습을 다시 실행하지 않았습니다. 이전 점수나 작업 ID를 새로운 실행 결과로 바꾸지 않으며, 최신 문서 검증으로 기존 HOLD를 해소한 것으로 보지 않습니다.</p>
-<p>실제 포털 사진은 기존 환경을 Headless Playwright로 촬영한 자료입니다. <a href="../web/assets/portal/captures.json">촬영 기록</a>의 출처와 상태를 확인합니다. 미제출 설정 화면, 기존 서비스 결과, 현재 참가자의 실행 결과는 서로 다릅니다.</p>
-<h2 id="checks">보존 기준</h2>
+<p><code>status: PASS</code> in the verification JSON means <strong>only the documentation/package checks explicitly listed in that file passed</strong>. It is not Azure execution success, an agent-quality pass, or human operational approval. GitHub Pages serves generated static guides; it does not run the CLI or models.</p>
+<h2 id="status">Keep verification separate from LIVE outcomes</h2>
+<p>The last reported <strong>LIVE quality verdict on 2026-09-30 was HOLD</strong>. Calibration disagreement and critical failures remained, the final fresh test was blocked, and human operational approval was absent. Evaluation definitions—including <strong>retrieval Judge 1.1.0</strong>—gates, and lab data remain unchanged.</p>
+<p>This documentation translation/publication does not rerun paid models, evaluations, optimization, or training. Earlier scores/job IDs are not relabeled as new results, and successful documentation checks do not resolve the existing HOLD.</p>
+<p>The real portal images were captured from the existing environment using headless Playwright. Check provenance and state in the <a href="../web/assets/portal/captures.json">capture manifest</a>. Unsubmitted setup screens, existing service results, and the current participant's results are different things.</p>
+<h2 id="checks">Retention boundaries</h2>
 <ul>
-<li>현재 실행 코드·정책·데이터·평가기·14개 포털 사진과 <code>docs/</code>의 최신 HTML/PDF를 유지합니다.</li>
-<li>비공개 <code>.lab/</code>의 원본 실행·승인·소유 기록은 저장소 정리 대상이 아닙니다.</li>
-<li>Azure 자원·권한은 변경하거나 삭제하지 않습니다. 호스팅·로그 비용도 자동으로 멈추지 않습니다.</li>
-<li>새 검증 결과를 게시할 때는 <code>evidence/latest.json</code>을 갱신하고 이전 날짜별 파일을 추가하지 않습니다.</li>
+<li>Keep current runtime code, policies, data, evaluators, all 14 portal screenshots, and current bilingual HTML/PDF in <code>docs/</code>.</li>
+<li>Private <code>.lab/</code> execution, approval, and ownership records are not repository-cleanup targets.</li>
+<li>Do not change or delete Azure resources/permissions. Hosting/log costs do not stop automatically.</li>
+<li>Update <code>evidence/latest.json</code> when publishing new verification; do not add dated copies.</li>
 </ul>
-<h2 id="sources">출처</h2>
-<p>Contoso Atlas Cloud와 정책·사례는 이 실습을 위한 합성 자료이며 실제 공급자의 약관이나 실제 고객 자료가 아닙니다.</p>
-<p>이전 실습 설계 참고 원본은 <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">foundry-evaluation-labs-v0.9의 고정 커밋</a>입니다. 해당 보관 저장소는 별도 접근 권한이 필요할 수 있습니다. 상세 이관 기록은 이 저장소의 Git 이력에 보존하며, 공개 열람 자체가 참고 원본의 추가 사용 허락을 부여하지는 않습니다.</p>
-<p>Microsoft 공식 Foundry 아이콘과 포털 사진의 출처·사용 범위는 <a href="../web/assets/NOTICE.txt">NOTICE</a>에 있습니다. 공식 아이콘의 원본 바이트와 사용 조건을 유지합니다.</p>
-<h2 id="update">로컬 재검증</h2>
+<h2 id="sources">Sources</h2>
+<p>Contoso Atlas Cloud, its policies, and cases are synthetic materials for this lab—not actual provider terms or customer data.</p>
+<p>The earlier workshop design reference is <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">a pinned commit in foundry-evaluation-labs-v0.9</a>. That archived repository may require separate access. Detailed migration history remains in this repository's Git history. Public access does not itself grant further reuse rights to referenced source material.</p>
+<p>The official Microsoft Foundry icon and portal screenshots are attributed in <a href="../web/assets/NOTICE.txt">NOTICE</a>, including their permitted usage. Preserve the official icon's original bytes and usage terms.</p>
+<h2 id="update">Recheck locally</h2>
 <pre><code class="language-bash">python -m lab validate
 python scripts/build_guide.py
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 </code></pre>
-<p><strong>명령 해설:</strong> 순서대로 원본 데이터 검사, HTML 생성, 쓰기 없는 최신 상태 확인, 로컬 자동 검사입니다. Azure를 호출하지 않습니다. PDF와 ZIP은 별도로 재생성·검사한 뒤 해당 결과만 최신 JSON에 기록합니다.</p>
+<p><strong>Commands explained:</strong> In order: validate source data, generate HTML in both languages, check freshness without writing, and run local tests. These commands do not call Azure. Regenerate/check PDFs and the ZIP separately, then record only the checks actually performed in the latest JSON.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
-        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 장의 읽음 여부만 기록합니다. LIVE 실행이나 운영 승인을 뜻하지 않습니다.</p></div>
-        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">읽음 표시</button>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>This records only whether you have read the current chapter, not a LIVE run or operational approval.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">Mark as read</button>
       </section>
-      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="장 이동" hidden>
-        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 장</span><strong></strong></a>
-        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="Navigate between chapters" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← Previous chapter</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
-        <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
+        <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
   </div>
 
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
-    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
-    <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <h2 id="reset-title">Reset reading progress for this document?</h2>
+    <p id="reset-description">This clears all chapters marked as read in this document, in both languages. Other documents, earlier guide revisions, content, and lab files are not changed.</p>
     <form method="dialog" class="dialog-actions">
-      <button class="secondary-button" value="cancel" autofocus>취소</button>
-      <button class="danger-button" value="reset">읽음 표시 초기화</button>
+      <button class="secondary-button" value="cancel" autofocus>Cancel</button>
+      <button class="danger-button" value="reset">Reset reading progress</button>
     </form>
   </dialog>
   <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>

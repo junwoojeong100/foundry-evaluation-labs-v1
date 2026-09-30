@@ -1,45 +1,51 @@
 <!doctype html>
-<html lang="ko">
+<html lang="{{CONTENT_LANGUAGE}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
-  <title>{{TITLE}} · Foundry 실습 가이드</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <title>{{TITLE}} · {{SITE_TITLE}}</title>
+  <link rel="canonical" href="{{CANONICAL_HREF}}">
+  <link rel="alternate" hreflang="en" href="{{EN_HREF}}">
+  <link rel="alternate" hreflang="ko" href="{{KO_HREF}}">
+  <link rel="alternate" hreflang="x-default" href="{{EN_HREF}}">
   <link rel="icon" type="image/svg+xml" href="{{WEB_PATH}}/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{{MESSAGES}}</script>
   <script src="{{WEB_PATH}}/theme.js"></script>
   <link rel="stylesheet" href="{{WEB_PATH}}/styles.css">
   <script src="{{WEB_PATH}}/app.js" defer></script>
 </head>
 <body data-document-id="{{DOCUMENT_ID}}" data-progress-revision="{{PROGRESS_REVISION}}">
-  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+  <a class="skip-link" href="#main-content">{{SKIP_LINK}}</a>
 
   <header class="site-header">
     <div class="header-inner">
-      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="{{MENU_OPEN}}" hidden>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <a class="brand" href="{{HOME_HREF}}" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+      <a class="brand" href="{{HOME_HREF}}" aria-label="{{BRAND_LABEL}}">
         <img class="brand-symbol" src="{{WEB_PATH}}/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+        <span class="brand-text"><strong>Foundry</strong><span>{{BRAND_SUBTITLE}}</span></span>
       </a>
-      <span class="header-context">한국어 · 오프라인 문서</span>
+      <span class="header-context">{{HEADER_CONTEXT}}</span>
+      <nav class="language-switcher" aria-label="{{LANGUAGE_NAV_LABEL}}">{{LANGUAGE_LINKS}}</nav>
       <div class="header-actions">
-        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
-        <button class="toolbar-button" type="button" data-print-one title="현재 읽는 {{CHAPTER_UNIT}}만 인쇄" hidden>현재 인쇄</button>
-        <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
-        <noscript><a class="toolbar-button" href="{{PDF_HREF}}">전체 PDF</a></noscript>
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="{{THEME_DARK_LABEL}}" hidden>{{THEME_DARK}}</button>
+        <button class="toolbar-button" type="button" data-print-one title="{{PRINT_ONE_TITLE}}" hidden>{{PRINT_ONE}}</button>
+        <button class="toolbar-button" type="button" data-print-all title="{{PRINT_ALL_TITLE}}" hidden>{{PRINT_ALL}}</button>
+        <noscript><a class="toolbar-button" href="{{PDF_HREF}}">{{PRINT_ALL}}</a></noscript>
       </div>
     </div>
   </header>
   <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
 
   <div class="workspace">
-    <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="{{NAV_LABEL}}">
       <div class="sidebar-inner">
         <div class="sidebar-heading">
           <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">{{CONTENTS_LABEL}}</h2></div>
-          <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="{{MENU_CLOSE}}" hidden>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
           </button>
         </div>
@@ -47,68 +53,68 @@
           {{TOC}}
         </nav>
         <details class="related-documents">
-          <summary>참고 자료 · 운영자/심화</summary>
-          <nav aria-label="실습 문서 모음">{{DOCUMENT_LINKS}}</nav>
+          <summary>{{RELATED_DOCUMENTS}}</summary>
+          <nav aria-label="{{DOCUMENTS_LABEL}}">{{DOCUMENT_LINKS}}</nav>
         </details>
 
         <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
-          <div class="panel-heading"><h2 id="progress-title">내 학습 기록</h2><span class="local-badge">로컬</span></div>
+          <div class="panel-heading"><h2 id="progress-title">{{PROGRESS_TITLE}}</h2><span class="local-badge">{{LOCAL_BADGE}}</span></div>
           <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
           <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
           <details class="progress-details">
-            <summary>{{CHAPTER_UNIT}}별 읽음 표시</summary>
+            <summary>{{PROGRESS_DETAILS}}</summary>
             <div id="progress-checklist" class="progress-checklist"></div>
           </details>
-          <div class="progress-bottom"><span>직접 체크한 {{CHAPTER_UNIT}}만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
-          <p id="storage-feedback" class="storage-note" role="status">이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.</p>
+          <div class="progress-bottom"><span>{{PROGRESS_MANUAL}}</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">{{RESET}}</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">{{STORAGE_NOTE}}</p>
         </section>
 
         <details class="keyboard-help" data-keyboard-help hidden>
-          <summary>키보드 사용 안내</summary>
+          <summary>{{KEYBOARD_HELP}}</summary>
           <dl>
-            <div><dt><kbd>Esc</kbd></dt><dd>모바일 목차·확인 창 닫기</dd></div>
-            <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
-            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 {{CHAPTER_UNIT}}로 이동</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>{{KEYBOARD_ESCAPE}}</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>{{KEYBOARD_TAB}}</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>{{KEYBOARD_CHAPTER}}</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">{{SIDEBAR_NOTE}} 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">{{SIDEBAR_NOTE}} {{LOCAL_PREFERENCES}}</p>
       </div>
     </aside>
-    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="{{MENU_CLOSE}}" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
 {{RETURN_LINK}}
       <div class="reading-toolbar no-print">
-        <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></span>
+        <span class="document-label"><span aria-hidden="true"></span>{{DOCUMENT_LABEL}}</span>
+        <span class="document-date">{{DOCUMENT_DATE}} <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></span>
       </div>
-      <noscript><p class="noscript-note">본문·목차·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
+      <noscript><p class="noscript-note">{{NOSCRIPT_NOTE}}</p></noscript>
       <article id="guide-start" class="guide-content" lang="{{CONTENT_LANGUAGE}}" aria-label="{{TITLE}}">
         {{CONTENT}}
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
-        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 {{CHAPTER_UNIT}}의 읽음 여부만 기록합니다. LIVE 실행이나 운영 승인을 뜻하지 않습니다.</p></div>
-        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">읽음 표시</button>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>{{COMPLETION_NOTE}}</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">{{MARK_READ}}</button>
       </section>
-      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="{{CHAPTER_UNIT}} 이동" hidden>
-        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 {{CHAPTER_UNIT}}</span><strong></strong></a>
-        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 {{CHAPTER_UNIT}} →</span><strong></strong></a>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="{{PAGINATION_LABEL}}" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>{{PREVIOUS_CHAPTER}}</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>{{NEXT_CHAPTER}}</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></p>
-        <div class="footer-links"><a href="{{PRINT_HREF}}">부록 포함 인쇄본</a><a href="{{PDF_HREF}}">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
+        <p>{{SITE_TITLE}} <span aria-hidden="true">·</span> <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></p>
+        <div class="footer-links"><a href="{{PRINT_HREF}}">{{PRINT_BOOK}}</a><a href="{{PDF_HREF}}">{{PDF_FILE}}</a><a href="#guide-start">{{BACK_TO_TOP}}</a></div>
       </footer>
     </main>
   </div>
 
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
-    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
-    <p id="reset-description">이 문서에서 표시한 모든 {{CHAPTER_UNIT}}의 읽음 표시를 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <h2 id="reset-title">{{RESET_TITLE}}</h2>
+    <p id="reset-description">{{RESET_DESCRIPTION}}</p>
     <form method="dialog" class="dialog-actions">
-      <button class="secondary-button" value="cancel" autofocus>취소</button>
-      <button class="danger-button" value="reset">읽음 표시 초기화</button>
+      <button class="secondary-button" value="cancel" autofocus>{{CANCEL}}</button>
+      <button class="danger-button" value="reset">{{RESET_CONFIRM}}</button>
     </form>
   </dialog>
   <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>

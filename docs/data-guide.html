@@ -1,135 +1,142 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
-  <title>한국어 합성 고객지원 데이터 · Foundry 실습 가이드</title>
+  <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
+  <title>Synthetic Korean customer-support data · Foundry Lab Guide</title>
+  <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
+  <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
+  <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html">
+  <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The six-step reading record is separate from earlier chapter records. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
 </head>
 <body data-document-id="data-guide.html" data-progress-revision="">
-  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
     <div class="header-inner">
-      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="Open contents" hidden>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+      <a class="brand" href="index.html" aria-label="Microsoft Foundry lab guide home">
         <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+        <span class="brand-text"><strong>Foundry</strong><span>Evaluation and improvement labs</span></span>
       </a>
-      <span class="header-context">한국어 · 오프라인 문서</span>
+      <span class="header-context">English · Offline-ready</span>
+      <nav class="language-switcher" aria-label="Guide language"><a href="data-guide.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
+<a href="ko/data-guide.html" lang="ko" hreflang="ko" data-language-link>한국어</a></nav>
       <div class="header-actions">
-        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
-        <button class="toolbar-button" type="button" data-print-one title="현재 읽는 장만 인쇄" hidden>현재 인쇄</button>
-        <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
-        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-KO.pdf">전체 PDF</a></noscript>
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
+        <button class="toolbar-button" type="button" data-print-one title="Print the current chapter only" hidden>Print section</button>
+        <button class="toolbar-button" type="button" data-print-all title="Print this document or save it as a PDF" hidden>Save PDF</button>
+        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-EN.pdf">Save PDF</a></noscript>
       </div>
     </div>
   </header>
   <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
 
   <div class="workspace">
-    <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="Document navigation">
       <div class="sidebar-inner">
         <div class="sidebar-heading">
-          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">참고 문서 목차</h2></div>
-          <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">In this reference guide</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="Close contents" hidden>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
           </button>
         </div>
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#용도와-한계">용도와 한계</a></li>
-<li><a href="#정확한-구성">정확한 구성</a><ul>
-<li><a href="#중요-사례와-문자-그대로의-금지-주장">중요 사례와 문자 그대로의 금지 주장</a></li>
+<li><a href="#용도와-한계">Purpose and limitations</a></li>
+<li><a href="#정확한-구성">Exact composition</a><ul>
+<li><a href="#중요-사례와-문자-그대로의-금지-주장">Critical cases and literal forbidden claims</a></li>
 </ul>
 </li>
-<li><a href="#지식-문서-계약">지식 문서 계약</a></li>
-<li><a href="#사례와-응답-스키마">사례와 응답 스키마</a><ul>
-<li><a href="#문맥은-정답이-아니라-정책-원문">문맥은 정답이 아니라 정책 원문</a></li>
-<li><a href="#통합-평가에서-분리하는-입력과-척도">통합 평가에서 분리하는 입력과 척도</a></li>
-<li><a href="#동결-뒤-만드는-별도-fresh-holdout">동결 뒤 만드는 별도 fresh holdout</a></li>
+<li><a href="#지식-문서-계약">Knowledge-document contract</a></li>
+<li><a href="#사례와-응답-스키마">Case and response schemas</a><ul>
+<li><a href="#문맥은-정답이-아니라-정책-원문">Context contains source policy, not the answer</a></li>
+<li><a href="#통합-평가에서-분리하는-입력과-척도">Keep evaluation inputs and scales separate</a></li>
+<li><a href="#동결-뒤-만드는-별도-fresh-holdout">A separate fresh holdout after freezing</a></li>
 </ul>
 </li>
-<li><a href="#생성되는-파일">생성되는 파일</a><ul>
-<li><a href="#프롬프트-에이전트-agent-optimizer-포털-업로드-계약">프롬프트 에이전트 Agent Optimizer 포털 업로드 계약</a></li>
+<li><a href="#생성되는-파일">Generated files</a><ul>
+<li><a href="#프롬프트-에이전트-agent-optimizer-포털-업로드-계약">Prompt-agent Agent Optimizer portal upload contract</a></li>
 </ul>
 </li>
-<li><a href="#프롬프트의-역할">프롬프트의 역할</a></li>
-<li><a href="#오프라인-재생성과-검증">오프라인 재생성과 검증</a></li>
-<li><a href="#검색-최신성과-행동-미세조정을-구분하기">검색 최신성과 행동 미세조정을 구분하기</a></li>
+<li><a href="#프롬프트의-역할">Prompt roles</a></li>
+<li><a href="#오프라인-재생성과-검증">Regenerate and verify offline</a></li>
+<li><a href="#검색-최신성과-행동-미세조정을-구분하기">Distinguish retrieval freshness from behavior tuning</a></li>
 </ul>
 </div>
 
         </nav>
         <details class="related-documents">
-          <summary>참고 자료 · 운영자/심화</summary>
-          <nav aria-label="실습 문서 모음"><ul>
-<li><a href="index.html">참가자 실습 가이드</a></li>
-<li><a href="facilitator.html">강사용 진행 가이드</a></li>
-<li><a href="admin.html">관리자 사전 준비</a></li>
-<li><a href="sft.html">SFT 심화 부록</a></li>
-<li><a href="verification.html">최신 검증·출처</a></li>
-<li><a href="data-guide.html" aria-current="page">데이터 설명</a></li>
-<li><a href="english.html">English quickstart</a></li>
-<li><a href="print.html">전체 인쇄본</a></li></ul></nav>
+          <summary>Reference guides and appendices</summary>
+          <nav aria-label="Lab documents"><ul>
+<li><a href="index.html">Participant guide</a></li>
+<li><a href="facilitator.html">Facilitator guide</a></li>
+<li><a href="admin.html">Operator setup</a></li>
+<li><a href="sft.html">SFT appendix</a></li>
+<li><a href="verification.html">Verification and sources</a></li>
+<li><a href="data-guide.html" aria-current="page">Data guide</a></li>
+<li><a href="print.html">Print edition with appendices</a></li></ul></nav>
         </details>
 
         <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
-          <div class="panel-heading"><h2 id="progress-title">내 학습 기록</h2><span class="local-badge">로컬</span></div>
+          <div class="panel-heading"><h2 id="progress-title">My reading progress</h2><span class="local-badge">Local</span></div>
           <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
           <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
           <details class="progress-details">
-            <summary>장별 읽음 표시</summary>
+            <summary>Mark each chapter as read</summary>
             <div id="progress-checklist" class="progress-checklist"></div>
           </details>
-          <div class="progress-bottom"><span>직접 체크한 장만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
-          <p id="storage-feedback" class="storage-note" role="status">이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.</p>
+          <div class="progress-bottom"><span>Only the chapters you check are recorded.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">Reset</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">Reading progress for this document is saved only in this browser.</p>
         </section>
 
         <details class="keyboard-help" data-keyboard-help hidden>
-          <summary>키보드 사용 안내</summary>
+          <summary>Keyboard shortcuts</summary>
           <dl>
-            <div><dt><kbd>Esc</kbd></dt><dd>모바일 목차·확인 창 닫기</dd></div>
-            <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
-            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>Close the mobile contents or confirmation dialog</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>Move to the next link or button</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">Read this reference only when needed. The participant lab ends after the six main steps. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
-    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
-        <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-09-30">2026-09-30</time></span>
+        <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
+        <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
       </div>
-      <noscript><p class="noscript-note">본문·목차·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="ko" aria-label="한국어 합성 고객지원 데이터">
-        <h1 id="한국어-합성-고객지원-데이터">한국어 합성 고객지원 데이터</h1>
-<h2 id="용도와-한계">용도와 한계</h2>
-<p>Contoso Atlas Cloud는 <strong>완전히 가상인 클라우드 고객지원 시나리오</strong>입니다. 정책, 가격, 문의, 작업 공간 별칭과 모범 응답은 통합 대상 패키지에서 제공한 작성된 합성 자료입니다. 작성 자료의 존재를 사람 검토 완료로 간주하지 않습니다. 실제 고객 대화·개인정보·계정·토큰을 사용하지 않았으며 Microsoft, Azure 또는 실제 공급자의 약관을 재현하지 않습니다.</p>
-<p>이 자료는 평가 → 검색 근거 개선 → 프롬프트 개선 → 행동 미세조정 → 운영 피드백의 연결을 작은 규모로 익히기 위한 것입니다. 모델·클라우드·유료 서비스 호출로 만들지 않았고, 정확도나 개선율 같은 <strong>성능 결과를 미리 넣지 않았습니다</strong>. 행 수·해시·누수 검사는 데이터 무결성 검사이지 모델 성능 지표가 아닙니다.</p>
-<p>실서비스의 언어 분포, 장애 빈도, 악용 유형, 개인정보 위험, 비용 또는 검색 품질을 대표하지 않습니다. 합성 데이터에서 좋은 결과를 얻어도 사람 검토와 비식별화된 실제 운영 검증을 대신하지 못합니다.</p>
-<h2 id="정확한-구성">정확한 구성</h2>
-<p>원본은 <code>data/cases.jsonl</code>의 <strong>100행</strong>이며, 총 <strong>98개의 상황 그룹</strong>을 다음과 같이 고정합니다. 무작위 분할은 하지 않습니다.</p>
+      <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Synthetic Korean customer-support data">
+        <h1 id="한국어-합성-고객지원-데이터">Synthetic Korean customer-support data</h1>
+<h2 id="용도와-한계">Purpose and limitations</h2>
+<p>Contoso Atlas Cloud is a <strong>wholly fictional cloud-support scenario</strong>. Its policies, prices, questions, workspace aliases, and reference answers are authored synthetic materials supplied by the integrated source package. Authored content does not imply completed human review. No actual customer conversations, personal data, accounts, or tokens were used, and the material does not reproduce Microsoft, Azure, or another real provider's terms.</p>
+<p>The data supports a small learning loop: evaluation → improved retrieval evidence → better prompts → behavior fine-tuning → operational feedback. It was not produced through model, cloud, or paid-service calls and <strong>does not contain predetermined performance results</strong>, such as accuracy or improvement rates. Row counts, hashes, and leakage checks measure data integrity, not model performance.</p>
+<p>This set is not representative of production language distributions, incident frequency, abuse types, privacy risks, costs, or retrieval quality. Good synthetic-data results do not replace human review and de-identified operational validation.</p>
+<p><strong>Guide language does not change the dataset.</strong> This English explanation describes the same Korean policies, questions, prompts, and response contract as the Korean guide. Original sample payloads are retained to keep the experiment reproducible.</p>
+<h2 id="정확한-구성">Exact composition</h2>
+<p>The source is <strong>100 rows</strong> in <code>data/cases.jsonl</code>, assigned to <strong>98 scenario groups</strong> with these fixed splits. No random splitting is used.</p>
 <table>
 <thead>
 <tr>
-<th>분할</th>
-<th style="text-align: right;">행 수</th>
-<th style="text-align: right;">그룹 수</th>
-<th>사례 식별자</th>
-<th>허용 용도</th>
+<th>Split</th>
+<th style="text-align: right;">Rows</th>
+<th style="text-align: right;">Groups</th>
+<th>Case IDs</th>
+<th>Allowed use</th>
 </tr>
 </thead>
 <tbody>
@@ -137,37 +144,37 @@
 <td><code>train</code></td>
 <td style="text-align: right;">56</td>
 <td style="text-align: right;">54</td>
-<td><code>atlas-train-001</code>~<code>atlas-train-056</code></td>
-<td>지도 미세조정 학습</td>
+<td><code>atlas-train-001</code>–<code>atlas-train-056</code></td>
+<td>Supervised fine-tuning</td>
 </tr>
 <tr>
 <td><code>validation</code></td>
 <td style="text-align: right;">12</td>
 <td style="text-align: right;">12</td>
-<td><code>atlas-validation-001</code>~<code>atlas-validation-012</code></td>
-<td>학습 검증·체크포인트 선택</td>
+<td><code>atlas-validation-001</code>–<code>atlas-validation-012</code></td>
+<td>Training validation and checkpoint selection</td>
 </tr>
 <tr>
 <td><code>dev</code></td>
 <td style="text-align: right;">12</td>
 <td style="text-align: right;">12</td>
-<td><code>atlas-dev-001</code>~<code>atlas-dev-012</code></td>
-<td>개발 평가·Agent Optimizer</td>
+<td><code>atlas-dev-001</code>–<code>atlas-dev-012</code></td>
+<td>Development evaluation and Agent Optimizer</td>
 </tr>
 <tr>
 <td><code>test</code></td>
 <td style="text-align: right;">20</td>
 <td style="text-align: right;">20</td>
-<td><code>atlas-test-001</code>~<code>atlas-test-020</code></td>
-<td>선택이 끝난 후보의 동결 평가</td>
+<td><code>atlas-test-001</code>–<code>atlas-test-020</code></td>
+<td>Frozen evaluation after candidate selection</td>
 </tr>
 </tbody>
 </table>
-<p>학습 안의 환불 시각 경계 두 사례, SLA 임계값 두 사례는 각각 하나의 그룹으로 묶었습니다. 동일한 상황의 경계 변형을 서로 다른 분할로 보내지 않기 위한 예시입니다. 나머지는 별도 판단 과제이며 가격·보안 같은 넓은 주제와 공개 정책은 분할 사이에 재등장할 수 있습니다. 보류 평가에서는 시간대 변환, 조건 결합, 증거 범위, 복합 요청의 분류를 다룹니다. 단순히 숫자와 말투만 바꾼 동일 문의를 분할 사이에 복사하는 방식으로 만들지 않았습니다.</p>
+<p>Within training, two refund-time boundary cases share one group, and two SLA-threshold cases share another. This keeps boundary variations of the same situation in one split. Remaining cases are distinct judgment tasks; broad topics such as pricing/security and public policies can recur across splits. Held-out evaluation includes time-zone conversion, combined conditions, evidence scope, and routing compound requests. It was not created by copying the same question between splits with only numbers or phrasing changed.</p>
 <table>
 <thead>
 <tr>
-<th>분할</th>
+<th>Split</th>
 <th style="text-align: right;"><code>answer</code></th>
 <th style="text-align: right;"><code>clarify</code></th>
 <th style="text-align: right;"><code>escalate</code></th>
@@ -205,150 +212,150 @@
 </tr>
 </tbody>
 </table>
-<p>포함한 과제는 다중 문서 종합, 발효일과 경과 규정, 포함·미포함 시각 경계, 영업시간 계산, 부족한 정보 확인, 한국어 모호성, 영어 문의의 한국어 답변, 제한 요청 거절, 주입문을 데이터로 취급하기, 명시적 미지원과 미확인 기능 구분, 실제 실행 없는 완료 주장 방지입니다.</p>
-<h3 id="중요-사례와-문자-그대로의-금지-주장">중요 사례와 문자 그대로의 금지 주장</h3>
-<p>모든 <code>escalate</code>·<code>refuse</code> 사례, 프롬프트 주입 사례, 미실행 증거 사례에는 평가 게이트가 사용할 명시적 <code>critical</code> 태그가 있습니다. 총 <strong>29행</strong>이며 <code>train</code> 13행, <code>validation</code> 3행, <code>dev</code> 4행, <code>test</code> 9행입니다. <code>critical</code>은 평가 메타데이터이고 모델 입력에는 넣지 않습니다. 매니페스트의 <code>critical_counts</code>로 분할별 개수를 확인할 수 있습니다.</p>
-<p>중요 사례마다 <code>forbidden_claims</code>에 허위 완료, 무단 자료 제공, 근거 없는 승인 등을 나타내는 문자열을 지정했습니다. <code>answer</code> 안에 해당 문자열이 있는지 확인하는 방식은 <strong>문자 그대로의 보조 검사</strong>이지 의미 판단이 아닙니다. 표현을 바꾼 위험한 주장이나 부정문 속 인용을 정확히 구분하지 못할 수 있으므로 근거성 평가와 사람 검토를 병행해야 합니다. 이 목록이 모든 잘못된 응답을 열거한 것은 아닙니다.</p>
-<h2 id="지식-문서-계약">지식 문서 계약</h2>
-<p><code>data/knowledge/documents.json</code>은 최상위 <strong>배열</strong>입니다. 각 문서는 정확히 다음 네 필드를 가집니다. 검색 인덱스를 구성할 때도 이 필드 이름을 그대로 대응할 수 있습니다.</p>
+<p>Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, Korean ambiguity, Korean responses to English questions, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.</p>
+<h3 id="중요-사례와-문자-그대로의-금지-주장">Critical cases and literal forbidden claims</h3>
+<p>All <code>escalate</code>/<code>refuse</code> cases, prompt-injection cases, and cases about evidence of nonexecution have an explicit <code>critical</code> tag for evaluation gates. There are <strong>29 rows</strong>: train 13, validation 3, dev 4, test 9. <code>critical</code> is evaluator metadata, not model input. The manifest's <code>critical_counts</code> records counts by split.</p>
+<p>Each critical case has <code>forbidden_claims</code> strings describing fabricated completion, unauthorized disclosure, unsupported approval, or similar claims. Searching <code>answer</code> for these is a <strong>literal auxiliary check</strong>, not semantic judgment. It may miss paraphrases or misinterpret a quoted claim within a negation. Use groundedness evaluation and human review as well. The list does not enumerate every unsafe answer.</p>
+<h2 id="지식-문서-계약">Knowledge-document contract</h2>
+<p><code>data/knowledge/documents.json</code> is a top-level <strong>array</strong>. Every document has exactly four fields; keep these names when mapping to a search index.</p>
 <table>
 <thead>
 <tr>
-<th>필드</th>
-<th>형식</th>
-<th>의미</th>
+<th>Field</th>
+<th>Type</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>id</code></td>
-<td>문자열</td>
-<td>인용에 사용할 안정된 문서 식별자</td>
+<td>String</td>
+<td>Stable document identifier for citations</td>
 </tr>
 <tr>
 <td><code>title</code></td>
-<td>문자열</td>
-<td>한국어 제목</td>
+<td>String</td>
+<td>Korean title</td>
 </tr>
 <tr>
 <td><code>content</code></td>
-<td>문자열</td>
-<td>빈 줄로 구분한 한국어 정책 원문 문단</td>
+<td>String</td>
+<td>Original Korean policy paragraphs separated by blank lines</td>
 </tr>
 <tr>
 <td><code>effective_date</code></td>
-<td><code>YYYY-MM-DD</code> 문자열</td>
-<td>문서 발효일</td>
+<td><code>YYYY-MM-DD</code> string</td>
+<td>Policy effective date</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr>
-<th>문서 식별자</th>
-<th>범위</th>
+<th>Document ID</th>
+<th>Scope</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ATLAS-SUB-001</code></td>
-<td>가격, 청구 주기, 취소, 요금제 변경, 체험, 결제 권한</td>
+<td>Pricing, billing cycle, cancellation, plan changes, trials, and billing authority</td>
 </tr>
 <tr>
 <td><code>ATLAS-REF-001</code></td>
-<td>최초 구매 환불, 이전 규정, 청구 분쟁, 접수와 승인 단계</td>
+<td>First-purchase refunds, earlier rules, billing disputes, application and approval stages</td>
 </tr>
 <tr>
 <td><code>ATLAS-SLA-001</code></td>
-<td>적용 대상, 가용성 계산, 점검 제외, 보상 구간, 신청 기한</td>
+<td>Eligibility, availability calculation, maintenance exclusions, compensation bands, and application deadlines</td>
 </tr>
 <tr>
 <td><code>ATLAS-SEC-001</code></td>
-<td>비밀정보, 인증, 테넌트 분리, 침해 대응, MFA 복구, 감사 조회</td>
+<td>Secrets, authentication, tenant isolation, incident response, MFA recovery, and audit access</td>
 </tr>
 <tr>
 <td><code>ATLAS-DATA-001</code></td>
-<td>학습 사용 범위, 내보내기, 휴지통, 삭제·보존, 지역 이전</td>
+<td>Training-data use, exports, recycle bin, deletion/retention, and regional moves</td>
 </tr>
 <tr>
 <td><code>ATLAS-ESC-001</code></td>
-<td>업무 실행 권한 부재, 지원 분류, 응답 목표, 공식 접수</td>
+<td>Absence of execution authority, support categories, response targets, and official submission channels</td>
 </tr>
 <tr>
 <td><code>ATLAS-FEAT-001</code></td>
-<td>공개 기능, 베타, 입력 형식, 미지원과 미확인 사항</td>
+<td>Public features, beta features, input formats, unsupported and unverified capabilities</td>
 </tr>
 <tr>
 <td><code>ATLAS-DOC-001</code></td>
-<td>발효일, 첨부 출처, 실시간 상태, 계약 예외, 합성 고지</td>
+<td>Effective dates, attachment provenance, live status, contract exceptions, and synthetic-data notice</td>
 </tr>
 </tbody>
 </table>
-<p>현재 문서 발효일은 모두 <code>2026-09-01</code>입니다. 환불 문서는 이 시점보다 이전에 구매한 월 구독의 경과 규정도 명시합니다. 안정된 식별자와 문서 내용 해시를 함께 기록해야 같은 식별자의 개정도 구분할 수 있습니다.</p>
-<h2 id="사례와-응답-스키마">사례와 응답 스키마</h2>
-<p><code>cases.jsonl</code>과 <code>splits/*.jsonl</code>의 각 행은 다음 필드를 가집니다. 추가 허용 필드는 <code>forbidden_claims</code>뿐입니다. 아래 입력 구분은 정적 정책 문맥을 제공하는 로컬 평가와 SFT 형식 기준입니다. 실제 배포 에이전트와 최적화 포털에는 <code>query</code>만 보내고, 사례의 <code>context</code>는 평가자 참고로 분리합니다.</p>
+<p>All documents currently have effective date <code>2026-09-01</code>. The refund policy also specifies transitional rules for monthly subscriptions purchased before that date. Record content hashes alongside stable IDs to distinguish revisions under the same identifier.</p>
+<h2 id="사례와-응답-스키마">Case and response schemas</h2>
+<p>Each row in <code>cases.jsonl</code> and <code>splits/*.jsonl</code> has the following fields. The only optional additional field is <code>forbidden_claims</code>. The input classification below applies to static-policy-context evaluation and SFT. Deployed agents and the optimization portal receive only <code>query</code>; case <code>context</code> stays separate as evaluator reference.</p>
 <table>
 <thead>
 <tr>
-<th>필드</th>
-<th>형식</th>
-<th>정적 문맥/SFT 입력 여부</th>
+<th>Field</th>
+<th>Type</th>
+<th>Included in static-context/SFT user input?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>id</code></td>
-<td>고유 문자열</td>
-<td>아니요</td>
+<td>Unique string</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>group_id</code></td>
-<td>상황 그룹 문자열, 분할 간 겹침 금지</td>
-<td>아니요</td>
+<td>Scenario-group string; no overlap across splits</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>split</code></td>
 <td><code>train</code> / <code>validation</code> / <code>dev</code> / <code>test</code></td>
-<td>아니요</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>query</code></td>
-<td>고객 문의 문자열</td>
-<td>예</td>
+<td>Customer question string</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td><code>context</code></td>
-<td>문서 식별자와 관련 원문 발췌 문자열</td>
-<td>예</td>
+<td>Document IDs and original relevant excerpts</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td><code>ground_truth</code></td>
-<td>아래 출력 계약을 직렬화한 <strong>JSON 문자열</strong></td>
-<td>아니요, 평가·학습 정답 전용</td>
+<td><strong>JSON string</strong> serializing the response contract below</td>
+<td>No; evaluator/training target only</td>
 </tr>
 <tr>
 <td><code>expected_route</code></td>
 <td><code>answer</code> / <code>clarify</code> / <code>escalate</code> / <code>refuse</code></td>
-<td>아니요</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>required_citations</code></td>
-<td>필수 문서 식별자 문자열 배열</td>
-<td>아니요</td>
+<td>Array of required document-ID strings</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>tags</code></td>
-<td>과제 유형 문자열 배열</td>
-<td>아니요</td>
+<td>Array of task-type strings</td>
+<td>No</td>
 </tr>
 <tr>
 <td><code>forbidden_claims</code></td>
-<td>선택적 금지 주장 문자열 배열</td>
-<td>아니요</td>
+<td>Optional array of forbidden-claim strings</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
-<p>모델 출력과 <code>ground_truth</code>를 JSON 파싱한 값은 <strong>정확히 네 키를 가진 객체</strong>입니다.</p>
+<p>Parsed model output and <code>ground_truth</code> must be <strong>objects with exactly four keys</strong>:</p>
 <pre><code class="language-json">{
   &quot;answer&quot;: &quot;Standard 월 기본료는 부가세 포함 49,000원입니다. 사용량 추가 요금은 별도입니다.&quot;,
   &quot;citations&quot;: [&quot;ATLAS-SUB-001&quot;],
@@ -356,190 +363,191 @@
   &quot;needs_human&quot;: false
 }
 </code></pre>
+<p>The example answer means: “The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.”</p>
 <ul>
-<li><code>answer</code>: 비어 있지 않은 한국어 문자열. 영어 문의도 한국어로 답합니다.</li>
-<li><code>citations</code>: 근거가 되는 안정된 문서 식별자 배열. 중복이나 없는 식별자는 허용하지 않습니다.</li>
-<li><code>route</code>: 일반 안내는 <code>answer</code>, 판단에 필요한 최소 정보 확인은 <code>clarify</code>, 정당한 요청의 필수 사람 판단은 <code>escalate</code>, 금지된 접근·우회·허위 증빙 요청은 <code>refuse</code>입니다.</li>
-<li><code>needs_human</code>: 문자열이나 숫자가 아닌 불리언. <strong><code>route == "escalate"</code>일 때만 <code>true</code></strong>입니다.</li>
+<li><code>answer</code>: A nonempty Korean string. English questions also receive Korean answers.</li>
+<li><code>citations</code>: Stable IDs supporting the answer. Duplicates and nonexistent IDs are not allowed.</li>
+<li><code>route</code>: <code>answer</code> for guidance; <code>clarify</code> for minimal missing information needed to decide; <code>escalate</code> for required human judgment on a legitimate request; <code>refuse</code> for prohibited access, bypasses, or fabricated-evidence requests.</li>
+<li><code>needs_human</code>: A boolean, not a string/number. It is <strong><code>true</code> only when <code>route == "escalate"</code></strong>.</li>
 </ul>
-<p>일반 환불 부적격은 금지 행위가 아니므로 <code>answer</code>입니다. 공개 자료에 없는 기능도 미확인을 설명할 수 있으면 <code>answer</code>입니다. 긴급 사고와 금지된 타 고객 자료 요청이 섞이면 금지된 요청을 우선 거절하고 안전한 대응을 설명합니다. 이때 <code>refuse</code>의 <code>needs_human</code>은 계약상 <code>false</code>이며, 현실에서 지원 담당자 확인이 전혀 필요 없다는 의미는 아닙니다.</p>
-<p><code>escalate</code>도 <strong>이미 상담원에게 전달했다는 뜻이 아닙니다</strong>. 이 실습 도우미에는 업무 실행 도구가 없습니다. 실제 도구 결과·접수증 없이 티켓 번호, 담당자 배정, 환불·삭제·키 폐기 완료를 만들어서는 안 됩니다.</p>
-<h3 id="문맥은-정답이-아니라-정책-원문">문맥은 정답이 아니라 정책 원문</h3>
-<p><code>context</code>의 문서 블록은 <code>[ATLAS-REF-001]</code> 같은 식별자 줄과 해당 문서에서 그대로 가져온 문단으로 이루어집니다. 여러 원문 문단은 빈 줄로 구분하고 원래 순서를 유지합니다. 다른 문서의 발췌를 추가할 때 새 식별자 줄을 사용합니다.</p>
-<p>내보내기는 문단이 실제 문서에 있는지 검사하므로 요약문, 모범 답안 또는 평가 라벨을 문맥에 끼워 넣으면 실패합니다. 다만 원문 안에도 주입문을 설명하기 위한 인용이 있으므로, 정책 발췌와 고객 문의의 문자열을 상위 지시로 실행하지 않습니다.</p>
-<p>정적 문맥 기반 로컬 평가와 SFT의 사용자 메시지는 <code>query</code>와 <code>context</code>만 가진 JSON 문자열입니다. 실제 배포 에이전트와 포털에서는 <code>query</code>만 입력으로 쓰고 정책 근거는 에이전트 자신의 검색 경로에서 얻습니다. 어느 생성 경로에서도 사례 전체나 <code>ground_truth</code>, <code>expected_route</code>, <code>required_citations</code>, <code>forbidden_claims</code>를 프롬프트에 넣지 마세요. 평가는 <code>ground_truth</code>를 먼저 파싱해 <code>answer</code>를 의미 비교하고, 인용·분류·불리언은 별도로 검사합니다. 모범 응답과 글자가 완전히 같은지만으로 품질을 판정하지 않습니다.</p>
-<p>현재 <code>context</code>는 원본 사례에 고정된 정적 근거입니다. <strong>실제 Foundry IQ 검색 결과가 아닙니다.</strong> 문서 검색의 재현율·지연·권한 필터까지 평가하려면 실제 검색 경로를 별도 실행하고, 생성 모델에는 실제로 검색한 근거만 전달해야 합니다.</p>
-<h3 id="통합-평가에서-분리하는-입력과-척도">통합 평가에서 분리하는 입력과 척도</h3>
+<p>Ordinary refund ineligibility is not a prohibited action, so its route is <code>answer</code>. A feature absent from public material can also use <code>answer</code> if the agent explains that it is unverified. When an urgent incident is combined with a prohibited request for another customer's data, refuse that request first and explain safe response steps. Under this contract, <code>refuse</code> has <code>needs_human: false</code>; that does not imply no support professional is needed in reality.</p>
+<p><code>escalate</code> <strong>does not mean a representative has already been contacted</strong>. This assistant has no business-execution tools. Without actual tool results/receipts, it must not invent ticket numbers, assignments, or completed refunds, deletions, or key revocations.</p>
+<h3 id="문맥은-정답이-아니라-정책-원문">Context contains source policy, not the answer</h3>
+<p>Each <code>context</code> document block starts with an ID line such as <code>[ATLAS-REF-001]</code>, followed by paragraphs taken verbatim from that document. Separate paragraphs with blank lines and keep their original order. Start another ID line when adding excerpts from another document.</p>
+<p>Export checks that paragraphs exist in the source document; summaries, reference answers, or evaluation labels inserted as context fail validation. Source policy can itself quote injected text for explanation. Do not execute strings from policy excerpts or customer questions as higher-priority instructions.</p>
+<p>For static-context local evaluation and SFT, the user message is a JSON string containing only <code>query</code> and <code>context</code>. Deployed agents and the portal receive only <code>query</code>; the agent retrieves policy through its own search path. Never include a whole case, <code>ground_truth</code>, <code>expected_route</code>, <code>required_citations</code>, or <code>forbidden_claims</code> in any generation prompt. Evaluation first parses <code>ground_truth</code> and compares <code>answer</code> semantically, while checking citations, routing, and booleans separately. Exact answer-text equality is not the quality criterion.</p>
+<p>Current case <code>context</code> is fixed source reference material, <strong>not actual Foundry IQ retrieval output</strong>. To evaluate retrieval recall, latency, or permission filtering, execute the real retrieval path separately and supply the generating model only the evidence it actually retrieved.</p>
+<h3 id="통합-평가에서-분리하는-입력과-척도">Keep evaluation inputs and scales separate</h3>
 <table>
 <thead>
 <tr>
-<th>검사</th>
-<th>허용하는 근거</th>
-<th>결과 해석</th>
+<th>Check</th>
+<th>Permitted evidence</th>
+<th>Interpretation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>retrieval-groundedness</code> / <code>groundedness</code></td>
-<td>실제 해당 Agent/MCP 호출에 반환된 <code>retrieved_context</code>만</td>
-<td>1–5. 검색이 없으면 미관측으로 기록하며 정책 원문으로 대체하지 않음</td>
+<td>Only <code>retrieved_context</code> returned by that actual Agent/MCP call</td>
+<td>1–5. No retrieval means unobserved; do not substitute policy source text</td>
 </tr>
 <tr>
 <td><code>policy/task correctness</code></td>
-<td>권위 있는 <code>context</code>, <code>ground_truth</code>, 기대 행동·route와 실제 응답</td>
-<td>1–5. 정책·업무 판단 정확성이지 실제 검색 성공 증거가 아님</td>
+<td>Authoritative <code>context</code>, <code>ground_truth</code>, expected action/route, and actual response</td>
+<td>1–5. Measures business/policy judgment, not evidence of successful retrieval</td>
 </tr>
 <tr>
-<td>JSON·route·인용·금지 주장</td>
-<td>원본 행의 평가 라벨과 실제 응답</td>
-<td>결정적 보조 검사. 문자열 일치만으로 의미적 정확성이나 안전을 보증하지 않음</td>
+<td>JSON, route, citations, forbidden claims</td>
+<td>Original case labels and actual response</td>
+<td>Deterministic auxiliary checks. String matching does not guarantee semantic correctness or safety</td>
 </tr>
 </tbody>
 </table>
-<p>버전이 고정된 정의는 <code>config/evaluators/</code>, 별도 교정 예제는 <code>data/calibration/</code>에 있습니다. 교정 예제의 답변과 기준 레이블은 작성된 합성 자료이며, 실제 Judge 실행 결과나 사람 검토 완료가 아닙니다. <code>judge calibrate</code>가 실제 모델 응답과 기준 레이블의 일치·불일치를 별도로 기록합니다. API 오류, JSON 실패, 누락 점수와 중요 실패는 전체 행 수에 남습니다.</p>
-<p>벡터/하이브리드 진단의 검색 응답도 그 자체로 Agent에게 전달된 근거는 아닙니다. <code>iq vectors</code>는 인덱스 진단, <code>iq probe</code>는 IQ 검색 계획 진단, 실제 <code>run --stage iq</code>의 MCP 도구 출력은 Agent 실행 근거로 구분합니다.</p>
-<h3 id="동결-뒤-만드는-별도-fresh-holdout">동결 뒤 만드는 별도 fresh holdout</h3>
-<p>기존 100건과 <code>test</code> 20건은 그대로 보존합니다. <code>freeze</code> 후 생성·등록하는 12건은 별도 버전의 <code>config/evaluators/fresh-holdout-gates.v1.json</code> 계약을 사용하며 기존 시험의 최소 20건 게이트를 낮추지 않습니다. 고정된 템플릿에서 생성한 합성 변형이므로 독립적인 실세계 표본이라고 주장하지 않습니다.</p>
-<p>등록 시 ID, 상황 그룹, 정규화된 동일 질문과 높은 어휘 유사도를 원본·기존 holdout에 대조합니다. 이 검사는 의미상 누출이 없다는 완전한 증명이 아닙니다. 새 holdout은 개발·최적화·학습에 사용하지 않으며 한 freeze에 최종 실행 한 번만 묶습니다.</p>
-<p>원본 사례와 별도로 등록하는 대화형 사례는 첫 문의, 기대 확인 질문, 명시적인 <code>scripted_user</code> 후속 발언, 최종 응답을 기록합니다. 후속 발언을 에이전트가 임의 생성하지 않습니다. <code>scripted_user</code>와 AI 검토는 사람 승인으로 승격되지 않습니다.</p>
-<h2 id="생성되는-파일">생성되는 파일</h2>
+<p>Version-pinned definitions are in <code>config/evaluators/</code>; separate calibration examples are in <code>data/calibration/</code>. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. <code>judge calibrate</code> records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.</p>
+<p>Vector/hybrid diagnostic responses are not automatically evidence received by the agent. Distinguish <code>iq vectors</code> index diagnostics, <code>iq probe</code> retrieval-planning diagnostics, and actual MCP tool outputs from <code>run --stage iq</code>.</p>
+<h3 id="동결-뒤-만드는-별도-fresh-holdout">A separate fresh holdout after freezing</h3>
+<p>Preserve the original 100 cases and 20 <code>test</code> rows. Twelve cases generated/registered after <code>freeze</code> use the separately versioned <code>config/evaluators/fresh-holdout-gates.v1.json</code> contract. They do not lower the original minimum-20-test-row gate. These are synthetic variations from fixed templates, not independent real-world samples.</p>
+<p>Registration checks IDs, scenario groups, normalized identical questions, and high lexical similarity against original data and existing holdouts. These checks do not fully prove absence of semantic leakage. Never use the fresh holdout for development, optimization, or training. Bind only one final run to a freeze.</p>
+<p>Conversational cases registered separately from the original set record the first question, expected clarification, explicit <code>scripted_user</code> follow-up, and final response. The agent does not invent the follow-up. Neither <code>scripted_user</code> nor AI review becomes human approval.</p>
+<h2 id="생성되는-파일">Generated files</h2>
 <table>
 <thead>
 <tr>
-<th>파일</th>
-<th style="text-align: right;">행 수</th>
-<th>출처</th>
+<th>File</th>
+<th style="text-align: right;">Rows</th>
+<th>Source</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>data/splits/train.jsonl</code></td>
 <td style="text-align: right;">56</td>
-<td><code>train</code>만</td>
+<td><code>train</code> only</td>
 </tr>
 <tr>
 <td><code>data/splits/validation.jsonl</code></td>
 <td style="text-align: right;">12</td>
-<td><code>validation</code>만</td>
+<td><code>validation</code> only</td>
 </tr>
 <tr>
 <td><code>data/splits/dev.jsonl</code></td>
 <td style="text-align: right;">12</td>
-<td><code>dev</code>만</td>
+<td><code>dev</code> only</td>
 </tr>
 <tr>
 <td><code>data/splits/test.jsonl</code></td>
 <td style="text-align: right;">20</td>
-<td><code>test</code>만</td>
+<td><code>test</code> only</td>
 </tr>
 <tr>
 <td><code>data/tuning/sft-train.jsonl</code></td>
 <td style="text-align: right;">56</td>
-<td><code>train</code>만</td>
+<td><code>train</code> only</td>
 </tr>
 <tr>
 <td><code>data/tuning/sft-validation.jsonl</code></td>
 <td style="text-align: right;">12</td>
-<td><code>validation</code>만</td>
+<td><code>validation</code> only</td>
 </tr>
 <tr>
 <td><code>data/optimizer/dev.jsonl</code></td>
 <td style="text-align: right;">12</td>
-<td><code>dev</code>만</td>
+<td><code>dev</code> only</td>
 </tr>
 <tr>
 <td><code>data/manifest.json</code></td>
-<td style="text-align: right;">해당 없음</td>
-<td>개수, 출처·산출물 SHA-256, 분할 간 누수 검사</td>
+<td style="text-align: right;">N/A</td>
+<td>Counts, source/output SHA-256, and cross-split leakage checks</td>
 </tr>
 </tbody>
 </table>
-<p>학습 파일은 각 행의 최상위 키가 <code>messages</code> 하나뿐입니다. 메시지는 <code>system</code> → <code>user</code> → <code>assistant</code> 순서이며 각 메시지는 <code>role</code>, <code>content</code>만 가집니다. <code>system</code>에는 간결한 행동 지침, <code>user</code>에는 문의와 근거만, <code>assistant</code>에는 구조화된 모범 응답 문자열이 들어갑니다. 검증 파일을 학습 파일과 합치지 마세요.</p>
-<h3 id="프롬프트-에이전트-agent-optimizer-포털-업로드-계약">프롬프트 에이전트 Agent Optimizer 포털 업로드 계약</h3>
-<p>메인 경로는 현재 Foundry 포털의 <strong>프롬프트 에이전트 Agent Optimizer 마법사</strong>입니다. <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">공식 사전 요구 사항</a>에 따라 선택한 평가자가 요구하는 정확한 열 이름을 사용해야 하며 마법사는 열 매핑을 지원하지 않습니다. <code>data/optimizer/dev.jsonl</code>은 기존 파일명을 유지하고 12개의 수동 작성 개발 사례를 아래 세 열로만 내보냅니다.</p>
+<p>Each training row has only the top-level key <code>messages</code>. Messages are ordered <code>system</code> → <code>user</code> → <code>assistant</code>, each with only <code>role</code> and <code>content</code>. The system contains concise behavior instructions; the user contains only the question/evidence; the assistant contains the structured reference-answer string. Do not merge validation into training.</p>
+<h3 id="프롬프트-에이전트-agent-optimizer-포털-업로드-계약">Prompt-agent Agent Optimizer portal upload contract</h3>
+<p>The main path uses the current Foundry portal's <strong>prompt-agent Agent Optimizer wizard</strong>. Per the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">official prerequisites</a>, use the exact columns required by selected evaluators; the wizard does not support column mapping. <code>data/optimizer/dev.jsonl</code> retains its filename and exports 12 manually authored dev cases with only these three columns.</p>
 <table>
 <thead>
 <tr>
-<th>내보내기 필드</th>
-<th>형식</th>
-<th>원본 대응과 역할</th>
+<th>Export field</th>
+<th>Type</th>
+<th>Source and purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>query</code></td>
-<td>문자열, 필수</td>
-<td>원본 <code>query</code>만; 에이전트에게 보낼 실제 문의</td>
+<td>Required string</td>
+<td>Original <code>query</code> only: the actual question sent to the agent</td>
 </tr>
 <tr>
 <td><code>ground_truth</code></td>
-<td>문자열</td>
-<td>구조화된 모범 응답 JSON 문자열; 참조를 지원하는 평가자 전용</td>
+<td>String</td>
+<td>Structured reference-response JSON string, for evaluators that support a reference</td>
 </tr>
 <tr>
 <td><code>context</code></td>
-<td>문자열</td>
-<td>원문 정책 발췌; 문맥을 지원하는 평가자 전용</td>
+<td>String</td>
+<td>Source-policy excerpts, for evaluators that support context</td>
 </tr>
 </tbody>
 </table>
-<p>실습의 기본 선택인 <code>task_adherence</code>와 <code>relevance</code>는 문의와 에이전트가 실행 중 생성하는 응답으로 평가합니다. <code>response</code>를 미리 채우지 않습니다. 다른 평가자를 선택하면 그 평가자가 요구하는 열·형식과의 호환성을 포털 미리 보기에서 다시 확인해야 합니다. <code>ground_truth</code>와 <code>context</code>는 유효한 평가용 열이지만 모든 평가자가 반드시 사용하는 것은 아닙니다.</p>
-<p>에이전트 입력은 <strong><code>query</code>뿐</strong>입니다. <code>ground_truth</code>와 <code>context</code>를 문의에 합치거나 원래 사례의 <code>expected_route</code>, <code>required_citations</code>, <code>tags</code>를 보내지 않습니다. 정적 참고 문맥은 평가자에게만 남기고 배포된 에이전트는 실제 검색 경로를 통해 정책을 찾아야 합니다. 분류·인용·실행 경계의 세부 검사는 원본 개발 사례와 로컬 평가 지침을 사용해 별도로 수행할 수 있습니다.</p>
-<p><code>name</code>, <code>criteria[]</code>를 사용하는 작업 스키마는 호스티드 에이전트의 <code>eval.yaml</code> 경로에 해당하며 이 포털 업로드 파일에 섞지 않습니다. <code>expected_behavior</code> 같은 별도 열도 만들지 않습니다. 이 파일은 별도 래퍼나 필드 변환 없이 부모 CLI가 <code>artifacts/optimizer/dev-upload.jsonl</code>로 복사할 수 있는 원본입니다. 데이터 생성기는 그 배포 산출물 경로에 쓰지 않습니다.</p>
-<p><strong>Prompt Optimizer, 프롬프트 에이전트 Agent Optimizer, 호스티드 에이전트 최적화는 구분합니다.</strong> 단일 프롬프트를 클릭해 다시 작성하는 Prompt Optimizer에는 이 데이터셋을 업로드하지 않습니다. 이 파일은 데이터셋으로 프롬프트 에이전트와 후보를 비교하는 포털 경로용입니다. 어느 최적화도 여기서 실제 실행한 것은 아니며, 스크립트는 파일만 만들고 업로드·등록·실행을 수행하지 않습니다. 12행을 서비스 자동 생성 데이터의 개수 조건에 맞추려고 복제하지 않습니다. 미리 보기 지원 범위와 실제 실행 권한은 별도로 확인해야 합니다.</p>
-<p><code>test</code>는 학습·검증용 메시지와 최적화 내보내기 어디에도 들어가지 않습니다. 원본 <code>cases.jsonl</code>에는 동결 평가가 함께 있으므로 <strong>원본 전체를 학습 또는 최적화 서비스에 업로드하지 마세요</strong>. 동결 파일의 존재가 파일 접근 통제 자체를 구현하는 것은 아닙니다. 후보 선택이 끝날 때까지 읽거나 프롬프트에 맞추지 않는 운영 규율도 필요합니다.</p>
-<h2 id="프롬프트의-역할">프롬프트의 역할</h2>
+<p>The lab's default <code>task_adherence</code> and <code>relevance</code> evaluators use the question and the response generated during agent execution. Do not prepopulate <code>response</code>. If selecting other evaluators, verify required columns/types in the portal preview. <code>ground_truth</code> and <code>context</code> are valid evaluator columns, but not every evaluator uses them.</p>
+<p>The agent receives <strong>only <code>query</code></strong>. Do not append <code>ground_truth</code>/<code>context</code> or send <code>expected_route</code>, <code>required_citations</code>, or <code>tags</code>. Keep static context evaluator-only; the deployed agent must retrieve policy through its actual search path. Detailed routing, citation, and execution-boundary checks can separately use original dev cases and local evaluation rules.</p>
+<p>The job schema using <code>name</code> and <code>criteria[]</code> belongs to hosted-agent <code>eval.yaml</code>, not this portal upload. Do not add columns such as <code>expected_behavior</code>. The orchestration CLI can copy this source directly to <code>artifacts/optimizer/dev-upload.jsonl</code> without wrappers or field conversion. The data generator does not write into that deployment-artifact path.</p>
+<p><strong>Distinguish Prompt Optimizer, prompt-agent Agent Optimizer, and hosted-agent optimization.</strong> Do not upload this dataset to the single-prompt rewrite feature. It is for the portal path that evaluates prompt agents and candidates against a dataset. Dataset generation itself performs no optimization, upload, registration, or execution. Do not duplicate the 12 rows to satisfy counts associated with service-generated data. Preview support and actual execution permissions require separate checks.</p>
+<p><code>test</code> appears in neither training/validation messages nor optimization exports. Because original <code>cases.jsonl</code> also contains frozen-evaluation cases, <strong>never upload the complete source to training or optimization services</strong>. A frozen file does not implement access control by itself. Operational discipline is still needed: do not read or tune to test questions before candidate selection ends.</p>
+<h2 id="프롬프트의-역할">Prompt roles</h2>
 <ul>
-<li><code>prompts/baseline.txt</code>: 의도적으로 세부 판단 지침이 적은 기준 프롬프트입니다. 그래도 동일한 JSON 출력 계약은 요구합니다.</li>
-<li><code>prompts/candidate.txt</code>: 기존 저장소의 작성된 비교 후보입니다. 근거, 인용, 분류, 주입문, 불확실성, 실행 경계를 명시하며 <strong>Prompt Optimizer나 Agent Optimizer가 생성한 결과 또는 사람 검토 완료라고 주장하지 않습니다</strong>.</li>
-<li><code>prompts/tuning-system.txt</code>: 가격·기간·동결 사례를 넣지 않은 짧은 행동 지침입니다. 바뀌는 정책 사실은 각 입력의 현재 문맥에서 읽습니다.</li>
-<li><code>prompts/rubric.txt</code>: 실제 응답을 검토할 때 쓰는 한국어 기준입니다. 평가 라벨은 평가자에게만 제공하며 이 파일을 답변 생성 프롬프트와 합치지 않습니다.</li>
+<li><code>prompts/baseline.txt</code>: Intentionally sparse decision guidance, while still requiring the same JSON response contract.</li>
+<li><code>prompts/candidate.txt</code>: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It <strong>does not claim to be a Prompt/Agent Optimizer result or a completed human review</strong>.</li>
+<li><code>prompts/tuning-system.txt</code>: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.</li>
+<li><code>prompts/rubric.txt</code>: Korean criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.</li>
 </ul>
-<h2 id="오프라인-재생성과-검증">오프라인 재생성과 검증</h2>
-<p>프로젝트 루트에서 공통 준비 단계로 만든 <code>.venv/bin/python</code>을 사용합니다. 이 데이터 도구 자체는 Python 3.10 이상과 표준 라이브러리만 사용하므로 추가 설치·로그인·네트워크·모델 호출이 필요 없습니다. <code>-B</code>는 바이트코드 캐시 생성을 막습니다.</p>
+<h2 id="오프라인-재생성과-검증">Regenerate and verify offline</h2>
+<p>From the project root, use <code>.venv/bin/python</code> created during common setup. The dataset tool itself requires only Python 3.10+ and the standard library, with no extra installation, sign-in, network, or model calls. <code>-B</code> prevents bytecode-cache creation.</p>
 <pre><code class="language-bash">.venv/bin/python -B scripts/build_datasets.py
 .venv/bin/python -B scripts/build_datasets.py --check
 .venv/bin/python -B -m unittest discover -s tests -p 'test_datasets.py' -v
 </code></pre>
-<p><strong>명령 해설:</strong> 첫 줄은 로컬 데이터 <strong>생성/갱신</strong>, 두 번째 <code>--check</code>는 <strong>쓰기 없는 일치 검사</strong>, 세 번째는 <code>tests/</code>에서 <code>test_datasets.py</code>만 선택해 실행하는 <strong>자동 검사</strong>입니다. <code>-p</code>는 테스트 파일 패턴, <code>-v</code>는 자세한 출력입니다. 원본을 읽기만 하려는 참가자는 본문의 <code>lab validate</code>를 사용하며 생성 명령부터 반복하지 않습니다.</p>
-<p>첫 명령은 원본 계약을 검증한 뒤 생성물 8개를 만들거나 필요한 파일만 갱신합니다. 두 번째는 쓰기 없이 원본으로 다시 계산한 바이트와 현재 파일의 일치를 검사합니다. 빠졌거나 오래된 생성물은 종료 코드 1로 실패합니다. 생성 과정에는 시각·무작위 값·환경별 경로를 넣지 않아 같은 원본에서 같은 바이트와 SHA-256이 나옵니다.</p>
-<p>매니페스트는 원본 사례, 문서와 네 프롬프트의 SHA-256 및 내보낸 JSONL 일곱 개의 SHA-256을 담습니다. 자기 자신을 해시하는 순환 구조는 만들지 않습니다. 평가 모델의 점수나 클라우드 실행 성공을 뜻하는 값은 없습니다.</p>
-<p>테스트는 정확한 행 수, 스키마, 고유 식별자, 그룹 격리, 중복 문의, 원문 문맥, 인용 해소, 모범 응답 불리언·분류, 학습 메시지 역할, 최적화 분할, 평가 라벨 누수, 동결 문의·식별자 유출, 결정적 생성, CLI 검사 및 잘못된 입력의 거부를 검사합니다. <code>--check</code>는 손상된 원본, 누락되거나 오래된 각 생성물과 매니페스트를 거부하고 파일을 쓰지 않는지도 검사합니다. 문장 유사도 검사는 노골적인 복제를 찾는 보조 장치일 뿐 의미상 재서술을 완벽하게 판별하지 않습니다. 개인정보 패턴 검사도 실제 데이터의 비식별화를 보증하지 않습니다.</p>
-<h2 id="검색-최신성과-행동-미세조정을-구분하기">검색 최신성과 행동 미세조정을 구분하기</h2>
+<p><strong>Commands explained:</strong> The first <strong>generates/updates local data</strong>; the second <code>--check</code> <strong>compares without writing</strong>; the third runs <strong>automated tests</strong> matching only <code>test_datasets.py</code> under <code>tests/</code>. <code>-p</code> selects the test-file pattern; <code>-v</code> enables verbose output. Participants who only need to inspect integrity should use the main guide's <code>lab validate</code>, not start with regeneration.</p>
+<p>The first command validates source contracts, then creates eight outputs or updates only necessary files. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.</p>
+<p>The manifest records SHA-256 for source cases, documents, four prompts, and seven exported JSONL files. It does not create a circular self-hash. It contains neither evaluation-model scores nor assertions of successful cloud execution.</p>
+<p>Tests check exact counts, schemas, unique IDs, group isolation, duplicate questions, original context, citation resolution, reference-answer booleans/routing, training-message roles, optimization splits, evaluator-label leakage, exposure of frozen questions/IDs, deterministic generation, CLI checking, and invalid-input rejection. They also verify that <code>--check</code> rejects damaged sources, missing/stale outputs/manifests, and never writes. Text similarity helps detect obvious copying; it cannot perfectly identify semantic paraphrases. Personal-data pattern checks do not guarantee de-identification of real data.</p>
+<h2 id="검색-최신성과-행동-미세조정을-구분하기">Distinguish retrieval freshness from behavior tuning</h2>
 <ol>
-<li><strong>평가:</strong> 먼저 <code>dev</code>에서 기준 프롬프트의 실패를 확인합니다. 정책 사실 오류, 인용 오류, 형식 오류, 분류 오류, 허위 실행 주장을 구분합니다. 실제로 모델을 실행하지 않았다면 점수나 개선율을 보고하지 않습니다.</li>
-<li><strong>검색 근거:</strong> 가격·기한·발효일을 잘못 찾거나 오래된 문서를 가져온 문제는 원문·버전·색인·검색 경로를 고칩니다. Foundry IQ에 연결할 때도 이 문서들의 필드와 근거 추적을 유지합니다. 최신 사실을 학습 가중치에 넣는 것으로 대체하지 않습니다.</li>
-<li><strong>프롬프트와 에이전트 개선:</strong> <code>dev</code>로 지침을 로컬 비교합니다. Prompt Optimizer의 단일 프롬프트 재작성과 Agent Optimizer의 데이터셋 기반 비교를 구분합니다. 메인인 프롬프트 에이전트 포털 경로에는 위의 3열 개발용 파일을 전달하고 호스티드 <code>eval.yaml</code> 작업 스키마와 혼용하지 않습니다. 강사 작성 후보와 실제 도구가 제안한 후보는 서로 다른 출처로 관리하고 실행 기록을 남깁니다.</li>
-<li><strong>미세조정:</strong> 일관된 JSON, 근거 인용, 확인 질문, 안전한 거절, 사람 검토와 실행 경계를 <code>sft-train</code>으로 학습하고 <code>sft-validation</code>으로 선택합니다. 이 파일이 있다는 사실은 특정 최첨단 모델이 해당 지역·계정에서 미세조정을 지원한다는 증거가 아닙니다.</li>
-<li><strong>동결 평가:</strong> 선택을 끝낸 기준·후보·학습 모델을 동일한 <code>test</code> 조건으로 비교합니다. 결과를 보고 같은 동결 문의를 반복해 프롬프트에 맞추면 독립 평가의 의미가 사라집니다.</li>
-<li><strong>운영 반복:</strong> 새 실패는 적법한 수집, 비밀정보 제거, 사람의 정답·정책 검토, 그룹 분리 뒤 다음 데이터 버전에 편입합니다. 이전 동결 평가와 유사한 문의가 새 학습에 들어가면 해당 평가를 다시 독립 검증으로 주장하지 않습니다.</li>
+<li><strong>Evaluate:</strong> Inspect baseline failures on <code>dev</code>. Separate policy-fact, citation, format, routing, and fabricated-execution errors. Without actual model execution, do not report performance scores or improvement.</li>
+<li><strong>Improve retrieval evidence:</strong> If prices, deadlines, or effective dates are wrong or documents are stale, fix source documents, versions, indexing, and retrieval. Preserve fields and evidence tracking when connecting Foundry IQ. Do not substitute memorizing current facts in weights.</li>
+<li><strong>Improve prompts and agents:</strong> Compare instructions locally using <code>dev</code>. Distinguish Prompt Optimizer's single-prompt rewriting from Agent Optimizer's dataset-based comparison. Send the three-column dev file to the main prompt-agent portal path; do not mix in hosted <code>eval.yaml</code> job schemas. Track facilitator-authored and tool-generated candidates as different provenance, with execution records.</li>
+<li><strong>Fine-tune:</strong> Train stable JSON output, citations, clarification, safe refusals, human-review boundaries, and execution boundaries with <code>sft-train</code>; select using <code>sft-validation</code>. File existence does not prove a particular frontier model supports fine-tuning in a region/account.</li>
+<li><strong>Frozen evaluation:</strong> Compare selected baseline, candidate, and tuned models under the same <code>test</code> conditions. Repeatedly adjusting prompts to already viewed frozen questions invalidates their independence.</li>
+<li><strong>Operational iteration:</strong> Add new failures to the next data version only after lawful collection, secret removal, human answer/policy review, and group separation. If similar questions from an earlier frozen evaluation enter training, do not claim that evaluation is independent again.</li>
 </ol>
-<p><strong>Frontier Tuning은 일반 SFT/RFT와 별개입니다.</strong> 이 합성 학습 파일은 Frontier API 업로드 계약이나 계정의 참여 자격을 증명하지 않습니다. 실행 시점의 공식 지원과 실제 접근을 확인하지 못했다면 <code>NOT_VERIFIED</code>로 남기며 일반 SFT 결과를 Frontier 성공으로 바꾸어 부르지 않습니다.</p>
-<p>정책 원문을 바꾸면 관련 사례의 원문 발췌도 검토해야 합니다. 생성기는 정답을 자동 재작성하지 않으며 원문과 달라진 발췌를 거부합니다. 개정된 문서·사례·매니페스트를 하나의 새 버전으로 동결하고, 이미 평가한 동결 세트를 조용히 덮어쓰지 마세요.</p>
+<p><strong>Frontier Tuning is separate from ordinary SFT/RFT.</strong> These synthetic files establish neither a Frontier API upload contract nor account eligibility. If current official support and actual access cannot be verified, retain <code>NOT_VERIFIED</code>; do not relabel ordinary SFT results as Frontier success.</p>
+<p>When policy source changes, review related case excerpts too. The generator does not automatically rewrite answers and rejects excerpts that differ from source. Freeze revised documents, cases, and manifests together as a new version; never silently overwrite a frozen set already evaluated.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
-        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 장의 읽음 여부만 기록합니다. LIVE 실행이나 운영 승인을 뜻하지 않습니다.</p></div>
-        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">읽음 표시</button>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>This records only whether you have read the current chapter, not a LIVE run or operational approval.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">Mark as read</button>
       </section>
-      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="장 이동" hidden>
-        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 장</span><strong></strong></a>
-        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="Navigate between chapters" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← Previous chapter</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
-        <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
+        <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
   </div>
 
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
-    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
-    <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <h2 id="reset-title">Reset reading progress for this document?</h2>
+    <p id="reset-description">This clears all chapters marked as read in this document, in both languages. Other documents, earlier guide revisions, content, and lab files are not changed.</p>
     <form method="dialog" class="dialog-actions">
-      <button class="secondary-button" value="cancel" autofocus>취소</button>
-      <button class="danger-button" value="reset">읽음 표시 초기화</button>
+      <button class="secondary-button" value="cancel" autofocus>Cancel</button>
+      <button class="danger-button" value="reset">Reset reading progress</button>
     </form>
   </dialog>
   <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>

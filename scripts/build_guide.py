@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import os
 import posixpath
 import re
@@ -27,6 +28,9 @@ from markdown.treeprocessors import Treeprocessor
 BUILD_DATE = "2026-09-30"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIRECTORY = "docs"
+SITE_URL = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
+LANGUAGES = ("en", "ko")
+LOCALES = json.loads((PROJECT_ROOT / "web/locales.json").read_text(encoding="utf-8"))
 REQUIRED_PLACEHOLDERS = ("CONTENT", "TOC", "BUILD_DATE")
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
 
@@ -36,25 +40,59 @@ class Document:
     source: str
     output: str
     label: str
+    language: str = "en"
 
     @property
     def key(self) -> str:
-        return self.output.removesuffix(".html")
+        return posixpath.basename(self.output).removesuffix(".html")
 
 
 DOCUMENTS = (
-    Document("guide/handbook.md", "index.html", "참가자 실습 가이드"),
-    Document("guide/facilitator.md", "facilitator.html", "강사용 진행 가이드"),
-    Document("guide/admin-setup.md", "admin.html", "관리자 사전 준비"),
-    Document("guide/sft-appendix.md", "sft.html", "SFT 심화 부록"),
-    Document("guide/verification.md", "verification.html", "최신 검증·출처"),
-    Document("data/README.md", "data-guide.html", "데이터 설명"),
-    Document("README.en.md", "english.html", "English quickstart"),
+    Document("guide/en/handbook.md", "index.html", "Participant guide"),
+    Document("guide/en/facilitator.md", "facilitator.html", "Facilitator guide"),
+    Document("guide/en/admin-setup.md", "admin.html", "Operator setup"),
+    Document("guide/en/sft-appendix.md", "sft.html", "SFT appendix"),
+    Document("guide/en/verification.md", "verification.html", "Verification and sources"),
+    Document("data/README.en.md", "data-guide.html", "Data guide"),
+    Document("guide/handbook.md", "ko/index.html", "참가자 실습 가이드", "ko"),
+    Document("guide/facilitator.md", "ko/facilitator.html", "강사용 진행 가이드", "ko"),
+    Document("guide/admin-setup.md", "ko/admin.html", "관리자 사전 준비", "ko"),
+    Document("guide/sft-appendix.md", "ko/sft.html", "SFT 심화 부록", "ko"),
+    Document("guide/verification.md", "ko/verification.html", "최신 검증·출처", "ko"),
+    Document("data/README.md", "ko/data-guide.html", "데이터 설명", "ko"),
 )
 DOCUMENT_LINKS = {
     document.source: posixpath.join(SITE_DIRECTORY, document.output)
     for document in DOCUMENTS
 }
+
+
+def locale(language: str) -> dict:
+    if language not in LANGUAGES:
+        raise ValueError(f"Unsupported guide language: {language}")
+    return LOCALES[language]
+
+
+def documents_for(language: str) -> tuple[Document, ...]:
+    locale(language)
+    return tuple(document for document in DOCUMENTS if document.language == language)
+
+
+def localized_filename(filename: str, language: str) -> str:
+    locale(language)
+    return posixpath.join("ko", filename) if language == "ko" else filename
+
+
+def language_links(filename: str, language: str, output_base: str) -> str:
+    links = []
+    for code, label in (("en", "English"), ("ko", "한국어")):
+        path = posixpath.join(SITE_DIRECTORY, localized_filename(filename, code))
+        href = html.escape(output_relative(path, output_base), quote=True)
+        current = ' aria-current="page"' if code == language else ""
+        links.append(
+            f'<a href="{href}" lang="{code}" hreflang="{code}" data-language-link{current}>{label}</a>'
+        )
+    return "\n".join(links)
 
 
 def output_relative(path: str, output_base: str = "") -> str:
@@ -144,7 +182,9 @@ def render_markdown(
     relative_base: str = "",
     link_map: Mapping[str, str] | None = None,
     output_base: str = "",
+    language: str = "en",
 ) -> RenderedMarkdown:
+    text = locale(language)["shell"]
     converter = Markdown(
         extensions=["fenced_code", "tables", "toc", "attr_list"],
         extension_configs={
@@ -190,10 +230,10 @@ def render_markdown(
     content = converter.convert(markdown_text.lstrip("\ufeff"))
     title_parser = _TitleParser()
     title_parser.feed(content)
-    title = "".join(title_parser.parts).strip() or "Foundry 평가·개선 실습 가이드"
+    title = "".join(title_parser.parts).strip() or text["SITE_TITLE"]
     toc = converter.toc
     if not converter.toc_tokens:
-        toc = '<ul><li><a href="#guide-start">본문 읽기</a></li></ul>'
+        toc = f'<ul><li><a href="#guide-start">{text["FALLBACK_TOC"]}</a></li></ul>'
     return RenderedMarkdown(content, toc, title)
 
 
@@ -220,11 +260,17 @@ def render_guide(
     link_map: Mapping[str, str] | None = None,
     document_id: str = "index.html",
     output_base: str = "",
+    language: str = "en",
 ) -> str:
     """Return deterministic UTF-8-ready HTML without reading or writing files."""
     rendered = render_markdown(
-        markdown_text, relative_base=relative_base, link_map=link_map, output_base=output_base
+        markdown_text, relative_base=relative_base, link_map=link_map,
+        output_base=output_base, language=language,
     )
+    text = locale(language)["shell"]
+    filename = posixpath.basename(document_id)
+    auxiliary = filename != "index.html"
+    chapter_unit = text["CHAPTER_UNIT" if auxiliary else "STEP_UNIT"]
 
     def site_href(filename: str) -> str:
         return html.escape(
@@ -233,33 +279,39 @@ def render_guide(
         )
 
     navigation = ["<ul>"]
-    for document in DOCUMENTS:
+    for document in documents_for(language):
         current = ' aria-current="page"' if document.output == document_id else ""
         navigation.append(f'<li><a href="{site_href(document.output)}"{current}>{document.label}</a></li>')
-    navigation.append(f'<li><a href="{site_href("print.html")}">전체 인쇄본</a></li></ul>')
-    auxiliary = document_id != "index.html"
+    print_href = site_href(localized_filename("print.html", language))
+    home_href = site_href(localized_filename("index.html", language))
+    navigation.append(f'<li><a href="{print_href}">{text["PRINT_BOOK"]}</a></li></ul>')
     replacements = {
+        **{
+            key: html.escape(value.replace("{unit}", chapter_unit), quote=True)
+            for key, value in text.items()
+        },
         "CONTENT": rendered.content,
         "TOC": rendered.toc,
         "BUILD_DATE": BUILD_DATE,
         "WEB_PATH": html.escape(output_relative("web", output_base), quote=True),
-        "PRINT_HREF": site_href("print.html"),
-        "PDF_HREF": site_href("Foundry-Learning-Loop-Lab-KO.pdf"),
+        "PRINT_HREF": print_href,
+        "PDF_HREF": site_href(f"Foundry-Learning-Loop-Lab-{language.upper()}.pdf"),
         "TITLE": html.escape(rendered.title, quote=True),
-        "DOCUMENT_ID": html.escape(document_id, quote=True),
+        "DOCUMENT_ID": html.escape(filename, quote=True),
         "PROGRESS_REVISION": "" if auxiliary else "single-path-6",
-        "CHAPTER_UNIT": "장" if auxiliary else "단계",
-        "CONTENTS_LABEL": "참고 문서 목차" if auxiliary else "실습 순서",
-        "SIDEBAR_NOTE": (
-            "이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다."
-            if auxiliary else
-            "위에서 아래로 진행하세요. 최종 판정·종료에서 실습이 끝나며, 참고 자료는 추가 단계가 아닙니다."
-        ),
-        "CONTENT_LANGUAGE": "en" if document_id == "english.html" else "ko",
+        "CHAPTER_UNIT": chapter_unit,
+        "CONTENTS_LABEL": text["REFERENCE_CONTENTS" if auxiliary else "MAIN_CONTENTS"],
+        "SIDEBAR_NOTE": text["REFERENCE_NOTE" if auxiliary else "MAIN_NOTE"],
+        "CONTENT_LANGUAGE": language,
+        "LANGUAGE_LINKS": language_links(filename, language, output_base),
+        "MESSAGES": json.dumps(locale(language)["messages"], ensure_ascii=False).replace("<", "\\u003c"),
+        "CANONICAL_HREF": SITE_URL + posixpath.join(SITE_DIRECTORY, localized_filename(filename, language)),
+        "EN_HREF": SITE_URL + posixpath.join(SITE_DIRECTORY, filename),
+        "KO_HREF": SITE_URL + posixpath.join(SITE_DIRECTORY, "ko", filename),
         "DOCUMENT_LINKS": "\n".join(navigation),
-        "HOME_HREF": site_href("index.html") if auxiliary else "#guide-start",
+        "HOME_HREF": home_href if auxiliary else "#guide-start",
         "RETURN_LINK": (
-            f'<a class="back-to-main no-print" href="{site_href("index.html")}">← 참가자 가이드로 돌아가기</a>'
+            f'<a class="back-to-main no-print" href="{home_href}">{text["RETURN_LABEL"]}</a>'
             if auxiliary else ""
         ),
     }
@@ -299,12 +351,35 @@ def render_site(sources: Mapping[str, str], template: str, print_template: str) 
             relative_base=posixpath.dirname(document.source),
             link_map=DOCUMENT_LINKS,
             document_id=document.output,
-            output_base=SITE_DIRECTORY,
+            output_base=posixpath.dirname(posixpath.join(SITE_DIRECTORY, document.output)),
+            language=document.language,
         )
         for document in DOCUMENTS
     }
-    pages[posixpath.join(SITE_DIRECTORY, "print.html")] = render_book(sources, print_template)
+    for language in LANGUAGES:
+        pages[posixpath.join(SITE_DIRECTORY, localized_filename("print.html", language))] = render_book(
+            sources, print_template, language=language
+        )
+    pages[posixpath.join(SITE_DIRECTORY, "english.html")] = render_english_redirect()
     return pages
+
+
+def render_english_redirect() -> str:
+    return """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Foundry Lab Guide · English</title>
+  <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script>window.location.replace("index.html" + window.location.search + window.location.hash);</script>
+  <noscript><meta http-equiv="refresh" content="0; url=index.html"></noscript>
+</head>
+<body>
+  <p>The full English guide is now the default. <a href="index.html">Open the English guide</a> · <a href="ko/index.html" lang="ko">한국어</a></p>
+</body>
+</html>
+"""
 
 
 def check_or_write(pages: Mapping[Path, str], *, check: bool) -> int:
@@ -335,6 +410,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--source", type=Path, help="단일 문서 모드의 원문 (--output과 함께 사용)")
     parser.add_argument("--template", type=Path, default=PROJECT_ROOT / "web" / "template.html")
     parser.add_argument("--output", type=Path, help="단일 문서 모드의 HTML 경로 (--source와 함께 사용)")
+    parser.add_argument("--language", choices=LANGUAGES, default="en", help="단일 문서의 언어. 전체 빌드는 항상 영어·한국어를 모두 생성합니다.")
     parser.add_argument("--check", action="store_true", help="파일을 쓰지 않고 모든 대상의 최신 상태 확인")
     args = parser.parse_args(argv)
     if (args.source is None) != (args.output is None):
@@ -349,6 +425,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 link_map=DOCUMENT_LINKS,
                 document_id=args.output.name,
                 output_base=os.path.relpath(output_dir, PROJECT_ROOT).replace(os.sep, "/"),
+                language=args.language,
             )
             pages = {args.output: rendered}
         else:

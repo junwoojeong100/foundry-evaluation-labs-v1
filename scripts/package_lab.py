@@ -10,12 +10,17 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ROOT_FILES = (
-    "README.md", "README.en.md", "index.html", "pyproject.toml", "requirements.lock",
-    "requirements-verification.lock", ".env.example", ".gitignore", ".nojekyll",
+GUIDE_FILES = (
     "docs/index.html", "docs/facilitator.html", "docs/admin.html", "docs/sft.html",
     "docs/english.html", "docs/verification.html", "docs/data-guide.html", "docs/print.html",
-    "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+    "docs/ko/index.html", "docs/ko/facilitator.html", "docs/ko/admin.html", "docs/ko/sft.html",
+    "docs/ko/verification.html", "docs/ko/data-guide.html", "docs/ko/print.html",
+    "docs/Foundry-Learning-Loop-Lab-EN.pdf", "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+)
+ROOT_FILES = (
+    "README.md", "README.en.md", "README.ko.md", "index.html", "pyproject.toml", "requirements.lock",
+    "requirements-verification.lock", ".env.example", ".gitignore", ".nojekyll",
+    *GUIDE_FILES,
     "evidence/latest.json",
 )
 SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra")
@@ -43,9 +48,7 @@ def package_files(root: Path) -> list[Path]:
 def build_archive(root: Path, destination: Path) -> dict:
     files = package_files(root)
     required = (
-        "README.md", "index.html", "docs/index.html", "docs/facilitator.html", "docs/admin.html",
-        "docs/sft.html", "docs/english.html", "docs/verification.html", "docs/data-guide.html",
-        "docs/print.html", "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+        "README.md", "README.en.md", "README.ko.md", "index.html", *GUIDE_FILES,
         ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
     )
     missing = [name for name in required if root / name not in files]

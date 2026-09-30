@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from zipfile import ZipFile
 
-from scripts.package_lab import build_archive, package_files
+from scripts.package_lab import GUIDE_FILES, ROOT_FILES, build_archive, package_files
 
 
 class PackageTests(unittest.TestCase):
@@ -11,10 +11,7 @@ class PackageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             for name in (
-                "README.md", "index.html", "docs/index.html", "docs/facilitator.html",
-                "docs/admin.html", "docs/sft.html", "docs/english.html",
-                "docs/verification.html", "docs/data-guide.html", "docs/print.html",
-                "docs/Foundry-Learning-Loop-Lab-KO.pdf",
+                *ROOT_FILES,
                 ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
                 "evidence/old-run/report.json", "evidence/old-screenshot.png",
                 ".env", ".venv/private.txt", "artifacts/secret.json", "lab/code.py",
@@ -28,6 +25,8 @@ class PackageTests(unittest.TestCase):
             self.assertIn("lab/code.py", selected)
             self.assertIn("docs/index.html", selected)
             self.assertIn("docs/Foundry-Learning-Loop-Lab-KO.pdf", selected)
+            self.assertTrue(set(GUIDE_FILES).issubset(selected))
+            self.assertIn("README.ko.md", selected)
             self.assertIn("evidence/latest.json", selected)
             self.assertNotIn("evidence/old-run/report.json", selected)
             self.assertNotIn("evidence/old-screenshot.png", selected)
