@@ -66,8 +66,7 @@ button { color: var(--ink); }
 .header-inner { max-width: 96rem; min-height: var(--header-height); margin: auto; padding: 0 2.5rem; display: flex; align-items: center; gap: 1.1rem; }
 .brand { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--ink); text-decoration: none; flex: 0 0 auto; }
 .brand:hover { color: var(--ink); }
-.brand-symbol { width: 2.65rem; height: 2.65rem; display: grid; place-items: center; border-radius: 0.7rem; background: var(--ink); color: #a5e1d5; }
-.brand-symbol svg { fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linejoin: round; }
+.brand-symbol { width: 2.65rem; height: 2.65rem; display: block; flex: 0 0 auto; object-fit: contain; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.35; }
 .brand-text strong { font-size: 1.1rem; letter-spacing: -0.02em; }
 .brand-text > span { margin-top: 0.15rem; color: var(--muted); font-size: 0.73rem; }
@@ -289,8 +288,7 @@ mark { padding: 0.03rem 0.08rem; border-radius: 0.15rem; background: #ffecae; co
 @media (max-width: 42rem) {
   .header-inner { padding: 0 0.75rem; gap: 0.4rem; }
   .brand { gap: 0.5rem; }
-  .brand-symbol { width: 2.2rem; height: 2.2rem; border-radius: 0.5rem; }
-  .brand-symbol svg { width: 26px; height: 26px; }
+  .brand-symbol { width: 2.2rem; height: 2.2rem; }
   .brand-text strong { font-size: 1rem; }
   .brand-text > span { font-size: 0.65rem; }
   .header-actions { gap: 0.2rem; }
@@ -328,7 +326,7 @@ mark { padding: 0.03rem 0.08rem; border-radius: 0.15rem; background: #ffecae; co
 }
 
 @media (forced-colors: active) {
-  .brand-symbol, .primary-button, .danger-button { border: 1px solid ButtonText; }
+  .primary-button, .danger-button { border: 1px solid ButtonText; }
   .chapter-nav a[aria-current="location"] { border-left-color: Highlight; }
   .guide-content h2::before { background: CanvasText; }
 }
