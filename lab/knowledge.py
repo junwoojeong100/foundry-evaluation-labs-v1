@@ -8,7 +8,7 @@ from azure.ai.projects.models import MCPTool
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
-from lab.content import content_path, language_metadata, require_content_language
+from lab.content import content_path, language_metadata, require_content_language, selected_language
 from lab.embeddings import DIMENSIONS, embed, validate_vectors
 from lab.files import ARTIFACTS, ROOT, read_json, record_created, sha256_file, workspace, write_once_json
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
@@ -33,13 +33,14 @@ def search_url(config: Config, resource: str, name: str, action: str = "") -> st
 def knowledge_payloads(config: Config, names: dict, planner_model: str) -> dict:
     if not config.embedding:
         raise LabError("벡터 검색을 위해 EMBEDDING_DEPLOYMENT를 명시하세요.")
+    analyzer = f"{selected_language()}.microsoft"
     return {
         "index": {
             "name": names["index"],
             "fields": [
                 {"name": "id", "type": "Edm.String", "key": True, "filterable": True, "retrievable": True},
-                {"name": "title", "type": "Edm.String", "searchable": True, "retrievable": True, "analyzer": "ko.microsoft"},
-                {"name": "content", "type": "Edm.String", "searchable": True, "retrievable": True, "analyzer": "ko.microsoft"},
+                {"name": "title", "type": "Edm.String", "searchable": True, "retrievable": True, "analyzer": analyzer},
+                {"name": "content", "type": "Edm.String", "searchable": True, "retrievable": True, "analyzer": analyzer},
                 {"name": "effective_date", "type": "Edm.String", "filterable": True, "retrievable": True},
                 {"name": "content_vector", "type": "Collection(Edm.Single)", "searchable": True,
                  "retrievable": False, "dimensions": DIMENSIONS, "vectorSearchProfile": "contoso-vector"},

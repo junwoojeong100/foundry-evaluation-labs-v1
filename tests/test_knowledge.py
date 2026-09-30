@@ -1,5 +1,7 @@
 from pathlib import Path
+import os
 import unittest
+from unittest.mock import patch
 
 from lab.config import load_config
 from lab.knowledge import SEARCH_API, knowledge_payloads, resource_names, search_url
@@ -17,6 +19,15 @@ class KnowledgeTests(unittest.TestCase):
         self.assertTrue(identifier["key"])
         self.assertTrue(identifier["retrievable"])
         self.assertEqual(self.payloads["source"]["kind"], "searchIndex")
+
+    def test_lexical_analyzers_match_the_selected_policy_language(self):
+        for language in ("ko", "en"):
+            with self.subTest(language=language), patch.dict(os.environ, {"LAB_LANGUAGE": language}):
+                payload = knowledge_payloads(self.config, self.names, "gpt-5.5")
+                fields = {field["name"]: field for field in payload["index"]["fields"]}
+                self.assertEqual(fields["title"]["analyzer"], f"{language}.microsoft")
+                self.assertEqual(fields["content"]["analyzer"], f"{language}.microsoft")
+                self.assertEqual(fields["content_vector"]["dimensions"], 1536)
 
     def test_source_data_fields_are_on_the_source_not_the_base(self):
         self.assertIn("sourceDataFields", self.payloads["source"]["searchIndexParameters"])
