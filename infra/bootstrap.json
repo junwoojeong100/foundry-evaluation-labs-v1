@@ -115,7 +115,10 @@
       "name": "[format('{0}/{1}', parameters('names').account, parameters('models')[copyIndex()].deployment)]",
       "tags": "[parameters('tags')]",
       "copy": {"name": "modelDeployments", "count": "[length(parameters('models'))]", "mode": "serial", "batchSize": 1},
-      "dependsOn": ["[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]"],
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]",
+        "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]"
+      ],
       "sku": {
         "name": "[parameters('models')[copyIndex()].sku]",
         "capacity": "[parameters('models')[copyIndex()].capacity]"
@@ -135,7 +138,8 @@
       "name": "[format('{0}/{1}/lab-search', parameters('names').account, parameters('names').project)]",
       "dependsOn": [
         "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]",
-        "[resourceId('Microsoft.Search/searchServices', parameters('names').search)]"
+        "[resourceId('Microsoft.Search/searchServices', parameters('names').search)]",
+        "modelDeployments"
       ],
       "properties": {
         "authType": "AAD",
@@ -157,7 +161,9 @@
       "dependsOn": [
         "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]",
         "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
-        "labRoleAssignments"
+        "labRoleAssignments",
+        "modelDeployments",
+        "[resourceId('Microsoft.CognitiveServices/accounts/projects/connections', parameters('names').account, parameters('names').project, 'lab-search')]"
       ],
       "properties": {
         "authType": "ProjectManagedIdentity",

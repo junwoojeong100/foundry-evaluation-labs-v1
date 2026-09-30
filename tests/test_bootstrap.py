@@ -681,6 +681,177 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(spec["api_version"], "2026-07-01")
         self.assertFalse(spec["taggable"])
 
+    def test_project_models_and_connections_are_explicitly_serialized(self):
+        resources = json.loads(b.TEMPLATE.read_text())["resources"]
+        models = next(r for r in resources if r.get("copy", {}).get("name") == "modelDeployments")
+        project_id = "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('names').account, parameters('names').project)]"
+        self.assertIn(project_id, models["dependsOn"])
+        search = next(r for r in resources if r.get("properties", {}).get("category") == "CognitiveSearch")
+        insights = next(r for r in resources if r.get("properties", {}).get("category") == "AppInsights")
+        self.assertIn("modelDeployments", search["dependsOn"])
+        self.assertIn("modelDeployments", insights["dependsOn"])
+        self.assertIn(
+            "[resourceId('Microsoft.CognitiveServices/accounts/projects/connections', parameters('names').account, parameters('names').project, 'lab-search')]",
+            insights["dependsOn"],
+        )
+
+    def dependency_repair_fixture(self):
+        original = json.loads(b.TEMPLATE.read_text())
+        for resource in original["resources"]:
+            if resource.get("copy", {}).get("name") == "modelDeployments":
+                resource["dependsOn"] = ["[resourceId('Microsoft.CognitiveServices/accounts', parameters('names').account)]"]
+            if resource.get("properties", {}).get("category") in {"CognitiveSearch", "AppInsights"}:
+                resource["dependsOn"] = [
+                    dependency for dependency in resource["dependsOn"]
+                    if dependency != "modelDeployments"
+                    and "accounts/projects/connections" not in dependency
+                ]
+        original_path = self.root / "old-template.json"
+        original_path.write_text(json.dumps(original, indent=3) + "\n")
+        with patch.object(b, "TEMPLATE", original_path):
+            result = b.plan(
+                subscription_id=SUB, tenant_id=TENANT, expected_user=USER,
+                root=self.root, environment="lab-repair",
+            )
+            self.path = Path(result["config_path"])
+            self.config = b._read(self.path)
+            self.azure = FakeAzure(self.path)
+            approval = self.approve()
+            self.azure.fail_terminal = True
+            with self.assertRaises(b.AzureCommandError):
+                b.apply(self.path, approval, run=self.azure)
+        resources = b._resources(self.config)
+        for key in ("project", "search_connection", "insights_connection"):
+            self.azure.remote.pop(resources[key]["id"].lower(), None)
+        for key, spec in resources.items():
+            if key.startswith("role:"):
+                self.azure.remote.pop(spec["id"].lower(), None)
+        deployment = self.azure.remote[resources["arm_deployment"]["id"].lower()]
+        deployment["properties"]["correlationId"] = str(uuid4())
+        deployment["properties"]["error"] = {
+            "code": "DeploymentFailed", "details": [{"code": "RequestConflict", "message": "Another account write is in progress."}],
+        }
+        for value in deployment["properties"]["parameters"].values():
+            value["type"] = "Object"
+        operations = [{
+            "id": deployment["id"] + "/operations/project-create",
+            "properties": {
+                "provisioningState": "Failed", "targetResource": {"id": resources["project"]["id"]},
+                "statusMessage": {"error": {"code": "RequestConflict", "message": "Another operation is in progress."}},
+            },
+        }]
+        b._write(self.path.parent / "evidence" / "first-apply-failed-deployment.local.json", deployment)
+        b._write(self.path.parent / "evidence" / "first-apply-operations.local.json", operations)
+        self.azure.mutations.clear()
+        self.azure.calls.clear()
+        return approval
+
+    def test_dependency_only_repair_archives_exact_bytes_and_retains_same_scope_resources(self):
+        approval = self.dependency_repair_fixture()
+        originals = {
+            name: (self.path.parent / name).read_bytes()
+            for name in ("config.json", "template.json", "manifest.json", "cost-ledger.json")
+        }
+        approval_bytes = approval.read_bytes()
+        failure = self.path.parent / "evidence" / "first-apply-failed-deployment.local.json"
+        failure_bytes = failure.read_bytes()
+        with self.assertRaises(b.BootstrapError):
+            b.preflight(self.path, run=self.azure)
+        result = b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.assertEqual(result["status"], "DEPENDENCY_REPAIR_READY")
+        self.assertEqual(self.azure.mutations, [])
+        archive = Path(result["archive_path"]) / "original"
+        for name, content in originals.items():
+            self.assertEqual((archive / name).read_bytes(), content)
+            self.assertEqual((archive / name).stat().st_mode & 0o777, 0o600)
+        self.assertEqual((archive / "approval.original.json").read_bytes(), approval_bytes)
+        self.assertEqual(approval.read_bytes(), approval_bytes)
+        self.assertEqual((archive / "evidence" / failure.name).read_bytes(), failure_bytes)
+        self.assertEqual(failure.read_bytes(), failure_bytes)
+        _, current, manifest = b._load(self.path)
+        self.assertEqual(current["instance_id"], self.config["instance_id"])
+        self.assertEqual(b._resources(current), b._resources(self.config))
+        self.assertNotEqual(current["scope_sha256"], self.config["scope_sha256"])
+        self.assertEqual(manifest["attempts"], json.loads(originals["manifest.json"])["attempts"])
+        bound = b._read(Path(result["approval_path"]))
+        self.assertEqual(bound["max_provisioning_retries"], 2)
+        self.assertEqual(bound["models"], self.config["models"])
+        self.assertEqual(b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)["status"], "DEPENDENCY_REPAIR_ALREADY_APPLIED")
+        with self.assertRaises(b.ProvisioningRetryError):
+            b.apply(self.path, result["approval_path"], run=self.azure)
+        self.assertEqual(b.apply(self.path, result["approval_path"], run=self.azure, retry=True)["status"], "APPLIED")
+        self.assertEqual(len(self.azure.mutations), 1)
+        self.assertEqual(self.azure.mutations[0][:3], ["deployment", "group", "create"])
+
+    def test_dependency_repair_rejects_non_dependency_changes_before_azure(self):
+        approval = self.dependency_repair_fixture()
+        changed = json.loads(b.TEMPLATE.read_text())
+        search = next(r for r in changed["resources"] if r["type"] == "Microsoft.Search/searchServices")
+        search["sku"]["name"] = "standard"
+        candidate = self.root / "unsafe-template.json"
+        candidate.write_text(json.dumps(changed))
+        original = self.path.read_bytes()
+        with patch.object(b, "TEMPLATE", candidate):
+            with self.assertRaisesRegex(b.BootstrapError, "semantic change"):
+                b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.assertEqual(self.azure.calls, [])
+        self.assertEqual(self.path.read_bytes(), original)
+
+    def test_dependency_repair_blocks_unknown_outcome_and_wrong_failure_proof(self):
+        approval = self.dependency_repair_fixture()
+        arm = b._resources(self.config)["arm_deployment"]["id"].lower()
+        self.azure.remote[arm]["properties"]["provisioningState"] = "Running"
+        with self.assertRaises(b.BootstrapError):
+            b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.azure.remote[arm]["properties"]["provisioningState"] = "Failed"
+        operation_file = self.path.parent / "evidence" / "first-apply-operations.local.json"
+        operations = json.loads(operation_file.read_text())
+        operations[0]["properties"]["targetResource"]["id"] = b._ids(self.config)["account"]
+        operation_file.write_text(json.dumps(operations))
+        with self.assertRaises(b.BootstrapError):
+            b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_dependency_repair_rejects_expanded_retry_allowance(self):
+        approval = self.dependency_repair_fixture()
+        for count in (0, 3, True, None):
+            with self.subTest(count=count):
+                with self.assertRaises(b.ApprovalError):
+                    b.repair_dependencies(self.path, approval, max_provisioning_retries=count, run=self.azure)
+        self.assertEqual(self.azure.calls, [])
+
+    def test_dependency_repair_validation_failure_leaves_original_plan_and_evidence_intact(self):
+        approval = self.dependency_repair_fixture()
+        originals = {name: (self.path.parent / name).read_bytes() for name in ("config.json", "template.json", "manifest.json")}
+        self.azure.validation_error = {"code": "ValidationFailed", "message": "Fixture rejection"}
+        with self.assertRaises(b.AzureCommandError):
+            b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.assertEqual({name: (self.path.parent / name).read_bytes() for name in originals}, originals)
+        self.assertTrue(list((self.path.parent / ".repairs").glob("*/original/manifest.json")))
+        self.assertFalse((self.path.parent / "dependency-repair.pending.json").exists())
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_dependency_repair_partial_local_write_rolls_back_without_touching_azure(self):
+        approval = self.dependency_repair_fixture()
+        names = ("config.json", "template.json", "manifest.json", "cost-ledger.json")
+        originals = {name: (self.path.parent / name).read_bytes() for name in names}
+        write = b._write_bytes
+        raised = [False]
+
+        def fail_once(path, content, *, replace=False):
+            if path == self.path.parent / "template.json" and replace and content != originals["template.json"] and not raised[0]:
+                raised[0] = True
+                raise OSError("Simulated local write interruption")
+            return write(path, content, replace=replace)
+
+        with patch.object(b, "_write_bytes", side_effect=fail_once):
+            with self.assertRaises(OSError):
+                b.repair_dependencies(self.path, approval, max_provisioning_retries=2, run=self.azure)
+        self.assertTrue(raised[0])
+        self.assertEqual({name: (self.path.parent / name).read_bytes() for name in names}, originals)
+        self.assertFalse((self.path.parent / "dependency-repair.pending.json").exists())
+        self.assertEqual(self.azure.mutations, [])
+
     def test_trace_connection_is_owned_but_not_claimed_as_observed_ingestion(self):
         result = self.apply()
         self.assertEqual(result["server_side_trace_connection"], "CONFIGURED_PROJECT_MANAGED_IDENTITY")

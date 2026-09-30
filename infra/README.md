@@ -285,6 +285,52 @@ There is no automatic restore, rollback, delete, or “repair permissions” ope
 After a process crash, a stale `.bootstrap.lock` must be investigated against its
 recorded PID before removing that **local** lock and resuming.
 
+### Explicit dependency-only recovery
+
+Cognitive Services can reject concurrent account/project/model writes with
+`RequestConflict`. The template orders **project → serial model loop → Search
+connection → App Insights connection**. It does not change any resource setting,
+SKU, name, identity, role binding, or model to recover from that conflict.
+
+For a failed initial bootstrap pinned to the earlier graph, the coordinator can
+perform a narrowly verified **local revision**, rather than hand-editing hashes:
+
+```sh
+python3 -S -m lab.bootstrap repair-dependencies \
+  --config .lab/lab-20260930-live/config.json \
+  --approval .lab/lab-20260930-live/approval.execution.local.json \
+  --max-provisioning-retries 2
+```
+
+By default this reads the original
+`evidence/first-apply-failed-deployment.local.json` and
+`evidence/first-apply-operations.local.json`. Alternate exact proof paths can be
+supplied with `--failed-deployment` and `--failed-operations`. The recorded and
+live deployment must be the **same terminal Failed correlation**, with unchanged
+parameters, verified owned resources, and a project `RequestConflict` operation.
+An absent or running deployment is not repairable through this command.
+
+The command accepts only additive **resource `dependsOn` changes** to the current
+checked-in template; every other JSON value must match the pinned template.
+Before replacing owned local state, it archives the original config, template,
+manifest, approval, cost ledger, and all failure evidence **byte-for-byte** under
+`.repairs/<repair-id>/original/`. It Provider-validates the proposed graph
+read-only, preserves the same instance/resource IDs and prior attempt history,
+then rebinds only the template/scope hashes and creates a **new private approval
+file**, whose path is returned. The old approval remains unchanged. Retry
+allowance is explicitly limited to one or two total retries; it is not reset
+per repair and does not waive call/job/processing/no-deletion restrictions.
+
+Local write interruption rolls back from verified archived bytes. A pending
+transaction blocks ordinary bootstrap commands; rerunning this same repair
+command recovers its local transaction before rechecking the original failure.
+It never deletes or writes an Azure resource.
+
+The coordinator then explicitly invokes `apply --retry` with the **returned
+approval path**, not the old approval. This is not automatic submission, proof
+of successful provisioning, or general permission to edit/reuse arbitrary
+existing resources.
+
 For an already-owned group, `apply --what-if` performs read-only group what-if
 without cost approval. It cannot create the group just to preview it. Full ARM
 outputs stay in local evidence. A successful ARM deployment is followed by an
@@ -373,6 +419,8 @@ before importing the normal SDK/config stack. Python functions return dictionari
 - `prepare_group_creation(config_path, authorization_path, *, run=az_json)`
 - `confirm_group_creation(config_path, *, run=az_json)`
 - `bind_created_group(config_path, intent_path, created_path, *, run=az_json)`
+- `repair_dependencies(config_path, approval_path, *, max_provisioning_retries,
+  failed_deployment_path=None, failed_operations_path=None, run=az_json)`
 - `require_owned_resources(config_path, account_id, *, run=az_json)`
 - `preflight(config_path, *, run=az_json, persist=True, approval_path=None)`
 - `apply(config_path, approval_path=None, *, run=az_json, what_if=False,

@@ -76,7 +76,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
         tools = [knowledge_tool(config)]
     with credential_for(config) as credential:
         deployment = model_snapshot(config, model)
-        with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
+        with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             try:
                 existing = project.agents.get(agent_name=name)
             except ResourceNotFoundError:

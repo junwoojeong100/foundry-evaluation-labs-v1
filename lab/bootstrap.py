@@ -225,13 +225,17 @@ def _file_digest(path: Path) -> str:
 
 def _write(path: Path, value: Any, *, replace: bool = False, text: bool = False) -> None:
     """Write privately and durably, using a same-directory staging file for owned state."""
+    content = value if text else _json(value)
+    _write_bytes(path, content.encode("utf-8"), replace=replace)
+
+
+def _write_bytes(path: Path, content: bytes, *, replace: bool = False) -> None:
     if path.is_symlink():
         raise BootstrapError("Refusing a symlink in bootstrap state.")
-    content = value if text else _json(value)
     target = path.with_name(f".{path.name}.{uuid4().hex}.pending") if replace else path
     try:
         fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        with os.fdopen(fd, "wb") as stream:
             stream.write(content)
             stream.flush()
             os.fsync(stream.fileno())
@@ -281,7 +285,7 @@ def _scope(config: dict) -> str:
     return _digest({key: value for key, value in config.items() if key != "scope_sha256"})
 
 
-def _validate(config: dict) -> None:
+def _validate(config: dict, *, template_path: Path | None = None) -> None:
     if config.get("schema_version") != SCHEMA_VERSION or config.get("location") != REGION:
         raise BootstrapError("Only this schema and northcentralus are supported; no region fallback.")
     if not all(_uuid(config.get(k)) for k in ("subscription_id", "tenant_id", "instance_id")):
@@ -330,7 +334,7 @@ def _validate(config: dict) -> None:
         raise BootstrapError("Duplicate model deployment names.")
     if config.get("scope_sha256") != _scope(config):
         raise BootstrapError("Configuration changed; create a new plan and obtain new approval.")
-    if config.get("template_sha256") != _file_digest(TEMPLATE):
+    if config.get("template_sha256") != _file_digest(template_path or TEMPLATE):
         raise BootstrapError("Infrastructure template changed; re-plan and obtain new approval.")
 
 
@@ -428,13 +432,15 @@ def _resources(config: dict) -> dict[str, dict]:
     return result
 
 
-def _load(path: Path | str) -> tuple[Path, dict, dict]:
+def _load(path: Path | str, *, _pinned_template: bool = False) -> tuple[Path, dict, dict]:
     path = Path(path)
     if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
         raise BootstrapError("Bootstrap paths must not traverse symlinks.")
     path = path.resolve()
+    if (path.parent / "dependency-repair.pending.json").exists():
+        raise BootstrapError("A local dependency repair is incomplete; rerun repair-dependencies before any Azure operation.")
     config = _read(path)
-    _validate(config)
+    _validate(config, template_path=path.parent / "template.json" if _pinned_template else None)
     if str(path.parent) != config.get("environment_dir"):
         raise BootstrapError("Environment path changed; do not reuse another environment's state.")
     template_path = path.parent / "template.json"
@@ -1406,6 +1412,267 @@ def _submission_required(manifest: dict, observed: dict, approval: dict, retry: 
     return True
 
 
+def _dependency_only_change(original: dict, revised: dict) -> None:
+    old, new = deepcopy(original), deepcopy(revised)
+
+    def strip(resources: list[dict]) -> None:
+        for resource in resources:
+            dependencies = resource.pop("dependsOn", [])
+            if not isinstance(dependencies, list) or any(not isinstance(value, str) for value in dependencies):
+                raise BootstrapError("Dependency repair requires ordinary resource dependsOn arrays.")
+            strip(resource.get("resources", []))
+
+    strip(old.get("resources", []))
+    strip(new.get("resources", []))
+    if old != new:
+        raise BootstrapError("Dependency repair rejects every semantic change outside resource dependsOn.")
+    for before, after in zip(original.get("resources", []), revised.get("resources", [])):
+        if not set(before.get("dependsOn", [])).issubset(after.get("dependsOn", [])):
+            raise BootstrapError("Dependency repair may add ordering, not remove an existing prerequisite.")
+
+
+def _verify_failed_deployment(config: dict, manifest: dict, deployment: dict, correlation: str) -> None:
+    spec = manifest["resources"]["arm_deployment"]
+    _owned(config, "arm_deployment", spec, deployment, manifest, {})
+    properties = deployment.get("properties", {})
+    actual_parameters = properties.get("parameters", {})
+    expected_parameters = _parameters(config, manifest["operator_principal_id"])["parameters"]
+    if (
+        properties.get("provisioningState") != "Failed"
+        or properties.get("correlationId") != correlation
+        or set(actual_parameters) != set(expected_parameters)
+        or any(actual_parameters[key].get("value") != value["value"] for key, value in expected_parameters.items())
+    ):
+        raise BootstrapError("Dependency repair requires the same terminal failed deployment and unchanged parameters.")
+
+
+def _recover_dependency_transaction(directory: Path, config_path: Path, approval_path: Path) -> None:
+    pending = directory / "dependency-repair.pending.json"
+    if not pending.exists():
+        return
+    transaction = _read(pending)
+    repair_id = transaction.get("repair_id", "")
+    if (
+        not re.fullmatch(r"[a-f0-9]{32}", repair_id)
+        or transaction.get("config_path") != str(config_path)
+        or transaction.get("original_approval_path") != str(approval_path)
+    ):
+        raise BootstrapError("Incomplete dependency repair belongs to different inputs.")
+    archive = directory / ".repairs" / repair_id
+    if archive.is_symlink() or archive.parent.is_symlink():
+        raise BootstrapError("Refusing a symlink in dependency repair history.")
+    targets = {
+        "config.json": config_path, "template.json": directory / "template.json",
+        "manifest.json": directory / "manifest.json", "cost-ledger.json": directory / "cost-ledger.json",
+    }
+    originals = {}
+    for name, target in targets.items():
+        source = archive / "original" / name
+        if source.is_symlink() or target.is_symlink():
+            raise BootstrapError("Refusing a symlink in dependency repair inputs.")
+        content = source.read_bytes()
+        digest = hashlib.sha256(content).hexdigest()
+        if digest != transaction["original_hashes"].get(name):
+            raise BootstrapError("Dependency repair archive changed; cannot restore local state.")
+        if _file_digest(target) not in {digest, transaction["proposed_hashes"].get(name)}:
+            raise BootstrapError("Live local state changed outside the repair; refusing overwrite.")
+        originals[name] = content
+    for name, target in targets.items():
+        _write_bytes(target, originals[name], replace=True)
+    os.replace(pending, archive / f"recovered-{uuid4().hex}.transaction.json")
+
+
+def repair_dependencies(
+    config_path: Path | str, approval_path: Path | str, *, max_provisioning_retries: int,
+    failed_deployment_path: Path | str | None = None,
+    failed_operations_path: Path | str | None = None, run: Run = az_json,
+) -> dict:
+    """Archive and rebind an additive dependsOn-only repair of a verified failed owned deployment."""
+    if type(max_provisioning_retries) is not int or max_provisioning_retries not in {1, 2}:
+        raise ApprovalError("Dependency-only recovery authorizes one or two total provisioning retries, never unbounded retries.")
+    config_path, approval_path = Path(config_path), Path(approval_path)
+    for path in (config_path, approval_path):
+        if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
+            raise BootstrapError("Repair input paths must not traverse symlinks.")
+    config_path, approval_path = config_path.resolve(), approval_path.resolve()
+    directory = config_path.parent
+    with _lock(directory):
+        _recover_dependency_transaction(directory, config_path, approval_path)
+        _, config, manifest = _load(config_path, _pinned_template=True)
+        original_template_bytes = (directory / "template.json").read_bytes()
+        revised_template_bytes = TEMPLATE.read_bytes()
+        old_template, new_template = json.loads(original_template_bytes), json.loads(revised_template_bytes)
+        _dependency_only_change(old_template, new_template)
+        if original_template_bytes == revised_template_bytes:
+            repairs = manifest.get("dependency_repairs", [])
+            if repairs:
+                prior = repairs[-1]
+                rebound = _approved_record(config, prior["approval_path"])
+                original_snapshot = Path(prior["archive_path"]) / "original" / "approval.original.json"
+                if (
+                    max_provisioning_retries != rebound.get("max_provisioning_retries")
+                    or _file_digest(approval_path) not in {
+                        _file_digest(Path(prior["approval_path"])), _file_digest(original_snapshot),
+                    }
+                ):
+                    raise ApprovalError("An existing dependency repair cannot silently change its original consent or retry allowance.")
+                return {
+                    "status": "DEPENDENCY_REPAIR_ALREADY_APPLIED", "config_path": str(config_path),
+                    "approval_path": repairs[-1]["approval_path"], "scope_sha256": config["scope_sha256"],
+                    "mutations_performed": False, "retry_required": manifest.get("phase") != "succeeded",
+                }
+            raise BootstrapError("No dependency-only template revision is available.")
+        original_approval = _approved_record(config, approval_path)
+        _check_outputs(directory, manifest)
+        if (directory / ".env").exists():
+            raise BootstrapError("This repair is only for failed initial provisioning; an existing runtime .env is never overwritten.")
+        identity = _identity(config, manifest, run)
+        if identity["user"]["id"] != manifest["operator_principal_id"]:
+            raise BootstrapError("Repair principal differs from the recorded provisioner.")
+        failed_deployment_path = Path(failed_deployment_path or directory / "evidence" / "first-apply-failed-deployment.local.json")
+        failed_operations_path = Path(failed_operations_path or directory / "evidence" / "first-apply-operations.local.json")
+        if failed_deployment_path.is_symlink() or failed_operations_path.is_symlink():
+            raise BootstrapError("Failure evidence cannot be a symlink.")
+        failed = _read(failed_deployment_path)
+        try:
+            operations = json.loads(failed_operations_path.read_bytes())
+        except (OSError, ValueError) as exc:
+            raise BootstrapError("Original failed operation evidence is missing or invalid.") from exc
+        correlation = failed.get("properties", {}).get("correlationId")
+        if not _uuid(correlation):
+            raise BootstrapError("Original failure evidence must include its correlation ID.")
+        _verify_failed_deployment(config, manifest, failed, correlation)
+        rows = operations.get("value", []) if isinstance(operations, dict) else operations
+        if not isinstance(rows, list):
+            raise BootstrapError("Expected the original ARM operation list.")
+        arm_id = manifest["resources"]["arm_deployment"]["id"]
+        project_id = _ids(config)["project"]
+        conflict = any(
+            str(row.get("id", "")).lower().startswith(arm_id.lower() + "/operations/")
+            and row.get("properties", {}).get("provisioningState") == "Failed"
+            and str(row.get("properties", {}).get("targetResource", {}).get("id", "")).lower() == project_id.lower()
+            and _azure_error(_json(row.get("properties", {}).get("statusMessage")), "", []).code == "RequestConflict"
+            for row in rows
+        )
+        if not conflict:
+            raise BootstrapError("This narrow repair requires original RequestConflict evidence on the planned project.")
+        observed = _inspect(config, manifest, run)
+        if "resource_group" not in observed or "account" not in observed or "arm_deployment" not in observed:
+            raise BootstrapError("Owned RG/account and original failed deployment must still be observable; unknown outcomes cannot be repaired.")
+        _verify_failed_deployment(config, manifest, observed["arm_deployment"], correlation)
+        prior_attempts = [item for item in manifest["attempts"] if item.get("phase") == "deploying"]
+        if not prior_attempts or max(0, len(prior_attempts) - 1) >= max_provisioning_retries:
+            raise ApprovalError("The requested total retry allowance is absent or already exhausted.")
+
+        repair_id = uuid4().hex
+        repairs_root = directory / ".repairs"
+        if repairs_root.is_symlink():
+            raise BootstrapError("Repair history must remain inside this environment.")
+        repairs_root.mkdir(exist_ok=True, mode=0o700)
+        archive = repairs_root / repair_id
+        archive.mkdir(mode=0o700)
+        original_dir, proposed_dir = archive / "original", archive / "proposed"
+        original_dir.mkdir(mode=0o700)
+        proposed_dir.mkdir(mode=0o700)
+        (proposed_dir / "evidence").mkdir(mode=0o700)
+        original_files = {
+            "config.json": config_path.read_bytes(), "template.json": original_template_bytes,
+            "manifest.json": (directory / "manifest.json").read_bytes(),
+            "approval.original.json": approval_path.read_bytes(),
+            "cost-ledger.json": (directory / "cost-ledger.json").read_bytes(),
+            "failed-deployment.original.json": failed_deployment_path.read_bytes(),
+            "failed-operations.original.json": failed_operations_path.read_bytes(),
+        }
+        for path in (directory / "evidence").rglob("*"):
+            if path.is_symlink():
+                raise BootstrapError("Refusing to archive a symlink in failure evidence.")
+            if path.is_file():
+                original_files["evidence/" + path.relative_to(directory / "evidence").as_posix()] = path.read_bytes()
+        for name, content in original_files.items():
+            target = original_dir / name
+            target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            _write_bytes(target, content)
+
+        revised = deepcopy(config)
+        revised["template_sha256"] = hashlib.sha256(revised_template_bytes).hexdigest()
+        revised["scope_sha256"] = _scope(revised)
+        _validate(revised)
+        if _resources(revised) != _resources(config) or _ids(revised) != _ids(config):
+            raise BootstrapError("Dependency repair must not change any resource ID, role, name, SKU, or model.")
+        approval = deepcopy(original_approval)
+        approval["scope_sha256"] = revised["scope_sha256"]
+        approval["max_provisioning_retries"] = max_provisioning_retries
+        approval["request_evidence"] = _json({
+            "original_request_evidence": original_approval.get("request_evidence", ""),
+            "original_approval_sha256": _digest(original_approval),
+            "dependency_only_repair_authorization": "Coordinator explicitly authorized additive resource ordering only and up to two same-scope provisioning retries; --retry remains mandatory.",
+            "old_scope_sha256": config["scope_sha256"], "new_scope_sha256": revised["scope_sha256"],
+            "failed_correlation_id": correlation, "resource_ids_settings_names_skus_roles_unchanged": True,
+        })
+        validate_approval(revised, approval)
+        new_approval_path = directory / f"approval.dependencies-{repair_id[:8]}.local.json"
+        revision = {
+            "repair_id": repair_id, "recorded_at": _stamp(), "instance_id": config["instance_id"],
+            "old_scope_sha256": config["scope_sha256"], "new_scope_sha256": revised["scope_sha256"],
+            "old_template_sha256": config["template_sha256"], "new_template_sha256": revised["template_sha256"],
+            "archive_path": str(archive), "approval_path": str(new_approval_path),
+            "failed_correlation_id": correlation, "dependsOn_only": True,
+            "max_provisioning_retries": max_provisioning_retries,
+        }
+        new_manifest = deepcopy(manifest)
+        new_manifest.update(scope_sha256=revised["scope_sha256"], phase="dependency_repair_ready", updated_at=_stamp())
+        new_manifest.setdefault("dependency_repairs", []).append(revision)
+        proposed_files = {
+            "config.json": _json(revised).encode(), "template.json": revised_template_bytes,
+            "manifest.json": _json(new_manifest).encode(),
+            "cost-ledger.json": _json(cost_ledger(new_manifest)).encode(),
+        }
+        for name, content in proposed_files.items():
+            _write_bytes(proposed_dir / name, content)
+        _write(proposed_dir / "approval.json", approval)
+        _write(archive / "revision.json", {
+            **revision, "original_hashes": {name: hashlib.sha256(value).hexdigest() for name, value in original_files.items()},
+        })
+        validation = _validate_arm(proposed_dir, revised, identity["user"]["id"], run)
+        latest = _get(manifest["resources"]["arm_deployment"], run)
+        if latest is None:
+            raise BootstrapError("Original deployment disappeared during repair; no local revision was installed.")
+        _verify_failed_deployment(config, manifest, latest, correlation)
+        if TEMPLATE.read_bytes() != revised_template_bytes:
+            raise BootstrapError("Candidate template changed during validation; no revision was installed.")
+        live_targets = {
+            "config.json": config_path, "template.json": directory / "template.json",
+            "manifest.json": directory / "manifest.json", "cost-ledger.json": directory / "cost-ledger.json",
+        }
+        if approval_path.read_bytes() != original_files["approval.original.json"] or any(
+            target.read_bytes() != original_files[name] for name, target in live_targets.items()
+        ):
+            raise BootstrapError("Original local state changed during repair; refusing overwrite.")
+        transaction = {
+            "repair_id": repair_id, "config_path": str(config_path), "original_approval_path": str(approval_path),
+            "original_hashes": {name: hashlib.sha256(original_files[name]).hexdigest() for name in live_targets},
+            "proposed_hashes": {name: hashlib.sha256(proposed_files[name]).hexdigest() for name in live_targets},
+        }
+        pending = directory / "dependency-repair.pending.json"
+        _write(pending, transaction)
+        try:
+            _write(new_approval_path, approval)
+            for name, target in live_targets.items():
+                _write_bytes(target, proposed_files[name], replace=True)
+            os.replace(pending, archive / "completed.transaction.json")
+        except BaseException:
+            _recover_dependency_transaction(directory, config_path, approval_path)
+            raise
+        _load(config_path)
+        return {
+            "status": "DEPENDENCY_REPAIR_READY", "config_path": str(config_path),
+            "approval_path": str(new_approval_path), "archive_path": str(archive),
+            "scope_sha256": revised["scope_sha256"], "instance_id": revised["instance_id"],
+            "resource_ids_settings_unchanged": True, "max_provisioning_retries": max_provisioning_retries,
+            "arm_validation_status": validation["status"], "retry_required": True, "mutations_performed": False,
+        }
+
+
 def _env(config: dict, insights: dict, approval_path: Path | str) -> str:
     ids, names = _ids(config), config["names"]
     models = {role: m["deployment"] for m in config["models"] for role in m["roles"]}
@@ -1701,6 +1968,12 @@ def main(argv: list[str] | None = None) -> int:
     group_bind.add_argument("--config", type=Path, required=True)
     group_bind.add_argument("--intent", type=Path, required=True)
     group_bind.add_argument("--created", type=Path, required=True)
+    repair = commands.add_parser("repair-dependencies", help="Archive and locally rebind a verified dependsOn-only recovery; never writes Azure")
+    repair.add_argument("--config", type=Path, required=True)
+    repair.add_argument("--approval", type=Path, required=True)
+    repair.add_argument("--max-provisioning-retries", type=int, choices=[1, 2], required=True)
+    repair.add_argument("--failed-deployment", type=Path)
+    repair.add_argument("--failed-operations", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
@@ -1720,6 +1993,11 @@ def main(argv: list[str] | None = None) -> int:
             result = confirm_group_creation(args.config)
         elif args.command == "bind-group":
             result = bind_created_group(args.config, args.intent, args.created)
+        elif args.command == "repair-dependencies":
+            result = repair_dependencies(
+                args.config, args.approval, max_provisioning_retries=args.max_provisioning_retries,
+                failed_deployment_path=args.failed_deployment, failed_operations_path=args.failed_operations,
+            )
         else:
             result = {"preflight": preflight, "status": status}[args.command](args.config, approval_path=args.approval)
         print(_json(result), end="")
