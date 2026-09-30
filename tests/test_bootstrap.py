@@ -54,6 +54,7 @@ class FakeAzure:
         self.fail_terminal = False
         self.validation_error = None
         self.validation_result = {"properties": {"provisioningState": "Succeeded"}, "error": None}
+        self.operations = []
         self.running = False
         for model in self.config["models"]:
             quota_model = "gpt4.1-mini" if model["name"] == "gpt-4.1-mini" else model["name"]
@@ -108,7 +109,8 @@ class FakeAzure:
                 props.update(disableLocalAuth=True, allowProjectManagement=True)
             elif key == "search":
                 row["sku"] = {"name": "basic"}
-                props.update(disableLocalAuth=True, partitionCount=1, replicaCount=1, semanticSearch="free")
+                props.update(provisioningState="succeeded", status="running", disableLocalAuth=True,
+                             partitionCount=1, replicaCount=1, semanticSearch="free")
             elif key == "workspace":
                 props.update(
                     sku={"name": "PerGB2018"}, retentionInDays=config["retention_days"],
@@ -134,7 +136,10 @@ class FakeAzure:
                 props.update(
                     category="AppInsights", authType="ProjectManagedIdentity",
                     target=specs["insights"]["id"], isSharedToAll=False,
-                    metadata={"ResourceId": specs["insights"]["id"], "lab_instance": config["instance_id"]},
+                    metadata={
+                        "ResourceId": specs["insights"]["id"], "lab_instance": config["instance_id"],
+                        "ApplicationInsightsConnectionString": "InstrumentationKey=fixture;IngestionEndpoint=https://example.invalid",
+                    },
                 )
             elif key.startswith("role:"):
                 role = spec["role"]
@@ -164,6 +169,8 @@ class FakeAzure:
             return deepcopy(self.usage)
         if args[:2] == ["resource", "list"]:
             return [r for r in deepcopy(self.remote).values() if r.get("type") != "Microsoft.Resources/resourceGroups"]
+        if args[:4] == ["deployment", "operation", "group", "list"]:
+            return deepcopy(self.operations)
         if args[:3] == ["deployment", "group", "validate"]:
             assert args[args.index("--validation-level") + 1] == "Provider"
             assert args[args.index("--mode") + 1] == "Incremental"
@@ -668,6 +675,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(connection["properties"]["authType"], "ProjectManagedIdentity")
         self.assertEqual(connection["properties"]["target"], "[resourceId('Microsoft.Insights/components', parameters('names').insights)]")
         self.assertEqual(connection["properties"]["metadata"]["ResourceId"], connection["properties"]["target"])
+        self.assertEqual(connection["properties"]["metadata"][b.TRACE_ROUTING_KEY], b.TRACE_ROUTING_EXPRESSION)
         self.assertNotIn("credentials", connection["properties"])
         self.assertNotIn("useWorkspaceManagedIdentity", connection["properties"])
         self.assertIn("labRoleAssignments", connection["dependsOn"])
@@ -850,6 +858,144 @@ class BootstrapTests(unittest.TestCase):
         self.assertTrue(raised[0])
         self.assertEqual({name: (self.path.parent / name).read_bytes() for name in names}, originals)
         self.assertFalse((self.path.parent / "dependency-repair.pending.json").exists())
+        self.assertEqual(self.azure.mutations, [])
+
+    def trace_routing_repair_fixture(self):
+        original = json.loads(b.TEMPLATE.read_text())
+        trace = next(r for r in original["resources"] if r.get("properties", {}).get("category") == "AppInsights")
+        trace["properties"]["metadata"].pop(b.TRACE_ROUTING_KEY)
+        original_path = self.root / "missing-routing-template.json"
+        original_path.write_text(json.dumps(original, indent=2) + "\n")
+        with patch.object(b, "TEMPLATE", original_path):
+            planned = b.plan(
+                subscription_id=SUB, tenant_id=TENANT, expected_user=USER,
+                root=self.root, environment="lab-routing",
+            )
+            self.path = Path(planned["config_path"])
+            self.config = b._read(self.path)
+            self.azure = FakeAzure(self.path)
+            approval = self.approve(max_provisioning_retries=2)
+            for retry in (False, True):
+                self.azure.fail_terminal = True
+                with self.assertRaises(b.AzureCommandError):
+                    b.apply(self.path, approval, run=self.azure, retry=retry)
+        specs = b._resources(self.config)
+        self.azure.remote.pop(specs["insights_connection"]["id"].lower())
+        deployment = self.azure.remote[specs["arm_deployment"]["id"].lower()]
+        deployment["properties"]["correlationId"] = str(uuid4())
+        error = {"code": "ValidationError", "message": "Required metadata property ApplicationInsightsConnectionString is missing"}
+        deployment["properties"]["error"] = {"code": "DeploymentFailed", "details": [error]}
+        self.azure.operations = [{
+            "id": deployment["id"] + "/operations/trace",
+            "properties": {
+                "provisioningState": "Failed", "targetResource": {"id": specs["insights_connection"]["id"]},
+                "statusMessage": {"error": error},
+            },
+        }]
+        summary = [{
+            "resource": f"{self.config['names']['account']}/{self.config['names']['project']}/lab-appinsights",
+            "state": "Failed", "error": {"error": error, "status": "Failed"},
+        }]
+        b._write(self.path.parent / "evidence" / "retry1-failed-deployment.local.json", deployment)
+        b._write(self.path.parent / "evidence" / "retry1-operations.local.json", summary)
+        self.azure.calls.clear()
+        self.azure.mutations.clear()
+        return approval
+
+    def test_trace_routing_repair_is_separately_audited_and_does_not_reset_retry_budget(self):
+        approval = self.trace_routing_repair_fixture()
+        original = {name: (self.path.parent / name).read_bytes() for name in ("config.json", "template.json", "manifest.json")}
+        approval_bytes = approval.read_bytes()
+        attempts = deepcopy(self.azure.manifest()["attempts"])
+        result = b.repair_trace_routing(self.path, approval, run=self.azure)
+        self.assertEqual(result["status"], "TRACE_ROUTING_REPAIR_READY")
+        self.assertEqual(self.azure.mutations, [])
+        archive = Path(result["archive_path"]) / "original"
+        for name, content in original.items():
+            self.assertEqual((archive / name).read_bytes(), content)
+        self.assertEqual((archive / "approval.original.json").read_bytes(), approval_bytes)
+        self.assertEqual(approval.read_bytes(), approval_bytes)
+        self.assertTrue((archive / "live-operations.snapshot.json").is_file())
+        _, repaired, manifest = b._load(self.path)
+        self.assertEqual(repaired["instance_id"], self.config["instance_id"])
+        self.assertEqual(b._resources(repaired), b._resources(self.config))
+        self.assertEqual(manifest["attempts"], attempts)
+        self.assertEqual(manifest["phase"], "trace_routing_repair_ready")
+        record = manifest["trace_routing_repairs"][-1]
+        self.assertFalse(record["dependsOn_only"])
+        self.assertEqual(record["repair_kind"], "trace-routing")
+        bound = b._read(Path(result["approval_path"]))
+        self.assertEqual(bound["max_provisioning_retries"], 2)
+        self.assertEqual(b.repair_trace_routing(self.path, approval, run=self.azure)["status"], "TRACE_ROUTING_REPAIR_ALREADY_APPLIED")
+        with self.assertRaises(b.ProvisioningRetryError):
+            b.apply(self.path, result["approval_path"], run=self.azure)
+        self.assertEqual(b.apply(self.path, result["approval_path"], run=self.azure, retry=True)["status"], "APPLIED")
+        self.assertEqual(len(self.azure.mutations), 1)
+        self.assertEqual(len([a for a in self.azure.manifest()["attempts"] if a["phase"] == "deploying"]), 3)
+
+    def test_trace_routing_repair_rejects_literal_foreign_auth_and_unrelated_changes(self):
+        approval = self.trace_routing_repair_fixture()
+        original = json.loads(b.TEMPLATE.read_text())
+        for change in ("literal", "foreign", "auth", "local-auth", "roles", "dependency"):
+            with self.subTest(change=change):
+                template = deepcopy(original)
+                trace = next(r for r in template["resources"] if r.get("properties", {}).get("category") == "AppInsights")
+                if change == "literal":
+                    trace["properties"]["metadata"][b.TRACE_ROUTING_KEY] = "InstrumentationKey=literal"
+                elif change == "foreign":
+                    trace["properties"]["metadata"][b.TRACE_ROUTING_KEY] = "[reference('/unowned/resource', '2020-02-02').ConnectionString]"
+                elif change == "auth":
+                    trace["properties"]["authType"] = "ApiKey"
+                    trace["properties"]["credentials"] = {"key": "literal"}
+                elif change == "local-auth":
+                    next(r for r in template["resources"] if r["type"] == "Microsoft.Insights/components")["properties"]["DisableLocalAuth"] = False
+                elif change == "roles":
+                    next(r for r in template["resources"] if r["type"] == "Microsoft.Authorization/roleAssignments")["properties"]["principalType"] = "User"
+                else:
+                    trace["dependsOn"] = []
+                candidate = self.root / f"routing-{change}.json"
+                candidate.write_text(json.dumps(template))
+                with patch.object(b, "TEMPLATE", candidate):
+                    with self.assertRaises(b.BootstrapError):
+                        b.repair_trace_routing(self.path, approval, run=self.azure)
+        self.assertEqual(self.azure.calls, [])
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_trace_routing_repair_requires_live_exact_operation_proof(self):
+        approval = self.trace_routing_repair_fixture()
+        self.azure.operations[0]["properties"]["targetResource"]["id"] = b._ids(self.config)["project"]
+        with self.assertRaises(b.BootstrapError):
+            b.repair_trace_routing(self.path, approval, run=self.azure)
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_trace_routing_repair_cannot_grant_or_replenish_retries(self):
+        approval = self.trace_routing_repair_fixture()
+        reduced = b._read(approval)
+        reduced["max_provisioning_retries"] = 1
+        approval.write_text(json.dumps(reduced))
+        with self.assertRaises(b.ApprovalError):
+            b.repair_trace_routing(self.path, approval, run=self.azure)
+        self.assertEqual(self.azure.calls, [])
+        reduced["max_provisioning_retries"] = 2
+        approval.write_text(json.dumps(reduced))
+        manifest = self.azure.manifest()
+        manifest["attempts"].append(deepcopy(next(a for a in manifest["attempts"] if a["phase"] == "deploying")))
+        (self.path.parent / "manifest.json").write_text(json.dumps(manifest))
+        with self.assertRaises(b.ApprovalError):
+            b.repair_trace_routing(self.path, approval, run=self.azure)
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_success_cannot_hide_missing_trace_routing_and_foreign_route_is_blocked(self):
+        self.apply()
+        spec = b._resources(self.config)["insights_connection"]
+        connection = self.azure.remote[spec["id"].lower()]
+        connection["properties"]["metadata"][b.TRACE_ROUTING_KEY] = "InstrumentationKey=foreign"
+        self.azure.mutations.clear()
+        with self.assertRaises(b.BootstrapError):
+            self.apply()
+        del connection["properties"]["metadata"][b.TRACE_ROUTING_KEY]
+        with self.assertRaises(b.BootstrapError):
+            self.apply()
         self.assertEqual(self.azure.mutations, [])
 
     def test_trace_connection_is_owned_but_not_claimed_as_observed_ingestion(self):

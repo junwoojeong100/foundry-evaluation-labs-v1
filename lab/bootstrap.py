@@ -26,6 +26,8 @@ REGION = "northcentralus"
 TEMPLATE = Path(__file__).resolve().parents[1] / "infra" / "bootstrap.json"
 ARM = "https://management.azure.com"
 SCHEMA_VERSION = 1
+TRACE_ROUTING_KEY = "ApplicationInsightsConnectionString"
+TRACE_ROUTING_EXPRESSION = "[reference(resourceId('Microsoft.Insights/components', parameters('names').insights), '2020-02-02').ConnectionString]"
 AWAITING_APPROVAL = "BLOCKED_AWAITING_APPROVAL"
 SEARCH_BASIC_PRICE = {
     "currency": "USD", "amount": 0.101, "unit": "hour", "region": REGION,
@@ -437,8 +439,10 @@ def _load(path: Path | str, *, _pinned_template: bool = False) -> tuple[Path, di
     if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
         raise BootstrapError("Bootstrap paths must not traverse symlinks.")
     path = path.resolve()
-    if (path.parent / "dependency-repair.pending.json").exists():
-        raise BootstrapError("A local dependency repair is incomplete; rerun repair-dependencies before any Azure operation.")
+    if any((path.parent / name).exists() for name in (
+        "dependency-repair.pending.json", "trace-routing-repair.pending.json",
+    )):
+        raise BootstrapError("A local template repair is incomplete; rerun its repair command before any Azure operation.")
     config = _read(path)
     _validate(config, template_path=path.parent / "template.json" if _pinned_template else None)
     if str(path.parent) != config.get("environment_dir"):
@@ -940,7 +944,7 @@ def _get(resource: dict, run: Run) -> dict | None:
     except AzureCommandError as exc:
         if exc.code in {
             "ResourceNotFound", "ResourceGroupNotFound", "ParentResourceNotFound",
-            "DeploymentNotFound", "RoleAssignmentNotFound", "NotFound",
+            "DeploymentNotFound", "RoleAssignmentNotFound", "NotFound", "NotFoundError",
         }:
             return None
         raise
@@ -1035,6 +1039,10 @@ def _owned(config: dict, key: str, spec: dict, remote: dict, manifest: dict, obs
             or metadata.get("lab_instance") != config["instance_id"]
         ):
             raise BootstrapError("Application Insights connection must use this project's managed identity and owned telemetry resource.")
+        if TRACE_ROUTING_KEY in metadata:
+            expected = observed.get("insights", {}).get("properties", {}).get("ConnectionString")
+            if not expected or metadata[TRACE_ROUTING_KEY] != expected:
+                raise BootstrapError("Application Insights routing metadata differs from the owned component.")
     if key.startswith("role:"):
         role = spec["role"]
         principal = manifest.get("operator_principal_id") if role["principal"] == "operator" else (
@@ -1431,6 +1439,34 @@ def _dependency_only_change(original: dict, revised: dict) -> None:
             raise BootstrapError("Dependency repair may add ordering, not remove an existing prerequisite.")
 
 
+def _trace_routing_only_change(original: dict, revised: dict) -> None:
+    before, after = deepcopy(original), deepcopy(revised)
+    target = "[resourceId('Microsoft.Insights/components', parameters('names').insights)]"
+    for template in (before, after):
+        connections = [
+            resource for resource in template.get("resources", [])
+            if resource.get("type") == "Microsoft.CognitiveServices/accounts/projects/connections"
+            and resource.get("properties", {}).get("category") == "AppInsights"
+        ]
+        if len(connections) != 1:
+            raise BootstrapError("Routing repair requires exactly the planned App Insights connection.")
+        properties = connections[0]["properties"]
+        if (
+            properties.get("authType") != "ProjectManagedIdentity"
+            or properties.get("target") != target
+            or properties.get("metadata", {}).get("ResourceId") != target
+            or "credentials" in properties
+        ):
+            raise BootstrapError("Routing repair cannot change authentication or target another component.")
+        metadata = properties["metadata"]
+        if template is after and metadata.get(TRACE_ROUTING_KEY) != TRACE_ROUTING_EXPRESSION:
+            raise BootstrapError("Routing metadata must reference the SAME owned component's ConnectionString; literal values are forbidden.")
+        if TRACE_ROUTING_KEY in metadata and metadata.pop(TRACE_ROUTING_KEY) != TRACE_ROUTING_EXPRESSION:
+            raise BootstrapError("Routing repair only adds the missing owned-component reference, not a replacement route.")
+    if before != after:
+        raise BootstrapError("Routing repair allows ONLY metadata.ApplicationInsightsConnectionString; every other template value must remain identical.")
+
+
 def _verify_failed_deployment(config: dict, manifest: dict, deployment: dict, correlation: str) -> None:
     spec = manifest["resources"]["arm_deployment"]
     _owned(config, "arm_deployment", spec, deployment, manifest, {})
@@ -1443,11 +1479,14 @@ def _verify_failed_deployment(config: dict, manifest: dict, deployment: dict, co
         or set(actual_parameters) != set(expected_parameters)
         or any(actual_parameters[key].get("value") != value["value"] for key, value in expected_parameters.items())
     ):
-        raise BootstrapError("Dependency repair requires the same terminal failed deployment and unchanged parameters.")
+        raise BootstrapError("Template repair requires the same terminal failed deployment and unchanged parameters.")
 
 
-def _recover_dependency_transaction(directory: Path, config_path: Path, approval_path: Path) -> None:
-    pending = directory / "dependency-repair.pending.json"
+def _recover_dependency_transaction(
+    directory: Path, config_path: Path, approval_path: Path, *,
+    pending_name: str = "dependency-repair.pending.json",
+) -> None:
+    pending = directory / pending_name
     if not pending.exists():
         return
     transaction = _read(pending)
@@ -1457,7 +1496,7 @@ def _recover_dependency_transaction(directory: Path, config_path: Path, approval
         or transaction.get("config_path") != str(config_path)
         or transaction.get("original_approval_path") != str(approval_path)
     ):
-        raise BootstrapError("Incomplete dependency repair belongs to different inputs.")
+        raise BootstrapError("Incomplete template repair belongs to different inputs.")
     archive = directory / ".repairs" / repair_id
     if archive.is_symlink() or archive.parent.is_symlink():
         raise BootstrapError("Refusing a symlink in dependency repair history.")
@@ -1488,8 +1527,37 @@ def repair_dependencies(
     failed_operations_path: Path | str | None = None, run: Run = az_json,
 ) -> dict:
     """Archive and rebind an additive dependsOn-only repair of a verified failed owned deployment."""
+    return _repair_template(
+        config_path, approval_path, repair_kind="dependencies", max_provisioning_retries=max_provisioning_retries,
+        failed_deployment_path=failed_deployment_path, failed_operations_path=failed_operations_path, run=run,
+    )
+
+
+def repair_trace_routing(
+    config_path: Path | str, approval_path: Path | str, *,
+    failed_deployment_path: Path | str | None = None,
+    failed_operations_path: Path | str | None = None, run: Run = az_json,
+) -> dict:
+    """Add only the owned-component trace routing reference, preserving the existing two-retry ceiling."""
+    return _repair_template(
+        config_path, approval_path, repair_kind="trace-routing", max_provisioning_retries=2,
+        failed_deployment_path=failed_deployment_path, failed_operations_path=failed_operations_path, run=run,
+    )
+
+
+def _repair_template(
+    config_path: Path | str, approval_path: Path | str, *, repair_kind: str, max_provisioning_retries: int,
+    failed_deployment_path: Path | str | None, failed_operations_path: Path | str | None, run: Run,
+) -> dict:
+    if repair_kind not in {"dependencies", "trace-routing"}:
+        raise BootstrapError("Unsupported template repair kind.")
+    routing = repair_kind == "trace-routing"
+    prefix = "TRACE_ROUTING" if routing else "DEPENDENCY"
+    history_key = "trace_routing_repairs" if routing else "dependency_repairs"
+    pending_name = "trace-routing-repair.pending.json" if routing else "dependency-repair.pending.json"
+    change_guard = _trace_routing_only_change if routing else _dependency_only_change
     if type(max_provisioning_retries) is not int or max_provisioning_retries not in {1, 2}:
-        raise ApprovalError("Dependency-only recovery authorizes one or two total provisioning retries, never unbounded retries.")
+        raise ApprovalError("Template recovery permits one or two total provisioning retries, never unbounded retries.")
     config_path, approval_path = Path(config_path), Path(approval_path)
     for path in (config_path, approval_path):
         if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
@@ -1497,14 +1565,14 @@ def repair_dependencies(
     config_path, approval_path = config_path.resolve(), approval_path.resolve()
     directory = config_path.parent
     with _lock(directory):
-        _recover_dependency_transaction(directory, config_path, approval_path)
+        _recover_dependency_transaction(directory, config_path, approval_path, pending_name=pending_name)
         _, config, manifest = _load(config_path, _pinned_template=True)
         original_template_bytes = (directory / "template.json").read_bytes()
         revised_template_bytes = TEMPLATE.read_bytes()
         old_template, new_template = json.loads(original_template_bytes), json.loads(revised_template_bytes)
-        _dependency_only_change(old_template, new_template)
+        change_guard(old_template, new_template)
         if original_template_bytes == revised_template_bytes:
-            repairs = manifest.get("dependency_repairs", [])
+            repairs = manifest.get(history_key, [])
             if repairs:
                 prior = repairs[-1]
                 rebound = _approved_record(config, prior["approval_path"])
@@ -1515,22 +1583,25 @@ def repair_dependencies(
                         _file_digest(Path(prior["approval_path"])), _file_digest(original_snapshot),
                     }
                 ):
-                    raise ApprovalError("An existing dependency repair cannot silently change its original consent or retry allowance.")
+                    raise ApprovalError("An existing repair cannot silently change its original consent or retry allowance.")
                 return {
-                    "status": "DEPENDENCY_REPAIR_ALREADY_APPLIED", "config_path": str(config_path),
+                    "status": f"{prefix}_REPAIR_ALREADY_APPLIED", "config_path": str(config_path),
                     "approval_path": repairs[-1]["approval_path"], "scope_sha256": config["scope_sha256"],
                     "mutations_performed": False, "retry_required": manifest.get("phase") != "succeeded",
                 }
-            raise BootstrapError("No dependency-only template revision is available.")
+            raise BootstrapError("No matching narrow template revision is available.")
         original_approval = _approved_record(config, approval_path)
+        if routing and original_approval.get("max_provisioning_retries", 0) != 2:
+            raise ApprovalError("Trace routing repair preserves an already-approved total retry ceiling of two; it cannot grant or reset retries.")
         _check_outputs(directory, manifest)
         if (directory / ".env").exists():
             raise BootstrapError("This repair is only for failed initial provisioning; an existing runtime .env is never overwritten.")
         identity = _identity(config, manifest, run)
         if identity["user"]["id"] != manifest["operator_principal_id"]:
             raise BootstrapError("Repair principal differs from the recorded provisioner.")
-        failed_deployment_path = Path(failed_deployment_path or directory / "evidence" / "first-apply-failed-deployment.local.json")
-        failed_operations_path = Path(failed_operations_path or directory / "evidence" / "first-apply-operations.local.json")
+        failure_prefix = "retry1" if routing else "first-apply"
+        failed_deployment_path = Path(failed_deployment_path or directory / "evidence" / f"{failure_prefix}-failed-deployment.local.json")
+        failed_operations_path = Path(failed_operations_path or directory / "evidence" / f"{failure_prefix}-operations.local.json")
         if failed_deployment_path.is_symlink() or failed_operations_path.is_symlink():
             raise BootstrapError("Failure evidence cannot be a symlink.")
         failed = _read(failed_deployment_path)
@@ -1546,16 +1617,39 @@ def repair_dependencies(
         if not isinstance(rows, list):
             raise BootstrapError("Expected the original ARM operation list.")
         arm_id = manifest["resources"]["arm_deployment"]["id"]
-        project_id = _ids(config)["project"]
-        conflict = any(
-            str(row.get("id", "")).lower().startswith(arm_id.lower() + "/operations/")
-            and row.get("properties", {}).get("provisioningState") == "Failed"
-            and str(row.get("properties", {}).get("targetResource", {}).get("id", "")).lower() == project_id.lower()
-            and _azure_error(_json(row.get("properties", {}).get("statusMessage")), "", []).code == "RequestConflict"
-            for row in rows
-        )
-        if not conflict:
-            raise BootstrapError("This narrow repair requires original RequestConflict evidence on the planned project.")
+        target_id = manifest["resources"]["insights_connection"]["id"] if routing else _ids(config)["project"]
+
+        def matches_failure(row: dict, *, allow_summary: bool = False) -> bool:
+            properties = row.get("properties", {})
+            full = (
+                str(row.get("id", "")).lower().startswith(arm_id.lower() + "/operations/")
+                and properties.get("provisioningState") == "Failed"
+                and str(properties.get("targetResource", {}).get("id", "")).lower() == target_id.lower()
+            )
+            summary = routing and allow_summary and row.get("state") == "Failed" and row.get("resource") == (
+                f"{config['names']['account']}/{config['names']['project']}/lab-appinsights"
+            )
+            if not (full or summary):
+                return False
+            error = _azure_error(_json(properties.get("statusMessage") if full else row.get("error")), "", [])
+            if not routing:
+                return error.code == "RequestConflict"
+            return (
+                error.code == "ValidationError" and TRACE_ROUTING_KEY in error.raw_message
+                and "missing" in error.raw_message.lower()
+            )
+
+        if not any(matches_failure(row, allow_summary=routing) for row in rows):
+            raise BootstrapError("The original operation evidence does not match this narrowly permitted repair.")
+        live_operations = None
+        if routing:
+            live_operations = run([
+                "deployment", "operation", "group", "list", "--subscription", config["subscription_id"],
+                "--resource-group", config["names"]["resource_group"], "--name", config["deployment_name"],
+            ])
+            live_rows = live_operations.get("value", []) if isinstance(live_operations, dict) else live_operations
+            if not isinstance(live_rows, list) or not any(matches_failure(row) for row in live_rows):
+                raise BootstrapError("Live scoped ARM operations do not confirm the same missing routing metadata failure.")
         observed = _inspect(config, manifest, run)
         if "resource_group" not in observed or "account" not in observed or "arm_deployment" not in observed:
             raise BootstrapError("Owned RG/account and original failed deployment must still be observable; unknown outcomes cannot be repaired.")
@@ -1583,6 +1677,8 @@ def repair_dependencies(
             "failed-deployment.original.json": failed_deployment_path.read_bytes(),
             "failed-operations.original.json": failed_operations_path.read_bytes(),
         }
+        if live_operations is not None:
+            original_files["live-operations.snapshot.json"] = _json(live_operations).encode()
         for path in (directory / "evidence").rglob("*"):
             if path.is_symlink():
                 raise BootstrapError("Refusing to archive a symlink in failure evidence.")
@@ -1598,30 +1694,40 @@ def repair_dependencies(
         revised["scope_sha256"] = _scope(revised)
         _validate(revised)
         if _resources(revised) != _resources(config) or _ids(revised) != _ids(config):
-            raise BootstrapError("Dependency repair must not change any resource ID, role, name, SKU, or model.")
+            raise BootstrapError("Narrow repair must not change any resource ID, role, name, SKU, or model.")
         approval = deepcopy(original_approval)
         approval["scope_sha256"] = revised["scope_sha256"]
         approval["max_provisioning_retries"] = max_provisioning_retries
         approval["request_evidence"] = _json({
             "original_request_evidence": original_approval.get("request_evidence", ""),
             "original_approval_sha256": _digest(original_approval),
-            "dependency_only_repair_authorization": "Coordinator explicitly authorized additive resource ordering only and up to two same-scope provisioning retries; --retry remains mandatory.",
+            "repair_kind": repair_kind,
+            "repair_authorization": (
+                "Coordinator explicitly authorized only the missing ApplicationInsightsConnectionString metadata reference to the SAME owned component, retaining ProjectManagedIdentity, disabled local auth, and the existing total ceiling of two retries; --retry remains mandatory."
+                if routing else
+                "Coordinator explicitly authorized additive resource ordering only and up to two same-scope provisioning retries; --retry remains mandatory."
+            ),
             "old_scope_sha256": config["scope_sha256"], "new_scope_sha256": revised["scope_sha256"],
-            "failed_correlation_id": correlation, "resource_ids_settings_names_skus_roles_unchanged": True,
+            "failed_correlation_id": correlation, "resource_ids_names_skus_roles_processing_unchanged": True,
+            "allowed_change": f"metadata.{TRACE_ROUTING_KEY} same-component reference" if routing else "additive dependsOn only",
         })
         validate_approval(revised, approval)
-        new_approval_path = directory / f"approval.dependencies-{repair_id[:8]}.local.json"
+        new_approval_path = directory / f"approval.{repair_kind}-{repair_id[:8]}.local.json"
         revision = {
             "repair_id": repair_id, "recorded_at": _stamp(), "instance_id": config["instance_id"],
             "old_scope_sha256": config["scope_sha256"], "new_scope_sha256": revised["scope_sha256"],
             "old_template_sha256": config["template_sha256"], "new_template_sha256": revised["template_sha256"],
             "archive_path": str(archive), "approval_path": str(new_approval_path),
-            "failed_correlation_id": correlation, "dependsOn_only": True,
+            "failed_correlation_id": correlation, "repair_kind": repair_kind, "dependsOn_only": not routing,
+            "allowed_change": f"metadata.{TRACE_ROUTING_KEY} owned-component reference only" if routing else "additive dependsOn only",
             "max_provisioning_retries": max_provisioning_retries,
         }
         new_manifest = deepcopy(manifest)
-        new_manifest.update(scope_sha256=revised["scope_sha256"], phase="dependency_repair_ready", updated_at=_stamp())
-        new_manifest.setdefault("dependency_repairs", []).append(revision)
+        new_manifest.update(
+            scope_sha256=revised["scope_sha256"],
+            phase="trace_routing_repair_ready" if routing else "dependency_repair_ready", updated_at=_stamp(),
+        )
+        new_manifest.setdefault(history_key, []).append(revision)
         proposed_files = {
             "config.json": _json(revised).encode(), "template.json": revised_template_bytes,
             "manifest.json": _json(new_manifest).encode(),
@@ -1653,7 +1759,7 @@ def repair_dependencies(
             "original_hashes": {name: hashlib.sha256(original_files[name]).hexdigest() for name in live_targets},
             "proposed_hashes": {name: hashlib.sha256(proposed_files[name]).hexdigest() for name in live_targets},
         }
-        pending = directory / "dependency-repair.pending.json"
+        pending = directory / pending_name
         _write(pending, transaction)
         try:
             _write(new_approval_path, approval)
@@ -1661,14 +1767,16 @@ def repair_dependencies(
                 _write_bytes(target, proposed_files[name], replace=True)
             os.replace(pending, archive / "completed.transaction.json")
         except BaseException:
-            _recover_dependency_transaction(directory, config_path, approval_path)
+            _recover_dependency_transaction(directory, config_path, approval_path, pending_name=pending_name)
             raise
         _load(config_path)
         return {
-            "status": "DEPENDENCY_REPAIR_READY", "config_path": str(config_path),
+            "status": f"{prefix}_REPAIR_READY", "config_path": str(config_path),
             "approval_path": str(new_approval_path), "archive_path": str(archive),
             "scope_sha256": revised["scope_sha256"], "instance_id": revised["instance_id"],
-            "resource_ids_settings_unchanged": True, "max_provisioning_retries": max_provisioning_retries,
+            "resource_ids_models_skus_roles_processing_unchanged": True,
+            **({"resource_ids_settings_unchanged": True} if not routing else {}),
+            "allowed_change": revision["allowed_change"], "max_provisioning_retries": max_provisioning_retries,
             "arm_validation_status": validation["status"], "retry_required": True, "mutations_performed": False,
         }
 
@@ -1865,9 +1973,16 @@ def apply(
             observed = _inspect(config, manifest, bounded)
             if set(observed) != set(manifest["resources"]):
                 raise BootstrapError("ARM succeeded but the complete owned inventory is not observable; do not claim success.")
+            routing = observed["insights_connection"].get("properties", {}).get("metadata", {}).get(TRACE_ROUTING_KEY)
+            expected_routing = observed["insights"].get("properties", {}).get("ConnectionString")
+            if not expected_routing or routing != expected_routing:
+                raise BootstrapError("ARM success is insufficient: trace routing metadata must match the owned component's ConnectionString.")
             for key, remote in observed.items():
-                if remote.get("properties", {}).get("provisioningState", "Succeeded") != "Succeeded":
+                state = remote.get("properties", {}).get("provisioningState")
+                if state is not None and str(state).lower() != "succeeded":
                     raise BootstrapError(f"Resource is not ready: {key}.")
+                if state is None and (key in RESOURCE_TYPES or key.startswith("model:")):
+                    raise BootstrapError(f"Resource readiness is missing: {key}.")
                 manifest["resources"][key]["status"] = "succeeded"
             content = _env(config, observed["insights"], approval_path)
             if not (directory / ".env").exists():
@@ -1974,6 +2089,11 @@ def main(argv: list[str] | None = None) -> int:
     repair.add_argument("--max-provisioning-retries", type=int, choices=[1, 2], required=True)
     repair.add_argument("--failed-deployment", type=Path)
     repair.add_argument("--failed-operations", type=Path)
+    trace_repair = commands.add_parser("repair-trace-routing", help="Archive and rebind ONLY the owned App Insights routing metadata; never writes Azure or resets retry budget")
+    trace_repair.add_argument("--config", type=Path, required=True)
+    trace_repair.add_argument("--approval", type=Path, required=True)
+    trace_repair.add_argument("--failed-deployment", type=Path)
+    trace_repair.add_argument("--failed-operations", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
@@ -1997,6 +2117,11 @@ def main(argv: list[str] | None = None) -> int:
             result = repair_dependencies(
                 args.config, args.approval, max_provisioning_retries=args.max_provisioning_retries,
                 failed_deployment_path=args.failed_deployment, failed_operations_path=args.failed_operations,
+            )
+        elif args.command == "repair-trace-routing":
+            result = repair_trace_routing(
+                args.config, args.approval, failed_deployment_path=args.failed_deployment,
+                failed_operations_path=args.failed_operations,
             )
         else:
             result = {"preflight": preflight, "status": status}[args.command](args.config, approval_path=args.approval)

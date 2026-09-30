@@ -173,6 +173,7 @@
         "metadata": {
           "ApiType": "Azure",
           "ResourceId": "[resourceId('Microsoft.Insights/components', parameters('names').insights)]",
+          "ApplicationInsightsConnectionString": "[reference(resourceId('Microsoft.Insights/components', parameters('names').insights), '2020-02-02').ConnectionString]",
           "lab_instance": "[parameters('tags').lab_instance]"
         }
       }

@@ -331,6 +331,53 @@ approval path**, not the old approval. This is not automatic submission, proof
 of successful provisioning, or general permission to edit/reuse arbitrary
 existing resources.
 
+### Explicit trace-routing metadata recovery
+
+The service can reject a managed-identity App Insights connection with
+`ValidationError: Required metadata property ApplicationInsightsConnectionString
+is missing`. The corrected template supplies **only that routing field** using
+an ARM `reference()` to the **same owned component's** `ConnectionString`.
+`ProjectManagedIdentity`, the scoped publisher role, and disabled local auth
+remain unchanged. The connection string identifies the telemetry destination;
+[Microsoft documents][connection-strings] that its instrumentation identifier
+is not a security token/key. It is never hardcoded into the template or used as
+an ApiKey credential.
+
+This is **not** a dependency-only repair. Use the separately audited command
+with the current rebound approval returned by the earlier repair:
+
+```sh
+python3 -S -m lab.bootstrap repair-trace-routing \
+  --config .lab/lab-20260930-live/config.json \
+  --approval <current-private-approval.json>
+```
+
+Defaults are `evidence/retry1-failed-deployment.local.json` and
+`evidence/retry1-operations.local.json`; explicit `--failed-deployment` /
+`--failed-operations` paths are also supported. In addition to original local
+proof and matching terminal failure/correlation/parameters, the command reads
+the same deployment's live operations to confirm the exact planned connection's
+missing-field error. This permits a locally filtered operation summary without
+mistaking it for independent full ARM evidence.
+
+Only addition of `metadata.ApplicationInsightsConnectionString` with the exact
+same-component ARM reference is allowed. Literal strings, another resource,
+credential/auth changes, enabling local auth, role/model/SKU/name changes, and
+dependency edits are rejected. Original bytes and evidence are archived again,
+then the proposed template is Provider-validated read-only and rebound to a new
+private approval. The command **requires and preserves** the already-approved
+total `max_provisioning_retries: 2`; the first retry remains consumed, leaving
+only one further create attempt. It does not reset the attempt journal or grant
+additional retries. The parent still explicitly invokes `apply --retry` using
+the newly returned approval path.
+
+The public connection schema describes metadata as a string map rather than an
+exhaustive list of category-specific required fields. The observed service
+response establishes this missing field; `ApiType`, `ResourceId`, and the
+ownership marker remain in place. No additional undocumented metadata/auth
+properties are guessed. Successful apply verifies the routing string against
+the owned component, but actual trace ingestion still needs separate evidence.
+
 For an already-owned group, `apply --what-if` performs read-only group what-if
 without cost approval. It cannot create the group just to preview it. Full ARM
 outputs stay in local evidence. A successful ARM deployment is followed by an
@@ -421,6 +468,8 @@ before importing the normal SDK/config stack. Python functions return dictionari
 - `bind_created_group(config_path, intent_path, created_path, *, run=az_json)`
 - `repair_dependencies(config_path, approval_path, *, max_provisioning_retries,
   failed_deployment_path=None, failed_operations_path=None, run=az_json)`
+- `repair_trace_routing(config_path, approval_path, *, failed_deployment_path=None,
+  failed_operations_path=None, run=az_json)`
 - `require_owned_resources(config_path, account_id, *, run=az_json)`
 - `preflight(config_path, *, run=az_json, persist=True, approval_path=None)`
 - `apply(config_path, approval_path=None, *, run=az_json, what_if=False,
@@ -459,3 +508,4 @@ not deploy, modify permissions, run paid models, or claim cloud validation.
 [starter-connection]: https://github.com/Azure-Samples/azd-ai-starter-basic/blob/main/infra/core/ai/ai-project.bicep
 [trace-setup]: https://learn.microsoft.com/azure/foundry/observability/how-to/trace-agent-setup
 [trace-entra]: https://learn.microsoft.com/azure/foundry/observability/how-to/trace-ingestion-entra-authentication
+[connection-strings]: https://learn.microsoft.com/azure/azure-monitor/app/connection-strings
