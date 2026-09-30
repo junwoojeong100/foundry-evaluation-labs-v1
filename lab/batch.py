@@ -156,7 +156,8 @@ def _aggregate_case(case: dict, turns: list[dict], error: str | None = None) -> 
     }
 
 
-def capture_case(client, agent: dict, case: dict, *, checkpoint=None, resume_record: dict | None = None) -> dict:
+def capture_case(client, agent: dict, case: dict, *, checkpoint=None, resume_record: dict | None = None,
+                 interval_seconds: float = 0) -> dict:
     """Capture one/two explicit user turns; checkpoints precede every POST.
 
     A known pending response is retrieved once on resume. A missing response ID
@@ -196,6 +197,8 @@ def capture_case(client, agent: dict, case: dict, *, checkpoint=None, resume_rec
                     if checkpoint:
                         checkpoint(result)
                     return result
+                if interval_seconds:
+                    time.sleep(interval_seconds)
             turn = {
                 "turn_index": index, "input": user_input,
                 "input_source": "scripted_user" if index else "dataset_query",
@@ -264,6 +267,10 @@ def capture_case(client, agent: dict, case: dict, *, checkpoint=None, resume_rec
 
 
 def dataset_for_metadata(metadata: dict) -> Path:
+    if metadata.get("dialogue_diagnostic") is True:
+        if metadata.get("source_split") != "dev" or metadata.get("freeze_id"):
+            raise LabError("Scripted dialogue diagnostics are separate dev data, never final holdout.")
+        return ROOT / "data/dialogue/dev.jsonl"
     if metadata.get("holdout_id"):
         from lab.governance import load_holdout
         if not metadata.get("freeze_id"):
@@ -280,13 +287,18 @@ def dataset_for_metadata(metadata: dict) -> Path:
 
 @_capture_lock
 def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int | None = None,
-              resume: bool = False, freeze_id: str | None = None, holdout_id: str | None = None) -> dict:
+              resume: bool = False, freeze_id: str | None = None, holdout_id: str | None = None,
+              interval_seconds: float = 0, dialogue: bool = False) -> dict:
     from lab.evidence import observed_model_drift, validate_case
 
     if split not in {"dev", "test"}:
         raise LabError("평가 실행 데이터는 dev 또는 test만 허용합니다.")
+    if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
+        raise LabError("interval-seconds는 0~120초여야 합니다.")
     if bool(freeze_id) != bool(holdout_id):
         raise LabError("freeze-id and holdout-id must be supplied together.")
+    if dialogue and (split != "dev" or freeze_id):
+        raise LabError("대화 진단은 별도 dev 사례이며 최종 holdout과 섞지 않습니다.")
     frozen = None
     if freeze_id:
         from lab.governance import bind_holdout_attempt, load_freeze, load_holdout
@@ -297,7 +309,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
             raise LabError("Frozen stage/mode differs; DEMO evidence cannot trigger a LIVE batch.")
         _, dataset_path = load_holdout(freeze_id, holdout_id)
     else:
-        dataset_path = ROOT / "data/splits" / f"{split}.jsonl"
+        dataset_path = ROOT / "data/dialogue/dev.jsonl" if dialogue else ROOT / "data/splits" / f"{split}.jsonl"
     cases = read_jsonl(dataset_path)
     for case in cases:
         validate_case(case)
@@ -349,6 +361,11 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
         "quality_status": "NOT_EVALUATED", "manual_operational_approval": "not_granted",
         "access_blockers": [],
     }
+    if interval_seconds:
+        metadata["parameters"]["interval_seconds"] = interval_seconds
+    if dialogue:
+        metadata["dialogue_diagnostic"] = True
+        metadata["diagnostic_scope"] = "One authored multi-turn dev case; not part of the original 100 or independent real-world sample."
     if frozen:
         metadata.update(freeze_id=freeze_id, freeze_sha256=frozen["content_sha256"], holdout_id=holdout_id)
         metadata["sample_contract_sha256"] = frozen["hashes"]["sample_contract"]
@@ -365,6 +382,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
             "agent_name", "agent_version", "workspace_id", "prompt_sha256", "knowledge_sha256",
             "model_deployment", "model_snapshot", "parameters", "freeze_id", "freeze_sha256", "holdout_id",
             "sample_contract_sha256",
+            "dialogue_diagnostic",
         )
         if any(previous.get(key) != metadata.get(key) for key in contract_fields):
             raise LabError("Resume contract changed (candidate/data/parameters). Do not reuse or resubmit this run.")
@@ -422,7 +440,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
             save_json(run_dir / "metadata.json", metadata)
             raise LabError("에이전트 생성 후 모델 배포 구성이 바뀌었습니다. 같은 기반 버전으로 실험을 다시 고정하세요.")
         metadata["model_snapshot"] = before_model
-        with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
+        with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             try:
                 remote = project.agents.get_version(agent_name=agent["name"], agent_version=agent["version"])
             except Exception as exc:
@@ -439,6 +457,8 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
                     from lab.calibration import save_json as checkpoint_json
                     path = run_dir / "raw" / f"{case['id']}.json"
                     prior = read_json(path) if path.exists() else None
+                    if index > 1 and prior is None and interval_seconds:
+                        time.sleep(interval_seconds)
                     if metadata["access_blockers"] and prior is None:
                         record = {
                             "id": case["id"], "raw_output": "", "retrieved_context": "",
@@ -450,6 +470,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
                         record = capture_case(
                             client, agent, case, resume_record=prior,
                             checkpoint=lambda value, path=path: checkpoint_json(path, value),
+                            interval_seconds=interval_seconds,
                         )
                     records.append(record)
                     checkpoint_json(path, record)

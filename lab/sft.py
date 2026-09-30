@@ -291,13 +291,18 @@ def _observe_job(response, state: dict, *, retrieved: bool) -> None:
     job_id = _text(payload.get("id"), "fine-tuning job ID")
     if job["id"] and job["id"] != job_id:
         raise LabError("원격 작업 ID가 기록된 SFT 작업과 다릅니다.")
+    save_json(_directory() / "job-observations" / f"{time.time_ns()}.json", {
+        "observed_at": _now(), "retrieved": retrieved, "response": payload,
+    })
     job.update(id=job_id, response=payload, fine_tuned_model=None, terminal_verified=False)
     _persist(state)
     expected = _request(state)
     if any(payload.get(key) != expected[key] for key in ("model", "training_file", "validation_file")):
         raise LabError("원격 작업의 기반 모델 또는 학습·검증 파일이 기록과 다릅니다.")
     observed_type = payload.get("trainingType", payload.get("training_type"))
-    if observed_type is not None and observed_type != TRAINING_TYPE:
+    if observed_type is not None and (
+        not isinstance(observed_type, str) or observed_type.lower() != TRAINING_TYPE.lower()
+    ):
         raise LabError("원격 작업이 Standard 학습이 아닙니다. 자동 대체를 허용하지 않습니다.")
     job["status"] = _text(payload.get("status"), "actual job status")
     job["phase"] = "recorded"
@@ -361,6 +366,23 @@ def job_status(config: Config) -> dict:
                 else:
                     _refresh_files(client, state)
         return state
+
+
+def wait_job(config: Config, *, timeout_seconds: int = 3600, interval_seconds: int = 60) -> dict:
+    if not 1 <= timeout_seconds <= 3600 or not 1 <= interval_seconds <= 120:
+        raise LabError("SFT 대기는 최대 3600초, 조회 간격은 1~120초입니다.")
+    deadline = time.monotonic() + timeout_seconds
+    while True:
+        state = job_status(config)
+        if not state["job"]["id"]:
+            raise LabError("조회할 실제 학습 작업 ID가 없습니다. wait는 새 작업을 제출하지 않습니다.")
+        if state["job"]["terminal_verified"]:
+            return state
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise LabError(f"SFT 대기 한도 도달. 원격 작업 {state['job']['id']}는 보존했습니다. status로 재개하세요.")
+        print(f"{state['job']['id']}: {state['job']['status']}; waiting without resubmission", flush=True)
+        time.sleep(min(interval_seconds, remaining))
 
 
 def cancel_job(config: Config, *, confirm: bool = False) -> dict:
@@ -476,7 +498,10 @@ def deploy_tuned_model(config: Config, name: str, *, capacity: int = 10, confirm
                 if record is None:
                     raise LabError("동일 이름의 배포가 있지만 이 학습 실습의 소유 기록이 없습니다.")
                 observed = remote.get("properties", {})
-                if observed.get("model") != expected["properties"]["model"] or remote.get("sku") != expected["sku"]:
+                if (
+                    any(observed.get("model", {}).get(key) != value for key, value in expected["properties"]["model"].items())
+                    or any(remote.get("sku", {}).get(key) != value for key, value in expected["sku"].items())
+                ):
                     raise LabError("원격 학습 모델/배포 SKU가 기록과 다릅니다.")
                 record.update(status=observed.get("provisioningState"), response=remote, observed_at=_now())
                 _persist(state)
@@ -551,8 +576,10 @@ def _evaluation_cases(split: str) -> tuple[Path, list[dict]]:
 
 def _capture_runs(
     config: Config, state: dict, client, split: str, directories: dict, names: dict,
-    deployments: dict, *, phase: str, pair_id: str | None = None,
+    deployments: dict, *, phase: str, pair_id: str | None = None, interval_seconds: float = 0,
 ) -> dict:
+    if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
+        raise LabError("SFT interval-seconds는 0~120초여야 합니다.")
     dataset, cases = _evaluation_cases(split)
     prompt = ROOT / "prompts/tuning-system.txt"
     system = prompt.read_text(encoding="utf-8").strip()
@@ -581,10 +608,16 @@ def _capture_runs(
                 else "Interleaved base then tuned for each row."
             ),
         }
+        if interval_seconds:
+            metadata[arm]["parameters"]["interval_seconds"] = interval_seconds
         save_json(directory / "metadata.json", metadata[arm])
     try:
+        first_request = True
         for case in cases:
             for arm, directory in directories.items():
+                if not first_request and interval_seconds:
+                    time.sleep(interval_seconds)
+                first_request = False
                 record = capture_model(client, names[arm], case, system)
                 records[arm].append(record)
                 save_json(directory / "raw" / f"{case['id']}.json", record)
@@ -606,7 +639,8 @@ def _capture_runs(
     return metadata
 
 
-def run_baseline(config: Config, base_deployment: str, run_id: str, *, confirm: bool = False) -> dict:
+def run_baseline(config: Config, base_deployment: str, run_id: str, *, confirm: bool = False,
+                 interval_seconds: float = 0) -> dict:
     _confirm(confirm)
     directory = safe_run_dir(run_id)
     if directory.exists():
@@ -623,13 +657,15 @@ def run_baseline(config: Config, base_deployment: str, run_id: str, *, confirm: 
             deployment = _deployment(config, base_deployment, tuned_model=None)
             if state.get("baseline"):
                 state.setdefault("baseline_history", []).append(state["baseline"])
-            state["baseline"] = {"run_id": run_id, "phase": "capturing", "started_at": _now()}
+            state["baseline"] = {"run_id": run_id, "phase": "capturing", "started_at": _now(),
+                                 "interval_seconds": interval_seconds}
             state["status"] = "BASELINE_RUNNING"
             _persist(state)
             try:
                 metadata = _capture_runs(
                     config, state, client, "dev", {"base": directory}, {"base": base_deployment},
                     {"base": deployment}, phase="pretraining-baseline",
+                    interval_seconds=interval_seconds,
                 )["base"]
                 score_run(run_id)
             except BaseException:
@@ -674,6 +710,8 @@ def _baseline_evidence(state: dict) -> dict:
         "row_ids": [case["id"] for case in cases],
         "parameters": {**INFERENCE, "retries": 0, "timeout_seconds": 120},
     }
+    if reference.get("interval_seconds"):
+        expected["parameters"]["interval_seconds"] = reference["interval_seconds"]
     if (
         any(metadata.get(key) != value for key, value in expected.items())
         or metadata.get("status") not in {"completed", "completed_with_errors"}
@@ -696,7 +734,7 @@ def _baseline_evidence(state: dict) -> dict:
 
 def run_pair(
     config: Config, base_deployment: str, tuned_deployment: str, split: str, run_prefix: str,
-    *, confirm: bool = False,
+    *, confirm: bool = False, interval_seconds: float = 0,
 ) -> dict:
     _confirm(confirm)
     if split not in {"dev", "test"} or base_deployment == tuned_deployment:
@@ -723,6 +761,7 @@ def run_pair(
             metadata = _capture_runs(
                 config, state, client, split, directories, names, deployments,
                 phase="posttraining-pair", pair_id=run_prefix,
+                interval_seconds=interval_seconds,
             )
         return metadata
 
@@ -759,42 +798,56 @@ def parser() -> argparse.ArgumentParser:
         ("upload", "준비한 56 train/12 validation만 업로드"),
         ("submit", "processed 파일로 Standard SFT 작업 1회 요청"),
         ("status", "기록된 파일/작업을 한 번 조회 (클라우드 읽기 전용)"),
+        ("wait", "기록된 학습 작업만 최대 60분 대기·조회; 새 제출 없음"),
         ("cancel", "기록된 작업만 취소 요청; status로 종료 확인"),
         ("run-pair", "동일 기반/실제 학습 모델의 dev 또는 test 유료 추론"),
         ("deploy", "종료 확인한 학습 모델만 새 Standard 배포로 생성; 지속 호스팅 비용 발생"),
     ):
         command = commands.add_parser(name, help=help_text)
-        if name != "status":
+        if name not in {"status", "wait"}:
             command.add_argument("--confirm", action="store_true")
         if name == "baseline":
             command.add_argument("--base-deployment", required=True)
             command.add_argument("--run-id", required=True)
+            command.add_argument("--interval-seconds", type=float, default=0)
         if name == "run-pair":
             command.add_argument("--base-deployment", required=True)
             command.add_argument("--tuned-deployment", required=True)
             command.add_argument("--split", choices=("dev", "test"), required=True)
             command.add_argument("--run-prefix", required=True)
+            command.add_argument("--interval-seconds", type=float, default=0)
         if name == "deploy":
             command.add_argument("--deployment", required=True)
             command.add_argument("--capacity", type=int, default=10)
+        if name == "wait":
+            command.add_argument("--timeout-seconds", type=int, default=3600)
+            command.add_argument("--interval-seconds", type=int, default=60)
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command != "status":
+        if args.command not in {"status", "wait"}:
             _confirm(args.confirm)
         config = load_config(args.config)
         if args.command == "baseline":
-            result = status_summary(run_baseline(config, args.base_deployment, args.run_id, confirm=args.confirm))
+            result = status_summary(run_baseline(config, args.base_deployment, args.run_id,
+                                                 confirm=args.confirm, interval_seconds=args.interval_seconds))
         elif args.command == "run-pair":
             result = run_pair(
                 config, args.base_deployment, args.tuned_deployment, args.split, args.run_prefix,
                 confirm=args.confirm,
+                interval_seconds=args.interval_seconds,
             )
         elif args.command == "status":
             result = status_summary(job_status(config))
+        elif args.command == "wait":
+            state = wait_job(config, timeout_seconds=args.timeout_seconds, interval_seconds=args.interval_seconds)
+            result = status_summary(state)
+            if state["job"]["status"] != "succeeded":
+                print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
+                return 1
         elif args.command == "deploy":
             result = deploy_tuned_model(config, args.deployment, capacity=args.capacity, confirm=args.confirm)
         else:

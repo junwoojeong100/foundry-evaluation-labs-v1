@@ -18,6 +18,7 @@ import math
 import os
 from pathlib import Path
 import re
+import time
 from uuid import uuid4
 
 from lab.config import LabError
@@ -265,12 +266,23 @@ def judge_payloads(case: dict, raw_output: str, retrieved_context: str, *, conve
     reference = strict_json_loads(case["ground_truth"])
     if not isinstance(reference, dict) or not isinstance(reference.get("answer"), str):
         raise LabError("The policy judge requires a reference answer JSON projection.")
+    messages = []
+    if conversation is not None:
+        if not isinstance(conversation, list):
+            raise LabError("Captured conversation must be a list of explicit turns.")
+        for turn in conversation:
+            if not isinstance(turn, dict) or not isinstance(turn.get("input"), str) or not isinstance(turn.get("raw_output"), str):
+                raise LabError("A captured turn needs explicit input and raw_output strings.")
+            messages.extend([
+                {"role": "user", "content": turn["input"], "source": turn.get("input_source", "recorded_user_input")},
+                {"role": "assistant", "content": turn["raw_output"]},
+            ])
     return {
         "policy": {
             "query": case["query"], "response": raw_output,
             "authoritative_policy": case["context"],
             "reference_answer": reference["answer"], "expected_route": case["expected_route"],
-            "conversation": [] if conversation is None else deepcopy(conversation),
+            "conversation": messages,
         },
         "retrieval": {
             "query": case["query"], "response": raw_output, "retrieved_context": retrieved_context,
@@ -326,8 +338,8 @@ def judge_case(client, deployment: str, case: dict, raw_output: str, retrieved_c
             response = client.responses.create(
                 model=deployment,
                 input=[
-                    {"role": "system", "content": definition["instructions"]},
-                    {"role": "user", "content": canonical(payload)},
+                    {"type": "message", "role": "system", "content": definition["instructions"]},
+                    {"type": "message", "role": "user", "content": canonical(payload)},
                 ],
                 text={"format": {
                     "type": "json_schema", "name": f"atlas_{kind}_v1",
@@ -353,6 +365,7 @@ def judge_case(client, deployment: str, case: dict, raw_output: str, retrieved_c
             request.update(
                 status=(
                     "pending_response" if request.get("response", {}).get("status") in {"queued", "in_progress"}
+                    else "rejected" if getattr(exc, "status_code", None) in {400, 404, 422}
                     else "invalid_result" if request.get("response_id") else "unknown_outcome"
                 ),
                 error=f"{type(exc).__name__}: {exc}",
@@ -454,7 +467,9 @@ def summarize_calibration(fixtures: list[dict], records: list[dict]) -> dict:
 
 
 def _execute(config, cases: list[dict], records: list[dict], directory: Path, contract: dict,
-             *, before_call=None) -> tuple[list[dict], dict]:
+             *, before_call=None, interval_seconds: float = 0) -> tuple[list[dict], dict]:
+    if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
+        raise LabError("Judge interval-seconds must be within 0..120.")
     observations = {
         "execution_mode": "LIVE", "execution_status": "running", "access_blockers": [],
         "execution_errors": [],
@@ -470,9 +485,11 @@ def _execute(config, cases: list[dict], records: list[dict], directory: Path, co
                 operation = "frozen_contract"
                 before_call(observations["model_snapshot"])
             operation = "judge_execution"
-            with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
+            with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
                 with project.get_openai_client(max_retries=0, timeout=120.0) as client:
-                    for case, capture in zip(cases, records, strict=True):
+                    for index, (case, capture) in enumerate(zip(cases, records, strict=True)):
+                        if index and interval_seconds:
+                            time.sleep(interval_seconds)
                         if capture.get("error"):
                             result = _unavailable(case["id"], f"capture_error: {capture['error']}")
                         elif observations["access_blockers"]:
@@ -552,10 +569,12 @@ def run_calibration(config, calibration_id: str, *, confirm: bool = False,
     return report
 
 
-def score_captured_run(config, run_id: str, *, confirm: bool = False) -> dict:
+def score_captured_run(config, run_id: str, *, confirm: bool = False, interval_seconds: float = 0) -> dict:
     """One configured Judge attempt over captured outputs, never an agent call."""
     if confirm is not True:
         raise LabError("Paid Judge scoring requires --confirm and separate budget/data approval.")
+    if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
+        raise LabError("Judge interval-seconds must be within 0..120.")
     from lab.batch import dataset_for_metadata
 
     directory = safe_run_dir(run_id)
@@ -610,6 +629,7 @@ def score_captured_run(config, run_id: str, *, confirm: bool = False) -> dict:
         "row_ids": metadata["row_ids"], "freeze_id": metadata.get("freeze_id"),
         "freeze_sha256": metadata.get("freeze_sha256"),
         "sample_contract_sha256": metadata.get("sample_contract_sha256"),
+        "interval_seconds": interval_seconds,
     }
     save_json(attempt / "submission.json", submission, exclusive=True)
 
@@ -617,7 +637,8 @@ def score_captured_run(config, run_id: str, *, confirm: bool = False) -> dict:
         if metadata.get("freeze_id"):
             validate_frozen_run(metadata["freeze_id"], run_id, judge_snapshot=snapshot)
 
-    records, observations = _execute(config, selected, captures, attempt, contract, before_call=check_snapshot)
+    records, observations = _execute(config, selected, captures, attempt, contract,
+                                     before_call=check_snapshot, interval_seconds=interval_seconds)
     scores = {row["id"]: row["judge"] for row in records}
     if observations["execution_status"] in {"invalid_model_drift", "execution_error", "blocked_access", "blocked_contract"}:
         for values in scores.values():

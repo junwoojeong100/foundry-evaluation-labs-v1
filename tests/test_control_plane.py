@@ -11,6 +11,8 @@ class ControlPlaneTests(unittest.TestCase):
         self.assertIn('dynamic(["resp-actual-id"])', query)
         self.assertIn("operation_Id in (matching)", query)
         self.assertIn("take 500", query)
+        self.assertIn("withsource=labTelemetryTable", query)
+        self.assertNotIn("withsource=source ", query)
         self.assertNotIn("or agentId", query)
         with self.assertRaises(LabError):
             trace_query([], "lab-fixture-iq", "1")

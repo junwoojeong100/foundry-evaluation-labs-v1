@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     batch.add_argument("--resume", action="store_true")
     batch.add_argument("--freeze-id")
     batch.add_argument("--holdout-id")
+    batch.add_argument("--interval-seconds", type=float, default=0, help="Explicit 0–120s pacing between cases and scripted turns; not a retry")
+    batch.add_argument("--dialogue", action="store_true", help="Separate authored dev dialogue with an explicit scripted follow-up")
     batch.add_argument("--confirm", action="store_true")
     score = commands.add_parser("score", help="Score captured outputs locally without model calls")
     score.add_argument("--run-id", required=True)
@@ -64,6 +66,7 @@ def parser() -> argparse.ArgumentParser:
     judge_score = judge_actions.add_parser("score")
     judge_score.add_argument("--run-id", required=True)
     judge_score.add_argument("--confirm", action="store_true")
+    judge_score.add_argument("--interval-seconds", type=float, default=0)
     review = commands.add_parser("review", help="AI advice or externally claimed, unverified manual review")
     reviews = review.add_subparsers(dest="review_action", required=True)
     ai_review = reviews.add_parser("ai")
@@ -98,8 +101,14 @@ def parser() -> argparse.ArgumentParser:
     control = commands.add_parser("control-plane", help="Read actual traces; empty telemetry remains NOT_VERIFIED")
     control.add_argument("--run-id", required=True)
     control.add_argument("--app-insights-id", required=True)
+    feedback = commands.add_parser("feedback", help="Export actual dev failures to a review-only queue, never final-test training")
+    feedback.add_argument("--run-id", required=True)
+    feedback.add_argument("--feedback-id", required=True)
     optimize = commands.add_parser("optimize", help="Prepare an Agent Optimizer handoff (not a service execution)")
     optimize.add_argument("--run-id", required=True)
+    optimizer_result = commands.add_parser("optimizer-result", help="Preserve actual portal Prompt Optimizer output, not execute the service")
+    optimizer_result.add_argument("--request", type=Path, required=True)
+    optimizer_result.add_argument("--response", type=Path, required=True)
     tune = commands.add_parser("tune-prepare", help="Prepare training artifacts, not a training job")
     tune.add_argument("--kind", choices=("frontier", "sft"), default="frontier")
     cleanup = commands.add_parser("cleanup", help="Plan or remove only locally recorded lab-owned objects")
@@ -113,6 +122,12 @@ def require_confirmation(args: argparse.Namespace) -> None:
 
 
 def execute(args: argparse.Namespace) -> int:
+    if args.command == "feedback":
+        from lab.feedback import prepare_feedback
+
+        result = prepare_feedback(args.run_id, args.feedback_id)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "bootstrap":
         from lab.bootstrap import main as bootstrap_main
 
@@ -190,6 +205,11 @@ def execute(args: argparse.Namespace) -> int:
         print(prepare_tuning(args.kind))
         return 0
     config = load_config(args.config)
+    if args.command == "optimizer-result":
+        from lab.optimizer import collect_prompt
+
+        print(json.dumps(collect_prompt(config, args.request, args.response), ensure_ascii=False, indent=2))
+        return 0
     if args.command == "freeze":
         from lab.governance import freeze_candidate
 
@@ -226,7 +246,7 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         result = (
             run_calibration(config, args.calibration_id, confirm=True, fixtures_path=args.fixtures)
             if args.judge_action == "calibrate"
-            else score_captured_run(config, args.run_id, confirm=True)
+            else score_captured_run(config, args.run_id, confirm=True, interval_seconds=args.interval_seconds)
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["execution_status"] == "completed" else 1
@@ -261,6 +281,8 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         result = run_batch(
             config, args.stage, args.split, args.run_id, limit=args.limit, resume=args.resume,
             freeze_id=args.freeze_id, holdout_id=args.holdout_id,
+            interval_seconds=args.interval_seconds,
+            dialogue=args.dialogue,
         )
         print(safe_run_dir(args.run_id))
         return 0 if result["status"] == "completed" else 1

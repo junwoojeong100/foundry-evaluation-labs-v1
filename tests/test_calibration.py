@@ -18,6 +18,25 @@ from lab.files import ROOT as SOURCE_ROOT, sha256_file, write_jsonl
 
 
 class CalibrationTests(unittest.TestCase):
+    def test_judge_conversation_excludes_nested_api_and_tool_envelopes(self):
+        fixture = calibration.load_fixtures()[0]
+        payload = calibration.judge_payloads(
+            fixture["case"], fixture["raw_output"], fixture["retrieved_context"],
+            conversation=[{
+                "input": "explicit customer follow-up", "input_source": "scripted_user",
+                "raw_output": fixture["raw_output"],
+                "response": {"nested_api_envelope": "must-not-enter-policy-judge"},
+                "retrieved_context": "duplicate-full-tool-response",
+                "usage": {"input_tokens": 999},
+            }],
+        )
+        self.assertEqual(payload["policy"]["conversation"], [
+            {"role": "user", "content": "explicit customer follow-up", "source": "scripted_user"},
+            {"role": "assistant", "content": fixture["raw_output"]},
+        ])
+        self.assertNotIn("nested_api_envelope", json.dumps(payload["policy"]))
+        self.assertNotIn("conversation", payload["retrieval"])
+
     def setUp(self):
         self.root = Path("artifacts") / f"test-calibration-{uuid4().hex}"
         self.root.mkdir(parents=True)
@@ -34,6 +53,7 @@ class CalibrationTests(unittest.TestCase):
 
         def create(**kwargs):
             self.requests.append(kwargs)
+            self.assertTrue(all(message.get("type") == "message" for message in kwargs["input"]))
             payload = json.loads(kwargs["input"][1]["content"])
             fixture = next(row for row in self.fixtures if row["raw_output"] == payload["response"])
             kind = "policy" if "authoritative_policy" in payload else "retrieval"
@@ -116,7 +136,7 @@ class CalibrationTests(unittest.TestCase):
     def test_callable_real_execution_path_uses_verified_config_and_preserves_all_rows(self):
         report = calibration.run_calibration(self.config, "mock-calibration", confirm=True)
         self.auth.assert_called_once_with(self.config)
-        self.factory.assert_called_once_with(endpoint=self.config.project_endpoint, credential="mock-credential")
+        self.factory.assert_called_once_with(endpoint=self.config.project_endpoint, credential="mock-credential", retry_total=0)
         self.project.get_openai_client.assert_called_once_with(max_retries=0, timeout=120.0)
         self.assertEqual(self.model.call_count, 2)
         self.assertEqual(report["sample_count"], 16)

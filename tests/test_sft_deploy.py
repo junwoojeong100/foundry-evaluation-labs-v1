@@ -96,6 +96,25 @@ class SftDeploymentTests(unittest.TestCase):
         self.http.request.assert_not_called()
         self.persist.assert_not_called()
 
+    def test_owned_remote_provider_metadata_does_not_require_resubmission(self):
+        request = {
+            "sku": {"name": "Standard", "capacity": 10},
+            "properties": {
+                "model": {"format": "OpenAI", "name": self.state["job"]["fine_tuned_model"], "version": "1"},
+                "versionUpgradeOption": "NoAutoUpgrade",
+            },
+        }
+        self.state["deployments"] = {"ft-fixture": {"request": request, "status": "Creating"}}
+        self.http.request.return_value = SimpleNamespace(body={
+            "sku": {**request["sku"], "family": None, "tier": None},
+            "properties": {"model": {**request["properties"]["model"], "publisher": None},
+                           "provisioningState": "Succeeded"},
+        })
+        result = deploy_tuned_model(self.config, "ft-fixture", confirm=True)
+        self.assertEqual(result["status"], "Succeeded")
+        self.assertEqual(self.http.request.call_count, 1)
+        self.az.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

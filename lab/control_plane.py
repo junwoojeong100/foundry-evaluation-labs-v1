@@ -26,7 +26,7 @@ let matching = materialize(
     | where isnotempty(operation_Id)
     | distinct operation_Id
 );
-union withsource=source dependencies, requests, customEvents, traces
+union withsource=labTelemetryTable dependencies, requests, customEvents, traces
 | where timestamp > ago(24h)
 | extend responseId = tostring(customDimensions["gen_ai.response.id"]),
          operation = tostring(customDimensions["gen_ai.operation.name"]),
@@ -34,7 +34,7 @@ union withsource=source dependencies, requests, customEvents, traces
          tool = tostring(customDimensions["gen_ai.tool.name"]),
          model = tostring(customDimensions["gen_ai.request.model"])
 | where operation_Id in (matching) or responseId in (wanted)
-| project timestamp, source, operation_Id, operation_ParentId, responseId, operation,
+| project timestamp, source = labTelemetryTable, operation_Id, operation_ParentId, responseId, operation,
           evaluation, tool, model, customDimensions
 | order by timestamp asc
 | take 500"""

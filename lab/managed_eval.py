@@ -549,7 +549,7 @@ def _parse_scores(items: list[dict], expected: dict, state: dict, contract: dict
         sample = item.get("sample")
         if sample is not None and not isinstance(sample, dict):
             raise LabError(f"{case_id}: sample 형식 오류입니다.")
-        if item.get("status") not in ("pass", "fail") or item.get("error") or (sample or {}).get("error"):
+        if item.get("status") not in ("pass", "fail", "completed") or item.get("error") or (sample or {}).get("error"):
             raise LabError(f"{case_id}: 서비스 행 상태/오류를 확인하세요. 점수를 추정하지 않습니다.")
         results = item.get("results")
         if not isinstance(results, list):
@@ -563,6 +563,8 @@ def _parse_scores(items: list[dict], expected: dict, state: dict, contract: dict
                 raise LabError(f"{case_id}: 중복·알 수 없거나 불일치한 evaluator metric입니다.")
             if result.get("type") != "azure_ai_evaluator" or result.get("error"):
                 raise LabError(f"{case_id}.{metric}: evaluator 형식 또는 서비스 오류입니다.")
+            if result.get("status") not in (None, "completed", "pass", "fail"):
+                raise LabError(f"{case_id}.{metric}: evaluator 실행이 완료되지 않았습니다.")
             grader_sample = result.get("sample")
             if grader_sample is not None and (
                 not isinstance(grader_sample, dict) or grader_sample.get("error")
