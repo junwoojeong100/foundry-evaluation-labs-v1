@@ -998,7 +998,10 @@ def _identity(config: dict, manifest: dict, run: Run) -> dict:
         or account.get("user", {}).get("name", "").casefold() != config["expected_user"].casefold()
     ):
         raise BootstrapError("Active Azure CLI subscription/tenant/user differs; no automatic account switch.")
-    user = run(["ad", "signed-in-user", "show", "--query", "{id:id,userPrincipalName:userPrincipalName}"])
+    user = run([
+        "rest", "--method", "GET", "--url", "https://graph.microsoft.com/v1.0/me?$select=id,userPrincipalName",
+        "--resource", "https://graph.microsoft.com", "--subscription", config["subscription_id"],
+    ])
     if (
         not isinstance(user, dict) or not _uuid(user.get("id"))
         or user.get("userPrincipalName", "").casefold() != config["expected_user"].casefold()

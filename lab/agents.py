@@ -69,6 +69,11 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
         raise LabError(
             f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가하세요."
         )
+    if record_path.exists():
+        prior = read_json(record_path)
+        prior_version = ARTIFACTS / "agents/versions" / f"{prior['name']}-v{prior['version']}.json"
+        if not prior_version.exists():
+            write_once_json(prior_version, prior)
     tools = []
     if stage != "baseline":
         from lab.knowledge import knowledge_tool
@@ -124,6 +129,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
             snapshot.parent.mkdir(parents=True, exist_ok=True)
             snapshot.write_text(instructions, encoding="utf-8")
             record["prompt_snapshot"] = artifact_reference(snapshot)
+            write_once_json(ARTIFACTS / "agents/versions" / f"{agent.name}-v{agent.version}.json", record)
             save_json(record_path, record)
     return record
 

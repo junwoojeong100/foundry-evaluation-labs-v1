@@ -23,7 +23,7 @@ from lab.calibration import (
 )
 from lab.config import LabError
 from lab.evidence import evaluate_gates, load_gates, observed_model_drift, score_row, summarize, validate_case
-from lab.files import ARTIFACTS, ROOT, safe_run_dir, sha256_file
+from lab.files import ARTIFACTS, ROOT, code_provenance, safe_run_dir, sha256_file
 
 
 def load_agent(config, stage):
@@ -301,6 +301,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
         files.append(_file(path, "review"))
     record = _seal({
         "schema_version": "freeze-v2-explicit-sample-contract", "freeze_id": freeze_id, "created_at": now(),
+        "code": code_provenance(),
         "stage": stage, "execution_mode": mode, "project_endpoint": config.project_endpoint,
         "agent": deepcopy(agent), "model_snapshot": deepcopy(agent["model_snapshot"]),
         "judge_deployment": config.judge, "judge_model_snapshot": calibration.get("model_snapshot"),
@@ -399,6 +400,10 @@ def check_disjoint(cases: list[dict], existing: list[dict], *, threshold: float 
 
 def _existing_cases() -> list[dict]:
     cases = read_jsonl(ROOT / "data/cases.jsonl")
+    cases.extend(fixture["case"] for fixture in load_fixtures())
+    dialogue = ROOT / "data/dialogue/dev.jsonl"
+    if dialogue.exists():
+        cases.extend(read_jsonl(dialogue))
     for path in sorted(_directory("holdouts").glob("*/metadata.json")):
         metadata = _sealed(path)
         dataset = Path(metadata["dataset_path"])

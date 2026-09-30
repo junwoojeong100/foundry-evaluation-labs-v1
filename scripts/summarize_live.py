@@ -145,6 +145,11 @@ def summarize(environment: Path) -> dict:
             )}
             optimizer[name]["error_present"] = bool(value.get("error"))
             optimizer[name]["source_sha256"] = digest(path)
+            if name == "agent_result":
+                optimizer[name]["progress"] = value.get("progress")
+                optimizer[name]["result"] = {key: value.get("result", {}).get(key) for key in (
+                    "baseline", "best", "candidate_ids", "token_usage", "latency_usage",
+                )}
     governance = []
     for path in sorted((artifacts / "governance/freezes").glob("*.json")):
         value = read(path)

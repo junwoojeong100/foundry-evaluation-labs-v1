@@ -159,7 +159,10 @@ class FakeAzure:
         self.calls.append(args)
         if args[:2] == ["account", "show"]:
             return deepcopy(self.account)
-        if args[:3] == ["ad", "signed-in-user", "show"]:
+        if args[:5] == [
+            "rest", "--method", "GET", "--url", "https://graph.microsoft.com/v1.0/me?$select=id,userPrincipalName",
+        ]:
+            assert args[5:] == ["--resource", "https://graph.microsoft.com", "--subscription", self.config["subscription_id"]]
             return deepcopy(self.user)
         if args[:2] == ["provider", "show"]:
             return {"registrationState": self.provider_state}
@@ -1497,7 +1500,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(self.azure.mutations, [])
         self.assertEqual((self.path.parent / "manifest.json").read_bytes(), before)
         self.assertFalse(any(args[:2] == ["resource", "list"] for args in self.azure.calls))
-        self.assertEqual(len([args for args in self.azure.calls if args[0] == "rest"]), 3)
+        self.assertEqual(len([args for args in self.azure.calls if args[0] == "rest"]), 4)
 
     def test_public_ownership_guard_rejects_unrelated_or_unfinished_scope_before_azure(self):
         account = b._ids(self.config)["account"]

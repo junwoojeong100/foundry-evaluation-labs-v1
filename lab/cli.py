@@ -109,6 +109,12 @@ def parser() -> argparse.ArgumentParser:
     optimizer_result = commands.add_parser("optimizer-result", help="Preserve actual portal Prompt Optimizer output, not execute the service")
     optimizer_result.add_argument("--request", type=Path, required=True)
     optimizer_result.add_argument("--response", type=Path, required=True)
+    agent_optimizer_result = commands.add_parser("optimizer-agent-result", help="Import actual completed instruction-only Agent Optimizer output")
+    agent_optimizer_result.add_argument("--result", type=Path, required=True)
+    agent_optimizer_result.add_argument("--candidate", type=Path, required=True)
+    optimizer_check = commands.add_parser("optimizer-check", help="Apply local rules to all actual native optimizer responses without new model calls")
+    optimizer_check.add_argument("--baseline-items", type=Path, required=True)
+    optimizer_check.add_argument("--candidate-items", type=Path, required=True)
     tune = commands.add_parser("tune-prepare", help="Prepare training artifacts, not a training job")
     tune.add_argument("--kind", choices=("frontier", "sft"), default="frontier")
     cleanup = commands.add_parser("cleanup", help="Plan or remove only locally recorded lab-owned objects")
@@ -122,6 +128,12 @@ def require_confirmation(args: argparse.Namespace) -> None:
 
 
 def execute(args: argparse.Namespace) -> int:
+    if args.command == "optimizer-check":
+        from lab.optimizer import check_native_pair
+
+        result = check_native_pair(args.baseline_items, args.candidate_items)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "feedback":
         from lab.feedback import prepare_feedback
 
@@ -209,6 +221,11 @@ def execute(args: argparse.Namespace) -> int:
         from lab.optimizer import collect_prompt
 
         print(json.dumps(collect_prompt(config, args.request, args.response), ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "optimizer-agent-result":
+        from lab.optimizer import collect_agent
+
+        print(json.dumps(collect_agent(config, args.result, args.candidate), ensure_ascii=False, indent=2))
         return 0
     if args.command == "freeze":
         from lab.governance import freeze_candidate

@@ -227,7 +227,7 @@ class GovernanceTests(unittest.TestCase):
         self.assertTrue(all("synthetic_variant" in row["tags"] for row in rows))
         self.assertTrue(all(row["split"] == "test" for row in rows))
         self.assertGreater(generated["generated_at"], frozen["created_at"])
-        self.assertEqual(generated["disjointness"]["existing_case_count"], 100)
+        self.assertEqual(generated["disjointness"]["existing_case_count"], 117)
         self.assertEqual(sha256_file(self.package / "data/cases.jsonl"), original)
         self.assertTrue(Path(generated["dataset_path"]).is_relative_to(self.artifacts.resolve()))
         with self.assertRaisesRegex(LabError, "immutable|overlaps"):
