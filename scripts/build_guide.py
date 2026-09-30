@@ -221,6 +221,14 @@ def render_guide(
         "BUILD_DATE": BUILD_DATE,
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(document_id, quote=True),
+        "PROGRESS_REVISION": "" if auxiliary else "single-path-6",
+        "CHAPTER_UNIT": "장" if auxiliary else "단계",
+        "CONTENTS_LABEL": "참고 문서 목차" if auxiliary else "실습 순서",
+        "SIDEBAR_NOTE": (
+            "이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다."
+            if auxiliary else
+            "위에서 아래로 진행하세요. 최종 판정·종료에서 실습이 끝나며, 참고 자료는 추가 단계가 아닙니다."
+        ),
         "CONTENT_LANGUAGE": "en" if document_id == "english.html" else "ko",
         "DOCUMENT_LINKS": "\n".join(navigation),
         "HOME_HREF": "index.html" if auxiliary else "#guide-start",

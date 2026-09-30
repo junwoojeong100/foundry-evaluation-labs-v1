@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
-  <title>Foundry Learning Loop Lab v1.1 · English quickstart · Foundry 실습 가이드</title>
+  <title>Foundry Learning Loop Lab v1 · English · Foundry 실습 가이드</title>
   <link rel="icon" type="image/svg+xml" href="web/assets/foundry.svg">
+  <script src="web/theme.js"></script>
   <link rel="stylesheet" href="web/styles.css">
   <script src="web/app.js" defer></script>
 </head>
-<body data-document-id="english.html">
+<body data-document-id="english.html" data-progress-revision="">
   <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
 
   <header class="site-header">
@@ -24,22 +25,20 @@
       </a>
       <span class="header-context">한국어 · 오프라인 문서</span>
       <div class="header-actions">
-        <button class="search-trigger" type="button" data-search-open aria-haspopup="dialog" aria-controls="search-dialog" hidden>
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
-          <span>본문 검색</span><kbd aria-hidden="true">/</kbd>
-        </button>
-        <button class="icon-button print-trigger" type="button" data-print aria-label="가이드 인쇄 또는 PDF로 저장" title="인쇄 또는 PDF로 저장" hidden>
-          <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M6 8V3h12v5M6 17H3V8h18v9h-3M6 13h12v8H6zM17 11h1"/></svg>
-        </button>
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
+        <button class="toolbar-button" type="button" data-print-one title="현재 읽는 장만 인쇄" hidden>현재 인쇄</button>
+        <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
+        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-KO.pdf">전체 PDF</a></noscript>
       </div>
     </div>
   </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
 
   <div class="workspace">
     <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
       <div class="sidebar-inner">
         <div class="sidebar-heading">
-          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">학습 목차</h2></div>
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">참고 문서 목차</h2></div>
           <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
           </button>
@@ -47,18 +46,17 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#1-start-before-azure-setup">1. Start before Azure setup</a></li>
-<li><a href="#2-what-is-implemented-versus-verified">2. What is implemented versus verified?</a></li>
-<li><a href="#3-install-only-when-moving-beyond-demo">3. Install only when moving beyond DEMO</a></li>
-<li><a href="#4-read-the-right-document">4. Read the right document</a></li>
-<li><a href="#5-safety-and-evidence-boundaries">5. Safety and evidence boundaries</a></li>
+<li><a href="#before-starting">Before starting</a></li>
+<li><a href="#the-only-participant-path">The only participant path</a></li>
+<li><a href="#boundaries">Boundaries</a></li>
+<li><a href="#reference-only-not-additional-participant-steps">Reference only — not additional participant steps</a></li>
 <li><a href="#maintainer-checks">Maintainer checks</a></li>
 </ul>
 </div>
 
         </nav>
         <details class="related-documents">
-          <summary>함께 보는 문서</summary>
+          <summary>참고 자료 · 운영자/심화</summary>
           <nav aria-label="실습 문서 모음"><ul>
 <li><a href="index.html">참가자 실습 가이드</a></li>
 <li><a href="facilitator.html">강사용 진행 가이드</a></li>
@@ -76,23 +74,22 @@
           <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
           <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
           <details class="progress-details">
-            <summary>장별 완료 표시</summary>
+            <summary>장별 읽음 표시</summary>
             <div id="progress-checklist" class="progress-checklist"></div>
           </details>
           <div class="progress-bottom"><span>직접 체크한 장만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
-          <p id="storage-feedback" class="storage-note" role="status">이 문서의 완료 표시는 이 브라우저에만 저장됩니다.</p>
+          <p id="storage-feedback" class="storage-note" role="status">이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.</p>
         </section>
 
         <details class="keyboard-help" data-keyboard-help hidden>
           <summary>키보드 사용 안내</summary>
           <dl>
-            <div><dt><kbd>/</kbd></dt><dd>본문 검색</dd></div>
-            <div><dt><kbd>Esc</kbd></dt><dd>검색·모바일 목차 닫기</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>모바일 목차·확인 창 닫기</dd></div>
             <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
-            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장으로 이동</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">본문을 차례로 읽거나 필요한 장부터 시작하세요. 검색과 학습 기록은 외부로 전송되지 않습니다.</p>
+        <p class="sidebar-note">이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
@@ -103,122 +100,108 @@
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
         <span class="document-date">문서 기준 <time datetime="2026-09-30">2026-09-30</time></span>
       </div>
-      <noscript><p class="noscript-note">본문과 목차는 JavaScript 없이도 읽을 수 있습니다. 검색은 브라우저의 찾기 기능을 이용하세요. 학습 기록과 코드 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Foundry Learning Loop Lab v1.1 · English quickstart">
-        <h1 id="foundry-learning-loop-lab-v11-english-quickstart">Foundry Learning Loop Lab v1.1 · English quickstart</h1>
-<p><a href="README.md">한국어</a> · <strong><a href="index.html">Open the workshop guide</a></strong> · <a href="index.html">Source handbook</a></p>
-<p><strong>A fluent answer is not necessarily a correct business answer. Start by finding a mistake, then improve one Contoso support agent using evidence.</strong></p>
-<p>Follow one path:</p>
+      <noscript><p class="noscript-note">본문·목차·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Foundry Learning Loop Lab v1 · English">
+        <h1 id="foundry-learning-loop-lab-v1-english">Foundry Learning Loop Lab v1 · English</h1>
+<p><strong><a href="index.html#start">Start the lab → index.html</a></strong></p>
+<p><strong>Follow six steps on one page, in order.</strong> You do not need to choose a document, evaluator path, or optimizer.</p>
 <blockquote>
-<p>Authored wrong answer → offline DEMO → local installation → a new NCUS environment → one model connectivity response → small LIVE agent evaluation → Foundry IQ → separate optimizer checkpoints → freeze and fresh holdout → human decision → observability and the next improvement</p>
+<p>Understand the example → connect the environment → evaluate the baseline → connect Foundry IQ → improve instructions with Agent Optimizer → decide and finish</p>
 </blockquote>
-<p>SFT and Frontier are gated appendices, not prerequisites for finishing the core learning loop. The policy, cases, prompts and responses remain <strong>Korean</strong>, so all participants use the same experiment.</p>
-<h2 id="1-start-before-azure-setup">1. Start before Azure setup</h2>
-<p>A fictional Contoso Atlas Cloud customer asks for a refund five days after their first monthly purchase.</p>
-<blockquote>
-<p><strong>Authored wrong answer:</strong> “It is within 14 days, so your refund is approved and will arrive tomorrow.”</p>
-</blockquote>
-<p>The <a href="data/knowledge/documents.json">synthetic policy</a>, <code>ATLAS-REF-001</code>, requires more than elapsed days: purchase type, production work and paid-credit use matter. <strong>Eligibility is not approval or payment. This assistant cannot execute refunds.</strong></p>
-<p>With the complete package and Python 3.11+ available locally, run from the package root. Python 3.12 is recommended.</p>
-<pre><code class="language-bash">python3 -S -m lab demo
-</code></pre>
-<p><strong>Checkpoint:</strong> <code>AUTHORED_DEMO_NOT_LIVE</code>, <code>author_type: ai</code>, and <code>DEMO_COMPLETED</code>. The answers, labels and dialogue are AI-authored teaching examples, not claimed human authorship or review. No Azure account, credentials, <code>.env</code>, Azure CLI, SDK packages, network connection or paid request is needed.</p>
-<p>The DEMO does not measure a live model or grant human approval. If Python is missing, read the guide while preparing Python; do not switch to LIVE commands to bypass a local error.</p>
-<p>Continue with the <a href="index.html#demo">same handbook path</a>, not a separate experiment.</p>
-<h2 id="2-what-is-implemented-versus-verified">2. What is implemented versus verified?</h2>
+<p><strong>Plan for approximately 3–4 hours, including result discussions</strong>, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows <strong>command → sample output → discuss your results and decision → next step</strong>. Samples illustrate the format and are not evidence of a successful live run.</p>
+<p>At each evaluation, share <strong>actual results → a representative case → the next decision</strong>. Calibration, baseline diagnosis, IQ, optimizer ranking, candidate re-evaluation, and the fresh holdout answer different questions. These checkpoints use existing reports; they add no paid evaluation calls or automatic external sharing.</p>
+<p>The local <code>explain</code> command connects <strong>criteria, measured scores, saved Judge reasons, HOLD causes, and improvement suggestions</strong>. For strictly paired runs it also computes the configured regression diagnostics. The guide includes score-level rubrics, a worked teaching example, and next-action rules; explanations never rewrite existing evaluation evidence or grant approval.</p>
+<p><strong>This is the same lab and environment.</strong> Keep the existing dedicated NCUS resources, Contoso data, models, and evaluation criteria. Do not redeploy or rerun completed experiments because the guide changed. The former 15 chapters are grouped into six steps; the underlying tools remain available.</p>
+<h2 id="before-starting">Before starting</h2>
+<p>Keep the complete package in one folder and open <code>index.html</code>. Use Python 3.11+ (3.12 recommended) and bash/zsh on macOS/Linux or Ubuntu in Windows WSL2. The policy, cases, prompts, and responses remain <strong>Korean</strong> so participants use the same experiment.</p>
+<p>The top-right <strong>어둡게/밝게</strong> control remembers light/dark mode in this browser. <strong>현재 인쇄</strong> prints the current step; <strong>전체 PDF</strong> opens the entire current document in the print dialog, where you can choose Save as PDF. Printing always uses a light background. The footer links to the combined PDF including appendices.</p>
+<p>Step 01 is an <strong>AI-authored offline DEMO</strong>. It needs no Azure login, <code>.env</code>, Azure CLI, SDK installation, network, or paid requests. Subsequent installation and commands are in the handbook, not a second quickstart.</p>
+<p>Before LIVE work, the operator verifies the participant's actual identity, permissions, dedicated environment, and current cost authorization, then supplies the private environment folder. Follow <a href="admin.html">operator setup</a> <strong>only if no lab environment exists yet</strong>. Otherwise reconnect using the original ownership manifest; do not create another resource group.</p>
+<h2 id="the-only-participant-path">The only participant path</h2>
 <table>
 <thead>
 <tr>
-<th>Evidence type</th>
-<th>Current meaning</th>
+<th>Step</th>
+<th>Evidence to keep</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Offline DEMO</td>
-<td>Runnable authored examples, not measured model quality</td>
+<td>01. Understand the example</td>
+<td>Your judgment about the false refund promise and missing information</td>
 </tr>
 <tr>
-<td>Dataset</td>
-<td>Eight synthetic policies; the original 100 cases remain train 56 / validation 12 / dev 12 / test 20</td>
+<td>02. Connect the environment</td>
+<td>Ownership/preflight checks and the original dataset validation</td>
 </tr>
 <tr>
-<td>New Azure environment</td>
-<td>ARM <code>Succeeded</code>; 25 owned resource/connection/role records, including the new Foundry project, four model deployments, Search and telemetry</td>
+<td>03. Evaluate the baseline</td>
+<td>Actual Agent responses and business Judge calibration</td>
 </tr>
 <tr>
-<td>LIVE execution</td>
-<td>Model and Agent responses, a 12-case IQ/MCP capture, real embedding/vector/hybrid/agentic retrieval, managed evaluation and separate business Judges executed</td>
+<td>04. Connect knowledge</td>
+<td>Actual IQ retrieval/MCP output and all 12 dev cases</td>
 </tr>
 <tr>
-<td>Quality</td>
-<td><strong>HOLD</strong>, not a fabricated pass: calibration disagreement, invalid output and throttled/missing scores remain visible</td>
+<td>05. Improve instructions</td>
+<td>One Agent Optimizer candidate and paired dev evidence</td>
 </tr>
 <tr>
-<td>Optimization/training</td>
-<td>Prompt Optimizer produced a real candidate and it was re-evaluated as a new Agent. Actual Agent Optimizer and SFT job IDs and terminal outcomes are tracked in the <a href="verification.html">verification record</a></td>
-</tr>
-<tr>
-<td>Frontier support/access path</td>
-<td><strong><code>NOT_VERIFIED</code></strong>, not a claim that the product or API does not exist</td>
-</tr>
-<tr>
-<td>Production approval</td>
-<td>A separate human responsibility, never granted by a score or AI-authored review</td>
+<td>06. Decide and finish</td>
+<td>Frozen fresh12 results or reasons for not running them, HOLD decisions, and preservation responsibility</td>
 </tr>
 </tbody>
 </table>
-<p>See the <a href="verification.html">verification record</a>. Metadata access, mocked tests, completed API calls and quality acceptance are different states.</p>
-<p><strong>The first failure lesson:</strong> gpt-4o-mini / 2024-07-18 showed <code>Deprecating</code>,
-fine-tuning capability and available quota in catalog metadata, yet the provider
-rejected it as deprecated since 2026-03-31. Preserve that failed attempt. The
-replacement's <code>Legacy</code> catalog state and quota are also not deployment or
-training guarantees.</p>
-<h2 id="3-install-only-when-moving-beyond-demo">3. Install only when moving beyond DEMO</h2>
-<p>These steps require network access for package installation; they are <strong>not</strong> prerequisites for the offline DEMO.</p>
-<pre><code class="language-bash">python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.lock
-python -m lab validate
-</code></pre>
-<p>Use bash/zsh on macOS/Linux, or Ubuntu in Windows WSL2. Do not paste <code>source</code> into native PowerShell.</p>
-<p><strong>Checkpoint:</strong> local dataset validation succeeds and the original split counts remain unchanged. Then follow <a href="admin.html">new-environment setup</a>. Do not reuse an old account, subscription or resource profile. The bootstrap manifest and private generated <code>.env</code> identify each environment; <code>.env.example</code> is only a placeholder template.</p>
-<h2 id="4-read-the-right-document">4. Read the right document</h2>
+<p><strong>Stop at step 06.</strong> Prompt Optimizer, separate managed evaluation, SFT, and Frontier remain reference/advanced material, not requirements for completing this path. On errors or failed calibration, stop paid progression and record the evidence and unexecuted steps. Learning completion, actual API success, quality acceptance, and human production approval are distinct.</p>
+<h2 id="boundaries">Boundaries</h2>
+<ul>
+<li>Preserve eight synthetic policies and 100 cases: train 56 / validation 12 / dev 12 / test 20. Create the separate fresh12 only after freeze; never lower the original test20 gate.</li>
+<li>Use only the owned, dedicated <strong>North Central US</strong> environment. Do not switch to unrelated existing/shared resources, shared policies, or other regions.</li>
+<li>Each participant needs current authorization for cost, processing, and workload. The earlier run's explicit removal of a monetary ceiling is not transferable authorization. Finite call, job, candidate, and waiting bounds still apply.</li>
+<li><strong>Preserve resources and raw evidence. Deletion is not authorized.</strong> Search, logs, and model hosting can keep incurring costs after the terminal closes.</li>
+<li>Keep AI authorship/review separate from human review and approval. Never change failed evidence or thresholds to obtain a pass.</li>
+<li>Keep private environments, approval records, credentials, and raw run data out of source, ZIP, and PDF bundles. Publish only sanitized, allowlisted evidence.</li>
+</ul>
+<h2 id="reference-only-not-additional-participant-steps">Reference only — not additional participant steps</h2>
 <table>
 <thead>
 <tr>
-<th>Goal</th>
+<th>Topic</th>
 <th>Document</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Complete the learning loop</td>
-<td><a href="index.html">Handbook</a> · <a href="index.html">Markdown</a></td>
+<td>Source handbook</td>
+<td><a href="index.html">Markdown</a></td>
 </tr>
 <tr>
-<td>New environment, identity, cost, RBAC and recovery</td>
-<td><a href="admin.html">Operator guide</a> · <a href="admin.html">Markdown</a></td>
+<td>Identity, resources, cost, recovery</td>
+<td><a href="admin.html">Operator guide</a></td>
 </tr>
 <tr>
-<td>Facilitate the workshop and recognize HOLD</td>
-<td><a href="facilitator.html">Facilitator guide</a> · <a href="facilitator.html">Markdown</a></td>
+<td>Facilitation, recovery, separate diagnostics</td>
+<td><a href="facilitator.html">Facilitator guide</a></td>
 </tr>
 <tr>
-<td>Optional SFT and Frontier boundaries</td>
-<td><a href="sft.html">Appendix</a> · <a href="sft.html">Markdown</a></td>
+<td>Optional SFT and Frontier</td>
+<td><a href="sft.html">Advanced appendix</a></td>
 </tr>
 <tr>
-<td>Dataset and evaluator-input contracts</td>
-<td><a href="data-guide.html">Data guide</a> · <a href="data-guide.html">Markdown</a></td>
+<td>Data contracts</td>
+<td><a href="data-guide.html">Data guide</a></td>
 </tr>
 <tr>
-<td>Actual verification scope and gaps</td>
-<td><a href="verification.html">Verification</a> · <a href="verification.html">Markdown</a></td>
+<td>Existing LIVE evidence and gaps</td>
+<td><a href="verification.html">Verification</a></td>
 </tr>
 <tr>
-<td>v1 migration decisions and provenance</td>
-<td><a href="migration.html">Migration</a> · <a href="migration.html">Markdown</a></td>
+<td>Migration decisions and provenance</td>
+<td><a href="migration.html">Migration</a></td>
+</tr>
+<tr>
+<td>Korean entry point</td>
+<td><a href="README.md">한국어</a></td>
 </tr>
 <tr>
 <td>Portable reading</td>
@@ -226,30 +209,19 @@ python -m lab validate
 </tr>
 </tbody>
 </table>
-<p>Keep the complete package together. Reading, local search and copying code work offline; the copy button does not execute commands. Copy shell commands from the web guide rather than visual line wrapping in the PDF.</p>
-<h2 id="5-safety-and-evidence-boundaries">5. Safety and evidence boundaries</h2>
-<ul>
-<li><code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI.</li>
-<li>Use only the newly authorized <strong>North Central US</strong> resources. Do not change existing/shared resources, shared policies or other regions.</li>
-<li>For this coordinated run, the user explicitly removed the monetary ceiling. <strong>Workload bounds remain:</strong> at most 300 calls, one job per optimizer with at most two candidates, one SFT job/epoch, and at most 60 minutes waiting per job. Other operators need their own authorization.</li>
-<li>GlobalStandard/Global/Developer processing is not a promise that processing stays in NCUS. Approval for synthetic data does not cover real customer data.</li>
-<li><strong>Preserve the new resource group for review. Deletion is not authorized.</strong> Retaining Search or fine-tuned deployments can continue to incur charges.</li>
-<li>Distinguish AI-authored reviews from human reviews. Do not relabel an AI record as human or alter failed evidence to obtain a pass.</li>
-<li>The fresh 12-case holdout is created after freeze under a separate contract. It does not replace the original 20-case test split or silently lower its gate.</li>
-<li>Keep runtime environments, original approval records, credentials and raw run data out of source/publication bundles. Include only allowlisted, sanitized new-run evidence.</li>
-<li>This v1.1 package is self-contained. It does not require the v1 repository's executables or README.</li>
-</ul>
+<p>Existing LIVE evidence includes actual Agent, IQ, optimizer, and SFT results alongside <strong>HOLD</strong>, calibration disagreements, execution errors, and missing human approval. This guide revision does not alter those results or claim a new successful run. Copying code does not execute it.</p>
 <h2 id="maintainer-checks">Maintainer checks</h2>
+<p>The directory and <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1">GitHub repository</a> are named <strong><code>foundry-evaluation-labs-v1</code></strong>, and the guide edition is <strong>v1</strong>. In the existing development environment, the previous path is a compatibility symlink for virtualenv and frozen-record absolute paths, not a second copy. New installations do not need this link.</p>
 <pre><code class="language-bash">python scripts/build_guide.py
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 </code></pre>
-<p>The builder creates all registered web pages and <code>print.html</code>; PDF generation and inspection are separate. The package remains <strong>v1.1</strong>. The integration documentation date is <strong>2026-09-30</strong>, not an assertion that every cloud feature was executed on that date.</p>
+<p>The builder generates HTML and the print book; regenerate PDF and ZIP separately. <code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI. The guide edition is <strong>v1</strong> and the documentation date is <strong>2026-09-30</strong>.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
-        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 읽는 장의 완료 여부를 직접 기록하세요.</p></div>
-        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">이 장 완료 표시</button>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 장의 읽음 여부만 기록합니다. LIVE 실행이나 운영 승인을 뜻하지 않습니다.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">읽음 표시</button>
       </section>
       <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="장 이동" hidden>
         <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 장</span><strong></strong></a>
@@ -257,35 +229,18 @@ python -m unittest discover -s tests -v
       </nav>
       <footer class="document-footer">
         <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
-        <div class="footer-links"><a href="print.html">전체 인쇄본</a><a href="#guide-start">처음으로 ↑</a></div>
+        <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>
   </div>
 
-  <dialog id="search-dialog" class="search-dialog" aria-labelledby="search-title" aria-describedby="search-help">
-    <div class="dialog-heading">
-      <div><p class="eyebrow">FIND IN GUIDE</p><h2 id="search-title">본문 검색</h2></div>
-      <button class="icon-button" type="button" data-search-close aria-label="검색 닫기">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
-      </button>
-    </div>
-    <form id="guide-search-form" role="search" aria-label="가이드 본문">
-      <label for="search-input">찾을 내용</label>
-      <input id="search-input" type="search" placeholder="예: 지식 기반, 평가 지표, fine-tuning" autocomplete="off" spellcheck="false" aria-controls="search-results" aria-describedby="search-help search-status">
-      <p id="search-help">여러 단어를 띄어 쓰면 모두 포함된 위치를 찾습니다. 결과를 선택하면 해당 제목으로 이동합니다.</p>
-    </form>
-    <p id="search-status" class="search-status" role="status" aria-live="polite" aria-atomic="true">검색어를 입력하세요.</p>
-    <ol id="search-results" class="search-results"></ol>
-    <p class="dialog-footnote"><kbd>↓</kbd> 결과로 이동 <span aria-hidden="true">·</span> <kbd>Tab</kbd> 탐색 <span aria-hidden="true">·</span> <kbd>Esc</kbd> 닫기</p>
-  </dialog>
-
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
     <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
-    <p id="reset-description">이 문서에서 표시한 모든 장의 완료 표시를 지웁니다. 다른 문서의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
     <form method="dialog" class="dialog-actions">
       <button class="secondary-button" value="cancel" autofocus>취소</button>
-      <button class="danger-button" value="reset">완료 표시 초기화</button>
+      <button class="danger-button" value="reset">읽음 표시 초기화</button>
     </form>
   </dialog>
   <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>

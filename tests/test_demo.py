@@ -33,6 +33,9 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(result["author_type"], "ai")
         self.assertEqual(result["network_calls"], 0)
         self.assertEqual(result["states"]["human_review"], "PENDING")
+        self.assertIn("guide/handbook.md#prepare", result["next"])
+        self.assertIn("재배포하지 않습니다", result["next"])
+        self.assertNotIn("bootstrap", result["next"])
 
     def test_labels_do_not_turn_into_cloud_evidence(self):
         result = run_demo()

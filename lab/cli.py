@@ -45,6 +45,10 @@ def parser() -> argparse.ArgumentParser:
     batch.add_argument("--confirm", action="store_true")
     score = commands.add_parser("score", help="Score captured outputs locally without model calls")
     score.add_argument("--run-id", required=True)
+    explain = commands.add_parser("explain", help="Read saved criteria, scores, Judge reasons and improvement hints; no model calls or evidence writes")
+    explain.add_argument("--run-id", required=True)
+    explain.add_argument("--baseline", help="Optional existing run with identical data/cases/Judge for local regression diagnostics")
+    explain.add_argument("--case-id", help="Show one case in detail without changing full-run metrics or gates")
     compare = commands.add_parser("compare", help="Compare paired, held-out evidence locally")
     compare.add_argument("--baseline", required=True)
     compare.add_argument("--candidate", required=True)
@@ -128,6 +132,11 @@ def require_confirmation(args: argparse.Namespace) -> None:
 
 
 def execute(args: argparse.Namespace) -> int:
+    if args.command == "explain":
+        from lab.explanation import explain_run
+
+        print(explain_run(args.run_id, baseline_id=args.baseline, case_id=args.case_id), end="")
+        return 0
     if args.command == "optimizer-check":
         from lab.optimizer import check_native_pair
 

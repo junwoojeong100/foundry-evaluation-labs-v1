@@ -207,6 +207,22 @@ class GuideBuildTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "guide/verification.md"):
             build_guide.render_site(sources, self.template, "unused")
 
+    def test_single_path_progress_is_separate_from_old_chapters_and_reference_pages(self) -> None:
+        pages = self._site_pages()
+        for name in ("index.html", "facilitator.html", "admin.html", "english.html"):
+            page = PageInspector()
+            page.feed(pages[name])
+            body = next(attrs for tag, attrs in page.elements if tag == "body")
+            self.assertEqual(body["data-document-id"], name)
+            self.assertEqual(body["data-progress-revision"], "single-path-6" if name == "index.html" else "")
+        self.assertIn("실습 순서", pages["index.html"])
+        self.assertIn("참고 문서 목차", pages["admin.html"])
+        app = (ROOT / "web/app.js").read_text(encoding="utf-8")
+        self.assertIn("document.body.dataset.progressRevision", app)
+        self.assertIn('stored === null && documentId === "index.html" && !progressRevision', app)
+        self.assertIn("authoredNextTargets.has(next.id)", app)
+        self.assertNotIn("localStorage.removeItem", app)
+
     def test_default_check_validates_all_outputs_and_does_not_write(self) -> None:
         pages = self._site_pages()
         print_template = (ROOT / "web" / "print-template.html").read_text(encoding="utf-8")
@@ -263,9 +279,9 @@ class GuideBuildTests(unittest.TestCase):
         self.assertEqual(elements["main-content"][0], "main")
         self.assertEqual(elements["main-content"][1]["tabindex"], "-1")
         self.assertEqual(elements["chapter-nav"][0], "nav")
-        self.assertEqual(elements["search-dialog"][0], "dialog")
+        self.assertNotIn("search-dialog", elements)
+        self.assertNotIn("search-input", elements)
         self.assertEqual(elements["reset-dialog"][0], "dialog")
-        self.assertEqual(elements["search-status"][1]["role"], "status")
         self.assertEqual(elements["announcements"][1]["aria-live"], "polite")
         self.assertIn('class="skip-link" href="#main-content"', self.rendered)
         self.assertIn('class="chapter-pagination no-print"', self.rendered)
@@ -276,6 +292,23 @@ class GuideBuildTests(unittest.TestCase):
             for attribute in ("aria-labelledby", "aria-describedby", "aria-controls"):
                 for target in (attrs.get(attribute) or "").split():
                     self.assertIn(target, elements, f"{attribute}: {target}")
+
+    def test_header_has_theme_current_print_and_full_pdf_in_reference_order(self) -> None:
+        expected = ["data-theme-toggle", "data-print-one", "data-print-all"]
+        controls = [
+            attribute for tag, attrs in self.page.elements if tag == "button"
+            for attribute in expected if attribute in attrs
+        ]
+        self.assertEqual(controls, expected)
+        self.assertNotIn("본문 검색", self.rendered)
+        self.assertNotIn("data-search-open", self.rendered)
+        self.assertNotIn("data-print ", self.rendered)
+        self.assertLess(self.template.index('src="web/theme.js"'), self.template.index('href="web/styles.css"'))
+        self.assertIn(':root[data-theme="dark"]', self.css)
+        self.assertIn('body[data-print="one"] .print-excluded', self.css)
+        app = (ROOT / "web/app.js").read_text(encoding="utf-8")
+        self.assertIn('window.addEventListener("afterprint", restorePrint)', app)
+        self.assertNotIn("openSearch", app)
 
     def test_runtime_dependencies_are_local(self) -> None:
         for tag, attrs in self.page.elements:
@@ -305,6 +338,7 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_anchor_offset_is_not_applied_twice(self) -> None:
         self.assertIn("scroll-margin-top: calc(var(--header-height) + 1.5rem)", self.css)
+        self.assertRegex(self.css, r"\.share-checkpoint[^{}]*\{[^}]*scroll-margin-top:")
         self.assertNotRegex(self.css, r"scroll-padding-top:\s*calc\(")
 
     def test_missing_or_unknown_template_placeholders_fail_clearly(self) -> None:

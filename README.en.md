@@ -1,99 +1,70 @@
-# Foundry Learning Loop Lab v1.1 · English quickstart
+# Foundry Learning Loop Lab v1 · English
 
-[한국어](README.md) · **[Open the workshop guide](index.html)** · [Source handbook](guide/handbook.md)
+**[Start the lab → index.html](index.html#start)**
 
-**A fluent answer is not necessarily a correct business answer. Start by finding a mistake, then improve one Contoso support agent using evidence.**
+**Follow six steps on one page, in order.** You do not need to choose a document, evaluator path, or optimizer.
 
-Follow one path:
+> Understand the example → connect the environment → evaluate the baseline → connect Foundry IQ → improve instructions with Agent Optimizer → decide and finish
 
-> Authored wrong answer → offline DEMO → local installation → a new NCUS environment → one model connectivity response → small LIVE agent evaluation → Foundry IQ → separate optimizer checkpoints → freeze and fresh holdout → human decision → observability and the next improvement
+**Plan for approximately 3–4 hours, including result discussions**, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows **command → sample output → discuss your results and decision → next step**. Samples illustrate the format and are not evidence of a successful live run.
 
-SFT and Frontier are gated appendices, not prerequisites for finishing the core learning loop. The policy, cases, prompts and responses remain **Korean**, so all participants use the same experiment.
+At each evaluation, share **actual results → a representative case → the next decision**. Calibration, baseline diagnosis, IQ, optimizer ranking, candidate re-evaluation, and the fresh holdout answer different questions. These checkpoints use existing reports; they add no paid evaluation calls or automatic external sharing.
 
-## 1. Start before Azure setup
+The local `explain` command connects **criteria, measured scores, saved Judge reasons, HOLD causes, and improvement suggestions**. For strictly paired runs it also computes the configured regression diagnostics. The guide includes score-level rubrics, a worked teaching example, and next-action rules; explanations never rewrite existing evaluation evidence or grant approval.
 
-A fictional Contoso Atlas Cloud customer asks for a refund five days after their first monthly purchase.
+**This is the same lab and environment.** Keep the existing dedicated NCUS resources, Contoso data, models, and evaluation criteria. Do not redeploy or rerun completed experiments because the guide changed. The former 15 chapters are grouped into six steps; the underlying tools remain available.
 
-> **Authored wrong answer:** “It is within 14 days, so your refund is approved and will arrive tomorrow.”
+## Before starting
 
-The [synthetic policy](data/knowledge/documents.json), `ATLAS-REF-001`, requires more than elapsed days: purchase type, production work and paid-credit use matter. **Eligibility is not approval or payment. This assistant cannot execute refunds.**
+Keep the complete package in one folder and open `index.html`. Use Python 3.11+ (3.12 recommended) and bash/zsh on macOS/Linux or Ubuntu in Windows WSL2. The policy, cases, prompts, and responses remain **Korean** so participants use the same experiment.
 
-With the complete package and Python 3.11+ available locally, run from the package root. Python 3.12 is recommended.
+The top-right **어둡게/밝게** control remembers light/dark mode in this browser. **현재 인쇄** prints the current step; **전체 PDF** opens the entire current document in the print dialog, where you can choose Save as PDF. Printing always uses a light background. The footer links to the combined PDF including appendices.
 
-```bash
-python3 -S -m lab demo
-```
+Step 01 is an **AI-authored offline DEMO**. It needs no Azure login, `.env`, Azure CLI, SDK installation, network, or paid requests. Subsequent installation and commands are in the handbook, not a second quickstart.
 
-**Checkpoint:** `AUTHORED_DEMO_NOT_LIVE`, `author_type: ai`, and `DEMO_COMPLETED`. The answers, labels and dialogue are AI-authored teaching examples, not claimed human authorship or review. No Azure account, credentials, `.env`, Azure CLI, SDK packages, network connection or paid request is needed.
+Before LIVE work, the operator verifies the participant's actual identity, permissions, dedicated environment, and current cost authorization, then supplies the private environment folder. Follow [operator setup](admin.html) **only if no lab environment exists yet**. Otherwise reconnect using the original ownership manifest; do not create another resource group.
 
-The DEMO does not measure a live model or grant human approval. If Python is missing, read the guide while preparing Python; do not switch to LIVE commands to bypass a local error.
+## The only participant path
 
-Continue with the [same handbook path](guide/handbook.md#demo), not a separate experiment.
-
-## 2. What is implemented versus verified?
-
-| Evidence type | Current meaning |
+| Step | Evidence to keep |
 |---|---|
-| Offline DEMO | Runnable authored examples, not measured model quality |
-| Dataset | Eight synthetic policies; the original 100 cases remain train 56 / validation 12 / dev 12 / test 20 |
-| New Azure environment | ARM `Succeeded`; 25 owned resource/connection/role records, including the new Foundry project, four model deployments, Search and telemetry |
-| LIVE execution | Model and Agent responses, a 12-case IQ/MCP capture, real embedding/vector/hybrid/agentic retrieval, managed evaluation and separate business Judges executed |
-| Quality | **HOLD**, not a fabricated pass: calibration disagreement, invalid output and throttled/missing scores remain visible |
-| Optimization/training | Prompt Optimizer produced a real candidate and it was re-evaluated as a new Agent. Actual Agent Optimizer and SFT job IDs and terminal outcomes are tracked in the [verification record](guide/verification.md) |
-| Frontier support/access path | **`NOT_VERIFIED`**, not a claim that the product or API does not exist |
-| Production approval | A separate human responsibility, never granted by a score or AI-authored review |
+| 01. Understand the example | Your judgment about the false refund promise and missing information |
+| 02. Connect the environment | Ownership/preflight checks and the original dataset validation |
+| 03. Evaluate the baseline | Actual Agent responses and business Judge calibration |
+| 04. Connect knowledge | Actual IQ retrieval/MCP output and all 12 dev cases |
+| 05. Improve instructions | One Agent Optimizer candidate and paired dev evidence |
+| 06. Decide and finish | Frozen fresh12 results or reasons for not running them, HOLD decisions, and preservation responsibility |
 
-See the [verification record](guide/verification.md). Metadata access, mocked tests, completed API calls and quality acceptance are different states.
+**Stop at step 06.** Prompt Optimizer, separate managed evaluation, SFT, and Frontier remain reference/advanced material, not requirements for completing this path. On errors or failed calibration, stop paid progression and record the evidence and unexecuted steps. Learning completion, actual API success, quality acceptance, and human production approval are distinct.
 
-**The first failure lesson:** gpt-4o-mini / 2024-07-18 showed `Deprecating`,
-fine-tuning capability and available quota in catalog metadata, yet the provider
-rejected it as deprecated since 2026-03-31. Preserve that failed attempt. The
-replacement's `Legacy` catalog state and quota are also not deployment or
-training guarantees.
+## Boundaries
 
-## 3. Install only when moving beyond DEMO
+- Preserve eight synthetic policies and 100 cases: train 56 / validation 12 / dev 12 / test 20. Create the separate fresh12 only after freeze; never lower the original test20 gate.
+- Use only the owned, dedicated **North Central US** environment. Do not switch to unrelated existing/shared resources, shared policies, or other regions.
+- Each participant needs current authorization for cost, processing, and workload. The earlier run's explicit removal of a monetary ceiling is not transferable authorization. Finite call, job, candidate, and waiting bounds still apply.
+- **Preserve resources and raw evidence. Deletion is not authorized.** Search, logs, and model hosting can keep incurring costs after the terminal closes.
+- Keep AI authorship/review separate from human review and approval. Never change failed evidence or thresholds to obtain a pass.
+- Keep private environments, approval records, credentials, and raw run data out of source, ZIP, and PDF bundles. Publish only sanitized, allowlisted evidence.
 
-These steps require network access for package installation; they are **not** prerequisites for the offline DEMO.
+## Reference only — not additional participant steps
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.lock
-python -m lab validate
-```
-
-Use bash/zsh on macOS/Linux, or Ubuntu in Windows WSL2. Do not paste `source` into native PowerShell.
-
-**Checkpoint:** local dataset validation succeeds and the original split counts remain unchanged. Then follow [new-environment setup](guide/admin-setup.md). Do not reuse an old account, subscription or resource profile. The bootstrap manifest and private generated `.env` identify each environment; `.env.example` is only a placeholder template.
-
-## 4. Read the right document
-
-| Goal | Document |
+| Topic | Document |
 |---|---|
-| Complete the learning loop | [Handbook](index.html) · [Markdown](guide/handbook.md) |
-| New environment, identity, cost, RBAC and recovery | [Operator guide](admin.html) · [Markdown](guide/admin-setup.md) |
-| Facilitate the workshop and recognize HOLD | [Facilitator guide](facilitator.html) · [Markdown](guide/facilitator.md) |
-| Optional SFT and Frontier boundaries | [Appendix](sft.html) · [Markdown](guide/sft-appendix.md) |
-| Dataset and evaluator-input contracts | [Data guide](data-guide.html) · [Markdown](data/README.md) |
-| Actual verification scope and gaps | [Verification](verification.html) · [Markdown](guide/verification.md) |
-| v1 migration decisions and provenance | [Migration](migration.html) · [Markdown](guide/integration-migration.md) |
+| Source handbook | [Markdown](guide/handbook.md) |
+| Identity, resources, cost, recovery | [Operator guide](admin.html) |
+| Facilitation, recovery, separate diagnostics | [Facilitator guide](facilitator.html) |
+| Optional SFT and Frontier | [Advanced appendix](sft.html) |
+| Data contracts | [Data guide](data-guide.html) |
+| Existing LIVE evidence and gaps | [Verification](verification.html) |
+| Migration decisions and provenance | [Migration](migration.html) |
+| Korean entry point | [한국어](README.md) |
 | Portable reading | [Print HTML](print.html) · [PDF](Foundry-Learning-Loop-Lab-KO.pdf) |
 
-Keep the complete package together. Reading, local search and copying code work offline; the copy button does not execute commands. Copy shell commands from the web guide rather than visual line wrapping in the PDF.
-
-## 5. Safety and evidence boundaries
-
-- `python -m lab` is this repository's educational tool, not an official Microsoft CLI.
-- Use only the newly authorized **North Central US** resources. Do not change existing/shared resources, shared policies or other regions.
-- For this coordinated run, the user explicitly removed the monetary ceiling. **Workload bounds remain:** at most 300 calls, one job per optimizer with at most two candidates, one SFT job/epoch, and at most 60 minutes waiting per job. Other operators need their own authorization.
-- GlobalStandard/Global/Developer processing is not a promise that processing stays in NCUS. Approval for synthetic data does not cover real customer data.
-- **Preserve the new resource group for review. Deletion is not authorized.** Retaining Search or fine-tuned deployments can continue to incur charges.
-- Distinguish AI-authored reviews from human reviews. Do not relabel an AI record as human or alter failed evidence to obtain a pass.
-- The fresh 12-case holdout is created after freeze under a separate contract. It does not replace the original 20-case test split or silently lower its gate.
-- Keep runtime environments, original approval records, credentials and raw run data out of source/publication bundles. Include only allowlisted, sanitized new-run evidence.
-- This v1.1 package is self-contained. It does not require the v1 repository's executables or README.
+Existing LIVE evidence includes actual Agent, IQ, optimizer, and SFT results alongside **HOLD**, calibration disagreements, execution errors, and missing human approval. This guide revision does not alter those results or claim a new successful run. Copying code does not execute it.
 
 ## Maintainer checks
+
+The directory and [GitHub repository](https://github.com/junwoojeong100/foundry-evaluation-labs-v1) are named **`foundry-evaluation-labs-v1`**, and the guide edition is **v1**. In the existing development environment, the previous path is a compatibility symlink for virtualenv and frozen-record absolute paths, not a second copy. New installations do not need this link.
 
 ```bash
 python scripts/build_guide.py
@@ -101,4 +72,4 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 ```
 
-The builder creates all registered web pages and `print.html`; PDF generation and inspection are separate. The package remains **v1.1**. The integration documentation date is **2026-09-30**, not an assertion that every cloud feature was executed on that date.
+The builder generates HTML and the print book; regenerate PDF and ZIP separately. `python -m lab` is this repository's educational tool, not an official Microsoft CLI. The guide edition is **v1** and the documentation date is **2026-09-30**.

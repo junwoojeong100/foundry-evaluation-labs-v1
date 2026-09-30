@@ -1,8 +1,10 @@
 # 선택 부록 · Foundry SFT와 Frontier 접근 확인
 
-[핵심 학습 경로](handbook.md#tune) · [운영자 준비](admin-setup.md) · [실제 검증 상태](verification.md)
+[참가자 6단계로 돌아가기](handbook.md#start) · [운영자 준비](admin-setup.md) · [실제 검증 상태](verification.md)
 
 **선택·별도 유료 경로입니다. 기본 루프를 끝내기 위해 실행할 필요는 없습니다.**
+
+참가자 실습은 본문 06에서 끝납니다. 이 부록은 별도 목적·승인이 있을 때만 진행하며, 기본 경로의 오류나 HOLD를 우회하는 수단이 아닙니다. 기존 실습 도구와 실행 증거는 그대로 유지합니다.
 
 - **Foundry SFT**는 supervised 학습입니다. 실제 서비스의 작업·가중치 산출물·배포·평가가 있어야 학습/개선을 주장합니다.
 - **Frontier**의 직접 일치하는 공식 API/지원 경로는 현재 조사에서 **`NOT_VERIFIED`**입니다. 찾지 못했다고 제품/API가 존재하지 않는다고 단정하지 않습니다.

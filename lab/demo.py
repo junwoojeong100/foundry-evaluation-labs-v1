@@ -53,7 +53,7 @@ def run_demo(out: Path | None = None) -> dict:
             "human_review": "PENDING",
             "operational_approval": "NOT_APPROVED",
         },
-        "next": "가이드의 단일 학습 경로: 새 환경 계획 -> 비용/처리 승인 -> bootstrap -> 작은 LIVE smoke. DEMO 결과를 LIVE 분모에 합치지 않습니다.",
+        "next": "가이드 02. 환경 연결: guide/handbook.md#prepare. 기존 실습 환경과 현재 승인을 확인하며 재배포하지 않습니다. DEMO 결과를 LIVE 분모에 합치지 않습니다.",
     }
     if out is not None:
         out.parent.mkdir(parents=True, exist_ok=True)

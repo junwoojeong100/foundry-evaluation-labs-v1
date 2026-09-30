@@ -1,30 +1,32 @@
-# v1 → v1.1 통합·마이그레이션 결정
+# 참고 원본 → v1 통합·마이그레이션 결정
 
 **조사 기준: 2026-09-30 KST. 이 문서는 구현 완료나 LIVE 실행 보고서가 아니라, 고정한 두 소스의 비교와 통합 요구조건입니다.**
 
-v1의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 끝까지 실행·판단·재개할 수 있게 만든 점입니다. v1.1의 장점은 Contoso 데이터 계약, 실제 Agent Service 버전, MCP 기반 IQ, 엄격한 근거 처리와 오프라인 웹·인쇄 제작 체계입니다. **v1의 학습·실행 패턴을 Contoso에 맞게 새로 구현하고, v1.1의 기반을 대체하지 않습니다.**
+참고 원본의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 끝까지 실행·판단·재개할 수 있게 만든 점입니다. 통합 대상의 장점은 Contoso 데이터 계약, 실제 Agent Service 버전, MCP 기반 IQ, 엄격한 근거 처리와 오프라인 웹·인쇄 제작 체계입니다. **원본의 학습·실행 패턴을 Contoso에 맞게 새로 구현하고, 통합 대상의 기반을 대체하지 않습니다.**
+
+**이름 안내:** 현재 유지보수 저장소와 실제 디렉터리는 `foundry-evaluation-labs-v1`이며, 가이드 표기는 **v1**입니다. 이 문서의 **참고 원본**은 `foundry-evaluation-labs-v0.9`에 보관된 과거 소스를 뜻합니다. 옛 로컬 경로는 가상환경과 동결 기록의 절대 경로를 유지하는 호환용 링크로 남기며, 실습 데이터·평가기준·Azure 리소스는 바꾸지 않습니다.
 
 ## 1. 소스·범위·판정 용어
 
 | 대상 | 고정 소스 | 이번 작업의 경계 |
 |---|---|---|
-| 통합 대상 v1.1 | `junwoojeong100/foundry-evaluation-labs-v1.1`, 시작 커밋 `8ea5d3aedb2aeef0727d16031033969f30c2d0b0` | PRIVATE 유지. `integration/v11-learning-loop-20260930`에서 작업 |
-| 읽기 전용 참고 v1 | [`junwoojeong100/foundry-evaluation-labs-v1`][v1-root], 커밋 `93bc07e31373c4cfc278a2dc3757785946404cf2` | PUBLIC 유지. 원본 파일·브랜치·가시성·보관 상태를 변경하지 않음 |
+| 현재 가이드 v1 | [`junwoojeong100/foundry-evaluation-labs-v1`](https://github.com/junwoojeong100/foundry-evaluation-labs-v1), 통합 시작 커밋 `8ea5d3aedb2aeef0727d16031033969f30c2d0b0` | PRIVATE 유지. 문서 표기는 v1으로 통일하며 실습 내용·환경은 변경하지 않음 |
+| 읽기 전용 참고 원본 | [`junwoojeong100/foundry-evaluation-labs-v0.9`][v1-root], 커밋 `93bc07e31373c4cfc278a2dc3757785946404cf2` | 현재 PRIVATE·Archived로 보관되어 있음. 이번 이름 변경에서 원본 파일·브랜치·가시성·보관 상태는 변경하지 않음 |
 | 최초 산출물 | `guide/integration-migration.md` | 구현 전에 비교·계약을 먼저 저장하고 형제 구현 담당자에게 전달 |
 | 후속 문서 범위 | `README.md`, `README.en.md`, `guide/*.md`의 지정 원문 | 가이드 우선 순서로 참가자·운영자·강사·SFT·검증·이관 문서를 통합. HTML/PDF/스크립트/코드는 각 소유 담당자가 처리 |
 
-시작 시 로컬/원격 HEAD 일치와 두 작업 트리의 청결은 통합 담당자의 사전 확인 기록입니다. 이 조사에서는 로컬 HEAD와 추적 파일을 읽었으며, 원격 상태를 다시 조회하거나 Azure에 접속하지 않았습니다. 아래 **기존**은 v1.1 시작 커밋의 동작이고 통합 경로는 현재 추가한 소스에 연결합니다. 설계 시의 **제안**과 현재 구현/로컬 검사/실제 실행 상태는 구별합니다. 이 표 자체는 LIVE 완료 증거가 아닙니다.
+시작 시 로컬/원격 HEAD 일치와 두 작업 트리의 청결은 통합 담당자의 사전 확인 기록입니다. 초기 비교 조사는 로컬 HEAD와 추적 파일을 읽는 방식이었습니다. 이후 이름 변경에서는 GitHub 저장소의 동일 ID·현재 이름·비공개/보관 상태와 원본 커밋의 존재를 별도로 확인했으며, Azure 리소스는 변경하지 않았습니다. 아래 **기존**은 통합 대상 시작 커밋의 동작이고 통합 경로는 현재 추가한 소스에 연결합니다. 설계 시의 **제안**과 현재 구현/로컬 검사/실제 실행 상태는 구별합니다. 이 표 자체는 LIVE 완료 증거가 아닙니다.
 
-- **KEEP**: v1.1에 이미 있는 기반·경계를 유지합니다.
-- **REINFORCE**: v1에서 확인한 패턴을 독자적으로 구현하거나 기존 동작을 보강합니다.
+- **KEEP**: 통합 대상에 이미 있는 기반·경계를 유지합니다.
+- **REINFORCE**: 참고 원본에서 확인한 패턴을 독자적으로 구현하거나 기존 동작을 보강합니다.
 - **EXCLUDE**: 도메인·제품·권한·증거 계약이 다른 내용은 가져오지 않습니다.
-- 표의 상대 링크는 **실제로 존재하는 v1.1 통합 지점**입니다. 새 산출물 경로 예시는 별도로 **제안**이라고 표시하며, 존재하는 실행 명령처럼 안내하지 않습니다.
+- 표의 상대 링크는 **실제로 존재하는 현재 가이드의 통합 지점**입니다. 새 산출물 경로 예시는 별도로 **제안**이라고 표시하며, 존재하는 실행 명령처럼 안내하지 않습니다.
 
 ## 2. 기능 단위 결정 매트릭스
 
-### 2-1. KEEP — 유지할 v1.1 기반
+### 2-1. KEEP — 유지할 통합 대상의 기반
 
-| ID / 기능 | v1에서 확인한 비교점 | v1.1 기존 경로·통합 지점 | 결정 이유와 유지 조건 |
+| ID / 기능 | 참고 원본에서 확인한 비교점 | 현재 가이드의 기존 경로·통합 지점 | 결정 이유와 유지 조건 |
 |---|---|---|---|
 | K01 · Contoso 시나리오·출력 계약 | [v1 README][v1-readme]는 다른 업무 도메인과 필드를 사용 | [정책](../data/knowledge/documents.json), [데이터 계약](../data/README.md), [응답 스키마](../schemas/response.schema.json) | **KEEP.** Contoso Atlas Cloud와 `answer`·`citations`·`route`·`needs_human` 유지. 업무 실행 도구가 없다는 경계도 유지 |
 | K02 · 원본 100건·분할 | [입문][v1-intro]의 dev/holdout 분리 원리는 유용하지만 규모·구조는 다름 | [원본](../data/cases.jsonl), [분할 매니페스트](../data/manifest.json), [생성기](../scripts/build_datasets.py), [검사](../tests/test_datasets.py) | **KEEP.** train 56 / validation 12 / dev 12 / test 20, 상황 그룹과 기존 레이블을 보존. 새 DEMO·교정·fresh holdout으로 원본을 교체하지 않음 |
@@ -35,9 +37,9 @@ v1의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 �
 | K07 · 제품 경계·운영 루프 | [v1 진행자 가이드][v1-facilitator]는 교육 완료와 출시 판단을 구별 | [본문](handbook.md), [강사](facilitator.md), [인수 파일](../lab/handoffs.py), [SFT 부록](sft-appendix.md) | **KEEP.** Prompt/Agent Optimizer, Frontier/SFT, 준비/실행/학습 완료/개선을 구분. 운영 실패를 다음 데이터로 돌리는 흐름 유지 |
 | K08 · 안전한 로컬 출판·실행 범위 | [v1 준비][v1-setup]의 복사·완료 확인·재개 안내가 보완점 | [웹 빌더](../scripts/build_guide.py), [인쇄 빌더](../scripts/build_print.py), [웹 동작](../web/app.js), [정리](../lab/cleanup.py) | **KEEP.** 오프라인 읽기, 원문 그대로 코드 복사, 명령 자동 실행 없음, 휴대 가능한 PDF 링크, 소유 기록 기반 정리. 가이드를 읽거나 DEMO로 전환했다고 공유 자원을 변경하지 않음 |
 
-### 2-2. REINFORCE — v1의 장점을 새로 구현할 부분
+### 2-2. REINFORCE — 참고 원본의 장점을 새로 구현할 부분
 
-| ID / 기능 | 구체적인 v1 근거 | v1.1 기존 경로·제안 통합 지점 | 시작 커밋의 차이와 완료 조건 |
+| ID / 기능 | 구체적인 원본 근거 | 현재 가이드의 기존 경로·제안 통합 지점 | 시작 커밋의 차이와 완료 조건 |
 |---|---|---|---|
 | R01 · 설치 전 그럴듯한 오답 | [DEMO 0장][v1-offline], [입문 0장][v1-intro]의 먼저 선택하고 규정으로 확인하는 구성 | [본문](handbook.md), [Contoso 정책](../data/knowledge/documents.json), [강사](facilitator.md) | **REINFORCE.** 설명만 읽는 도입을 짧은 Contoso 판단 활동으로 보강. 작성 예시를 실제 기준선 실패로 표시하지 않음. 예시는 3절 참고 |
 | R02 · 진짜 오프라인 authored DEMO | [DEMO][v1-offline], [`demo_entries`와 지연 import][v1-cli], [fixture 매니페스트][v1-demo-manifest] | [통합 DEMO](../lab/demo.py), [CLI](../lab/cli.py), [파일 계약](../lab/files.py), [CLI 검사](../tests/test_cli.py) | **REINFORCE.** 시작 커밋은 가이드만 오프라인이고 실행 DEMO가 없으며 CLI가 SDK를 최상위 import. 통합 경로는 `python3 -S -m lab demo`로 분리하며 계정·설정·SDK·네트워크 없는 검사를 요구 |
@@ -49,18 +51,18 @@ v1의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 �
 | R08 · 실제 embeddings/vector/hybrid/IQ 계획 | [`embed`, `vector_index`, `retrieve`][v1-retrieval], [벡터·계획 확인][v1-complete] | [통합 임베딩](../lab/embeddings.py), [IQ](../lab/knowledge.py), [설정](../lab/config.py), [검사](../tests/test_knowledge.py) | **REINFORCE.** 시작 커밋은 텍스트/semantic 인덱스와 `embedding_model: null`. 실제 임베딩·벡터 필드·차원·vector-only/hybrid 요청과 반환 청크, IQ `modelQueryPlanning`/하위 질의 증거를 각각 확인해야 함 |
 | R09 · 명시적 후속 발언과 최종 답 | [`run_command`의 대화 프로토콜][v1-advanced-cli], [개발용 후속 발언][v1-followups], [대화 검사 안내][v1-complete] | [버전 에이전트 실행](../lab/batch.py), [응답 스키마](../schemas/response.schema.json), [근거 엔진](../lab/evidence.py), [실행 검사](../tests/test_agent_run.py) | **REINFORCE.** 기존은 독립 단일 질문. `clarify` → **사용자 입력 또는 출처가 명시된 scripted-user 발언** → 최종 답을 캡처. 에이전트가 누락 정보를 스스로 만들어 넣지 않으며, 첫 응답의 위험을 최종 정답으로 지우지 않음 |
 | R10 · 멱등 재개와 중복 호출 방지 | [입문 `run`/`judge` 재사용][v1-cli], [단계별 pending 저장][v1-advanced-cli], [재개 한계][v1-setup] | [배치](../lab/batch.py), [관리형 평가](../lab/managed_eval.py), [파일 계약](../lab/files.py), [배치 검사](../tests/test_batch.py) | **REINFORCE.** 기존 배치는 디렉터리가 있으면 새 run-id를 요구함. 같은 계약의 완료 결과는 검증 후 재사용, 부분 결과는 저장된 행을 건너뛰고 이어감. 입력 변경·손상·원격 제출 여부 불명확 시 자동 재호출하지 않음 |
-| R11 · 통제 비교와 원인 설명 | [동일 초기 문맥 replay와 planned-dev 구분][v1-complete], [개별 회귀 검사][v1-evaluation] | [비교](../lab/evidence.py), [본문 05/06/08장](handbook.md), [인수 파일](../lab/handoffs.py) | **REINFORCE.** IQ 추가 효과와 지시 개선 효과를 분리하는 기존 설계를 유지하며 사례별 전후 근거를 쉽게 읽게 함. 대화 절차까지 바꾸면 “프롬프트 문구만의 효과”로 주장하지 않음. 평균 상승으로 critical 회귀를 상쇄하지 않음 |
+| R11 · 통제 비교와 원인 설명 | [동일 초기 문맥 replay와 planned-dev 구분][v1-complete], [개별 회귀 검사][v1-evaluation] | [비교](../lab/evidence.py), [본문 03–06단계](handbook.md), [인수 파일](../lab/handoffs.py) | **REINFORCE.** IQ 추가 효과와 지시 개선 효과를 분리하는 기존 설계를 유지하며 사례별 전후 근거를 쉽게 읽게 함. 대화 절차까지 바꾸면 “프롬프트 문구만의 효과”로 주장하지 않음. 평균 상승으로 critical 회귀를 상쇄하지 않음 |
 | R12 · 비용·데이터·보존의 승인 상태 | [준비/비용/DEMO 전환][v1-setup], [보존 우선 정리][v1-cleanup] | [통합 bootstrap](../lab/bootstrap.py), [승인 스키마](../infra/approval.schema.json), [환경 준비](admin-setup.md), [정리](../lab/cleanup.py) | **REINFORCE.** `--confirm`은 동작 확인이지 전체 승인 대체물이 아님. 명시적 무상한 금액 정책과 유한한 호출/작업·대상·보존·처리 범위를 구분하고 승인 밖의 변경은 차단 |
 
 ### 2-3. EXCLUDE — 그대로 가져오지 않을 내용
 
-| ID / 제외 대상 | v1 소스 | v1.1에 적용할 경계 | 이유 |
+| ID / 제외 대상 | 참고 원본 소스 | 현재 가이드에 적용할 경계 | 이유 |
 |---|---|---|---|
 | X01 · 출장 도메인 데이터·프롬프트·필드 | [v1 데이터/규정][v1-root], [업무 rubric][v1-policy-rubric], [후속 발언][v1-followups] | [Contoso 데이터](../data/README.md), [프롬프트](../prompts/baseline.txt), [응답 스키마](../schemas/response.schema.json) 유지 | 도메인 규정·금액·정답·ID를 섞으면 하나의 Contoso 실험이 아니게 됨. 교정/DEMO/대화 모두 Contoso 근거로 새로 작성 |
-| X02 · 과거 LIVE 답변·점수·영상 | [기록 fixture][v1-recorded], [실행 기록 설명][v1-complete], [미디어 설명][v1-media] | [검증 기록](verification.md), [패키징](../scripts/package_lab.py) | 이전 환경의 관측값이지 v1.1의 새 실행 증거가 아님. `recorded-live`를 `live`/`authored-demo`로 바꿔 가져오거나 성공 숫자를 전사하지 않음 |
-| X03 · v1 모델·리전·리소스 기본값 | [설정/SDK 계약][v1-reference], [검색 설정][v1-retrieval] | [설정](../lab/config.py), [환경 템플릿](../.env.example), [사전 점검](../lab/preflight.py) | v1의 모델명·차원·planner·리전 고정값은 현재 NCUS 경로의 지원 증명이 아님. v1.1 시작 커밋의 기존 리소스 프로파일도 실행에 재사용하지 않음. 새 승인 범위의 비공개 환경만 사용 |
+| X02 · 과거 LIVE 답변·점수·영상 | [기록 fixture][v1-recorded], [실행 기록 설명][v1-complete], [미디어 설명][v1-media] | [검증 기록](verification.md), [패키징](../scripts/package_lab.py) | 이전 환경의 관측값이지 현재 가이드의 새 실행 증거가 아님. `recorded-live`를 `live`/`authored-demo`로 바꿔 가져오거나 성공 숫자를 전사하지 않음 |
+| X03 · 원본 모델·리전·리소스 기본값 | [설정/SDK 계약][v1-reference], [검색 설정][v1-retrieval] | [설정](../lab/config.py), [환경 템플릿](../.env.example), [사전 점검](../lab/preflight.py) | 원본의 모델명·차원·planner·리전 고정값은 현재 NCUS 경로의 지원 증명이 아님. 통합 대상 시작 커밋의 기존 리소스 프로파일도 실행에 재사용하지 않음. 새 승인 범위의 비공개 환경만 사용 |
 | X04 · 여러 독립 runner 통째로 이식 | [입문 CLI][v1-cli], [완결형 CLI][v1-advanced-cli] | [기존 진입점](../lab/__main__.py), [CLI](../lab/cli.py), [SDK 계약](../pyproject.toml) | 파일 복사는 중복 상태·의존성·서로 다른 데이터 계약을 낳음. 필요한 기능만 기존 `python -m lab` 구조에 통합하고 DEMO 의존성은 분리 |
-| X05 · 다른 과제의 합격선·강제 실패 | [v1 acceptance][v1-acceptance], [`freeze_command`][v1-advanced-cli] | [기존 게이트](../config/gates.json), [근거 엔진](../lab/evidence.py) | 8건·100% 또는 입문 80%를 근거 없이 이식하지 않음. v1 완결형의 “기준선 실패가 있어야 freeze” 조건 때문에 v1.1 LIVE 실패를 조작하지 않음. 필수 지표를 빼거나 기준을 낮춰 통과시키지 않음 |
+| X05 · 다른 과제의 합격선·강제 실패 | [원본 acceptance][v1-acceptance], [`freeze_command`][v1-advanced-cli] | [기존 게이트](../config/gates.json), [근거 엔진](../lab/evidence.py) | 8건·100% 또는 입문 80%를 근거 없이 이식하지 않음. 원본 완결형의 “기준선 실패가 있어야 freeze” 조건 때문에 현재 실습의 LIVE 실패를 조작하지 않음. 필수 지표를 빼거나 기준을 낮춰 통과시키지 않음 |
 | X06 · 과도한 검증/권한 주장 | [초기 필드 검사 한계][v1-complete], [legacy reviewer 처리][v1-reference] | [근거 엔진](../lab/evidence.py), [관리형 평가](../lab/managed_eval.py), [검증 기록](verification.md) | 초기 JSON 필드 통과 ≠ 초기 설명의 의미 안전성. 검토 유형 자기신고 ≠ 신원 인증. 새 기록에서 누락 reviewer를 사람으로 추정하지 않음. 로컬 mock 통과 ≠ 클라우드 가용성 |
 | X07 · 무허가 본문·코드·그림 재배포 | [v1 고정 트리][v1-root] | 이 문서의 5절, [배포 패키징](../scripts/package_lab.py) | 명시적 라이선스를 찾지 못함. 공개 저장소라는 이유로 복사·수정·재배포 권리가 있다고 가정하지 않음. 출처 표시는 사용 허가를 대신하지 않음 |
 
@@ -193,8 +195,8 @@ holdout을 읽고 후보/rubric/기준을 수정했다면 기존 holdout은 더 
 
 - v1 고정 트리의 README(영문/국문), DEMO/입문/완결형/공통 준비/참고/강사 문서와 관련 CLI·평가·검색 코드, authored fixture 매니페스트 및 과거 LIVE fixture 메타데이터를 직접 읽었습니다.
 - v1의 `examples/manifest.json`은 `source: authored-demo`와 프롬프트/질문/문맥/fixture 해시를 갖습니다. 반면 `advanced-rag/fixtures/recorded-v1.json`은 `source: recorded-live`, 캡처 시각 `2026-09-27T21:53:22.399772+00:00`, 원본 근거 해시와 모델 스냅샷을 갖습니다. **서로 다른 출처이며 이 기록의 실제 클라우드 실행을 이번 조사에서 재검증하지 않았습니다.**
-- v1 문서의 2026-09-28 실행 기록은 특정 이전 환경의 관측 설명입니다. v1.1의 [기존 검증 문서](verification.md)는 2026-09-29의 로컬/모의 검사와 읽기 전용 메타데이터 관찰을 구분하고 유료 실습 미실행을 명시합니다. 둘을 하나의 v1.1 실행 이력으로 합치지 않습니다.
-- **두 시작 커밋 모두 추적 트리에서 LICENSE/LICENCE, COPYING, NOTICE, COPYRIGHT 파일을 찾지 못했습니다.** 추적된 Markdown/Python/TOML/텍스트/JSON의 license·copyright·SPDX 표기도 확인되지 않았고 v1.1 `pyproject.toml`에도 라이선스 선언이 없습니다. 이는 저장소 외부 권리 관계가 없다는 증명은 아닙니다.
+- 원본 문서의 2026-09-28 실행 기록은 특정 이전 환경의 관측 설명입니다. 통합 대상의 [기존 검증 문서](verification.md)는 2026-09-29의 로컬/모의 검사와 읽기 전용 메타데이터 관찰을 구분하고 유료 실습 미실행을 명시합니다. 둘을 하나의 실행 이력으로 합치지 않습니다.
+- **두 시작 커밋 모두 추적 트리에서 LICENSE/LICENCE, COPYING, NOTICE, COPYRIGHT 파일을 찾지 못했습니다.** 추적된 Markdown/Python/TOML/텍스트/JSON의 license·copyright·SPDX 표기도 확인되지 않았고 통합 대상 `pyproject.toml`에도 라이선스 선언이 없습니다. 이는 저장소 외부 권리 관계가 없다는 증명은 아닙니다.
 
 ### 통합 원칙
 
@@ -225,6 +227,7 @@ holdout을 읽고 후보/rubric/기준을 수정했다면 기존 holdout은 더 
 
 - 생성 HTML을 직접 편집하지 않습니다. 원문 경로 기준 링크는 빌더가 루트 HTML로 재배치하고 등록된 문서 링크를 매핑합니다.
 - `{#start}` 같은 기존 안정 앵커와 고유한 문서 ID를 유지합니다. 브라우저의 진행 상태는 문서 ID별이며 새 페이지 추가 시 중복시키지 않습니다.
+- 참가자 안내는 기존 15개 장을 **예시 이해 → 환경 연결 → 기준선 평가 → IQ → Agent Optimizer → 최종 판정·종료**의 6단계로 묶었습니다. 리소스·모델·데이터·게이트와 기존 LIVE 증거는 변경하지 않습니다. Prompt Optimizer·별도 managed 평가는 강사 참고로, SFT·Frontier는 심화 부록으로 유지합니다. 확장된 단계에 이전 장의 읽음 표시가 잘못 적용되지 않도록 참가자 학습 기록만 별도 revision으로 저장하며 원래 브라우저 기록은 삭제하지 않습니다.
 - Markdown은 신뢰된 로컬 저자 입력을 전제로 합니다. 모델/사용자 응답을 원시 HTML이나 실행 가능한 script로 삽입하지 않습니다. 코드 블록은 escape·복사 원문을 보존하고 템플릿 토큰처럼 다시 해석하지 않습니다.
 - `print.html`은 script·복사 버튼 없는 정적 통합 문서입니다. 문서 앵커는 `book-...`로 구분하고, 패키지 파일 링크는 읽을 수 있는 파일 경로로 바꿉니다. localhost/file URI를 PDF에 남기지 않습니다.
 - 시작 커밋의 `BUILD_DATE`는 `2026-09-29`였고 통합 브랜치는 `2026-09-30`을 사용합니다. 이 통합 제작일을 모든 공식 문서·서비스의 새 검증일로 해석하지 않습니다. 실제 확인 범위·관측 시각과 관련 검사를 함께 유지합니다.
@@ -256,7 +259,7 @@ PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된
 
 ## 7. 이관 완료·아카이브 준비 체크리스트
 
-**이 절은 아카이브 준비 지침이지 저장소의 archive/visibility 상태를 변경하는 승인이나 실행이 아닙니다.** v1은 PUBLIC 읽기 전용, v1.1은 PRIVATE와 이름/버전 1.1을 유지합니다.
+**이 절은 아카이브 준비 지침이지 저장소의 archive/visibility 상태를 변경하는 승인이나 실행이 아닙니다.** 보관 원본의 접근·보관 상태와 현재 v1 저장소의 PRIVATE 상태를 변경하지 않습니다.
 
 | 검토 | 완료로 볼 조건 | 하지 않을 일 |
 |---|---|---|
@@ -279,38 +282,38 @@ PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된
 | 출처 참조 | 이 문서의 v1 커밋/파일 링크만 남음. 링크를 읽지 않아도 설치·DEMO·LIVE 명령을 실행할 수 있음 |
 | LIVE 외부 의존성 | Azure 로그인·서비스 지원·쿼터·역할·처리 위치/비용 승인. Python 의존성은 이 패키지의 잠금 파일 사용 |
 | 실제 실행 증거 | 신규 환경의 성공·실패·접근 차단 기록을 [검증 기록](verification.md)과 함께 확인. 과거 v1 결과를 승계하지 않음 |
-| 아카이브·공유 | v1 archive 실행, v1.1 접근 권한 제공, 외부 배포 방식은 소유자가 별도로 결정. 이번 작업에서 변경하지 않음 |
+| 아카이브·공유 | 참고 원본은 현재 v0.9에서 PRIVATE·Archived 상태. 이번 이름 변경에서 원본의 보관/접근 상태나 두 저장소의 권한은 변경하지 않음 |
 
 ### 전환 안내 문안 — 소유자 검토용 초안 {#transition-notice}
 
 다음 문안은 **v1에 게시하거나 아카이브를 실행한 기록이 아닙니다.** 전환일·접근 방법을 소유자가 확정한 뒤 별도로 사용합니다.
 
-> Foundry 평가 실습의 대표 유지보수 저장소를 **foundry-evaluation-labs-v1.1**로 통합합니다. 신규 실습은 v1.1의 전체 패키지에서 `index.html`을 열어 시작해 주세요.
+> Foundry 평가 실습의 대표 유지보수 저장소는 **foundry-evaluation-labs-v1**이며, 가이드 표기도 **v1**입니다. 전체 패키지에서 `index.html`을 열어 시작해 주세요.
 >
-> v1.1은 Contoso 고객지원 시나리오에서 오답 발견 → 무료 작성형 DEMO → 신규 Azure 환경 → 실제 평가·검색·개선 → 동결·새 보류 평가 → 사람 검토·운영 관측을 하나의 경로로 안내합니다. 코드·데이터·설치·재개에 v1의 실행 파일은 필요하지 않습니다.
+> v1 가이드는 Contoso 고객지원 시나리오에서 오답 발견 → 무료 작성형 DEMO → 실습 환경 연결 → 실제 평가·검색·개선 → 동결·새 보류 평가 → 사람 검토·운영 관측을 하나의 경로로 안내합니다. 코드·데이터·설치·재개에 참고 원본의 실행 파일은 필요하지 않습니다.
 >
-> v1의 과거 자료는 이관 출처와 기존 기록을 참고하기 위한 용도로 남기며, 보관 처리 시점은 별도로 공지합니다. 과거 점수·실행 화면은 v1.1 신규 LIVE 결과가 아닙니다.
+> 참고 원본의 과거 자료는 **foundry-evaluation-labs-v0.9**에서 보관되어 있습니다. 과거 점수·실행 화면은 현재 가이드의 신규 LIVE 결과가 아닙니다.
 >
-> v1.1은 비공개 저장소입니다. 승인된 저장소 접근 또는 배포 패키지를 사용하고, Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.
+> 현재 저장소는 비공개입니다. 승인된 저장소 접근 또는 배포 패키지를 사용하고, Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.
 
-[v1-root]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/tree/93bc07e31373c4cfc278a2dc3757785946404cf2
-[v1-readme]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/README.ko.md
-[v1-offline]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/offline.md
-[v1-intro]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/intro-lab.md
-[v1-setup]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md
-[v1-reference]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md
-[v1-complete]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md
-[v1-facilitator]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/facilitator.md
-[v1-cleanup]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/cleanup.md
-[v1-cli]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py
-[v1-client]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/foundry_client.py
-[v1-evaluation]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/evaluation.py
-[v1-advanced-cli]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py
-[v1-advanced-evaluation]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_evaluation.py
-[v1-retrieval]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_retrieval.py
-[v1-policy-rubric]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/policy-task-success.txt
-[v1-followups]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/dev-followups.json
-[v1-acceptance]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/acceptance.json
-[v1-demo-manifest]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/examples/manifest.json
-[v1-recorded]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/fixtures/recorded-v1.json
-[v1-media]: https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/media/complete-rag/README.md
+[v1-root]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2
+[v1-readme]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/README.ko.md
+[v1-offline]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/offline.md
+[v1-intro]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/intro-lab.md
+[v1-setup]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md
+[v1-reference]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md
+[v1-complete]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md
+[v1-facilitator]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/facilitator.md
+[v1-cleanup]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/cleanup.md
+[v1-cli]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py
+[v1-client]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/foundry_client.py
+[v1-evaluation]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/evaluation.py
+[v1-advanced-cli]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py
+[v1-advanced-evaluation]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_evaluation.py
+[v1-retrieval]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_retrieval.py
+[v1-policy-rubric]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/policy-task-success.txt
+[v1-followups]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/dev-followups.json
+[v1-acceptance]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/acceptance.json
+[v1-demo-manifest]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/examples/manifest.json
+[v1-recorded]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/fixtures/recorded-v1.json
+[v1-media]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/media/complete-rag/README.md

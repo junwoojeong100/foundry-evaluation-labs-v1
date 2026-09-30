@@ -59,7 +59,7 @@ def prepare_optimizer(run_id: str) -> Path:
         "agent_name": metadata["agent_name"],
         "agent_version": metadata["agent_version"],
         "test_data_included": False,
-        "next": "Use the official optimizer access gate and UI/API described in chapter 06.",
+        "next": "Continue at guide/handbook.md#optimize (step 05): use the Agent Optimizer portal wizard with one instruction-only candidate.",
         "not_created": ["optimizer job", "optimized prompt", "new deployed agent", "improved evaluation score"],
     })
     return target

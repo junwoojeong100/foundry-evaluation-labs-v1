@@ -65,6 +65,8 @@ class HandoffTests(unittest.TestCase):
             target = prepare_optimizer("fixture")
             state = read_json(target / "handoff.json")
             self.assertEqual(state["status"], "PREPARED_NOT_SUBMITTED")
+            self.assertIn("guide/handbook.md#optimize (step 05)", state["next"])
+            self.assertIn("Agent Optimizer", state["next"])
             rows = read_jsonl(target / "dev-upload.jsonl")
             self.assertEqual(len(rows), 12)
             self.assertEqual(set(rows[0]), {"query", "context", "ground_truth"})
@@ -72,4 +74,3 @@ class HandoffTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

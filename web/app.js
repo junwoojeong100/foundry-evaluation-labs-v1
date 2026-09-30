@@ -7,7 +7,6 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   const cleanText = (text) => text.normalize("NFC").replace(/\s+/g, " ").trim();
-  const lower = (text) => cleanText(text).toLocaleLowerCase("ko-KR");
   const headings = $$("h1, h2, h3, h4, h5, h6", article);
   headings.forEach((heading, index) => {
     if (!heading.id) {
@@ -26,6 +25,7 @@
   const chapterIds = new Set(chapters.map((chapter) => chapter.id));
   let currentChapter = chapters[0] || null;
   let currentTocId = null;
+  let printState = null;
   const sidebar = $("#guide-sidebar");
   const header = $(".site-header");
   const main = $("#main-content");
@@ -126,160 +126,6 @@
   menuClose.addEventListener("click", () => closeDrawer());
   backdrop.addEventListener("click", () => closeDrawer());
   mobile.addEventListener("change", () => closeDrawer(false));
-  window.addEventListener("beforeprint", () => closeDrawer(false));
-
-  // Capture only authored text, before adding copy controls or chapter links.
-  const ancestors = [];
-  const searchIndex = headings.map((heading, index) => {
-    const level = Number(heading.tagName.slice(1));
-    while (ancestors.length && ancestors[ancestors.length - 1].level >= level) ancestors.pop();
-    const label = cleanText(heading.textContent);
-    const trail = ancestors.map((ancestor) => ancestor.label).join(" › ");
-    const range = document.createRange();
-    range.setStartAfter(heading);
-    if (headings[index + 1]) range.setEndBefore(headings[index + 1]);
-    else range.setEnd(article, article.childNodes.length);
-    const body = cleanText(range.toString());
-    ancestors.push({ level, label });
-    return { id: heading.id, label, trail, body, titleText: lower(label), text: lower(`${trail} ${label} ${body}`), order: index };
-  });
-
-  const searchDialog = $("#search-dialog");
-  const searchInput = $("#search-input");
-  const searchResults = $("#search-results");
-  const searchStatus = $("#search-status");
-  const searchOpen = $("[data-search-open]");
-  const supportsDialog = typeof searchDialog.showModal === "function";
-  let searchTimer;
-  let composing = false;
-
-  function appendHighlighted(element, text, terms) {
-    const comparable = lower(text);
-    let cursor = 0;
-    while (cursor < text.length) {
-      let nextIndex = -1;
-      let nextTerm = "";
-      terms.forEach((term) => {
-        const index = comparable.indexOf(term, cursor);
-        if (index !== -1 && (nextIndex === -1 || index < nextIndex || (index === nextIndex && term.length > nextTerm.length))) {
-          nextIndex = index;
-          nextTerm = term;
-        }
-      });
-      if (nextIndex === -1) {
-        element.append(document.createTextNode(text.slice(cursor)));
-        break;
-      }
-      element.append(document.createTextNode(text.slice(cursor, nextIndex)));
-      const mark = document.createElement("mark");
-      mark.textContent = text.slice(nextIndex, nextIndex + nextTerm.length);
-      element.append(mark);
-      cursor = nextIndex + nextTerm.length;
-    }
-  }
-
-  function excerptFor(entry, terms) {
-    if (!entry.body) return "이 제목으로 이동합니다.";
-    const comparable = lower(entry.body);
-    const matches = terms.map((term) => comparable.indexOf(term)).filter((index) => index >= 0);
-    const firstMatch = matches.length ? Math.min(...matches) : 0;
-    const start = Math.max(0, firstMatch - 38);
-    const end = Math.min(entry.body.length, start + 180);
-    return `${start ? "…" : ""}${entry.body.slice(start, end)}${end < entry.body.length ? "…" : ""}`;
-  }
-
-  function renderSearch() {
-    window.clearTimeout(searchTimer);
-    const query = lower(searchInput.value);
-    searchResults.replaceChildren();
-    if (!query) {
-      searchStatus.textContent = "검색어를 입력하세요. 제목뿐 아니라 본문·표·코드도 검색합니다.";
-      return;
-    }
-    const terms = [...new Set(query.split(" ").filter(Boolean))];
-    const matches = searchIndex.filter((entry) => terms.every((term) => entry.text.includes(term)));
-    const score = (entry) => (entry.titleText.includes(query) ? 20 : 0)
-      + terms.reduce((total, term) => total + (entry.titleText.includes(term) ? 4 : 0), 0);
-    matches.sort((a, b) => score(b) - score(a) || a.order - b.order);
-    if (!matches.length) {
-      searchStatus.textContent = "검색 결과가 없습니다. 짧은 단어나 다른 표현으로 검색해 보세요.";
-      return;
-    }
-    const limit = 30;
-    searchStatus.textContent = `${matches.length}개 위치를 찾았습니다.${matches.length > limit ? ` 앞의 ${limit}개를 표시합니다. 검색어를 더해 범위를 좁혀 보세요.` : ""}`;
-    matches.slice(0, limit).forEach((entry) => {
-      const item = document.createElement("li");
-      const link = document.createElement("a");
-      link.className = "search-result";
-      link.href = `#${encodeURIComponent(entry.id)}`;
-      if (entry.trail) {
-        const trail = document.createElement("span");
-        trail.className = "result-trail";
-        trail.textContent = entry.trail;
-        link.append(trail);
-      }
-      const title = document.createElement("strong");
-      appendHighlighted(title, entry.label, terms);
-      const excerpt = document.createElement("span");
-      excerpt.className = "result-excerpt";
-      appendHighlighted(excerpt, excerptFor(entry, terms), terms);
-      link.append(title, excerpt);
-      item.append(link);
-      searchResults.append(item);
-    });
-  }
-
-  function openSearch() {
-    if (!supportsDialog) return;
-    closeDrawer();
-    if (!searchDialog.open) searchDialog.showModal();
-    renderSearch();
-    searchInput.focus();
-    searchInput.select();
-  }
-
-  searchOpen.addEventListener("click", openSearch);
-  $("[data-search-close]").addEventListener("click", () => searchDialog.close());
-  searchDialog.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !event.isComposing && !composing) {
-      event.preventDefault();
-      searchDialog.close();
-    }
-  });
-  searchInput.addEventListener("compositionstart", () => { composing = true; });
-  searchInput.addEventListener("compositionend", () => { composing = false; renderSearch(); });
-  searchInput.addEventListener("input", (event) => {
-    if (composing || event.isComposing) return;
-    window.clearTimeout(searchTimer);
-    searchTimer = window.setTimeout(renderSearch, 120);
-  });
-  $("#guide-search-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!composing) renderSearch();
-  });
-  searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowDown" && !composing) {
-      const firstResult = $("a", searchResults);
-      if (firstResult) { event.preventDefault(); firstResult.focus(); }
-    }
-  });
-  searchResults.addEventListener("keydown", (event) => {
-    if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
-    const results = $$("a", searchResults);
-    const index = results.indexOf(document.activeElement);
-    if (index < 0) return;
-    event.preventDefault();
-    if (event.key === "ArrowUp" && index === 0) searchInput.focus();
-    else results[Math.min(results.length - 1, index + (event.key === "ArrowDown" ? 1 : -1))].focus();
-  });
-  searchResults.addEventListener("click", (event) => {
-    const link = event.target.closest("a");
-    if (!link || !isPlainClick(event)) return;
-    event.preventDefault();
-    const id = idFromLink(link);
-    searchDialog.close();
-    navigateToHeading(id);
-  });
   $$("dialog").forEach((dialog) => {
     dialog.addEventListener("click", (event) => {
       if (event.target !== dialog) return;
@@ -289,13 +135,19 @@
   });
 
   const documentId = document.body.dataset.documentId || window.location.pathname.split("/").pop() || "index.html";
-  const storageKey = `foundry-evaluation-guide:progress:v2:${encodeURIComponent(documentId)}`;
+  const chapterUnit = documentId === "index.html" ? "단계" : "장";
+  const progressRevision = document.body.dataset.progressRevision;
+  const baseStorageKey = `foundry-evaluation-guide:progress:v2:${encodeURIComponent(documentId)}`;
+  const storageKey = progressRevision ? `${baseStorageKey}:${encodeURIComponent(progressRevision)}` : baseStorageKey;
   const storageFeedback = $("#storage-feedback");
   let completed = new Set();
   try {
     let stored = window.localStorage.getItem(storageKey);
-    if (stored === null && documentId === "index.html") {
+    if (stored === null && documentId === "index.html" && !progressRevision) {
       stored = window.localStorage.getItem("foundry-evaluation-guide:progress:v1");
+    }
+    if (stored === null && progressRevision && window.localStorage.getItem(baseStorageKey) !== null) {
+      storageFeedback.textContent = "새 6단계의 읽음 표시는 이전 장별 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.";
     }
     if (stored) {
       const record = JSON.parse(stored);
@@ -305,7 +157,7 @@
       completed = new Set(record.completed.filter((id) => chapterIds.has(id)));
     }
   } catch {
-    storageFeedback.textContent = "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 완료 표시를 사용할 수 있습니다.";
+    storageFeedback.textContent = "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.";
     storageFeedback.classList.add("is-warning");
   }
 
@@ -332,7 +184,7 @@
         version: 1,
         completed: chapters.filter((chapter) => completed.has(chapter.id)).map((chapter) => chapter.id),
       }));
-      storageFeedback.textContent = "이 문서의 완료 표시는 이 브라우저에만 저장됩니다.";
+      storageFeedback.textContent = "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.";
       storageFeedback.classList.remove("is-warning");
       return true;
     } catch {
@@ -355,7 +207,7 @@
     const progress = $("#reading-progress");
     progress.max = chapters.length || 1;
     progress.value = completed.size;
-    const summary = `완료 ${completed.size} / ${chapters.length}개 장`;
+    const summary = `읽음 ${completed.size} / ${chapters.length}개 ${chapterUnit}`;
     if ($("#progress-summary").textContent !== summary) $("#progress-summary").textContent = summary;
     progressInputs.forEach((input, id) => { input.checked = completed.has(id); });
     tocLinks.forEach(({ link, id }) => link.classList.toggle("is-complete", completed.has(id)));
@@ -363,8 +215,8 @@
     if (currentChapter) {
       const done = completed.has(currentChapter.id);
       markChapter.setAttribute("aria-pressed", String(done));
-      markChapter.textContent = done ? "완료 표시 취소" : "이 장 완료 표시";
-      markChapter.setAttribute("aria-label", `${currentChapter.label}: ${done ? "완료 표시 취소" : "완료 표시"}`);
+      markChapter.textContent = done ? "읽음 표시 취소" : `이 ${chapterUnit} 읽음 표시`;
+      markChapter.setAttribute("aria-label", `${currentChapter.label}: ${done ? "읽음 표시 취소" : "읽음 표시"}`);
     }
   }
 
@@ -373,14 +225,14 @@
     else completed.delete(chapter.id);
     const saved = saveProgress();
     updateProgress();
-    announce(`${chapter.label}: ${isComplete ? "완료로 표시했습니다." : "완료 표시를 취소했습니다."}${saved ? "" : " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다."}`);
+    announce(`${chapter.label}: ${isComplete ? "읽음으로 표시했습니다." : "읽음 표시를 취소했습니다."}${saved ? "" : " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다."}`);
   }
 
   function resetProgress() {
     completed.clear();
     const saved = saveProgress();
     updateProgress();
-    announce(saved ? "모든 장의 완료 표시를 초기화했습니다." : "현재 창의 완료 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.");
+    announce(saved ? `모든 ${chapterUnit}의 읽음 표시를 초기화했습니다.` : "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.");
     $(".progress-details summary").focus({ preventScroll: true });
   }
 
@@ -391,7 +243,7 @@
     if (typeof resetDialog.showModal === "function") {
       resetDialog.returnValue = "";
       resetDialog.showModal();
-    } else if (window.confirm("이 문서의 모든 장 완료 표시를 초기화할까요?")) resetProgress();
+    } else if (window.confirm(`이 문서의 모든 ${chapterUnit} 읽음 표시를 초기화할까요?`)) resetProgress();
   });
   resetDialog.addEventListener("close", () => {
     if (resetDialog.returnValue === "reset") resetProgress();
@@ -417,18 +269,19 @@
   }
 
   // Native links at chapter boundaries keep long, continuous chapters navigable.
+  const authoredNextTargets = new Set($$("a[data-next-step]", article).map(idFromLink));
   chapters.forEach((chapter, index) => {
     const next = chapters[index + 1];
-    if (!next || next.heading.parentElement !== article) return;
+    if (!next || next.heading.parentElement !== article || authoredNextTargets.has(next.id)) return;
     const nav = document.createElement("nav");
     nav.className = "section-pagination no-print";
-    nav.setAttribute("aria-label", `${chapter.label} — 장 이동`);
+    nav.setAttribute("aria-label", `${chapter.label} — ${chapterUnit} 이동`);
     [chapters[index - 1], next].forEach((target, direction) => {
       if (!target) return;
       const link = document.createElement("a");
       link.href = `#${encodeURIComponent(target.id)}`;
       link.rel = direction ? "next" : "prev";
-      link.textContent = direction ? `다음 장: ${target.label} →` : `← 이전 장: ${target.label}`;
+      link.textContent = direction ? `다음 ${chapterUnit}: ${target.label} →` : `← 이전 ${chapterUnit}: ${target.label}`;
       nav.append(link);
     });
     article.insertBefore(nav, next.heading);
@@ -449,6 +302,7 @@
   let readingFrame = 0;
   function updateReadingPosition() {
     readingFrame = 0;
+    if (printState) return;
     const threshold = header.getBoundingClientRect().bottom + 40;
     let chapter = chapters[0];
     for (const candidate of chapters) {
@@ -515,6 +369,11 @@
   $$("pre", article).forEach((pre, index) => {
     const code = $("code", pre);
     if (!code) return;
+    if (pre.previousElementSibling?.classList.contains("output-label")) {
+      pre.tabIndex = 0;
+      pre.setAttribute("aria-label", "설명용 출력 예시. 실행 명령이나 실제 성공 기록이 아닙니다.");
+      return;
+    }
     const wrapper = document.createElement("div");
     wrapper.className = "code-block";
     const toolbar = document.createElement("div");
@@ -605,23 +464,77 @@
     }
     const typing = event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])");
     if (typing || event.isComposing || document.querySelector("dialog[open]")) return;
-    if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey && supportsDialog) {
-      event.preventDefault();
-      openSearch();
-    }
     if (event.altKey && event.shiftKey && !event.ctrlKey && !event.metaKey && !drawerOpen && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
       const index = chapters.indexOf(currentChapter);
       const target = chapters[index + (event.key === "ArrowRight" ? 1 : -1)];
       if (target) { event.preventDefault(); navigateToHeading(target.id); }
     }
   });
-  $("[data-print]").addEventListener("click", () => window.print());
+  function restorePrint() {
+    if (!printState) return;
+    printState.excluded.forEach((element) => element.classList.remove("print-excluded"));
+    printState.links.forEach(({ link, href }) => link.setAttribute("href", href));
+    printState.details.forEach((details) => { details.open = false; });
+    printState = null;
+    delete document.body.dataset.print;
+    requestReadingUpdate();
+  }
+
+  function preparePrint(mode) {
+    restorePrint();
+    closeDrawer(false);
+    printState = { excluded: [], links: [], details: [] };
+    document.body.dataset.print = mode;
+    const next = chapters[chapters.indexOf(currentChapter) + 1];
+    let included = !currentChapter;
+    Array.from(article.children).forEach((element) => {
+      if (element === currentChapter?.heading) included = true;
+      if (element === next?.heading) included = false;
+      if (mode === "one" && !included) {
+        element.classList.add("print-excluded");
+        printState.excluded.push(element);
+      }
+    });
+    $$("details:not([open])", article).forEach((details) => {
+      printState.details.push(details);
+      details.open = true;
+    });
+    $$("a[href]", article).forEach((link) => {
+      const href = link.getAttribute("href");
+      const fragment = idFromLink(link);
+      const target = fragment ? document.getElementById(fragment) : null;
+      if (target && article.contains(target) && !target.closest(".print-excluded")) return;
+      const url = new URL(href, window.location.href);
+      const local = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"].includes(url.hostname) || url.hostname.endsWith(".localhost");
+      if (/^(?:https?:)?\/\//i.test(href) && ["http:", "https:"].includes(url.protocol) && !local) return;
+      printState.links.push({ link, href });
+      link.removeAttribute("href");
+    });
+  }
+
+  function requestPrint(mode) {
+    preparePrint(mode);
+    try {
+      window.print();
+    } catch (error) {
+      restorePrint();
+      announce("인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용하세요.");
+      console.error("Guide printing failed:", error);
+    }
+  }
+
+  $("[data-print-one]").addEventListener("click", () => requestPrint("one"));
+  $("[data-print-all]").addEventListener("click", () => requestPrint("all"));
+  window.addEventListener("beforeprint", () => {
+    if (!printState) preparePrint("one");
+  });
+  window.addEventListener("afterprint", restorePrint);
 
   document.documentElement.classList.add("js");
   menuToggle.hidden = false;
   menuClose.hidden = false;
-  searchOpen.hidden = !supportsDialog;
-  $("[data-print]").hidden = false;
+  $("[data-print-one]").hidden = chapters.length === 0;
+  $("[data-print-all]").hidden = false;
   $("[data-keyboard-help]").hidden = false;
   $("[data-progress-panel]").hidden = chapters.length === 0;
   $("[data-chapter-completion]").hidden = chapters.length === 0;
