@@ -34,7 +34,7 @@ def summarize(environment: Path) -> dict:
             value = read(smoke)
             runs[directory.name] = {key: value.get(key) for key in (
                 "kind", "status", "response_id", "deployment", "model_snapshot",
-                "usage", "latency_ms", "started_at", "cost",
+                "usage", "latency_ms", "started_at", "cost", "language",
             )}
             runs[directory.name]["source_sha256"] = digest(smoke)
         if not metadata_path.exists():
@@ -46,6 +46,7 @@ def summarize(environment: Path) -> dict:
             "parameters", "dataset_sha256", "prompt_sha256", "knowledge_sha256",
             "outputs_sha256", "retrieval", "evaluation_contract_version", "judge_execution_status",
             "freeze_id", "holdout_id", "sample_contract_sha256", "pair_id", "arm", "technique",
+            "language",
         )}
         code = metadata.get("code", {})
         record["code"] = {key: code.get(key) for key in (
@@ -92,6 +93,8 @@ def summarize(environment: Path) -> dict:
             "evaluator_sha256": value["metadata"]["evaluator_sha256"],
             "fixture_sha256": value["metadata"]["fixtures_sha256"],
             "created_at": value["metadata"]["created_at"], "report_sha256": digest(path),
+            "language": value["metadata"].get("language", "ko"),
+            "all_dimensions_agreement_rate": value.get("all_dimensions_agreement_rate"),
             "human_review_state": "not_reviewed",
         }
     training = {"status": "NOT_SUBMITTED"}
@@ -104,6 +107,7 @@ def summarize(environment: Path) -> dict:
             "technique": "Foundry SFT, not Frontier Tuning",
             "status": state["status"], "base_model": state["base_model"],
             "training_type": state["training_type"], "job_id": job.get("id"),
+            "language": state.get("language", "ko"),
             "job_status": job.get("status"), "terminal_verified": job.get("terminal_verified"),
             "fine_tuned_model": job.get("fine_tuned_model"),
             "created_at": response.get("created_at"), "finished_at": response.get("finished_at"),
@@ -159,7 +163,18 @@ def summarize(environment: Path) -> dict:
         governance.append({key: value.get(key) for key in (
             "freeze_id", "created_at", "stage", "execution_mode", "content_sha256", "hashes",
             "sample_contract", "calibration_state", "manual_review_state", "manual_operational_approval",
+            "language",
         )})
+    final_results = {}
+    for path in sorted((artifacts / "governance/results").glob("*.json")):
+        value = read(path)
+        final_results[path.stem] = {
+            **{key: value.get(key) for key in (
+                "freeze_id", "run_id", "sample_count", "execution_status", "judge_execution_status",
+                "quality_status", "manual_operational_approval", "production_ready",
+            )},
+            "source_sha256": digest(path),
+        }
     holdouts = {}
     for path in sorted((artifacts / "governance/holdouts").glob("*/metadata.json")):
         value = read(path)
@@ -191,14 +206,15 @@ def summarize(environment: Path) -> dict:
         "bootstrap_phase": manifest["phase"], "resources": resources,
         "source_manifest_sha256": digest(environment / "manifest.json"),
         "runs": runs, "calibrations": calibrations, "knowledge": knowledge,
-        "optimizers": optimizer, "sft": training, "freezes": governance, "holdouts": holdouts, "reviews": reviews,
+        "optimizers": optimizer, "sft": training, "freezes": governance, "holdouts": holdouts,
+        "reviews": reviews, "final_results": final_results,
         "fresh_gate": {
             "enforcement_checked": gate_observation.exists(),
-            "status": "BLOCKED_CALIBRATION_HOLD" if governance and any(
-                item["calibration_state"]["quality_status"] == "HOLD" for item in governance
+            "status": "FINALIZED" if final_results else "BLOCKED_CALIBRATION_HOLD" if any(
+                item["quality_status"] == "HOLD" for item in calibrations.values()
             ) else "NOT_VERIFIED",
             "run_created": (artifacts / "runs/optimized-fresh").exists(),
-            "attempt_created": (artifacts / "governance/attempts/selected-v2.json").exists(),
+            "attempt_created": any((artifacts / "governance/attempts").glob("*.json")),
         },
         "human_operational_approval": "NOT_GRANTED",
         "frontier": {"status": "NOT_VERIFIED", "ordinary_sft_is_not_frontier": True},

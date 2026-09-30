@@ -55,7 +55,7 @@ RESOURCE_TYPES = {
 }
 DEFAULT_MODELS = (
     {"roles": ["agent"], "name": "gpt-4.1-mini", "version": "2025-04-14", "sku": "Standard", "capacity": 20},
-    {"roles": ["judge"], "name": "gpt-5.4-mini", "version": "2026-03-17", "capacity": 20},
+    {"roles": ["judge"], "name": "gpt-6-luna", "version": "2026-09-22", "capacity": 20},
     {"roles": ["planner", "optimizer"], "name": "gpt-5.5", "version": "2026-04-24", "capacity": 20},
     {"roles": ["embedding"], "name": "text-embedding-3-small", "version": "1", "capacity": 10},
 )

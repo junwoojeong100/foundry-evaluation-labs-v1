@@ -1,364 +1,197 @@
-# 운영자 안내 · 새 NCUS 환경과 안전한 재개
+# 운영자 사전 준비 · 격리된 NCUS 워크숍 {#operator-guide}
 
-[참가자 경로로 돌아가기](handbook.md#environment) · [인프라 계약](../infra/README.md) · [검증 상태](verification.md)
+[참가자 경로](handbook.md#start) · [강사 안내](facilitator.md#prepare) · [실측 검증](verification.md)
 
-**참가자 수업 전에 운영자가 한 번만 준비하는 문서입니다.** 이번 실습용으로 이미 만든 전용 NCUS 환경은 원래 소유 manifest와 현재 승인을 확인해 그대로 사용합니다. 안내가 6단계로 바뀌었다고 다시 배포하지 않습니다. 아래 신규 생성 절차는 **실습 환경이 아직 없는 경우에만** 수행하며, 무관한 기존/공유 계정·리소스를 가져오지 않습니다. 개인 식별값은 비공개 계획 파일에만 입력합니다.
+참가자가 시작하기 **전에** 프로젝트와 예제 에이전트를 준비합니다. 참가자 경로는 데이터셋 준비, 관리형 Evaluation, 실패 분석, 지시 전용 Agent Optimizer, 동일 조건 재평가이며 인프라 배포가 아닙니다.
 
-**경험할 기능과 목적:** Azure의 신원·리소스 범위·선언적 배포·소유 원장을 연결하는 준비 과정입니다. “생성 버튼을 누를 수 있음”과 “해당 사용자에게 승인된 환경임”을 분리해야 실습 결과와 비용을 추적할 수 있습니다. A1–A4에서는 신원과 계획을 확인하고, A5에서만 승인된 인프라를 실제 적용하며, A6에서 참가자의 실행 환경과 연결합니다.
+## 준비된 실습 환경에서 시작 {#start}
 
-| 용어 | 의미·이번 실습에서의 역할 |
+운영자는 이번 리허설을 위해 **새로운 격리된 North Central US(NCUS) 리소스 그룹**을 준비했습니다. 실제 대상·소유·준비 상태는 비공개 준비 근거로 확인합니다. 문서가 바뀌었다고 다시 만들거나 공유 운영 환경을 사용하지 않습니다.
+
+**리소스 존재**, **의도한 런타임 동작**, **허용 가능한 업무 품질**을 구분합니다. 배포 성공은 Agent 실행이나 관리형 평가자 지원을 증명하지 않습니다. 준비·실행 실측 결과는 화면의 상태를 복사하지 말고 [검증 기록](verification.md)에 남깁니다.
+
+<figure class="portal-shot" id="portal-resource-group">
+<img src="../web/assets/portal/en/00-resource-group.png" alt="영어 리허설용 신규 전용 리소스 그룹의 자원과 배포 상태. 한국어 실행 결과가 아님" width="1600" height="1000" loading="lazy">
+<figcaption><strong>준비된 리소스 그룹.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. Failed 건수에는 로그 대상을 찾지 못한 별도 조직 정책 배포 실패가 포함됩니다. 숨기거나 워크숍에서 공유 정책을 고치거나 실습 배포 상태와 혼동하지 않습니다. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+## 세 모델 역할을 별도로 검증 {#prepare}
+
+승인된 프로젝트를 확인한 뒤 배포 선택 필드에는 모델 계열 이름이 아닌 **아래 실제 배포 이름**을 사용합니다. 별도 영어 기준선 **`contoso-eval-en` 버전 `1`**이 실제 동작하며 기존 **읽기 전용 지식 연결을 유지**한 상태입니다. 전후 비교 동안 역할 배치를 바꾸지 않습니다.
+
+| 역할 | 필요한 결정 |
 |---|---|
-| Tenant / Subscription / Resource group | 신원을 관리하는 디렉터리 / 과금·관리 범위 / 실습 자원을 묶는 그룹입니다. 서로 같은 식별자가 아닙니다. |
-| Foundry resource / Project / Deployment | 모델 등 공통 기능을 제공하는 자원 / Agent·평가·연결 작업 공간 / 호출할 모델·버전·SKU 대상입니다. |
-| ARM template / manifest | 만들 인프라의 선언 / 실제 소유·실행 상태의 기록입니다. 계획 파일만 있다고 Azure 자원이 생긴 것은 아닙니다. |
-| Managed identity / RBAC | Azure 서비스가 사용할 신원 / 그 신원에 허용한 작업입니다. 사용자·프로젝트 MI·Search MI의 권한은 각각 확인합니다. |
+| Agent 런타임 | **`lab-agent-dea3cec5` → `gpt-4.1-mini` / `2025-04-14`**, **`contoso-eval-en` v1**에서 실제 동작 확인. 읽기 전용 지식 연결 유지. `gpt-6-luna` Responses·Agent 검증은 이 환경에서 실패 |
+| 평가 Judge | **`lab-judge-luna-dea3cec5` → `gpt-6-luna` / `2026-09-22`**. 실제 관리형 기준선·후보 평가에서 사용 확인 |
+| Optimizer 지시 생성 모델 | **`lab-planner-dea3cec5` → `gpt-5.5` / `2026-04-24`**. [공식 최적화 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)에는 `gpt-6-luna`가 **없음** |
 
-기본 CLI 표기와 가상환경 사용법은 [참가자 02](handbook.md#cli-basics), 포털에서 배포 이름·버전을 찾는 위치는 [실제 모델 화면](handbook.md#portal-models)을 참고합니다. 사진은 같은 기존 환경의 읽기용 자료이며 이 준비를 다시 실행하라는 의미가 아닙니다.
+**관측한 기능 호환성 근거:** `gpt-6-luna` 버전 `2026-09-22`는 NCUS의 **GlobalStandard**에서 GA입니다. 신규 배포 이름은 `lab-agent-luna-dea3cec5`, `lab-judge-luna-dea3cec5`이며 Chat Completions는 **READY**를 반환했습니다. 실제 네이티브 Foundry **Relevance** 평가가 **작성된 호환성 fixture 한 건에서 passed 1 / total 1 / errors 0**으로 완료되었습니다. evaluation ID는 `eval_589a069bfd8343cf980b4b88f57771e8`, run ID는 `evalrun_e662077a904543d6bd1420b202a1b078`입니다.
 
-> **현재 관측과 복구 순서**
->
-> 초안 검증 후 발생한 폐기 모델 거절, 프로젝트/모델 동시 생성 충돌, 관측 연결 메타데이터 누락을 실제 응답으로 확인하고 복구했습니다. 같은 신규 NCUS RG에서 ARM `Succeeded`와 25개 소유 기록을 확인했습니다. 모델은 응답 생성 전에 gpt-4.1-mini / 2025-04-14 / Standard로 명시 선택했으며 다른 리전이나 기존 자원을 재사용하지 않았습니다. [검증 기록](verification.md)에서 생성·데이터 평면·품질 결과를 구분합니다.
+이 앞선 기록은 Judge 기능 호환성이지 **Agent 품질** 검증이 아닙니다. 아래 설정 파일럿 및 수정된 비교와 별개이므로 건수·ID를 합치지 않습니다.
 
-## 승인·소유·준비는 서로 다른 상태 {#scope}
+**런타임 한계:** 직접 Responses 호출과 **명시적으로 고정한 `gpt-6-luna` 프롬프트 에이전트 v2**는 모두 **이 환경에서 HTTP 500**을 반환했습니다. 모델 전체가 미지원이라고 주장하지 않습니다. 여기서 런타임 검증이 실패한 것이므로 공급자 문제가 해결될 때까지 검증된 `gpt-4.1-mini` 에이전트를 유지하며 실험용 에이전트로 조용히 바꾸지 않습니다.
 
-| 확인 | 이번 작업의 범위 |
+`gpt-4.1-mini` / `2025-04-14`의 Azure 사용 중단 예정일은 **2027-04-14**입니다. 공개 문서의 **Deprecated** 표시는 신규 구독의 사용을 제한할 수 있으나 기존 배포에서 관측한 사용 가능성을 없애는 것은 아닙니다. 모든 신규 구독에 접근을 약속하지 말고 인수 전에 실제 계정과 기존 배포를 확인합니다.
+
+사용자 요청은 세 역할의 지원 범위가 다를 수 있음을 전제로 **지원되는 곳에서** `gpt-6-luna`를 사용하는 것입니다. 카탈로그 표시·배포 성공·채팅 응답이 모든 API와 런타임을 검증하지는 않습니다. 기준선 이후 역할을 조용히 바꾸거나 모델 교체 효과를 지시만 바꾼 개선으로 보고하지 않습니다.
+
+최적화 모델은 **후보 지시를 작성**합니다. 개선 대상 에이전트 모델, 응답을 채점하는 Judge와 다른 역할입니다. 직접 Evaluation·Optimizer 평가·직접 재평가에는 동일한 검증 Judge를 사용합니다.
+
+<figure class="portal-shot" id="portal-models">
+<img src="../web/assets/portal/en/02-model-deployments.png" alt="리허설의 역할별 배포 이름과 모델 버전을 보여 주는 Foundry 배포 목록. 한국어 실행 결과가 아님" width="1271" height="820" loading="lazy">
+<figcaption><strong>배포 목록은 역할 입력이지 런타임 증거가 아닙니다.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 모델 버전·배포 이름을 비공개 인수 자료와 대조합니다. 목록만으로 Agent·Responses·평가자·Optimizer 호환성을 확인할 수 없습니다. <a href="../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+## 프로젝트와 예제 에이전트 준비 {#bootstrap}
+
+공식 [직접 에이전트 평가 사전 요구 사항](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent#prerequisites)과 [프롬프트 에이전트 Optimizer 사전 요구 사항](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites)을 따릅니다. 지원되는 프로젝트·에이전트·모델·접근 조건을 확인하며 참가자에게 기존 전체 bootstrap 절차를 필수로 실행하게 하지 않습니다.
+
+| 준비 항목 | 인수 전에 필요한 근거 |
 |---|---|
-| 리전·대상 | `northcentralus`의 새 RG와 신규 리소스만 |
-| 금액 | 사용자가 **금액 상한 없음을 명시 승인**. 이전 USD50을 차단 조건으로 사용하지 않음 |
-| 작업 | 모델/Judge/planner 합계 최대 300회, Optimizer별 1작업·최대 2후보, SFT 1작업·56 train/12 validation·1 epoch, fresh12, 작업당 최대 60분 대기 |
-| 데이터·처리 | 승인된 합성 자료의 GlobalStandard/Global/Developer 처리. 실제 고객 자료로 확대 금지 |
-| 권한 | 신규 리소스에 필요한 최소 RBAC만. 기존/공유 범위의 권한·정책 변경 금지 |
-| 보존 | 새 RG와 근거는 사용자 검토를 위해 보존. 삭제 승인 없음 |
+| 의도한 계정·프로젝트 | 실제 로그인 테넌트·계정, 구독, 리소스 그룹, 프로젝트가 승인된 실습 범위와 일치. 포털과 운영자가 사용하는 CLI·SDK 신원은 각각 확인 |
+| 준비된 Contoso 에이전트 | 영어는 **`lab-agent-dea3cec5`**의 기존 **`contoso-eval-en` 버전 `1`**, 읽기 전용 지식 연결 유지. 한국어는 **`contoso-eval-ko` v1**과 한국어 네 키 응답 계약의 운영자 준비를 별도 확인 |
+| 런타임 | 의도한 런타임에서 고정 에이전트가 반환한 실제 응답. 모델 채팅 smoke로 대체하지 않음 |
+| 관리형 Evaluation | **`contoso-en-learning-loop`**가 **Completed**: 12행, 전체 통과 10·실패 2·오류 0, Relevance 10/12·이진 TaskAdherence 12/12. 파일럿과 분리 |
+| Agent Optimizer | Optimize Preview 접근, Instruction-only 대상, Max candidates 1, **`lab-planner-dea3cec5`**, 동일 Judge **`lab-judge-luna-dea3cec5`** |
+| 데이터셋 | 영어 **`contoso-eval-en-dev12` 버전 `1`**은 변경 없는 `data/en/optimizer/dev.jsonl` 12행으로 등록됨. 한국어는 `data/optimizer/dev.jsonl`의 **`contoso-eval-ko-dev12`** 등록·버전·SHA-256을 별도 확인 |
 
-이 승인은 **이번 운영 범위**에만 해당합니다. 패키지를 받은 다른 고객/참가자의 비용·테넌트 접근까지 승인한 것이 아닙니다. 승인 원문·서명/승인 파일은 비공개로 보관하며 HTML/PDF/ZIP에 넣지 않습니다.
+정책 접근은 수업 전에 구성한 뒤 그대로 유지합니다. 참가자가 더 좋은 점수를 얻으려고 별도 지식 시스템을 구축하거나 인프라를 고치지 않습니다. 에이전트에 필요한 근거가 없다면 참고 답변을 입력에 붙이지 말고 준비 차단 사유로 보고합니다.
 
-인프라 실패 기록을 나중의 성공으로 덮어쓰지 않습니다. 비용 승인 부재로 실제 서비스 오류를 설명하지 않습니다. 다만 특정 새 계획에 유효한 승인 파일이 없으면 도구의 `BLOCKED_AWAITING_APPROVAL`은 정당한 상태입니다. 실제 사용 동의와 그 계획을 결속하는 기계 읽기 기록은 별도입니다.
+아직 v1인 새 기준선은 **Pin currently latest** 뒤 해제된 체크박스를 재선택하고 **Next 전에 대상 1개**를 확인합니다. 실제 Agent는 후보 v2를 유지하되 **활성 버전을 1로 복원**했습니다. “최신”과 활성을 같다고 보지 말고 명시적 버전·저장된 평가 ID를 사용합니다. 실패한 `gpt-6-luna` v2는 다른 Agent입니다.
 
-## A1–A6. 한 번만 준비하고 같은 환경으로 이어가기 {#bootstrap}
+영어 파일럿에서는 스키마가 맞는 **Existing dataset** 선택 후 **Field mapping이 자동 해결**되어 **Configure agents → custom prompt override 미설정 → Criteria**로 이어졌습니다. 수정된 실행에서는 제안 23개의 나머지를 제거하고 정확히 **Relevance Threshold 4**, **TaskAdherence 이진 통과값 1**(범용 UI가 보이면 **Threshold 1**)을 사용합니다.
 
-### A1. 의도한 계정과 구독 확인
+[공식 에이전트 평가자 정의](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators)는 TaskAdherence를 1–5점이 아닌 **Binary Pass/Fail, 원시값 0/1**로 명시합니다. 파일럿 UI는 TaskAdherence Threshold 4를 허용했지만 실제 `score=1`이 `passed=true`로 반환되어 그 범용 설정은 의미가 없었습니다. 과거 정의를 고쳐 쓰지 말고 파일럿을 유지한 채 수정된 새 비교를 시작합니다.
 
-**목적:** CLI·SDK·브라우저가 다른 계정으로 조용히 바뀌지 않게 합니다.
+영어는 `contoso-eval-en`과 영어 데이터, 한국어는 운영자가 준비하는 **`contoso-eval-ko` v1**, `data/optimizer/dev.jsonl`, `contoso-eval-ko-dev12`, 한국어 응답 계약을 사용합니다. **이번 리허설에서 한국어를 재실행하지 않았으며 새로운 한국어 실측 결과나 등록 완료를 주장하지 않습니다.** 영어 근거를 바꾸어 표시하지 말고 한국어 준비를 따로 확인합니다.
 
-**할 일:** Python 3.11 이상과 Azure CLI를 로컬에 준비합니다. 아래 값은 자리표시자이며 실제 값은 터미널/비공개 파일에서만 사용합니다.
+**보존된 CONFIGURATION PILOT(설정 파일럿) — 포털 실행이며 수정된 기준선이 아님:**
 
-**복사 명령:**
+| 기록 항목 | 값 |
+|---|---|
+| 파일럿 Evaluation name | `contoso-en-baseline-luna-judge` |
+| 파일럿 평가 정의 ID | `eval_06d9c6cb93df4c7bad2bc3a62da9bc90` |
+| 파일럿 run ID | `evalrun_98ac1b10a98d4ebe9d72bed5c66ed0f2` |
+| 입력 | `contoso-eval-en` 고정 v1, `contoso-eval-en-dev12` 버전 1, 전체 12문항 |
+| 파일럿 설정 문제 | Relevance 임계값 4. TaskAdherence의 범용 임계값 4는 **이진 결과에 유효하지 않았음**. Judge: `lab-judge-luna-dea3cec5` / `gpt-6-luna` |
+| 보고된 상태 | **Completed, 출력 항목 12개** |
+| 파일럿 Agent 사용량 | **12회 호출**, `gpt-4.1-mini`의 고정 `contoso-eval-en` v1 |
+| 파일럿 서비스 보고 Judge 사용량 | **`gpt-6-luna-2026-09-22` 24회 호출, 83,492토큰**. 수정된 비교 사용량이 아님 |
+
+**완료된 정식 영어 기준선 — 포털, 아래에서 SDK 후보 실행도 검증됨:**
+
+| 기록 항목 | 값 |
+|---|---|
+| 수정된 Evaluation name | **`contoso-en-learning-loop`** |
+| 수정된 evaluation ID | `eval_94feef6f6f644fabb22a5680f5f24fb1` |
+| 수정된 기준선 run ID | `evalrun_cde9948ac9d946929661bc3d9e60432a` |
+| 입력 | `contoso-eval-en` 고정 v1, `contoso-eval-en-dev12` 버전 1, 같은 12문항 |
+| 기준·Judge | Relevance 임계값 4, TaskAdherence 이진 임계값·통과값 1, `lab-judge-luna-dea3cec5` / `gpt-6-luna` |
+| 확인된 응답 연결 | Relevance `response={{sample.output_text}}`, TaskAdherence `response={{sample.output_items}}` |
+| 실행·전체 | **Completed, 12행, 10 passed / 2 failed / 0 errored** |
+| 평가자별 결과 | **Relevance 10/12**, 임계값 4. **TaskAdherence 12/12**, 이진값 1 |
+| Relevance 실패 | `atlas-dev-001`: 구독 축소 답변이 모호하며 참고는 명시적 추가 확인 요구. `atlas-dev-011`: 정직한 미확인 기능 답변을 불완전하다고 판단 |
+| 근거의 경계 | HTTP 201 제출 이후 완료를 별도 확인한 기준선 결과. 후보 결과가 아니며 점수 때문에 정책 사실을 바꾸지 않음 |
+
+기준선은 **Evaluation name → Submit**으로 제출됐습니다. 같은 정의의 후보 **Add run**은 끝까지 동작하지 않았습니다. Pin v2 / Individual turns 뒤 **Configure agents: Config required → Add custom prompt / User prompt**가 나타났고 `{{item.query}}`를 넣어도 **`Unable to create data source configuration from item schema`** 클라이언트 오류가 났습니다. **이 포털 시도로 원격 후보 run은 제출되지 않았습니다.** 새 정의를 만들어 우회하지 않습니다.
+
+**Optimizer는 후보 하나로 성공했습니다:** `opt_e44bcf5701a348deb62a1cd4f9cb3910`, 지시 전용, 같은 데이터셋, `gpt-5.5` 생성, `gpt-6-luna` Judge, 모델 비교 없음입니다. UI 점수 **0.635 → 0.646**, **UI 표시 변화 +0.010**, **보고 토큰 264,260**을 그대로 기록합니다. 표시값으로 다른 변화량을 산출하지 않으며 직접 후보 평가 결과와 구분합니다.
+
+**포털 Promote로 실습 전용 `contoso-eval-en` v2가 생성됐습니다.** 운영자가 후보 지시의 정확한 일치와 모델·지식 도구 불변을 검증했습니다. **최신 활성 버전은 모든 채널에 영향을 주므로 격리된 미게시 실습 Agent에서만 승격하며 운영 환경에서는 절대 사용하지 않습니다.** v1은 명시적 기준선으로 남고 승격을 반복하거나 운영 승인으로 해석하지 않습니다.
+
+Optimizer **Criteria**의 **No custom evaluators available**은 필터 상태입니다. **Custom only를 OFF**로 바꾸거나 **View built-in evaluators**를 누릅니다. Relevance·TaskAdherence 행 선택으로 **Configure...**를 열어 **Relevance 4 / TaskAdherence 1**을 설정하고 **Apply**합니다. 우회용 사용자 정의 평가자를 추가하지 않습니다.
+
+<a id="sdk-prerequisites"></a>
+
+**단일 SDK 단계의 사전 준비:** Python 3.11 이상(3.12 권장), Azure CLI, 운영자가 제공하는 `scripts/add_foundry_eval_run.py`, 현재 `requirements.lock`을 준비합니다. 저장소 루트에서 모델 배포 주소로 추측하지 말고 승인된 **프로젝트 endpoint·구독**을 사용합니다.
 
 ```bash
-export AZURE_SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
-export AZURE_TENANT_ID="YOUR_TENANT_ID"
-export EXPECTED_AZURE_USER="operator@example.invalid"
-az login --tenant "$AZURE_TENANT_ID"
+export AZURE_AI_PROJECT_ENDPOINT="OPERATOR_PROJECT_ENDPOINT"
+export AZURE_SUBSCRIPTION_ID="OPERATOR_SUBSCRIPTION_ID"
+```
+
+`.venv`가 없을 때만 `python3 -m venv .venv`로 한 번 준비합니다. 고정 환경을 활성화·설치하고 실제 계정을 확인합니다.
+
+```bash
+source .venv/bin/activate
+python -m pip install -r requirements.lock
+az login
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az account show --query "{user:user.name,tenant:tenantId,subscription:id}" -o json
 ```
 
-**명령 해설:**
+사용자·테넌트·구독을 운영자 승인 및 포털 신원과 대조하며 다른 캐시 계정으로 진행하지 않습니다. 이 확인은 역할 할당이 아닙니다. `FOUNDRY_EVALUATION_ID`·`FOUNDRY_BASELINE_RUN_ID`는 정식 기준선 포털 URL 또는 **Raw JSON**에서 복사합니다. 위 실제 영어 ID 또는 해당 한국어 기준선 ID를 사용하며 파일럿·Optimizer job ID와 혼동하지 않습니다.
 
-| 명령 | 하는 일·주의점 |
-|---|---|
-| `export AZURE_SUBSCRIPTION_ID=...` | 승인된 구독 ID를 현재 셸 변수로 정합니다. 구독을 선택하거나 만들지는 않습니다. |
-| `export AZURE_TENANT_ID=...` | 로그인할 디렉터리 ID입니다. 다른 디렉터리의 같은 이름 계정을 쓰지 않도록 합니다. |
-| `export EXPECTED_AZURE_USER=...` | 기대하는 실제 로그인 사용자입니다. 예시 이메일을 교체하며 암호·토큰을 넣는 자리가 아닙니다. |
-| `az login --tenant ...` | 해당 테넌트의 정상 로그인/MFA를 수행합니다. 브라우저 포털 로그인과 별도의 CLI 인증입니다. |
-| `az account set --subscription ...` | 이후 CLI의 활성 구독을 지정합니다. 권한을 부여하거나 리소스를 배포하지 않습니다. |
-| `az account show --query ... -o json` | 실제 CLI 사용자·테넌트·구독만 JSON으로 추려 조회합니다. 출력에 개인 식별값이 있으므로 가이드·수업 화면에 그대로 게시하지 않습니다. |
+[06단계의 단일 명령](handbook.md#decision)은 Azure AI Projects/OpenAI Evals SDK로 기준선 `data_source`·기존 기준을 재사용하고 대상 버전만 2로 바꿉니다. 동일한 모델·도구를 확인하며 **같은 evalID 아래 실제 Foundry run 하나**를 제출합니다. 로컬 Judge나 별도 클라우드 채점 구현이 아닙니다. 비공개 `.lab/foundry-evaluations/candidate-v2.json` receipt를 유지하고 동일 명령을 반복해 같은 run을 수집합니다. 재시도하려고 receipt·이름·경로·정의를 바꾸지 않습니다.
 
-**완료 신호:** 실제 로그인 사용자·테넌트·구독이 승인 범위와 일치합니다. 브라우저에서도 같은 계정을 확인합니다. bootstrap은 실제 사용자 object ID를 별도 확인합니다.
+**실제 끝까지 검증된 영어 SDK 실행:** helper가 **동일한 `eval_94feef6f6f644fabb22a5680f5f24fb1`** 아래 **`contoso-eval-en` v2**의 후보 run **`evalrun_f3b710fc835d444fb8aa0d2bb7797bdf`**를 제출했습니다. **Completed, 12행, 11 passed / 1 failed / 0 errored**이며 기준선은 **10 passed / 2 failed / 0 errored**였습니다. 같은 데이터셋·평가자·Judge·모델·도구를 helper가 확인했고 지시·버전만 바뀌었습니다.
 
-**오류/복구:** 잘못된 계정·서비스 principal·권한 부족을 다른 캐시 자격 증명으로 우회하지 않습니다. 토큰·키·암호를 문서에 복사하지 않습니다.
+receipt를 재사용하고 **`contoso-en-learning-loop` → Evaluation runs → 두 run 체크박스 → Compare runs**를 엽니다. **Baseline 드롭다운은 원래 `contoso-eval-en`으로 지정합니다.** 기본값이 처음 선택한 행이며 실제로 `candidate-v2`였으므로 방향을 먼저 확인합니다. 포털 item-schema 실패는 그대로이며 후보 run은 SDK로 완료됐습니다.
 
-**재개:** 로그인 만료 때만 다시 인증합니다. 이번 실제 점검에서는 Azure MCP의 구독 조회가 맞았지만 **Foundry MCP의 데이터 평면 토큰은 다른 테넌트**여서 요청이 거부되었습니다. 이 경로로 변경하지 않았고 올바른 사용자·테넌트를 검증한 CLI/SDK 및 브라우저를 사용했습니다. MCP의 구독 목록만으로 principal·데이터 평면 인증이 같다고 단정하지 않습니다.
-
-**다음:** A2. 이미 비공개 계획이 있다면 새 계획을 만들지 않고 그 경로를 사용합니다.
-
-### A2. 신규 계획을 로컬에 생성
-
-**목적:** 생성할 이름·모델·용량·처리 범위·소유 표식을 원격 변경 전에 고정합니다.
-
-**할 일:** 처음 시작하는 환경에서만 실행합니다. 아래는 표준 라이브러리 경로이며 Azure에 접속하지 않습니다.
-
-**복사 명령:**
-
-```bash
-python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training --agent-sku Standard --root .lab --location northcentralus
-```
-
-**명령 해설:** `plan`은 **로컬 파일 생성**입니다. `--subscription`·`--tenant`·`--expected-user`는 검증할 신원을, `--environment`·`--root`는 비공개 계획의 위치를, `--location`은 허용 리전을 고정합니다. `--agent-sku Standard`는 기반 Agent 배포 유형이며 Judge·planner·embedding까지 Standard로 바꾸지 않습니다. `-S` 경로에는 SDK가 필요 없고 원격 생성·과금 호출을 하지 않습니다.
-
-`--environment`는 `lab-training`처럼 **소문자 영문자로 시작**하는 유효한 이름을 사용합니다. 날짜 숫자만으로 시작하는 환경명은 현재 검증에 맞지 않습니다. 환경명과 RG 이름은 다른 필드입니다. 오류를 없애려고 이미 만들어진 RG나 기존 계획을 임의로 이름 변경하지 않습니다.
-
-**완료 신호:** `plan_status: CREATED_LOCAL_ONLY`, `mutations_performed: false`. 기본 `.lab/lab-training/` 아래에 다음이 생깁니다.
-
-현재 새 agent/SFT 기반 권장값은 **gpt-4.1-mini / 2025-04-14 / Standard**입니다. 출력의 실제 모델/버전을 확인합니다. 이전 gpt-4o-mini가 들어 있는 계획은 적용하지 말고 새 계획을 준비합니다. `--agent-sku`는 SKU 선택이지 모델 이름/버전을 바꾸는 우회 옵션이 아닙니다.
-
-| 파일/폴더 | 용도 |
-|---|---|
-| `config.json`, `template.json` | 정확한 신규 리소스·배포·템플릿 해시 |
-| `manifest.json` | 대상 ID와 생성 의도·소유·단계 기록 |
-| `approval.example.json` | **승인되지 않은** 형식 예시 |
-| `group-authorization.example.json` | RG만 따로 만드는 경우의 미승인 예시 |
-| `cost-ledger.json` | SKU·소유 대상·알 수 없는 비용을 구분한 원장 |
-| `artifacts/`, `evidence/` | 해당 환경만의 비공개 실행/관측 기록 |
-| `.gitignore` | 해당 환경 디렉터리의 기록을 Git에서 제외 |
-
-`.env`는 계획 단계에 생성되지 않습니다. 전체 배포·소유 확인 후에만 생성됩니다. 비공개 디렉터리를 복사해 고객용 ZIP에 넣지 않습니다.
-
-**오류/복구:** 같은 환경 디렉터리가 있으면 덮어쓰기 대신 원래 계획을 찾습니다. 리소스 충돌을 해결하려고 기존 RG를 지우거나 태그를 복사하지 않습니다.
-
-**재개:** 이후 모든 명령은 같은 `config.json`을 사용합니다. 기본 모델·이름·용량·보존 설정을 바꾸려면 원래 상태를 보존한 별도 승인 계획이 필요합니다.
-
-**다음:** A3.
-
-#### 선택: 후속 SFT에 맞는 기반 배포 계획 {#sft-base}
-
-현재 bootstrap의 새 agent 기본 후보는 **gpt-4.1-mini / 2025-04-14 / Standard**이며 SFT도 같은 기반 계열/버전을 사용합니다. 명시적 `--agent-sku Standard`는 이 SKU를 고정하고 기본 요청 capacity는 ARM 단위 20입니다. Judge/planner/embedding은 기존의 승인된 역할 모델을 유지합니다.
-
-아직 계획이 없다면 A2에서 이 새 후보를 확인합니다. **이전 gpt-4o-mini 또는 GlobalStandard-agent 계획이 있고 이번 새 RG가 아직 비어 있다면**, 실패/이전 계획을 수정하지 않고 별도 로컬 환경으로 새 계획을 만듭니다. 아래 RG 값은 원래 비공개 기록의 **같은 새 RG 이름**으로 바꿉니다.
-
-```bash
-export NEW_RESOURCE_GROUP="YOUR_EXISTING_EMPTY_NEW_LAB_RESOURCE_GROUP"
-python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training-sft --root .lab --resource-group "$NEW_RESOURCE_GROUP" --agent-sku Standard
-```
-
-**명령 해설:** `export NEW_RESOURCE_GROUP`은 **원래 의도로 생성한 아직 빈 실습 RG의 이름**만 지정합니다. 뒤의 `plan`은 `--resource-group`으로 그 대상을 명시한 **별도 로컬 계획**을 만듭니다. RG 이름을 알고 있다는 사실만으로 소유를 인정하거나 그 그룹에 배포하지 않으며, 원래 receipt 결속과 새 승인 검사가 뒤따릅니다.
-
-이후 A3의 환경 디렉터리를 실제 새 `lab-training-sft` 경로로 선택하고 새 scope에 맞는 완전한 승인 파일을 준비합니다. A5에서 원래 intent/creation receipt로 읽기 전용 결속을 확인한 뒤 **선택한 새 계획만** 적용합니다. 실패한 gpt-4o-mini 계획이나 이전 GlobalStandard 계획을 자동 전환하거나 함께 apply하지 않습니다. 해당 로컬 디렉터리가 이미 있으면 다른 새 이름을 사용하며 덮어쓰지 않습니다. RG에 이미 자원이 생겼다면 이 빈-RG 절차를 억지로 적용하지 않습니다.
-
-새 Standard 기반 quota의 정확한 이름은 **`OpenAI.Standard.gpt4.1-mini`**, 별도 tuned quota는 **`OpenAI.Standard.gpt4.1-mini-finetune`**입니다. 모델 이름 `gpt-4.1-mini`와 달리 usageName의 `gpt` 뒤에는 하이픈이 없습니다. GlobalStandard quota나 이전 모델 이름을 가공해 추정하지 않습니다. 운영자가 읽은 여유는 기반 5000, 별도 fine-tuned 500이지만 관측 시점의 ARM/quota 단위이며 무료 사용량이나 성공 보장이 아닙니다. 실제 tuned Standard 배포는 성공한 SFT 작업 이후의 별도 단계입니다.
-
-### A3. 읽기 전용 사전 점검
-
-**목적:** 올바른 신원·리전·공급자·권한·모델 버전·쿼터를 확인하되 배포하지 않습니다.
-
-**할 일:** 자신의 실제 디렉터리에 맞게 첫 줄을 설정합니다. 기존 계획이 다른 위치에 있으면 그 경로를 사용합니다.
-
-**SDK-free와 offline은 다릅니다.** `plan`과 도움말/로컬 schema 읽기는 Azure 호출이 없지만, `preflight`와 `status`는 Azure CLI 로그인과 네트워크가 필요한 **읽기 전용 Azure 조회**입니다. `-S`를 붙였다고 모든 bootstrap 명령이 오프라인 또는 비용 없는 작업이 되는 것은 아닙니다.
-
-**복사 명령:**
-
-```bash
-export LAB_ENV_DIR="$PWD/.lab/lab-training"
-export LAB_BOOTSTRAP_CONFIG="$LAB_ENV_DIR/config.json"
-export LAB_COST_APPROVAL_FILE="$LAB_ENV_DIR/approval.json"
-python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG"
-python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG"
-```
-
-**명령 해설:**
-
-| 줄 | 하는 일·남는 것 |
-|---|---|
-| 세 `export` | 같은 환경 폴더·계획 JSON·승인 경로를 이후 명령에 전달합니다. 아직 없는 승인 파일을 만들거나 승인 상태를 바꾸지 않습니다. |
-| `preflight --config ...` | 신원·리전·모델/SKU·쿼터·권한 및 가능한 제공자 검증을 **Azure 읽기 전용**으로 점검합니다. 준비/차단 사유를 비공개 evidence에 남깁니다. |
-| `status --config ...` | 기존 계획에 연결된 실제 자원·배포·소유를 조회합니다. preflight 전체나 모델 추론을 대신하지 않습니다. 이 두 명령의 `--config`는 `.env`가 아니라 계획 JSON입니다. |
-
-**완료 신호:** 읽기 전용 보고서에 신원·NCUS·정확한 모델/버전/SKU·쿼터 family·regional capacity가 명시됩니다. 승인 파일을 아직 전달하지 않았다면 최상위 승인 차단 상태와 `readiness_status`를 따로 읽습니다. `READY`나 `OBSERVED`는 추론 검증이 아닙니다.
-
-| 출력 | 정확한 해석 |
-|---|---|
-| `CREATED_LOCAL_ONLY` | 계획 파일 생성. 기본 승인 예제는 미승인 |
-| `BLOCKED_AWAITING_APPROVAL` + 준비 `READY` | 기술적 준비와 **그 계획의 유효한 승인 파일**은 별개 |
-| `READY_FOR_APPROVED_APPLY` / `APPROVED` / `PENDING_EXECUTION` | 승인·읽기 전용 준비 확인. 이 출력만으로 apply 또는 실제 서비스 실행 완료를 판단할 수 없음 |
-| `OBSERVED` / `NOT_CHECKED_BY_STATUS` | status는 원격 관측이며 전체 readiness를 다시 검사한 것이 아님 |
-| `BLOCKED` | 기술/범위 오류. 다른 리전·계정·권한으로 자동 우회하지 않음 |
-
-모델 배포 기본 후보는 [인프라 문서](../infra/README.md)와 계획 파일이 정합니다. 현재 역할별 카탈로그 예시는 다음과 같으며 성공 보장이 아닙니다.
-
-| 역할 | 모델·버전 | 주의 |
+| 최종 관측 비교, n = 12 | 기준선 v1 | 후보 v2 |
 |---|---|---|
-| agent / 동일 기반 SFT | gpt-4.1-mini / 2025-04-14 / Standard | 명시적 새 후보. catalog `Legacy`, fineTune 지원 표식 관측; 실제 생성/학습 지원은 새로 검증 |
-| judge | gpt-5.4-mini / 2026-03-17 | 실제 평가 요청 지원·권한은 별도 |
-| planner / optimizer | gpt-5.5 / 2026-04-24 | 역할 공유 가능. 다른 모델로 자동 대체하지 않음 |
-| embedding | text-embedding-3-small / 1 | 인덱스 차원과 실제 응답을 이후 확인 |
+| 전체 기준 통과; 오류 | 10/12; 0 | 11/12; 0 |
+| Relevance 통과; 평균(1–5) | 10/12; 4.4167 | 11/12; 4.3333 |
+| TaskAdherence 통과; 이진 평균 | 12/12; 1.0 | 12/12; 1.0 |
+| Relevance 행 1 / 2 / 6 / 11 | 3 / 5 / 5 / 3 | 4 / 4 / 4 / 3 |
+| 지연 p50 (ms) | 5,891.09 | 7,287.52 |
+| 지연 p95 (ms) | 8,817.33 | 16,038.35 |
+| Agent 토큰 | 35,187 | 43,751 |
 
-ARM `capacity`는 모델/SKU별 단위입니다. 모든 값에 “×1,000 TPM”을 적용하지 않습니다. 카탈로그 minimum/step이 `null`이면 임의 숫자로 보충하지 않습니다. 기반 모델의 정확한 `usageName`과 `-finetune` quota를 구별합니다.
+네이티브 **PairedTTest는 Relevance·TaskAdherence 모두 Inconclusive**입니다. 행 1은 통과 임계값을 넘었지만 행 2·6은 하락했고 행 11은 근거 없는 확답 대신 정직한 불확실성을 유지하며 3입니다. 점수 때문에 정책 사실을 바꾸지 않습니다. **채택 HOLD, 추가 검토·새 대표 사례까지 고정 v1 유지**입니다. 통과 건수 증가만으로 평균 하락·지연·토큰 상충 관계를 상쇄하거나 전반적 개선을 입증하지 못하며 운영 승인은 없습니다.
 
-**오류/복구:** 현재 신원에 공급자 조회·생성·역할 할당 권한이 없으면 운영자가 승인된 권한 경로를 확인합니다. 도구는 공급자 등록·공유 권한 수정·다른 리전 전환을 자동 수행하지 않습니다.
+## 실제 워크숍 범위 제한 {#scope}
 
-**실제로 관측한 첫 실패:** 이전 gpt-4o-mini / 2024-07-18은 catalog의 `Deprecating`·fineTune 표식·쿼터와 달리 Azure validate에서 **2026-03-31부터의 폐기**를 이유로 `ServiceModelDeprecated`가 반환되었습니다. 첫 생성 요청의 거절과 하위 자원 0건·ARM 배포 404 원본을 보존합니다. 모델 응답 전에 새 후보로 교체한 환경 복구이며 모델 품질 개선 실험이 아닙니다. 새 후보도 metadata만으로 성공 처리하지 않습니다.
-**재개:** 같은 계획으로 read-only preflight/status만 다시 확인합니다. 쿼터 여유는 무료 호출이나 배포 성공이 아닙니다.
+<a id="approval"></a>
 
-**다음:** A4.
+**실제 계정·프로젝트·데이터·처리 위치·비용**의 현재 승인 범위를 정합니다. 다른 리허설의 승인이 그대로 적용되는 것은 아닙니다. GlobalStandard는 처리 방식이며 모든 요청이 NCUS 안에서만 처리된다는 약속이 아닙니다.
 
-### A4. 실제 승인과 계획을 결속 {#approval}
-
-**목적:** 범위가 다른 승인이나 단순 예제 파일로 유료 변경을 시작하지 않게 합니다.
-
-**할 일:** 승인된 운영자가 실제 승인 근거를 사용해 해당 계획의 비공개 승인 파일을 준비합니다. [승인 스키마](../infra/approval.schema.json)와 계획이 만든 예시를 확인합니다. 참가자나 AI가 승인을 대신 만들어 넣지 않습니다.
-
-실제 신원/승인 내용을 노출하지 않고 공개 형식만 확인하려면 다음을 사용합니다.
-
-```bash
-python3 -S -m json.tool infra/plan.schema.json
-python3 -S -m json.tool infra/approval.schema.json
-```
-
-**명령 해설:** 첫 줄은 계획 JSON의 필드 계약, 두 번째는 승인 기록의 필드 계약을 로컬에서 펼칩니다. 공개 **스키마**를 읽을 뿐 실제 승인 값을 채우거나 서명하지 않습니다. 파일 해시는 내용 일치 확인 수단이며 사람의 동의를 증명하는 서명 자체는 아닙니다.
-
-**복사 명령 — 작성된 승인 기록 검증만:**
-
-```bash
-python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-```
-
-**명령 해설:** A3 점검에 `--approval`을 추가해 현재 승인 파일이 **이 계획의 범위·해시·기간·한도**와 맞는지도 검증합니다. Azure 상태 조회와 로컬 승인 검사이며 아직 apply나 유료 모델 호출은 없습니다. 승인 파일이 없거나 유효하지 않으면 다음 단계로 넘어가지 않습니다.
-
-확인할 내용은 계획/템플릿 해시·모델·범위, 승인자와 기간, 실제 보존 설정, Global 처리, 호출·후보·epoch·작업/대기 제한, 자원 생성과 RBAC의 각각의 승인입니다. 모델 수명주기 조건과 지속 호스팅·미확정 비용도 별도로 확인합니다. 제공자가 폐기 사유로 거부한 모델은 단순한 수용 체크로 다시 허용되지 않습니다.
-
-**범위 요약과 완전한 승인 파일을 구분합니다.** 원래 비공개 범위 요약의 `budget_cap: null`을 bootstrap에 그대로 넘기는 것이 아닙니다. `approval_template(config)` 또는 해당 계획의 예시를 기준으로, 승인된 운영자가 실제 동의를 완전한 schema에 기록합니다.
-
-이번 무상한 승인의 bootstrap 필드는 `budget_policy: NO_MONETARY_CAP_EXPLICITLY_APPROVED`, `budget_amount: null`, `acknowledge_no_monetary_cap: true`와 **비어 있지 않은 비공개 `request_evidence`**입니다. 이와 별개로 실제 승인자/시각/기간·USD 통화·정확한 scope/모델·생성/RBAC/Global 처리·보존·유한한 작업 제한도 모두 검증해야 합니다. 이 필드 설명은 승인 파일 자체도, 다른 사용자의 지출 승인도 아닙니다.
-
-`null`은 승인 누락·0원·무료가 아닙니다. 과거 USD50 제안으로 현재 승인을 차단하거나 편의를 위해 임의의 숫자 승인을 만들지 않습니다. 유한 금액 정책은 별도로 선택·승인된 다른 범위에서 사용할 수 있지만, 이번 작업에 조용히 되살리지 않습니다.
-
-로그 보존의 기술적 최소값과 사용자가 승인한 보존 조건은 별개입니다. 예시의 30일을 승인 사실로 옮기지 않습니다. 다른 실습은 해당 고객의 실제 비용/처리/보존 승인을 사용합니다.
-
-**완료 신호:** 정확한 scope의 승인 검증이 통과하고 별도 준비 상태가 정상입니다. 이것만으로 리소스가 생성되거나 모델이 실행되지는 않습니다.
-
-**오류/복구:** 실제 승인과 schema/코드가 맞지 않으면 승인 내용을 왜곡하지 말고 통합 계약을 수정·검증합니다. 무상한 승인을 유한 금액으로 바꾸거나 승인 파일을 다른 계획에 재사용하지 않습니다.
-
-**재개:** 원본 승인 기록을 보존합니다. 환경 `.env`에 기록된 최초 승인 경로를 몰래 덮어쓰지 말고 현재 사용할 승인은 명시적으로 전달합니다.
-
-**다음:** A5. 가이드 검토 이후에도 새 계획의 유효한 승인·현재 준비·제공자 검증을 확인한 뒤에만 적용합니다.
-
-### A5. 같은 신규 환경을 한 번만 적용
-
-**목적:** 소유가 확인된 신규 RG에만 승인된 리소스를 만들고 부분 실행을 안전하게 이어갑니다.
-
-**할 일:** 다른 운영자/프로세스가 같은 환경을 적용하고 있지 않은지 확인합니다. **이 단계는 Azure 변경과 과금 자원 생성을 수행합니다. 이번 통합은 실패 기록을 보존한 복구 뒤 실제 `APPLIED`를 확인했습니다.**
-
-**이미 RG만 만든 이번 통합은 먼저 결속 확인:** 통합 운영자가 **생성 전 원본 의도와 실제 생성 결과**를 가지고 다음 읽기 전용 결속을 수행할 수 있습니다. 각 경로는 원래 비공개 기록으로 바꾸며 예시 JSON을 새로 만들어 과거 생성 사실을 주장하지 않습니다. 아직 RG도 만들지 않은 일반 신규 계획은 이 결속 단계를 건너뛰고 아래 apply에서 소유 의도를 먼저 기록합니다.
-
-```bash
-export RG_INTENT_FILE="YOUR_PRIVATE_PRECREATION_INTENT_JSON"
-export RG_CREATED_FILE="YOUR_PRIVATE_CREATION_RECEIPT_JSON"
-python3 -S -m lab.bootstrap bind-group --config "$LAB_BOOTSTRAP_CONFIG" --intent "$RG_INTENT_FILE" --created "$RG_CREATED_FILE"
-```
-
-**명령 해설:** 두 `export`는 기존 비공개 **생성 전 의도**와 **생성 receipt** 파일 경로입니다. `bind-group`은 `--intent`·`--created`의 실제 기록을 현재 계획과 Azure의 빈 RG에 대조하고 로컬 소유 원장에 결속합니다. 이름·태그를 사후 수정해 소유권을 만드는 명령이 아니며 Azure 생성/권한 변경을 하지 않습니다.
-
-이 경로도 실제 새 RG의 scope·원래 태그·생성 근거가 일치해야 합니다. 일반 참가자는 이름만 같은 그룹을 채택하지 않습니다. `prepare-group`는 외부 RG 생성 **전**, `confirm-group`는 그 원래 의도의 읽기 전용 확인입니다. `bind-group`도 태그/권한을 나중에 맞추거나 기존 리소스를 변경하는 동작이 아닙니다.
-
-**복사 명령 — 승인·소유 확인 후 운영자만:**
-
-```bash
-python3 -S -m lab.bootstrap apply --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-```
-
-**명령 해설:**
-
-| 명령 | 하는 일·비용 경계 |
+| 작업 | 범위 |
 |---|---|
-| `apply --config ... --approval ...` | 계획·승인·신원·소유·제공자 검증 뒤 **실제 ARM 리소스와 승인된 RBAC**를 적용합니다. 지속 과금 자원이 생길 수 있으며 배포 ID·부분 성공·오류를 보존합니다. 참가자의 일반 연결 명령이 아닙니다. |
-| `status --config ... --approval ...` | 방금 실행한 **같은 계획**의 원격 상태와 소유를 조회합니다. apply를 한 번 더 제출하거나 모델 응답을 생성하지 않습니다. 완료되었다면 이후에는 status와 참가자 preflight로 연결합니다. |
+| 기준선 | 전체 12건의 올바르게 설정한 직접 관리형 평가 한 번. 보존된 파일럿은 이 기준선이 아님 |
+| 최적화 | 지시 전용 작업 한 번, **Max candidates 1**, **최대 60분** 대기 |
+| 후보 확인 | SDK로 **같은 evalID**에 실제 Foundry run 하나 제출. 같은 데이터·버전·해시·Relevance 4·TaskAdherence 이진 통과값 1·Judge, receipt 재수집과 포털 비교 |
+| 에이전트 변경 | 실습 v2만 사용. 최신 활성 버전은 모든 채널에 영향. 격리된 미게시 Agent에서만 승격하며 운영 환경 금지 |
+| 추가 기능 | 검증되지 않은 기능은 실행하지 않으며 다른 실습으로 완료를 대체하지 않음 |
 
-bootstrap은 의도 ID를 저장한 뒤 대상 소유를 확인하고 RG 범위의 Incremental 배포를 사용합니다. 기존 RG/리소스·다른 환경을 이름만 보고 채택하지 않습니다. 알려지지 않은 대상·모델 변경·권한 범위 변경은 중단 사유입니다.
+준비 검사의 사용량도 별도 승인 범위이며 Optimizer 작업 하나에서 여러 내부 호출이 발생할 수 있습니다. 오류가 났다고 작업을 반복하거나 범위·리전을 바꾸거나 유리한 결과가 나올 때까지 실행하지 않습니다.
 
-**완료 신호:** 실제 ARM 배포가 완료되고 manifest/inventory가 일치하며 `.env`가 생성됩니다. 이 bootstrap의 `APPLIED`는 `data_plane_verified: false` / `live_status: NOT_VERIFIED`와 함께 보고됩니다. 인프라 확인은 모델 추론·MCP·교정·trace 수집 성공이 아닙니다.
+## 신원과 최소 권한 확인 {#rbac}
 
-**오류/복구:** 타임아웃을 리소스 부재로 해석하지 않습니다. 저장된 배포 ID·원장·원격 상태를 확인합니다. 자동 rollback/delete/권한 복구로 공유 환경을 변경하지 않습니다.
+현재 [Foundry RBAC 안내](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry)를 실제 작업과 대조합니다. 역할 할당 권한과 에이전트 실행 권한은 별개입니다.
 
-**재개:** 같은 config와 유효한 승인으로 `apply`를 이어가며 먼저 `status`를 확인합니다. stale lock은 기록된 PID가 종료되었고 다른 작업이 없는지 확인하기 전 제거하지 않습니다. 자원을 보존하려고 잠금만 임의로 무력화하지 않습니다.
-
-bootstrap apply에는 `--confirm`, `--resume`, `--force`, `--adopt`, `--delete`를 붙이지 않습니다. 별도 배치 명령의 `run --resume`와 구분합니다. 이미 소유가 확인된 RG에서만 `apply --what-if`로 읽기 전용 비교를 할 수 있으며, 결과는 `WHAT_IF_ONLY`입니다. what-if를 위해 RG를 생성하거나 비용 승인·실제 배포 성공으로 해석하지 않습니다.
-
-**다음:** A6.
-
-### A6. 런타임 환경 확인 후 참가자에게 전달
-
-**이 단계부터는 SDK가 필요합니다.** A1–A5의 SDK-free bootstrap과 달리, runtime preflight는 [본문 02의 로컬 설치](handbook.md#prepare)를 마친 `.venv`에서 실행합니다. 기존 가상환경이 있으면 활성화하며 재설치·재배포부터 반복하지 않습니다.
-
-**목적:** 생성된 정확한 신규 배포·검색·관측 endpoint를 사용하고 환경별 근거를 분리합니다.
-
-**할 일:** private `.env`의 배포 이름·endpoint가 실제 manifest와 맞는지 읽습니다. `.env.example`의 자리표시자나 이전 실습 값으로 바꾸지 않습니다. `.env`를 셸로 실행하지 않습니다.
-
-**복사 명령:**
-
-```bash
-export LAB_ENV_FILE="$LAB_ENV_DIR/.env"
-export LAB_ARTIFACTS_DIR="$LAB_ENV_DIR/artifacts"
-python -m lab --config "$LAB_ENV_FILE" preflight
-python -m lab validate
-```
-
-**명령 해설:** `LAB_ENV_FILE`은 생성된 `.env`, `LAB_ARTIFACTS_DIR`는 같은 환경의 결과 저장 폴더를 지정합니다. `lab --config ... preflight`는 SDK가 사용할 신원·실제 배포를 조회해 `preflight.json`에 남기고, `lab validate`는 원본 100건과 생성물만 로컬 검사합니다. 어느 쪽도 품질 평가나 첫 모델 응답 확인은 아닙니다.
-
-`LAB_ARTIFACTS_DIR`는 각 Python 프로세스의 **시작 전 환경**에 있어야 합니다. 새 터미널·작업 프로세스에서는 export를 다시 적용합니다. Python 안에서 모듈을 import한 뒤 뒤늦게 경로를 바꾸어 다른 환경의 근거를 섞지 않습니다.
-
-**완료 신호:** `preflight: PASS`, 데이터 100건 유지, 올바른 실제 환경. `.env`에는 `EMBEDDING_DEPLOYMENT`, `LAB_ARTIFACTS_DIR`, 같은 계획을 가리키는 `LAB_BOOTSTRAP_CONFIG`와 `BOOTSTRAP_CONFIG`, 최초 `LAB_COST_APPROVAL_FILE`, 신규 관측 리소스 ID도 기록됩니다. 키/암호를 요구하지 않습니다.
-
-bootstrap 이후 main CLI의 `--confirm` 호출과 SFT 배포는 `BOOTSTRAP_CONFIG`를 사용해 완료된 bootstrap 소유 근거와 실제 새 RG/계정을 확인합니다. 이 소유 확인은 현재 작업 승인을 부여하지 않으므로 별도 private approval·호출/작업 제한을 함께 검증합니다. 예전 환경 값이나 위조한 hash/receipt로 통과시키지 않습니다.
-
-**오류/복구:** 환경 밖 경로를 `.relative_to(ROOT)`로 강제하는 코드가 있다면 `artifact_reference` 계약을 사용하도록 수정해야 합니다. 파일을 저장소 안으로 억지 복사해 문제를 숨기지 않습니다.
-
-**재개:** 터미널을 다시 열면 같은 `.venv`와 환경 변수만 복원합니다. 재설치·재배포·새 RG 생성부터 반복하지 않습니다.
-
-**참가자에게 전달:** 사용할 실제 계정·테넌트·구독, 비공개 `LAB_ENV_DIR`와 현재 `LAB_COST_APPROVAL_FILE` 경로, 현재 승인 범위, 신규 `APPLICATIONINSIGHTS_RESOURCE_ID`, 보존·비용 확인 담당자입니다. `.env`·manifest·승인 파일은 공개 채널이나 패키지에 넣지 않습니다. 예시 폴더명이 아니라 참가자가 접근할 수 있는 실제 경로를 전달합니다.
-
-**다음:** 참가자는 [본문 02. 환경 연결](handbook.md#prepare)에서 이 값을 한 번 설정한 뒤 03–06을 같은 환경에서 진행합니다. 운영자는 **Agent Optimizer**의 prompt-agent 접근·실제 optimizer/judge 배포·후보 1개 설정을 사전 확인합니다. Prompt Optimizer·별도 managed 평가·SFT 접근을 기본 경로의 추가 조건으로 붙이지 않습니다. 참가자의 응답이나 평가 결과를 미리 만들어 놓지 않으며, 연결 확인을 품질 평가로 세지 않습니다.
-
-## 어떤 주체에게 어떤 권한인가 {#rbac}
-
-이 표는 **신규 리소스에만 적용할 계획**입니다. 실제 역할 정의와 API 작업을 사전 점검해야 하며 표를 읽은 것이 역할 할당의 증거가 아닙니다.
-
-| 주체 | 작업 | 최소 범위를 검토할 역할 |
-|---|---|---|
-| 운영자/실습 사용자 | Foundry 계정 데이터 작업·모델 호출 | 신규 계정의 작업별 Azure AI Developer / Cognitive Services OpenAI User |
-| 운영자/실습 사용자 | 현재 Agent Service 프로젝트 작업 | 신규 프로젝트의 Foundry User. Azure AI Developer 이름만 보고 Agent CRUD까지 된다고 가정하지 않음 |
-| 운영자/실습 사용자 | Search 스키마·콘텐츠 준비 | 신규 Search의 Search Service Contributor + Search Index Data Contributor |
-| 프로젝트 MI | IQ의 검색 읽기 | 신규 Search의 Search Index Data Reader |
-| 프로젝트 MI | 모델/관측 접근 | 신규 계정의 해당 모델 역할과 새 관측 자원의 발행 권한 |
-| Search MI | LLM 검색 계획·vectorizer 모델 접근 | 신규 Foundry 계정의 Cognitive Services User를 현재 공식 문서와 대조 |
-| 관측 사용자 | trace 읽기 | 새 Application Insights/Log Analytics의 작업별 읽기 역할 |
-
-역할 할당 권한 자체는 별도의 관리 권한입니다. 참가자에게 구독 Owner/Contributor를 새로 부여하는 방식으로 단순화하지 않습니다. Search MI와 프로젝트 MI를 서로 바꿔 지정하지 않습니다.
-
-Cognitive Services User에는 key-list 작업이 포함될 수 있습니다. 이는 키 인증을 사용하라는 뜻이 아닙니다. bootstrap의 Entra 인증·local-auth 비활성화 경계를 유지하며 키를 읽거나 배포하지 않습니다.
-
-참고: [Foundry RBAC](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry) · [Search RBAC](https://learn.microsoft.com/en-us/azure/search/search-security-rbac) · [Search MI의 모델 기반 Knowledge base 접근](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-create-knowledge-base#configure-access)
-
-### 공식 구현 계약 참고 {#references}
-
-다음은 인프라 담당자가 확인해 전달한 공식 계약입니다. **계획의 근거**이며 실제 역할 할당·배포·서비스 실행을 완료했다는 증거가 아닙니다.
-
-| 확인할 계약 | 공식 참조 |
+| 주체 | 적절한 최소 실습 범위에서 확인할 접근 |
 |---|---|
-| Foundry 계정/프로젝트 시스템 ID·프로젝트 속성 | [accounts/projects · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects) |
-| 고정 모델 버전·NoAutoUpgrade·SKU·태그 | [accounts/deployments · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/deployments) |
-| Search MI·Basic·disableLocalAuth | [searchServices · 2025-05-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.search/2025-05-01/searchservices) |
-| 새 리소스에만 extension-role scope 지정 | [ARM extension resource scope](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/scope-extension-resources) |
-| 프로젝트 연결의 AAD 인증 | [accounts/projects/connections · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects/connections) |
-| Log Analytics 요금제·보존 | [workspaces · 2023-09-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2023-09-01/workspaces) |
-| Workspace 기반 Application Insights | [components · 2020-02-02](https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/2020-02-02/components) |
+| 참가자·운영자 | 프로젝트 열기, 고정 에이전트 읽기, 데이터셋 업로드·선택, 평가 생성·읽기, Agent Optimizer 사용 |
+| 프로젝트 관리 ID | 필요한 모델 및 기존 도구·연결 접근 |
+| 지원 서비스 ID | 준비된 에이전트의 실제 연결에 필요한 접근만 |
+| 실습 관리 운영자 | 승인된 버전 생성, 자원·비용 조회, 별도 승인된 수명주기 작업 |
 
-Search에서 `disableLocalAuth: true`를 사용할 때 호환되지 않는 `authOptions`를 함께 넣지 않습니다. 이것은 키를 읽거나 기존 Search 설정을 고치라는 안내가 아닙니다. 새 template과 해당 API 계약을 검증하는 항목입니다.
+편의를 위해 참가자에게 구독 전체 Owner를 주거나 자격 증명을 노출하거나 조직 정책을 바꾸거나 네트워크 제한을 우회하지 않습니다. 포털 탭의 계정 표시만으로 다른 클라이언트의 신원도 같다고 단정하지 않습니다.
 
-## 비용·보존·새 기능 접근 {#cost}
+## 비용과 종료 책임 {#cost}
 
-| 비용 종류 | 읽는 방법 |
+에이전트 응답, Judge 평가, 지시 생성, Optimizer 내부 호출, 정책 도구, 지속 실행되는 지원 자원·로그의 비용을 포함합니다. **미확인 비용은 0원이 아니며**, quota는 무료 할당이 아니고 브라우저를 닫아도 호스팅 과금이 멈추지 않습니다.
+
+남은 작업·비용 확인·승인된 실습 자원 정리의 책임 운영자를 정합니다. 자원 삭제나 광범위한 계정 변경을 참가자 실습으로 만들지 않습니다. 자격 증명·비공개 설정·원본 계정 식별자는 공유 문서와 패키지에 넣지 않습니다.
+
+## 참가자가 사용할 계약 인수 {#handoff}
+
+| 전달할 항목 | 필요한 구체성 |
 |---|---|
-| Search Basic | NCUS의 읽기 전용 가격 참고는 0.101 USD/시간, 24시간 약 2.424 USD, 730시간 약 73.73 USD. 현재 청구액이나 총 실습 비용 아님 |
-| 모델/Judge/planner/embedding | 각각의 실제 요청/토큰. quota 여유를 무료 할당으로 해석하지 않음 |
-| Optimizer | 후보·에이전트·도구·평가 사용량. 포털이 숨기는 내부 호출 수까지 단순히 “1 API”라고 축소하지 않음 |
-| SFT | 학습 + 기반/학습 모델 추론 + 학습 모델의 지속 호스팅을 분리 |
-| 로그/보존 | 수집·보존 비용. ingestion cap은 엄격한 금전 차단기가 아님 |
-| 미집계/알 수 없음 | `UNKNOWN_NOT_ZERO` 또는 관측 대기. 0원으로 채우지 않음 |
+| 포털 대상 | 올바른 프로젝트와 한국어 **`contoso-eval-ko`**의 별도 준비 확인. 실제 영어 대상은 **`contoso-eval-en`** |
+| Agent 버전 | **활성 v1 복원**, 기록된 기준선 v1·보존된 후보 v2. **`lab-agent-dea3cec5`**, `gpt-4.1-mini` / `2025-04-14`, 명시적 버전·근거 유지 |
+| 모델 역할 | Agent **`lab-agent-dea3cec5`**, Judge **`lab-judge-luna-dea3cec5`**, Optimizer **`lab-planner-dea3cec5`**, 각 버전과 지원 한계 |
+| 데이터셋 | 영어 **`contoso-eval-en-dev12` 버전 `1`** 등록 확인. 한국어는 **`contoso-eval-ko-dev12`** 별도 확인. 각 원본 파일, n = 12, SHA-256 |
+| 평가 계약 | 같은 수정된 정의, **Relevance 1–5점·임계값 4 / TaskAdherence 이진 0/1·통과값 1**, 범용 TaskAdherence Threshold가 보이면 1. query 전용 입력, custom override 없음 |
+| 범위·책임 | 승인 범위, 후보 하나, 최적화 대기 60분, 비용·정리 책임자, 차단 시 연락 대상 |
+| SDK 준비 | 검증된 venv·의존성·`az login` 계정, 운영자 프로젝트 endpoint·구독, 기준선 URL/Raw JSON ID, helper와 고정 receipt 경로 |
+| 근거 | 완료된 기준선·SDK 후보, 입력 일치, 최종 지표·행별 회귀·PairedTTest Inconclusive. 추가 검토·새 대표 사례까지 채택 HOLD, 파일럿 제외 |
 
-비용 상한이 없어도 불필요한 반복·중복 요청을 하지 않습니다. 정해 둔 호출/후보/작업/대기 한도를 넘는 확장은 별도 판단 대상입니다. 현재는 **보존**이 원칙이고 삭제를 비용 통제의 자동 수단으로 사용하지 않습니다.
+**생성된 매핑을 기록하되 덮어쓰지 않습니다.** 수정된 제출에서 **Relevance `response={{sample.output_text}}`**, **TaskAdherence `response={{sample.output_items}}`**를 확인했습니다. UI 기본값에는 `query={{item.query}}`, TaskAdherence의 `tool_definitions={{sample.tool_definitions}}`도 있었습니다. **Raw JSON**을 확인하되 TaskAdherence를 이전 UI의 output-text 값으로 바꾸지 않습니다. 추가 데이터셋 열도 아닙니다.
 
-Prompt Optimizer, prompt-agent Agent Optimizer, SFT, Frontier, trace 수집은 각각 따로 확인합니다. Frontier는 현재 직접 일치하는 공식 API/지원 경로가 `NOT_VERIFIED`이며 존재하지 않는다고 단정하지 않습니다. Agent Optimizer는 prompt-agent 포털 wizard가 공식 경로이며 hosted 구조로 바꿀 필요가 없습니다.
+**버전 한계:** 카탈로그 링크에는 `relevance` **v14**, `task_adherence` **v17**이 보였지만 실제 서비스 기준의 **`evaluator_version`은 비어 있거나 기본값**이었습니다. 이름·설정, Judge·데이터셋 버전과 이 한계를 기록합니다. 같은 정의를 재사용해도 비공개 서비스 루브릭 버전이 완전히 고정됐다는 증거는 아닙니다.
 
-## 이 단계의 인수 체크리스트 {#handoff}
+**실행은 성공했지만 채택은 HOLD입니다.** 두 run·receipt·측정된 상충 관계를 유지하고 선택 기준선은 고정 v1으로 둡니다. 실습 v2 활성화는 모든 채널에 영향을 주는 별도 운영자 문제입니다. Optimizer +0.010·네이티브 통과 건수 증가를 전반적 개선·통계적 유의성·운영 승인·포털 오류 해결·새 한국어 결과로 해석하지 않습니다.
 
-- [ ] 실제 신원·구독·테넌트·NCUS와 신규 자원 scope가 확인되었다.
-- [ ] 원본 의도·소유 manifest로 같은 RG/환경을 재개할 수 있다.
-- [ ] 승인 예제와 실제 승인 기록이 구분되고 비공개로 보관된다.
-- [ ] 금액 무상한 승인과 유한한 작업 범위를 함께 반영했다.
-- [ ] 모델 수명주기·정확한 usageName·capacity 단위·역할 전파의 한계를 설명했다.
-- [ ] `.env`·실행 자료를 소스/배포 ZIP에 넣지 않는다.
-- [ ] 전체 배포/실제 추론/품질/관측의 상태를 각각 기록했다.
-- [ ] 이번 RG를 보존하며 삭제 명령은 실행하지 않는다.
-- [ ] 참가자가 사용할 실제 환경/승인 경로와 관측 ID를 전달했고, 본문 02로 연결했다.
-- [ ] 기존 실습 환경에서는 새 RG 생성·재배포를 반복하지 않으며 기본 경로의 Agent Optimizer 접근을 확인했다.
+**실행된 최종 실습 상태:** `contoso-eval-en`의 **Details → Agent configuration → Active version → Edit → Version 1**에서 활성 버전을 **1**로 복원했습니다. 후보 v2·평가 run·receipt는 삭제하지 않고 유지합니다. **운영용 Publish는 없었고 운영 채널·트래픽도 구성하지 않았습니다.** 다만 Foundry는 Publish 없이 **RBAC-only Responses/preview endpoints**를 자동 제공하므로 endpoint 존재와 운영 게시를 구분합니다.

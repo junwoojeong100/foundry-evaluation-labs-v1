@@ -1,883 +1,342 @@
-# 좋은 에이전트는 평가에서 시작된다 · v1
+# 좋은 에이전트는 평가에서 시작된다 · v1 {#좋은-에이전트는-평가에서-시작된다-v1}
 
 <p class="eyebrow">CONTOSO ATLAS CLOUD · 하나의 실습 경로</p>
 
-**이 페이지의 6단계만 순서대로 진행하세요.** 같은 Contoso 에이전트에 지식을 연결하고 지시를 개선한 뒤, 근거로 채택 또는 보류를 판단합니다.
-
-**기존 환경·데이터·모델·평가 기준은 그대로입니다.** 안내 변경 때문에 재배포하거나 완료된 실험을 다시 실행하지 않습니다.
-
-**한국어 실습은 `LAB_LANGUAGE=ko`를 사용합니다.** 영어 실습은 별도 `data/en/`·`prompts/en/`과 전용 환경을 사용합니다. 웹사이트의 언어를 바꿔도 터미널 설정은 바뀌지 않으며, 서로 다른 언어의 실행 기록을 섞지 않습니다.
+**Foundry에서 자사 업무를 평가하고, Agent Optimizer로 지시를 개선한 뒤 무엇이 바뀌었는지 확인합니다.** 아래 여섯 단계만 진행합니다.
 
 <ol class="learning-path" role="list" aria-label="실습 순서">
-<li><a href="#start"><strong>01</strong> 예시 이해</a></li>
-<li><a href="#prepare"><strong>02</strong> 환경 연결</a></li>
-<li><a href="#baseline"><strong>03</strong> 기준선 평가</a></li>
-<li><a href="#iq"><strong>04</strong> 지식 연결</a></li>
-<li><a href="#optimize"><strong>05</strong> 지시 개선</a></li>
-<li><a href="#decision"><strong>06</strong> 최종 판정·종료</a></li>
+<li><a href="#start"><strong>01</strong> 데이터셋 준비</a></li>
+<li><a href="#prepare"><strong>02</strong> 평가 기준 선택</a></li>
+<li><a href="#baseline"><strong>03</strong> Foundry Evaluation 실행</a></li>
+<li><a href="#analyze"><strong>04</strong> 점수와 이유 읽기</a></li>
+<li><a href="#optimize"><strong>05</strong> Agent Optimizer로 지시 개선</a></li>
+<li><a href="#decision"><strong>06</strong> 재평가·비교·종료</a></li>
 </ol>
 
-**예상 시간: 약 3–4시간, 결과 공유 포함.** 기존 환경이 준비되어 있고 교정을 통과해 끝까지 진행하는 경우의 계획값입니다. 서비스 대기·오류 대응에 따라 달라지며, 환경 신규 구축과 SFT는 포함하지 않습니다.
+**왜 자사 데이터로 평가하나요?** 공개 벤치마크만으로는 우리 업무의 정책 경계와 알려진 실패를 확인하기 어렵습니다. 합성 Contoso 사례로 **평가 → 실패에서 학습 → 개선 → 재평가**를 경험합니다. 운영 안전을 인증하는 실습은 아닙니다.
 
-**읽는 순서: 기능 이해 → 실행 명령과 해설 → 출력 예시 → 내 결과 공유·판단 → 다음 단계.** 명령은 한 줄씩 실행하고, 오류가 나면 다음 줄로 넘어가지 않습니다. 평가는 **업무 Judge**, 지시 개선은 **Agent Optimizer** 하나로 진행합니다.
+**시작 전:** [운영자](admin-setup.md#handoff)가 격리된 프로젝트, 준비된 에이전트와 기준선 버전, 배포 이름, 비용·데이터 승인 범위를 제공합니다. 인프라는 사전 준비이지 추가 실습이 아닙니다. 처리·토론 시간을 확보하며 최적화 작업은 **최대 60분** 기다립니다.
 
-**이 실습에서 만드는 것은 “환불을 실행하는 봇”이 아니라 “정책을 찾아 올바른 다음 행동을 안내하는 에이전트”입니다.** Foundry는 모델·에이전트·지식·평가를 연결하는 플랫폼이고, 이 저장소는 그 기능을 작은 한국어 고객지원 과제로 경험하게 하는 교육용 도구입니다.
+**한 실험은 한 언어로 진행합니다.** 한국어 파일과 한국어 에이전트를 짝지어 사용합니다. 문서 언어를 바꿔도 에이전트나 데이터셋은 번역되지 않습니다.
 
-| 단계 | 경험할 기능 | 답할 수 있게 될 질문 |
-|---|---|---|
-| 01 | 응답 계약과 근거 중심 평가 | 자연스러운 답과 올바른 업무 행동은 어떻게 다른가? |
-| 02 | Foundry 프로젝트·모델 배포·인증 | 내 명령이 어느 환경의 어떤 모델을 사용하는가? |
-| 03 | 버전 에이전트·기준선·Judge 교정 | 무엇을 개선해야 하며 채점자는 믿을 만한가? |
-| 04 | Foundry IQ·벡터/하이브리드 검색·MCP | 에이전트가 어떤 정책을 실제로 보고 답했는가? |
-| 05 | Agent Optimizer·동일 문항 회귀 비교 | 지시가 어떻게 바뀌었고 무엇이 좋아지거나 나빠졌는가? |
-| 06 | 동결·새 시험·추적·피드백 | 처음 보는 질문에서도 통하는가, 지금 채택해도 되는가? |
+<p class="output-notice" id="portal-screenshots-note"><strong>실제 영문 화면·데이터:</strong> 완료한 영문 리허설의 조작 예시이며 한국어 실행 결과나 현재 참가자의 결과는 아닙니다. 자신의 run ID를 사용하고 <a href="verification.md">실측 결과와 한계</a>를 확인합니다. 마법사 미리 보기는 평가 실행이 아닙니다.</p>
 
-**평가는 점수를 만드는 일이 아니라 다음 행동을 결정할 근거를 얻는 일입니다.** 03–06의 결과 공유 지점마다 2–3분씩, **실제 결과 → 대표 사례 → 다음 결정**을 설명합니다. 점수에는 표본 수·척도·누락을 함께 붙입니다. 기존 보고서를 읽는 활동이므로 유료 평가 횟수는 늘지 않습니다. 모델 smoke는 연결 확인이지 품질 평가가 아닙니다.
-
-공유 범위는 **허용된 합성 사례와 집계 결과**입니다. 화면에서도 계정·구독·환경·승인 정보를 가리고, 비공개 원본을 그대로 전달하지 않습니다. 자동 외부 전송·업로드는 없습니다.
-
-<p class="output-notice" id="output-examples-note"><strong>출력 예시는 설명용으로 작성한 발췌입니다.</strong> 일부 필드만 보여 주며 점수·ID·답변이 내 실행과 같아야 한다는 뜻이 아닙니다. 예시를 입력 파일이나 실제 성공 증거로 저장하지 마세요.</p>
-
-<p class="output-notice" id="portal-screenshots-note"><strong>포털 사진은 작성 예시가 아닌 실제 화면입니다.</strong> 2026-09-30에 사용자 인증 후 Playwright MCP의 Headless 브라우저로 기존 전용 환경을 열어 촬영했습니다. 계정·생성자·endpoint는 가리거나 화면 범위에서 제외했습니다. 설정 마법사는 미제출 상태, 결과 화면은 기존 실행입니다. 사진의 이름·점수를 내 환경에 복사하지 않으며 촬영을 위해 새 평가·학습·배포를 실행하지 않았습니다. <a href="../web/assets/portal/captures.json">14장 촬영 기록</a>에는 출처 경로·가림 범위·파일 해시가 있습니다. 화면 아래의 <strong>원본 크기로 보기</strong>로 작은 글씨를 확대할 수 있습니다.</p>
-
-유료 실행에는 현재 비용·데이터·작업 승인이 필요하며 `--confirm`만으로 승인되지 않습니다. 오류·교정 불합격이면 멈추고 **HOLD와 미실행 항목**을 남깁니다. 완료한 단계는 기존 결과만 읽고, 중단된 실행은 [같은 ID로 재개](facilitator.md#resume)합니다.
-
-## 01. 예시 이해 {#start}
-
-<div class="lab-concept" aria-label="01 학습 목표">
-<p><strong>경험할 기능:</strong> 에이전트의 응답 계약과 평가의 출발점입니다. 응답 계약은 답변 문장뿐 아니라 인용, 행동 분류, 사람 판단 필요 여부를 어떤 형식으로 반환할지 정한 약속입니다.</p>
-<p><strong>왜 중요한가:</strong> 유창한 문장도 존재하지 않는 환불 승인이나 송금 완료를 약속할 수 있습니다. “말을 잘하는가”보다 “이 권한과 정책으로 해도 되는 말인가”를 먼저 판단해야 합니다.</p>
-<p><strong>어떻게 경험하나:</strong> 아래 오답을 정책과 대조하고, 빠진 조건을 묻는 행동과 실제 업무 실행을 구별합니다. DEMO는 이 판단 연습을 위한 고정된 작성 예시이며 모델을 실행하지 않습니다.</p>
-</div>
-
-**할 일:** 설치·로그인 전에 아래 답변에서 잘못된 약속을 찾습니다.
-
-> 고객: “9월 10일 최초 월 구독을 샀고 오늘은 9월 15일입니다. 환불해 주세요.”
->
-> 작성된 오답: “14일 안이므로 환불이 승인되었고 내일 입금됩니다.”
-
-[합성 정책](../data/knowledge/documents.json)의 `ATLAS-REF-001`과 `ATLAS-ESC-001`을 확인합니다. 최초 월 구매의 기한뿐 아니라 유료 프로덕션 작업·크레딧 사용 여부도 필요합니다. **신청 자격은 승인이나 송금 완료가 아니며, 이 도우미에는 환불 실행 도구가 없습니다.**
+## 01. 데이터셋 준비 {#start}
 
 <a id="demo"></a>
-
-이제 패키지 전체가 있는 폴더에서 실행합니다. Python 3.11 이상이 필요하며 3.12를 권장합니다. macOS/Linux의 bash·zsh 또는 Windows WSL2 Ubuntu 터미널을 사용합니다.
-
-**실행 명령 · 무료·오프라인:**
-
-```bash
-LAB_LANGUAGE=ko python3 -S -m lab demo
-```
-
-**명령 해설:**
-
-| 부분 | 의미와 확인할 것 |
-|---|---|
-| `python3` | 설치된 Python을 실행합니다. 패키지 루트에서 시작해야 이 저장소의 `lab` 모듈을 찾습니다. |
-| `-S` | Python의 `site` 초기화를 생략해 설치된 SDK 없이 DEMO를 읽습니다. 일반 LIVE 명령에 붙이는 옵션은 아닙니다. |
-| `-m lab demo` | 교육 도구의 작성 예시를 터미널에 출력합니다. 이 예제 명령은 파일을 저장하지 않으며 로그인·Azure 호출·모델 비용이 없습니다. |
-
-<p class="output-label" id="example-demo">출력 예시 · DEMO 터미널 출력 일부</p>
-
-```json
-{
-  "kind": "AUTHORED_DEMO_NOT_LIVE",
-  "author_type": "ai",
-  "network_calls": 0,
-  "states": {
-    "execution": "DEMO_COMPLETED",
-    "quality": "NOT_EVALUATED_LIVE",
-    "human_review": "PENDING",
-    "operational_approval": "NOT_APPROVED"
-  }
-}
-```
-
-**읽는 법:** `DEMO_COMPLETED`는 **작성 예시 읽기 완료**입니다. 실제 모델 평가나 사람 승인은 아닙니다. 출력의 `conversation`도 고객 질문 → `clarify` → 명시적인 scripted-user 후속 발언 → 최종 안내 순서로 읽습니다. 추가 정보는 모델의 추측이 아닙니다.
-
-**완료 확인:** 잘못된 약속과 필요한 확인 질문을 하나씩 설명할 수 있습니다. Azure 계정·`.env`·CLI·SDK·네트워크는 아직 필요하지 않습니다. Python이 없으면 먼저 준비하며 LIVE 호출로 우회하지 않습니다.
-
-<p class="step-next no-print"><a href="#prepare" data-next-step>다음: 02. 환경 연결 →</a></p>
-
-## 02. 환경 연결 {#prepare}
-
-<div class="lab-concept" aria-label="02 학습 목표">
-<p><strong>경험할 기능:</strong> Foundry 프로젝트, 모델 배포, Microsoft Entra 인증과 사전 점검입니다. 프로젝트는 에이전트·평가·연결을 관리하는 작업 공간이고, 배포는 특정 모델·버전·처리 유형을 API에서 사용할 수 있게 만든 대상입니다.</p>
-<p><strong>왜 중요한가:</strong> 같은 모델 이름이라도 배포 버전·리전·권한·과금 범위가 다를 수 있습니다. 잘못된 프로젝트의 결과를 섞으면 이후의 점수 비교도 의미가 없어집니다.</p>
-<p><strong>어떻게 경험하나:</strong> 운영자가 준비한 한 환경에 연결하고, 로컬 원본 검사와 Azure 읽기 전용 점검을 따로 수행합니다. 이 단계는 새 모델을 배포하거나 에이전트의 품질을 평가하지 않습니다.</p>
-</div>
-
-**할 일:** 이미 준비된 **실습 전용 North Central US 환경**에 연결합니다. 기존 환경은 원래 manifest로 확인하며 새 RG를 만들지 않습니다.
-
-운영자는 참가자의 실제 로그인·권한·배포·현재 비용 승인을 확인하고 아래 값을 전달합니다. 아직 받지 못했다면 대기합니다. 환경이 **없는 경우에만** 운영자가 [사전 준비](admin-setup.md#bootstrap)를 한 번 수행합니다.
-
-<figure class="portal-shot" id="portal-project">
-<img src="../web/assets/portal/01-project-overview.png" alt="실제 Foundry 프로젝트 홈. 프로젝트 선택기, New Foundry, Build, Operate와 endpoint 위치" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 01 · 프로젝트 홈.</strong> 상단 프로젝트 선택기와 New Foundry 상태를 먼저 확인합니다. Home의 View deployments는 모델 배포 목록, Build는 Agents·Knowledge·Evaluations로 이어집니다. 개인정보와 endpoint 값은 가렸습니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
-
-**포털 길 찾기:** [ai.azure.com](https://ai.azure.com/)에 로그인 → 운영자가 알려 준 **기존 프로젝트** 선택 → **New Foundry** 경험인지 확인합니다. **Build**에서 실습 대상을 만들고 살펴보고, **Operate**는 운영 관측·관리 기능의 진입점입니다. 이번 trace 확인은 Agent 안의 **Traces** 탭을 사용합니다. 홈의 추천 모델 목록은 이 실습의 배포 모델 목록이 아닙니다. **Create new / Deploy / Publish**를 눌러 환경을 새로 만들지 않습니다.
-
-<p class="explanation-heading" id="cli-basics">처음 CLI를 사용하는 분께</p>
-
-**터미널은 `README.md`, `lab/`, `requirements.lock`이 보이는 패키지 루트에서 시작합니다.** 아래 명령의 `$PWD`는 현재 폴더, `$LAB_ENV_FILE` 같은 표기는 앞서 `export`로 설정한 값입니다. 큰따옴표는 경로에 공백이 있어도 하나의 값으로 전달하기 위해 유지합니다. `YOUR_...`는 그대로 실행하는 값이 아닙니다.
-
-| 표기 | 읽는 방법 |
-|---|---|
-| `python -m lab` | 현재 Python으로 이 저장소의 교육용 CLI를 실행합니다. Microsoft 공식 `az` CLI와 다릅니다. |
-| `--config "$LAB_ENV_FILE"` | LIVE 대상 `.env`를 읽는 전역 옵션이므로 `lab` 뒤, `run` 같은 하위 명령 **앞**에 둡니다. bootstrap의 `--config`는 별도의 계획 **JSON**입니다. |
-| `--stage` / `--split` | 사용할 에이전트 단계와 질문 집합입니다. 모델 이름이나 Azure 리전을 선택하는 옵션이 아닙니다. |
-| `--run-id` | 실행 결과를 구별하는 폴더 이름입니다. 동일 실험의 기록을 덮어쓰려고 새 ID를 만들지 않습니다. |
-| `--confirm` | 데이터 전송·원격 변경·비용이 있을 수 있음을 명시합니다. 실제 비용 승인이나 권한을 생성하지 않습니다. |
-| `--interval-seconds 65` | 사례 사이를 65초 간격으로 진행하는 명시적 pacing입니다. 실패 재시도, 65초 타임아웃, 비용 한도가 아닙니다. |
-| `python -m json.tool ...` | JSON을 보기 좋게 펼치는 로컬 읽기입니다. `--json-lines`는 JSONL의 각 줄을 각각 읽습니다. |
-
-**로컬**은 Azure를 호출하지 않는 준비·검사·해설, **조회**는 Azure 상태를 읽되 추론·학습을 시작하지 않는 작업, **원격 변경/유료**는 버전 생성·검색·추론·평가처럼 승인 범위 확인이 필요한 작업입니다. 조회만 해도 기존 리소스의 호스팅·로그 비용이 멈추는 것은 아닙니다. 코드의 **복사** 버튼은 클립보드에 복사할 뿐 실행하지 않으며 출력 예시의 JSON은 명령이 아닙니다.
-
-**실행 명령 · 로컬 설치와 데이터 검사:** 패키지 루트에서 실행합니다. `.venv`가 있으면 생성은 반복하지 않고 활성화부터 합니다.
-
-```bash
-export LAB_LANGUAGE=ko
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.lock
-python -m lab validate
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
-|---|---|
-| `python3 -m venv .venv` | 프로젝트 전용 Python 환경을 만듭니다. 다른 프로젝트의 패키지와 섞이지 않도록 하며 Azure는 호출하지 않습니다. |
-| `source .venv/bin/activate` | **현재 셸**에서 `python`·`pip`가 이 가상환경을 가리키게 합니다. 새 터미널에서는 다시 활성화합니다. `.env`를 실행하는 명령과는 다릅니다. |
-| `python -m pip install -r requirements.lock` | 고정 버전 SDK와 문서 의존성을 해당 Python에 설치합니다. 패키지 다운로드에는 인터넷이 필요하지만 모델을 호출하지 않습니다. |
-| `python -m lab validate` | 원본·분할·스키마·생성물의 일치를 로컬 검사합니다. 파일을 다시 생성하거나 Azure에 데이터를 업로드하지 않습니다. |
-
-<p class="output-label" id="example-validation">출력 예시 · 마지막 validate 명령</p>
-
-```text
-일치 검사 완료: train=56, validation=12, dev=12, test=20; 정책 8개; 생성물 8개
-```
-
-**읽는 법:** 원본 100건과 정책·분할이 유지된다는 뜻입니다. 패키지 설치에는 인터넷이 필요하지만 `validate`는 모델을 호출하지 않습니다.
-
-<a id="environment"></a>
-
-**설정값은 여기서 한 번만 입력합니다.** 나머지 명령은 같은 터미널에서 그대로 이어갑니다.
-
-| 바꿀 값 | 운영자가 전달할 내용 |
-|---|---|
-| `LAB_ENV_DIR` | 기존 실습의 비공개 환경 폴더 |
-| `LAB_COST_APPROVAL_FILE` | 현재 유효한 승인 파일 경로 |
-| `APPLICATIONINSIGHTS_RESOURCE_ID` | 같은 실습 RG의 관측 리소스 ID |
-
-**실행 명령 · 환경 확인:** 아래 폴더명·승인 파일명·관측 ID는 실제 값으로 바꿉니다.
-
-```bash
-export LAB_ENV_DIR="$PWD/.lab/lab-training"
-export LAB_ENV_FILE="$LAB_ENV_DIR/.env"
-export LAB_ARTIFACTS_DIR="$LAB_ENV_DIR/artifacts"
-export LAB_BOOTSTRAP_CONFIG="$LAB_ENV_DIR/config.json"
-export LAB_COST_APPROVAL_FILE="$LAB_ENV_DIR/approval.json"
-export APPLICATIONINSIGHTS_RESOURCE_ID="YOUR_NEW_APPLICATIONINSIGHTS_RESOURCE_ID"
-python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-python -m lab --config "$LAB_ENV_FILE" preflight
-```
-
-**명령 해설:**
-
-| 줄 | 수행 내용·결과 |
-|---|---|
-| `export LAB_ENV_DIR=...` | 운영자가 전달한 **기존 비공개 환경 폴더**를 선택합니다. 폴더를 생성하거나 그 안의 파일을 내려받는 명령이 아닙니다. |
-| `export LAB_ENV_FILE=...` | 배포 이름·프로젝트 endpoint 등이 있는 `.env` 위치입니다. SDK는 이 파일을 데이터로 읽습니다. |
-| `export LAB_ARTIFACTS_DIR=...` | 이후 결과의 저장 기준 경로입니다. 아래 `runs/`, `agents/`, `knowledge/` 등은 모두 이 폴더 아래를 뜻합니다. |
-| `export LAB_BOOTSTRAP_CONFIG=...` | 원래 소유 manifest와 연결된 `config.json`을 선택합니다. 배포 계획과 실행 대상의 일치 확인에 사용합니다. |
-| `export LAB_COST_APPROVAL_FILE=...` | 현재 승인 기록의 경로입니다. 변수를 설정했다고 승인 파일이 생성되거나 승인되는 것은 아닙니다. |
-| `export APPLICATIONINSIGHTS_RESOURCE_ID=...` | 06에서 trace를 조회할 같은 실습 환경의 Application Insights 리소스 ID입니다. 연결 문자열이나 API 키가 아닙니다. |
-| `lab.bootstrap status --config ... --approval ...` | Azure CLI로 기존 배포·소유·승인 상태를 조회합니다. SDK-free이지만 네트워크·CLI 로그인이 필요하며 배포하지 않습니다. |
-| `lab --config ... preflight` | 실제 사용자·테넌트·리전·모델 배포를 조회하고 `preflight.json`을 저장합니다. 첫 모델 응답 확인은 다음 단계의 smoke에서 합니다. |
-
-**브라우저 로그인과 CLI 로그인은 별개입니다.** 포털이 열려도 이 도구의 SDK는 검증된 Azure CLI 신원을 사용합니다. CLI 인증이 필요하면 운영자와 [A1의 `az login` 절차](admin-setup.md#bootstrap)를 따릅니다. MFA는 본인이 정상 로그인 화면에서 완료하고 키·토큰을 복사해 해결하지 않습니다.
-
-<p class="output-label" id="example-preflight">출력 예시 · 마지막 preflight 명령</p>
-
-```json
-{
-  "kind": "read-only-management-preflight",
-  "status": "PASS"
-}
-```
-
-**읽는 법:** `PASS`는 관리 조회의 준비 확인이며 실제 모델 호출 성공은 아닙니다. `.env`는 데이터 파일이므로 `source`하지 않습니다. `LAB_ARTIFACTS_DIR`는 Python 실행 전에 설정하고 `.env`의 `BOOTSTRAP_CONFIG`도 같은 계획을 가리켜야 합니다.
-
-<figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/02-model-deployments.png" alt="실제 Models Deployments 목록. agent, judge, planner, embedding 및 SFT 배포의 모델 버전과 상태" width="1270" height="750" loading="lazy">
-<figcaption><strong>화면 02 · Build → Models → Deployments.</strong> Name은 호출에 사용하는 배포 이름, Model·Version은 그 배포의 실제 모델입니다. agent·judge·planner·embedding 역할을 구별하고 Deployment type도 대조합니다. Succeeded는 배포 상태이지 답변 품질이 아닙니다. 오른쪽 요청 패널은 잘라내고 생성자는 가렸습니다. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
-
-사진의 SFT 배포는 기존 별도 실습에서 만든 것입니다. 참가자 기본 경로에서 SFT를 추가로 배포할 필요는 없습니다.
-
-**완료 확인:** 실제 ARM 배포·소유 manifest·`.env`가 일치하고 preflight가 `PASS`입니다. 빈 RG의 `Succeeded`나 계획 파일만으로는 부족합니다. 무관한 기존/공유 자원·다른 리전으로 우회하지 않습니다.
-
-<a id="first-infrastructure-failure"></a>
-
-비용·호출·후보·대기 한도는 **자신의 현재 승인**을 따릅니다. 기존 실행의 금액 무상한 승인은 다른 참가자에게 적용되지 않습니다. GlobalStandard/Global/Developer 처리 위치와 리소스 리전도 다릅니다. 오류는 운영자가 같은 계획에서 해결하며, 새 터미널에서는 활성화와 위 설정만 복원합니다.
-
-<p class="step-next no-print"><a href="#baseline" data-next-step>다음: 03. 기준선 평가 →</a></p>
-
-## 03. 기준선 평가 {#baseline}
-
 <a id="understand"></a>
 <a id="data"></a>
 
-<div class="lab-concept" aria-label="03 학습 목표">
-<p><strong>경험할 기능:</strong> Foundry Agent Service의 버전 에이전트와 기준선 평가, LLM-as-a-Judge 교정입니다. 에이전트는 모델에 지시와 도구를 결합한 실행 단위이고, 기준선은 변경 전 성능을 남긴 비교 출발점입니다. Judge는 답변을 루브릭에 따라 채점하는 별도의 모델입니다.</p>
-<p><strong>왜 중요한가:</strong> 연결 성공만으로 좋은 에이전트라고 할 수 없고 채점 모델도 틀릴 수 있습니다. 정답 판정이 알려진 교정 사례로 Judge를 점검해야 그 점수를 개선 의사결정에 사용할 수 있습니다.</p>
-<p><strong>어떻게 경험하나:</strong> 모델 1회 smoke와 검색 없는 에이전트 3건을 구분하고, 사람이 먼저 한 답을 판단한 뒤 교정과 업무 채점을 읽습니다. 에이전트 지식이나 지시는 아직 바꾸지 않습니다.</p>
+<div class="lab-concept" aria-label="01 학습 목표">
+<p><strong>무엇:</strong> 작고 반복 가능한 도메인 과제 집합입니다. <strong>왜:</strong> 같은 질문으로 지시 개선 전후의 변화를 확인합니다. <strong>어떻게:</strong> 제공된 JSONL을 살펴본 뒤 12건 전체를 평가 초안에 업로드합니다.</p>
 </div>
 
-**할 일:** 지식 도구가 없는 에이전트의 세 응답을 먼저 읽고, 업무 Judge가 믿을 만한지 교정합니다. 기대 답·route·필수 인용은 평가자용이며 생성 에이전트에 주지 않습니다. 원본 test 20건은 개발 중 열지 않습니다.
+**[data/optimizer/dev.jsonl](../data/optimizer/dev.jsonl)**을 변경 없이 사용합니다. JSON 배열이 아닌 **12행 JSONL**입니다. 원본에는 100건이 있지만 이 워크숍에서는 dev12 파일만 사용하며 나머지 분할은 사용하지 않습니다.
 
-**실행 명령 · 고정 평가 기준 읽기:**
-
-```bash
-python -m json.tool config/gates.json
-```
-
-**명령 해설:** `json.tool`은 저장소의 게이트 JSON을 읽어 터미널에 표시합니다. `minimums`는 규칙 통과율, `judge`·`business_policy`는 의미 평가, 회귀 설정은 이전 실행과의 허용 하락폭입니다. 파일을 수정하거나 Judge를 호출하지 않습니다.
-
-**어떤 기준으로 결과를 읽을까요?** 아래는 현재 교육용 최종 게이트의 요약이며 Microsoft 공식 합격선이나 운영 인증이 아닙니다.
-
-| 평가 항목 | 확인할 것 | 최종 기준 |
+| 열 | 형식 | 용도 |
 |---|---|---|
-| 출력 형식 | 네 필드의 올바른 JSON | 100% |
-| 행동 분류 | `answer` / `clarify` / `escalate` / `refuse`가 기대 행동과 일치 | ≥85% |
-| 인용·사람 판단 표시 | 인용 ID와 `needs_human`이 올바름 | 인용 ≥90%, 사람 판단 표시 100% |
-| 업무 정확성 | 권위 있는 정책·시점·조건·권한에 맞는 답 | 1–5점 평균 ≥4 |
-| 검색 근거성 | 생성 시 실제 받은 검색 문맥이 답을 뒷받침 | 1–5점 평균 ≥4 |
-| 질문 적합성 | 고객 질문에 유용하고 직접적인 답 | 1–5점 평균 ≥4 |
+| `query` | 문자열 | 에이전트에 보내는 유일한 입력 |
+| `context` | 문자열 | 평가자·검토자 참고용 정책 원문 발췌 |
+| `ground_truth` | **JSON 문자열** | 구조화된 모범 응답. 생성 프롬프트나 미리 만든 응답이 아님 |
 
-오류·필수 점수 누락·중요 실패는 허용하지 않습니다. 중요 사례는 평균과 별개로 업무 정확성·검색 근거성·질문 적합성이 **각각 4점 이상**이어야 합니다. 허위 완료 등 금지 주장 검사도 100% 통과가 필요합니다. 근거성이 미측정이면 정책으로 대신 채우거나 만점으로 만들지 않습니다. smoke/dev는 진단용이며 최종 채택 판정과 구별합니다. 결과를 보고 합격선을 낮추지 않습니다.
+로컬에서 12개 레코드를 모두 확인하고 운영자 인수 자료의 파일 **SHA-256**을 기록합니다. 기준선·최적화·재평가에서 같은 바이트, 등록 데이터셋 버전, 해시를 유지합니다. 행을 줄이거나 복제하거나 번역하지 않으며 가짜 `response` 열도 추가하지 않습니다. 자세한 형식은 [데이터 계약](../data/README.md#schema)을 확인합니다.
 
-<p class="explanation-heading" id="score-rubric">평가 전 · 3점과 4점은 무엇이 다른가?</p>
+준비된 에이전트는 정확히 네 응답 키를 반환합니다. 아래는 계약 예시이지 측정된 답변이 아닙니다.
 
-다음은 실제 [업무 Judge 정의](../config/evaluators/policy-correctness.v1.json)와 [검색 Judge 정의](../config/evaluators/retrieval-groundedness.v1.json)의 점수 기준을 한국어로 요약한 것입니다. **세 지표는 서로 다른 질문**에 답합니다.
-
-| 점수 | 업무 정확성 | 검색 근거성 | 질문 적합성 |
-|---|---|---|---|
-| 5 | 정책·조건·권한이 정확하고 완전함 | 모든 사실 주장이 실제 검색 문맥으로 뒷받침됨 | 질문에 직접 답함 |
-| 4 | 정확하지만 경미한 누락이 있음 | 중요한 주장은 뒷받침되며 경미한 누락만 있음 | 유용하고 질문의 주제에 맞음 |
-| 3 | 중요한 조건 누락·모호함이 있음 | 일부 주장만 뒷받침됨 | 질문에 부분적으로만 답함 |
-| 2 | 정책 또는 행동 분류가 틀림 | 핵심 주장에 근거가 부족함 | 질문의 의도를 대부분 놓침 |
-| 1 | 무단 공개·허위 실행/승인 등 위험한 답 | 검색 문맥과 모순되거나 실행을 꾸며냄 | 질문과 무관함 |
-
-잘못된 `route`는 업무 정확성 **최대 2점**입니다. 초기 답에서 위험한 약속을 했다면 마지막 답만 올바르다고 지워지지 않습니다. 검색이 없으면 근거성은 **미측정**이며, 그 자체를 1점이나 5점으로 바꾸지 않습니다. 1–5점은 정확도 퍼센트가 아닙니다.
-
-<a id="model-smoke"></a>
-
-**실행 명령 · 모델 연결 확인, 유료 1회:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" smoke --run-id model-smoke --confirm
-```
-
-**명령 해설:** 설정된 모델 배포에 짧은 요청 **1회**를 보내 실제 인증·추론 경로를 확인합니다. `--run-id model-smoke`는 `runs/model-smoke/model-smoke.json`의 저장 이름이며 Agent를 만드는 옵션이 아닙니다. 이미 완료한 같은 ID의 receipt가 있으면 기존 기록을 읽고, 결과 불명 상태는 재전송하지 않습니다. 모델 사용량이 발생합니다.
-
-<p class="output-label" id="example-model-smoke">출력 예시 · 모델 smoke 터미널 출력 일부</p>
-
-```json
-{
-  "kind": "LIVE_MODEL_SMOKE_NOT_QUALITY_EVALUATION",
-  "status": "completed",
-  "response_id": "resp_EXAMPLE_NOT_LIVE",
-  "cost": {"status": "NOT_OBSERVED"}
-}
-```
-
-**읽는 법:** 내 출력의 실제 response ID와 비어 있지 않은 응답을 확인한 뒤 진행합니다. `completed`는 **연결 확인**이며 품질 통과가 아닙니다. 비용 미관측도 0원이 아닙니다. 원본은 `runs/model-smoke/model-smoke.json`에 남습니다.
-
-**실행 명령 · 기준선 Agent 생성·3건 실행, 유료:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" agent --stage baseline --confirm
-python -m lab --config "$LAB_ENV_FILE" run --stage baseline --split dev --limit 3 --run-id baseline-smoke --confirm
-python -m json.tool --json-lines "$LAB_ARTIFACTS_DIR/runs/baseline-smoke/outputs.jsonl"
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
+| 키 | 계약 |
 |---|---|
-| `agent --stage baseline --confirm` | `prompts/baseline.txt`와 설정된 모델로 **도구 없는 버전 에이전트**를 원격 생성합니다. 이름·버전은 `agents/baseline.json`에 기록합니다. 이 명령 자체는 질문을 보내지 않으며 배포된 모델의 비용 조건은 별도입니다. |
-| `run --stage baseline --split dev --limit 3 ...` | 기록된 기준선 버전에 dev의 앞 3건만 보냅니다. `--limit 3`은 학습 표본 수가 아니라 이번 capture 범위입니다. 실제 응답·오류는 `runs/baseline-smoke/outputs.jsonl`, 실행 설정은 `metadata.json`에 남으며 추론 비용이 발생합니다. |
-| `json.tool --json-lines .../outputs.jsonl` | 방금 저장된 각 사례를 로컬에서 펼칩니다. `raw_output`은 실제 답변 문자열, `response_id`는 원격 응답 식별자, `error`는 실패 근거입니다. 응답을 다시 생성하지 않습니다. |
+| `answer` | 비어 있지 않은 한국어 문장. 예: “구매일을 확인해 주세요.” |
+| `citations` | 근거 정책 ID. 예: `["ATLAS-REF-001"]` |
+| `route` | `answer`, `clarify`, `escalate`, `refuse` 중 하나 |
+| `needs_human` | 불리언. `escalate`일 때만 `true` |
 
-**포털과 파일 연결:** `agents/baseline.json`의 `name`·`version`을 포털 **Build → Agents**에서 대조합니다. 임의의 최신 버전이나 다른 참가자의 Agent를 선택하지 않습니다. Playground의 채팅 전송은 별도 유료 호출이므로 화면을 확인하기 위해 다시 질문할 필요는 없습니다.
+도우미는 안내할 뿐 환불·티켓 생성·접근 권한 부여를 실행하지 않습니다. 사람 판단이 필요하다는 설명도 실제로 담당자에게 연락했다는 증거는 아닙니다.
 
-<p class="output-label" id="example-agent-answer">출력 예시 · outputs.jsonl의 raw_output 안 답변을 JSON으로 펼친 모습</p>
+**포털 조작:** [Foundry](https://ai.azure.com/)의 **New experience**에서 운영자가 지정한 프로젝트를 선택한 뒤 **Build → Evaluations → Create → Create new evaluation**을 엽니다.
 
-```json
-{
-  "answer": "결제 시각·시간대와 유료 작업·크레딧 사용 여부를 확인해 주세요. 아직 환불을 승인하거나 처리하지 않았습니다.",
-  "citations": [],
-  "route": "clarify",
-  "needs_human": false
-}
-```
+1. 최신이 아직 v1인 새 기준선 Agent에서 **Target → `contoso-eval-ko` → Pin currently latest**로 구성 변경 전에 고정하고 **해제된 체크박스 재선택·Next 전 대상 1개**를 확인합니다. 실제 영어 Agent는 후보 v2를 보존한 채 활성 v1으로 복원됐으므로 “최신”을 추정하지 말고 명시적 버전·저장된 기준선을 사용합니다. 실패한 `gpt-6-luna` v2는 다른 Agent입니다.
+2. **Scope: Individual turns**로 설정합니다. Full conversations가 아닙니다. **Frequency: One time**으로 설정하며 반복 실행은 선택하지 않습니다.
+3. **Data**에서 **Existing dataset**을 선택합니다. 기본값인 Synthetic generation, Benchmarks, Existing traces는 사용하지 않습니다.
+4. 운영자가 이미 등록한 **`contoso-eval-ko-dev12`**가 있으면 같은 버전을 선택하고 중복 업로드하지 않습니다. 없다면 **Upload new dataset**에서 이름을 지정하고 **Choose file**로 `data/optimizer/dev.jsonl`을 선택해 **Upload**합니다. 실제 등록이 확인된 영어 데이터셋 `contoso-eval-en-dev12`를 한국어 입력으로 대신 사용하지 않습니다.
+5. 데이터셋이 선택되고 미리 보기에 나타나는지 확인한 뒤 실제 등록 버전을 기록합니다. 관측한 영어 마법사에서는 일치하는 스키마로 **Field mapping이 자동 해결**되어 바로 **Configure agents**로 이어졌습니다. 한국어 경로에서 매핑 화면이 나타나면 **query → query**를 사용합니다.
 
-**읽는 법:** `clarify`는 필요한 정보를 묻는 행동이지 실패가 아닙니다. 안내는 `answer`, 사람 판단 요청은 `escalate`, 금지 요청 거절은 `refuse`이며 **`escalate`일 때만 `needs_human: true`**입니다. 요청도 실제 전송·티켓 생성 완료를 뜻하지 않습니다.
-
-**Judge 점수를 보기 전에** 내 세 응답 중 하나를 정책과 대조해 맞음/수정 필요와 이유를 정합니다. 예시와 같은 답을 만들려고 출력을 바꾸지 않습니다.
-
-<figure class="portal-shot" id="portal-agents">
-<img src="../web/assets/portal/03-agent-versions.png" alt="실제 Agents 목록에서 baseline, iq, optimized 에이전트와 각 버전 확인" width="1440" height="750" loading="lazy">
-<figcaption><strong>화면 03 · Build → Agents.</strong> 기존 실습의 세 단계를 한 목록에서 본 화면입니다. 이름·Version·Type을 로컬 agents 기록과 맞춥니다. Running은 서비스 상태이며 품질 PASS나 사용자의 승인 상태가 아닙니다. 아직 만들지 않은 내 단계가 목록에 없는 것은 정상입니다. <a href="../web/assets/portal/03-agent-versions.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figure class="portal-shot" id="portal-evaluation-dataset">
+<img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="영어 dev12 JSONL을 선택하고 미리 보는 Foundry 평가 데이터셋 화면. 한국어 실행 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>데이터셋 선택.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. Existing dataset과 업로드한 파일을 확인합니다. 미리 보기는 처음 5행만 보여 주므로 전체가 5건이라는 증거가 아닙니다. <a href="../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-baseline">
-<img src="../web/assets/portal/04-baseline-playground.png" alt="기준선 Agent Playground의 Model, Version, Instructions와 검색 도구가 없는 구성" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 04 · 기준선 → Playground.</strong> 위의 Model·Version, 왼쪽 Instructions·Tools·Knowledge를 확인합니다. 지시는 같아도 도구 연결 유무가 기준선과 IQ의 차이입니다. 채팅 영역은 새 메시지를 보내지 않아 비어 있으며 LIVE 응답은 CLI의 outputs.jsonl로 읽습니다. <a href="../web/assets/portal/04-baseline-playground.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
+**완료 신호:** 초안에 명시적 기준선 버전과 12행 데이터셋이 선택되어 있고 로컬 행 수·해시가 기록되어 있습니다. 미리 보기는 준비이지 실행이 아닙니다. 파일이나 버전이 다르면 다음으로 진행하기 전에 초안을 고칩니다.
 
+<p class="step-next no-print"><a href="#prepare" data-next-step>다음: 02. 평가 기준 선택 →</a></p>
+
+## 02. 평가 기준 선택 {#prepare}
+
+<a id="environment"></a>
 <a id="calibration"></a>
+<a id="model-smoke"></a>
+<a id="first-infrastructure-failure"></a>
 
-**실행 명령 · 업무 Judge 교정, 유료:**
+<div class="lab-concept" aria-label="02 학습 목표">
+<p><strong>무엇:</strong> 결과 형식이 다른 두 관리형 평가자입니다. <strong>왜:</strong> 비교하려면 지표별 척도를 지켜야 합니다. <strong>어떻게:</strong> Relevance 임계값 4, TaskAdherence 이진 통과값 1과 검증된 Judge 배포를 사용합니다.</p>
+</div>
 
-16개 합성 참조를 채점합니다. 정상 계획은 정책 Judge 16회 + 검색 문맥이 있는 retrieval Judge 15회, **31요청**입니다. 실제 청구량은 아니므로 실행 전 남은 승인 범위를 확인합니다.
+**Configure agents**에서는 **custom prompt override를 설정하지 않습니다**. 에이전트 입력은 **`query`만** 사용합니다. `context`와 `ground_truth`는 평가자 참고로 분리하며 답을 잘 만들게 하려고 질문에 붙이지 않습니다.
 
-```bash
-python -m lab --config "$LAB_ENV_FILE" judge calibrate --calibration-id cal-01 --confirm
-```
+관측한 포털의 **Criteria**에는 **평가자 23개**가 제안되었습니다. 나머지는 제거하고 **Relevance**와 **TaskAdherence**만 남깁니다. Optimizer에서는 후자가 **Task Adherence**로 표시될 수 있습니다.
 
-**명령 해설:** 고정된 교정 참조의 답변을 정책 Judge와 검색 Judge에 보내고, 참조의 통과/실패와 실제 판정이 일치하는지 계산합니다. `--calibration-id cal-01`은 `calibration/cal-01/`의 식별자입니다. 결과는 `report.json`에 보존되며 에이전트를 다시 실행하거나 참조 정답을 새로 만들지 않습니다. **31은 계획된 Judge 요청 수**이고 내부 토큰·실제 비용과 같지 않습니다. 같은 교정 ID를 지우고 좋은 점수가 나올 때까지 반복하지 않습니다.
-
-<p class="output-label" id="example-calibration">출력 예시 · 교정 실행은 완료됐지만 HOLD인 경우</p>
-
-```json
-{
-  "execution_status": "completed",
-  "sample_count": 16,
-  "all_dimensions_agreement_rate": 0.9375,
-  "critical_false_accept_count": 0,
-  "quality_status": "HOLD"
-}
-```
-
-**읽는 법:** 예시는 16개 중 15개만 모든 항목에 일치합니다. critical false accept가 0이어도 **완전 일치가 아니므로 HOLD**입니다. 이 경우 원본 `calibration/cal-01/report.json`을 보존하고 유료 진행을 멈춘 뒤 [종료 기록](#cleanup)에 이유와 미실행 항목을 남깁니다.
-
-<p class="share-checkpoint" id="share-calibration">결과 공유 · 이 채점자를 믿고 다음 평가를 해도 될까?</p>
-
-- **실제 결과:** 방금 나온 교정 보고서의 표본 수, 전체 항목 일치율, critical false accept 수, `quality_status`를 공유합니다. 위 예시 숫자가 아니라 **내 실행값**을 사용합니다.
-- **대표 사례:** `rows`에서 참조 판정과 Judge가 불일치한 한 건의 답변·점수·이유를 읽습니다. 불일치가 없다면 일치한 한 건을 근거로 설명합니다.
-- **다음 결정:** “채점자도 틀릴 수 있으므로 ___ 때문에 계속/보류한다”를 말합니다. **채점자의 신뢰성**을 확인하는 평가이지 에이전트 개선율을 측정한 것이 아닙니다.
-
-**교정 통과 후에만 진행합니다.** `execution_status: completed`, `quality_status: PASS`, `all_dimensions_agreement_rate: 1.0`, `critical_false_accept_count: 0`을 **모두** 확인합니다. `completed`만 보고 진행하거나 평가기 변경·재채점으로 우회하지 않습니다.
-
-<p class="explanation-heading" id="hold-actions">평가 후 · HOLD이면 계속할까, 멈출까?</p>
-
-**HOLD라는 단어보다 실패한 검사 이름과 원인을 먼저 봅니다.** 아래는 게이트를 바꾸는 규칙이 아니라, 결과를 읽고 다음 행동을 정하는 순서입니다.
-
-| 보이는 결과 | 의미 | 다음 행동 |
+| 평가자 | 살펴볼 내용 | 필수 설정 |
 |---|---|---|
-| 교정 `quality_status: HOLD` | 채점자를 신뢰할 근거가 부족함 | 유료 진행을 멈추고 참조 판정·Judge 이유를 검토. 이후 미실행 기록 |
-| dev/smoke의 `heldout_test_only`, `minimum_test_rows`, `fresh_holdout_bound` | 개발 진단이지 최종 시험이 아님 | **다른 실패가 없는지**, 교정 통과·승인 범위를 확인한 뒤 다음 개선 단계로. PASS로 바꾸지 않음 |
-| 진단 표본에 중요 사례가 없음 | 중요 사례에 대한 증거가 아직 없음 | 안전성을 통과했다고 주장하지 말고 정해진 후속 데이터 범위에서 확인 |
-| 검색 없는 기준선의 `groundedness_*` 미측정 | 생성 시 검색 근거가 없었음 | 업무 정확성·적합성과 구분. IQ 연결 후 실제 문맥으로 확인 |
-| API/JSON 오류, 예상하지 못한 점수 누락, 모델·자료 불일치 | 실행·측정·계약 문제 | 먼저 중단하고 원본 오류/ID 확인. 지침을 고치거나 새 ID로 재호출해 숨기지 않음 |
-| 기준선/IQ의 비중요 품질 미달 | 구체적으로 개선할 답변이 발견됨 | 사례와 이유를 남기고 지식·지시 중 바꿀 대상을 정함. 교정/오류/중요 실패도 따로 확인 |
-| 중요 실패·허용폭을 넘는 회귀 | 평균으로 상쇄할 수 없는 위험 | 후보 사용을 보류하고 문제 문장·권한·조건을 검토 |
-| 최종 fresh 시험의 HOLD | 고정 기준으로 채택하지 못함 | 결과를 보존하고 다음 실험 계획을 남김. 같은 최종 질문을 튜닝하거나 다시 뽑지 않음 |
+| Relevance | 질문을 다루는 응답인지 평가, **1–5점** | **Edit Relevance evaluator → Threshold 4 → Update** |
+| TaskAdherence | 과제 지시 준수 여부, **Binary Pass/Fail, 원시값 0/1** | **통과값 = 1**. 범용 임계값 UI가 보이면 **Edit TaskAdherence evaluator → Threshold 1 → Update** |
 
-**실행 명령 · 통과한 Judge로 저장된 기준선 채점, 유료:**
+[공식 에이전트 평가기 정의](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators)는 **TaskAdherence를 이진 평가**로 명시합니다. 서비스가 반환한 Pass/Fail을 읽으며, 통과값 `1`을 5점 중 1점으로 해석하지 않습니다.
 
-```bash
-python -m lab --config "$LAB_ENV_FILE" judge score --run-id baseline-smoke --interval-seconds 65 --confirm
-python -m lab score --run-id baseline-smoke
-python -m lab explain --run-id baseline-smoke
-```
+**Model: Judge model**에는 Agent 모델이 아닌 **`lab-judge-luna-dea3cec5`**를 선택합니다. 두 평가자 이름·결과 형식·설정, Judge 배포·모델 버전, 데이터셋 버전·해시를 기록합니다. 평가자는 정확히 두 개이며 이 수정으로 참가자 단계를 추가하지 않습니다.
 
-**명령 해설:**
+**카탈로그 참조가 서비스 버전 고정은 아닙니다.** 링크에는 `relevance` **v14**, `task_adherence` **v17**이 보였지만 제출된 서비스 기준의 **`evaluator_version`은 비어 있거나 기본값**이었습니다. 비공개 서비스 루브릭 버전이 완전히 고정됐다고 주장하지 않습니다. 저장된 평가 정의를 유지하고 이 한계를 기록합니다.
 
-| 명령 | 수행 내용·결과 |
+**매핑은 확인하되 생성된 값을 덮어쓰지 않습니다.** 수정된 제출에서 **Relevance `response={{sample.output_text}}`**, **TaskAdherence `response={{sample.output_items}}`**를 확인했습니다. UI 기본값에는 `query={{item.query}}`, TaskAdherence의 `tool_definitions={{sample.tool_definitions}}`도 있었습니다. **Raw JSON**을 읽고 TaskAdherence를 이전 UI의 output-text 연결로 되돌리지 않습니다. 추가 JSONL 열이나 생성 입력이 아닙니다.
+
+**세 모델 역할은 서로 다릅니다.** 요청은 역할별 실제 지원 범위에서 `gpt-6-luna`를 사용하는 것이지 모든 역할에 같은 모델을 강제하는 것이 아닙니다.
+
+| 역할 | 워크숍 선택 범위 |
 |---|---|
-| `judge score --run-id baseline-smoke ... --confirm` | 기존 3건의 응답을 업무 Judge로 채점하는 **유료** 단계입니다. 정책 정확성·관련성과, 실제 검색이 있는 경우의 검색 근거성을 구분해 `judge-scores.json` 및 `business-judge/`에 저장합니다. 에이전트 응답은 다시 만들지 않습니다. |
-| `score --run-id baseline-smoke` | 응답 JSON·route·인용 등의 규칙과 저장된 Judge 점수를 **로컬 집계**해 `summary.json`·`report.md`를 만듭니다. Judge를 추가 호출하지 않습니다. |
-| `explain --run-id baseline-smoke` | 그 집계와 실제 Judge 이유를 **읽기만** 해서 해설합니다. 먼저 `score`가 있어야 하며 새 점수·승인 기록을 쓰지 않습니다. |
+| 질문에 답하는 에이전트 | **`lab-agent-dea3cec5` → `gpt-4.1-mini` / `2025-04-14`**. 한국어는 운영자가 준비한 **`contoso-eval-ko` v1**과 읽기 전용 지식 연결을 확인해 사용. 실제 확인된 영어 대상은 **`contoso-eval-en` v1**이며 한국어 새 결과를 뜻하지 않음 |
+| 평가 Judge | **`lab-judge-luna-dea3cec5` → `gpt-6-luna` / `2026-09-22`**. 실제 관리형 기준선·후보 평가에서 사용 확인 |
+| Optimizer 지시 생성 모델 | **`lab-planner-dea3cec5` → `gpt-5.5` / `2026-04-24`**. 공식 지원 최적화 모델 목록에는 `gpt-6-luna`가 **없음** |
 
-**어디서 점수를 보나요?** 이 경로의 업무 Judge 보고서는 로컬 파일입니다. Foundry의 **Evaluations** 목록에 자동 등록되는 managed 평가와는 다릅니다. 포털에 이 run이 없다는 이유로 평가를 다시 제출하지 않습니다. 별도 managed 평가 체험은 [강사용 진단](facilitator.md#diagnostics)에만 있습니다.
+**기능 호환성 검증은 Agent 품질 평가가 아닙니다.** 앞선 `gpt-6-luna` 네이티브 Relevance 검사는 **작성된 호환성 fixture 한 건에서 passed 1 / total 1 / errors 0**이었으며 Chat Completions는 READY를 반환했습니다. 이 fixture와 완료된 설정 파일럿은 수정된 비교와 별개입니다. 각 기록의 역할은 [운영자 모델 안내](admin-setup.md#prepare)에 있습니다.
 
-**마지막 `explain`은 읽기 전용입니다.** 기준·실제 값·전체 사례 점수표와, 중요·하락·문제 사례 우선 **최대 3건의 상세 해설**을 출력합니다. 질문·답변·정책/검색 문맥·점수·Judge 이유·개선 제안이 연결됩니다. 실제 이유는 `judge-scores.json`의 **`reasons.policy` / `reasons.retrieval`**에서 가져오며 새로 생성하지 않습니다. 긴 문맥은 표시만 발췌하고 원문은 보존합니다.
+직접 Responses 호출과 **명시적으로 고정한 `gpt-6-luna` 프롬프트 에이전트 v2**는 **이 환경에서 HTTP 500**을 반환했습니다. 공급자 문제가 해결될 때까지 검증된 `gpt-4.1-mini` 에이전트를 유지합니다. 이 환경의 런타임 검증 실패이지 모델 전체가 어디서나 미지원이라는 주장이 아닙니다. 카탈로그 표시는 런타임 증거가 아닙니다.
 
-`score`는 저장된 응답의 로컬 점수를 만들고, `explain`은 그 결과를 읽습니다. `explain`을 다시 실행해도 모델을 호출하거나 기존 평가 파일을 바꾸지 않습니다. **종료 코드 0은 설명 출력 성공이지 품질 통과가 아닙니다.**
+기존 `gpt-4.1-mini` 모델 버전의 Azure 사용 중단 예정일은 **2027-04-14**입니다. 공개 문서의 **Deprecated** 표시는 신규 구독의 사용이 제한될 수 있다는 의미이므로 보편적 사용 가능성을 가정하지 말고 실제 계정을 확인합니다. 별도 Optimizer 생성 모델은 [공식 허용 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다.
 
-<p class="share-checkpoint" id="share-baseline">결과 공유 · 무엇을 고쳐야 하는지 기준선에서 찾기</p>
+<figure class="portal-shot" id="portal-evaluation-criteria">
+<img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Relevance와 TaskAdherence 및 명시적 Judge 모델을 설정하는 Foundry 평가 화면. 한국어 실행 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>각 지표의 척도 확인.</strong> 영문 리허설 화면입니다. Relevance는 임계값 4, TaskAdherence는 이진 통과값 1입니다. 두 평가기만 선택하고 Model: Judge model도 확인합니다. <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
 
-- **실제 결과:** `baseline-smoke`의 **3건**이라는 범위와 형식 통과율·route 정확도·업무 정확성, **점수 있는 행 / 전체**, 오류를 함께 읽습니다. 검색이 없어서 측정하지 못한 근거성은 0점이나 만점이 아닙니다.
-- **대표 사례:** `explain`의 같은 사례 ID에서 **실제 응답 → 세 점수 → 두 Judge 이유 → 개선 제안**을 읽습니다. “내 최초 판단과 Judge가 같은가, 어느 문장이 정책과 맞거나 다른가?”를 공유합니다.
-- **다음 결정:** IQ로 보완할 지식 문제를 하나 정합니다. 모두 적절했다면 그대로 보고합니다. **고치기 전 상태를 남겨야 이후 변화도 설명할 수 있습니다.**
+**완료 신호:** Relevance **1–5점·임계값 4**, TaskAdherence **이진 0/1·통과값 1**, query 전용 입력, 검증된 Judge, 생성 매핑과 서비스 버전 한계가 기록되어 있습니다. 설정이 다르면 지표·모델을 조용히 바꾸지 말고 제출 전에 수정합니다.
 
-<p class="explanation-heading" id="worked-evaluation">한 사례로 연결하기 · 답변 → 점수 → 이유 → 개선</p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>다음: 03. Foundry Evaluation 실행 →</a></p>
 
-**아래 답변·점수·해석은 AI가 작성한 교육 예시이며 실제 실행 결과가 아닙니다.** 실제 Judge가 반드시 이 점수를 준다는 뜻이 아니며, 내 결과는 위 `explain`으로 읽습니다.
+## 03. Foundry Evaluation 실행 {#baseline}
 
-> 질문: “9월 10일 최초 월 구독을 샀고 오늘은 9월 15일입니다. 환불해 주세요.”
+<div class="lab-concept" aria-label="03 학습 목표">
+<p><strong>무엇:</strong> 실제 Microsoft Foundry 관리형 에이전트 평가입니다. <strong>왜:</strong> 설정과 모델 연결 확인은 업무 성능 측정이 아닙니다. <strong>어떻게:</strong> 정확한 계약을 검토하고 한 번 제출한 뒤 실제 evaluation/run ID로 완료 상태를 확인합니다.</p>
+</div>
 
-<table class="worked-comparison">
-<thead><tr><th>관찰 항목</th><th>개선 전 작성 예시</th><th>개선 후 작성 예시</th></tr></thead>
-<tbody>
-<tr><td>답변</td><td>“14일 안이므로 환불이 승인되었고 내일 입금됩니다.”</td><td>“결제 시각·시간대와 유료 작업·크레딧 사용 여부를 확인해 주세요. 아직 환불을 승인하거나 처리하지 않았습니다.”</td></tr>
-<tr><td>행동</td><td><code>answer</code>로 승인 단정</td><td><code>clarify</code>로 빠진 조건 확인</td></tr>
-<tr><td>업무 정확성의 작성 점수</td><td><strong>1</strong> — 없는 승인·입금 결과를 만듦</td><td><strong>5</strong> — 필요한 조건을 묻고 실행 권한을 구분</td></tr>
-<tr><td>검색 근거성</td><td><strong>미측정</strong> — 실제 검색 실행 없음</td><td><strong>미측정</strong> — 실제 검색 실행 없음</td></tr>
-<tr><td>읽을 이유</td><td>신청 자격을 승인/송금 완료로 바꾸었음</td><td>조건 확인과 실제 실행을 구분했음</td></tr>
-<tr><td>다음 판단</td><td>허위 완료이므로 보류</td><td>이 사례의 개선 방향은 타당하지만 전체 품질·운영 승인은 아직 미확정</td></tr>
-</tbody>
-</table>
+새로 승인된 한국어 실습에서는 운영자의 **수정된 비교용 평가**를 [직접 에이전트 평가](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent)의 **Review**에서 확인합니다. 영어 **`contoso-en-learning-loop`**는 이미 포털 제출됐으므로 기록된 run을 열고 다시 제출하지 않습니다. 이전 파일럿과 분리하며 영어 제출을 한국어 실행으로 표시하지 않습니다.
 
-**지시에서 확인할 개선 규칙:** 빠진 조건은 최소 질문으로 확인하기, 신청 자격과 승인을 구분하기, 실제 실행 도구·증거 없이 완료를 약속하지 않기. 이는 후보 지시를 검토할 기준이지 이 예시를 실제 지시·점수 파일에 덮어쓰라는 뜻이 아닙니다.
-
-| 실제 결과에서 발견한 문제 | 먼저 확인할 개선 위치 |
+| 검토 항목 | 필수 값 |
 |---|---|
-| 검색 문맥 자체가 낡거나 관련 없음 | IQ의 정책 문서·발효일·검색 결과 |
-| 근거는 맞지만 조건·route·권한을 잘못 판단 | 실제 답과 Judge 이유를 보고 지시의 판단 규칙 |
-| JSON 형식이나 `needs_human` 불일치 | 출력 계약·분류 지침 |
-| API/평가 오류 또는 교정 불일치 | 환경·측정·평가기/참조의 문제. 답변 개선 효과로 포장하지 않음 |
+| 대상 | 운영자가 준비한 **`contoso-eval-ko`**, **구성 변경 전에 Pin currently latest로 고정한 버전 `1`** |
+| 범위·빈도 | Individual turns / One time |
+| 데이터 | 등록한 한국어 dev12 데이터셋과 기록된 버전·해시 |
+| 에이전트 구성 | `query`만 입력, custom prompt override 없음 |
+| 기준·Judge | **Relevance 임계값 4, TaskAdherence 이진 통과값 1**(범용 Threshold가 보이면 1), 생성 매핑과 **`lab-judge-luna-dea3cec5`** |
+| Evaluation name | 한국어는 운영자가 지정한 별도 수정 정의. 실제 영어 최종 루프 정의는 **`contoso-en-learning-loop`**이며 파일럿 이름을 사용하지 않음 |
 
-**고친 뒤에는 같은 dev 문항으로 다시 확인합니다.** 이번 경로는 아래 IQ·Agent Optimizer 단계에서 이를 수행합니다. 보기 좋은 예시나 길어진 지침만으로 개선을 인정하지 않습니다.
+<figure class="portal-shot" id="portal-evaluation-review">
+<img src="../web/assets/portal/en/17-evaluation-review.png" alt="고정 에이전트 버전, 기존 데이터셋, 평가 기준을 확인하는 Foundry Review 화면. 한국어 실행 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>제출 전 검토.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 수정된 정의 이름·고정 Agent·데이터셋·Relevance 4·TaskAdherence 이진 통과값 1·Judge를 확인합니다. 파일럿의 이전 설정은 수정 계약이 아니며 검토 화면도 실행 증거는 아닙니다. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
 
-**완료 확인:** 실제 Agent 버전·세 응답·교정 보고서·내 판단과 Judge의 차이를 확인했습니다. 검색 없는 기준선의 근거성을 정책으로 대신 채우지 않습니다. smoke/dev 자체는 최종 시험이 아니므로 그 `HOLD`와 **교정 HOLD**를 구별하고, 오류·누락을 숨기지 않습니다.
+최종 동작은 **Submit**이며 승인된 기준선을 한 번만 제출합니다. 아래 영어 제출은 이미 존재하므로 중복 제출하거나 보존된 파일럿을 고쳐 쓰지 않습니다.
 
-<p class="step-next no-print"><a href="#iq" data-next-step>다음: 04. 지식 연결 →</a></p>
+**완료된 정식 영어 포털 기준선:** **`contoso-en-learning-loop`**, evaluation `eval_94feef6f6f644fabb22a5680f5f24fb1`, run `evalrun_cde9948ac9d946929661bc3d9e60432a`입니다. HTTP 201 제출 이후 실제 완료를 확인했습니다. `contoso-eval-en` 고정 v1, `contoso-eval-en-dev12` v1, Relevance 임계값 4, TaskAdherence 이진 통과값 1, 동일한 `gpt-6-luna` Judge를 사용한 기준선이며 후보 결과가 아닙니다.
 
-## 04. IQ 지식 연결 {#iq}
+**EVALUATION 상세**의 **Raw JSON**과 **Evaluation runs**에서 정의·run ID, URL, 제출 시각을 기록합니다. 과거 파일럿은 [운영자 기록](admin-setup.md#bootstrap)에 별도로 남깁니다. 보이는 Add run 후보 마법사는 현재 실패하므로 반복하지 말고 06단계를 사용합니다.
+
+**완료 신호:** 실제 실행 페이지에 **Completed**가 표시되고 결과를 열 수 있습니다. 이때도 실패·오류·누락을 포함해 **전체 12건**을 확인합니다. 실패하거나 부분 완료한 실행은 기록에서도 그대로 남기며 실행 완료를 자동 품질 통과로 해석하지 않습니다.
+
+접근·모델 지원·채점에 실패하면 ID와 오류를 유지하고 [강사의 복구 안내](facilitator.md#resume)에 따라 후속 단계를 미실행으로 표시합니다. 실패한 관리형 평가를 작성된 점수로 대체하지 않습니다.
+
+<p class="step-next no-print"><a href="#analyze" data-next-step>다음: 04. 점수와 이유 읽기 →</a></p>
+
+## 04. 점수와 이유 읽기 {#analyze}
+
+<a id="iq"></a>
+<a id="score-rubric"></a>
+<a id="worked-evaluation"></a>
 
 <div class="lab-concept" aria-label="04 학습 목표">
-<p><strong>경험할 기능:</strong> Foundry IQ의 knowledge base와 Azure AI Search, 에이전트의 MCP 도구 호출입니다. RAG는 필요한 문서를 검색해 답변의 근거로 사용하는 방식이며, Foundry IQ는 지식 소스와 검색 계획을 재사용 가능한 knowledge base로 묶습니다.</p>
-<p><strong>왜 중요한가:</strong> 모델은 이 회사의 최신 환불 규정을 원래 알고 있지 않습니다. 정책을 지시에 계속 복사하거나 모델 가중치에 외우게 하는 대신, 실제 문서를 찾아 어떤 근거로 답했는지 남겨야 합니다. 검색 성공만으로 올바른 정책 해석까지 보장되지는 않습니다.</p>
-<p><strong>어떻게 경험하나:</strong> 지시와 모델은 고정한 채 정책 8개를 검색 가능하게 만들고 IQ를 도구로 연결합니다. 직접 검색 진단, 실제 Agent의 도구 사용, 답변 채점을 순서대로 분리해서 확인합니다.</p>
+<p><strong>무엇:</strong> 지표별 점수와 행별 설명입니다. <strong>왜:</strong> 평균은 정책 오류나 누락된 답변을 숨길 수 있습니다. <strong>어떻게:</strong> 두 평가자 요약을 읽고 실패 또는 최저점 사례와 잘한 사례를 비교합니다.</p>
 </div>
 
-**할 일:** 같은 지시문에 실제 지식 검색 도구만 더합니다. 신규 환경의 임베딩 배포와 합성 Contoso 정책 8개를 사용합니다.
+**Evaluations 실행 페이지**의 요약과 **Detailed metrics result**에서 **`Relevance.reason`**, **`TaskAdherence.reason`**을 읽습니다. 필요하면 가로로 스크롤합니다. 행의 **conversation_id → User view**는 질문·실제 JSON 응답 화면이며 **인라인 Judge 이유 패널이 아닙니다**. 평가 이유는 Detailed metrics result로 돌아가 확인합니다.
 
-| 용어 | 이 실습에서의 의미와 관찰점 |
+**실제 정식 영어 기준선만의 결과:** 파일럿 집계로 대체하거나 후보 결과로 표시하지 않습니다.
+
+| 기준선 결과 | 관측 값 |
 |---|---|
-| 임베딩·벡터 인덱스 | 문서를 숫자 벡터로 표현해 의미가 가까운 내용을 찾습니다. 이 구현은 실제 1,536차원 벡터와 HNSW/cosine 인덱스를 사용합니다. |
-| vector-only / hybrid | 전자는 의미 유사도, 후자는 키워드와 벡터 검색을 함께 사용합니다. 상위 문서의 ID·본문·발효일을 비교하며 서로 다른 검색 점수의 크기를 품질 점수처럼 비교하지 않습니다. |
-| knowledge source / knowledge base | source는 검색할 콘텐츠 연결, base는 어느 source를 어떻게 검색할지 정하는 상위 단위입니다. 여기서는 한 Search 인덱스를 한 source로 연결합니다. |
-| agentic retrieval·planner | 복합 질문을 검색 가능한 하위 질문으로 계획하고 출처·활동을 반환합니다. 이 구현은 `low` reasoning과 `extractiveData`로 원문 근거를 받아 에이전트가 답하게 합니다. |
-| MCP | 에이전트가 도구를 발견·호출하는 Model Context Protocol입니다. 여기서 `knowledge_base_retrieve`는 검색 도구이지 환불·티켓 실행 도구가 아닙니다. |
+| 실행 | **Completed, 12행** |
+| 전체 | **10 passed / 2 failed / 0 errored** |
+| Relevance | **10/12 통과**, 임계값 **4** |
+| TaskAdherence | **12/12 통과**, 이진값 **1** |
 
-**실제 흐름:** 고객 질문 → 버전 에이전트 → IQ MCP 도구 → knowledge base → Search 정책 문서 → 도구 출력 → 최종 답변입니다. `retrieved_context`는 이 실행에서 돌아온 도구 출력이어야 합니다. 평가용 `context`나 모범 응답으로 대신 채우지 않습니다. 이 실습의 프로젝트 관리 ID 인증을 사용자별 문서 권한 필터 검증으로 확대 해석하지 않습니다.
-
-제품 배경: [Foundry IQ 개념과 구성 요소](https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq). 포털/preview API 지원 범위는 달라질 수 있으며 이 가이드의 실제 연결 방식을 우선 확인합니다.
-
-**실행 명령 · 지식 준비·검색 확인, 유료:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" iq prepare --confirm
-python -m lab --config "$LAB_ENV_FILE" iq vectors --query "최초 월 구독 환불에 필요한 조건은 무엇인가요?" --confirm
-python -m lab --config "$LAB_ENV_FILE" iq probe --query "이전 구매와 9월 이후 최초 월 구매의 환불 기한 및 심사 신청 조건을 비교해 주세요." --confirm
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
+| 평가자마다 기록할 값 | 해석 |
 |---|---|
-| `iq prepare --confirm` | 정책 원문을 임베딩하고 Search 인덱스·knowledge source·knowledge base·프로젝트 MCP 연결을 준비합니다. `knowledge/setup.json`, `document-embeddings.json`, 설정/업로드 기록이 남습니다. 원격 변경·임베딩 사용량과 Search 호스팅 비용이 있습니다. |
-| `iq vectors --query ... --confirm` | 같은 질문의 vector-only와 hybrid 검색 결과를 직접 비교합니다. `--query`는 검색할 문장이고 Agent에게 하는 질문은 아닙니다. `knowledge/probes/`에 실제 검색 결과가 남으며 임베딩/검색 사용량이 있습니다. |
-| `iq probe --query ... --confirm` | knowledge base에 복합 질문을 보내 planner의 `modelQueryPlanning`, 활동, 출처를 확인합니다. `knowledge/probes/`에 원본이 남고 첫 조회의 `knowledge/retrieve-response.json`도 보존합니다. 검색·planner 사용량이 발생합니다. |
+| 전체 범위 | 유효 점수가 없는 행까지 **n = 12** |
+| 채점 행/전체, 누락, 오류 | 평가 범위 확인값. 누락을 성공 사례로 바꾸거나 분모에서 조용히 제외하지 않음 |
+| Relevance 결과 | **1–5점**, 임계값 **4**. 4/5점은 정확도 80%가 아님 |
+| TaskAdherence 결과 | **이진 0/1: 1 = Pass, 0 = Fail**. 누락·오류 결과는 채점된 0이 아님 |
+| 통과 건수와 점수 요약 | Relevance와 TaskAdherence를 각각 보고하며 새로운 정확도 지표로 합치지 않음 |
+| 행별 이유 | 실제 답변·참고 자료와 대조할 평가자의 설명 |
 
-순서대로 **실제 1536차원 임베딩·인덱스/KB 준비 → vector-only와 hybrid 검색 → IQ의 `modelQueryPlanning`·검색 활동·출처**를 확인합니다. 인덱스 존재나 설정값만으로 검색 성공을 주장하지 않습니다. 위 진단 결과를 에이전트의 `retrieved_context`에 복사하지 않습니다.
-
-<figure class="portal-shot" id="portal-knowledge">
-<img src="../web/assets/portal/05-knowledge-base.png" alt="실제 IQ knowledge base 구성. 검색 planner, Low reasoning, Extractive data, Azure AI Search Index 소스" width="1440" height="1100" loading="lazy">
-<figcaption><strong>화면 05 · Build → Knowledge → 해당 knowledge base.</strong> knowledge/setup.json의 이름을 찾아 planner 배포, Low, Extractive data, 연결된 source를 대조합니다. Active는 소스 상태이고 검색·정답 품질 점수가 아닙니다. 이 화면에서 Save나 Use in an agent로 CLI 구성을 다시 바꾸지 않습니다. <a href="../web/assets/portal/05-knowledge-base.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figure class="portal-shot" id="portal-evaluation">
+<img src="../web/assets/portal/en/18-evaluation-results.png" alt="정식 영어 기준선을 확인하는 Foundry 평가 요약과 Detailed metrics result. 한국어 실행 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>정식 기준선 읽기.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 기록된 run ID와 대조합니다. 전체 12행 중 통과 10·실패 2·오류 0, Relevance 10/12·이진 TaskAdherence 12/12입니다. 이유는 Detailed metrics result에서 읽으며 후보 결과와 구분합니다. <a href="../web/assets/portal/en/18-evaluation-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-iq-agent">
-<img src="../web/assets/portal/06-iq-agent-knowledge.png" alt="IQ 에이전트 Playground의 Knowledge에 연결된 실제 knowledge base" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 06 · IQ Agent → Playground → Knowledge.</strong> 기존 MCP 연결을 포털은 Knowledge 카드로 보여 줍니다. Tools 목록이 비어 있다고 IQ 연결도 없다고 단정하지 않습니다. Instructions는 보기 편하게 접었을 뿐 변경하지 않았습니다. 연결이 보이는 것과 실제 호출은 다르므로 runs/iq-dev의 MCP 출력까지 확인합니다. <a href="../web/assets/portal/06-iq-agent-knowledge.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+**실패 또는 최저점 사례를 최소 하나**, 그리고 존재한다면 **잘한 사례 하나**를 선택합니다. 각 사례에서 **실제 질문 → 실제 답변 → 평가 점수·이유 → 정책 `context`와 파싱한 `ground_truth` 참고 답변**을 연결합니다. 잘한 사례가 없으면 만들지 말고 없다고 보고합니다.
+
+구체적인 도메인 행동을 봅니다. 맞는 정책 발효일을 적용했는가? 정말 필요한 정보를 확인했는가? 근거 정책을 인용했는가? 실제 하지 않은 승인이나 실행을 완료했다고 말했는가? 모범 응답과 글자가 완전히 같아야 하는 것은 아닙니다.
+
+**정식 v1 기준선에서 Relevance가 실패한 두 사례:** TaskAdherence는 둘 다 통과했습니다. 후보의 회귀 결과가 아닙니다.
+
+| 사례 | 관측된 답변과 참고 자료의 차이 |
+|---|---|
+| `atlas-dev-001` | 구독 축소 안내가 모호했으며 참고 답변은 명시적인 추가 확인을 요구함 |
+| `atlas-dev-011` | 문서화되지 않은 기능을 미확인이라고 정직하게 설명했지만 Relevance는 불완전하다고 판단함 |
+
+실제 이유와 참고 정책을 함께 읽습니다. **Judge 점수만 높이려고 정책 사실을 바꾸거나 정당한 불확실성을 근거 없는 확신으로 바꾸지 않습니다.**
+
+<figure class="portal-shot" id="portal-evaluation-case">
+<img src="../web/assets/portal/en/19-evaluation-case.png" alt="평가 행 conversation_id에서 연 User view의 atlas-dev-001 질문과 실제 JSON 응답. Judge 이유 패널이나 한국어 결과가 아님" width="1440" height="340" loading="lazy">
+<figcaption><strong>conversation_id → User view: 실제 응답 확인.</strong> 영문 리허설의 atlas-dev-001 질문과 JSON 응답입니다. 채점 이유는 <strong>Detailed metrics result</strong>로 돌아가 <code>Relevance.reason</code>·<code>TaskAdherence.reason</code>에서 확인하고 참고 정책과 대조합니다. <a href="../web/assets/portal/en/19-evaluation-case.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-**실행 명령 · IQ Agent의 dev 12건 실행·동일 Judge 평가, 유료:**
+**한계:** Relevance와 TaskAdherence는 유용하고 간결한 기준이지만 모든 정책·안전성을 인증하지는 않습니다. 모든 평가자가 `context`나 `ground_truth`를 사용하는 것은 아닙니다. 해당 열은 지원되는 참고 평가와 사람 검토용으로 남깁니다. 평가자 두 개를 선택했다고 모든 응답 계약 규칙을 검사했다고 주장하지 않습니다.
 
-```bash
-python -m lab --config "$LAB_ENV_FILE" agent --stage iq --confirm
-python -m lab --config "$LAB_ENV_FILE" run --stage iq --split dev --run-id iq-dev --interval-seconds 65 --confirm
-python -m lab --config "$LAB_ENV_FILE" judge score --run-id iq-dev --interval-seconds 65 --confirm
-python -m lab score --run-id iq-dev
-python -m lab explain --run-id iq-dev
-```
+<p class="share-checkpoint" id="share-baseline"><strong>공유:</strong> 실제 run ID, n = 12, 지표별 채점 범위·통과 건수, 문제 문장 하나와 좋은 답변 하나를 설명합니다. 어떤 지시 행동을 왜 개선하고 싶은지 말합니다.</p>
 
-**명령 해설:**
+**완료 신호:** 실제 답변과 이유로 개선 가설을 설명하며 오류도 드러낼 수 있습니다. 실패가 관측되지 않았다면 최저점 사례를 사용해 그 사실을 정직하게 보고합니다. 학습 예시를 만들려고 기준선을 약화하지 않습니다.
 
-| 명령 | 수행 내용·결과 |
-|---|---|
-| `agent --stage iq --confirm` | 기준선과 같은 지시·모델에 IQ MCP만 연결한 버전을 만들고 `agents/iq.json`에 기록합니다. 생성 자체는 질문 실행이 아닙니다. |
-| `run --stage iq --split dev --run-id iq-dev ...` | `--limit`을 생략해 **dev 전체 12건**을 실행합니다. 모델·검색·planner 사용량이 있으며 `runs/iq-dev/`에 실제 MCP 호출/출력과 응답을 보존합니다. |
-| `judge score --run-id iq-dev ...` | 저장된 답을 같은 업무 Judge로 유료 채점합니다. 검색 근거성은 이 run의 실제 MCP 문맥만 사용합니다. |
-| `score --run-id iq-dev` | 12건의 규칙 검사·저장 점수를 로컬 집계합니다. 오류/누락 행도 전체 분모에 남깁니다. |
-| `explain --run-id iq-dev` | 실제 값·HOLD 원인·사례별 이유를 읽습니다. 기준선보다 표본이 많으므로 이 명령의 전체 평균을 기준선 3건 평균과 바로 비교하지 않습니다. |
+<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 05. Agent Optimizer로 지시 개선 →</a></p>
 
-<p class="output-label" id="example-iq-report">출력 예시 · explain의 요약 일부 · 아래 수치는 설명용 작성 값</p>
+## 05. Agent Optimizer로 지시 개선 {#optimize}
 
-```text
-# 평가 결과 해설
-- 실행: iq-dev / 단계: iq / 분할: dev / 12건
-- 기준: 현재 config/gates.json; 최종 최소 표본 20건
-- 게이트 결과: **HOLD** / 운영 승인: **not_granted**
-
-| 평가 항목 | 실제 값 | 기준 | 관측 범위 |
-| 업무 정확성 | 4.25 | 평균 ≥4 | 점수 12/12; 누락 0; 척도 [1.0, 5.0] |
-| 검색 근거성 | 4.50 | 평균 ≥4 | 점수 12/12; 누락 0; 척도 [1.0, 5.0] |
-```
-
-**읽는 법:** 높은 평균만으로 통과가 아닙니다. `explain`의 **HOLD 원인과 다음 확인**에서 범위·누락·오류·중요 실패를 보고, **사례별 해설**에서 실제 답과 Judge 이유를 읽습니다. 이 작성 예시의 dev 12건도 최종 시험은 아니며, 실제 실행에 다른 실패가 없는지는 전체 결과로 확인해야 합니다.
-
-<p class="share-checkpoint" id="share-iq">결과 공유 · 검색을 붙이니 업무 답변도 나아졌을까?</p>
-
-- **실제 결과:** `iq-dev` **12건**의 `groundedness`와 `policy_correctness`를 **각각의 점수 수·누락·오류**와 함께 읽습니다. 인용 ID가 있다는 사실만으로 검색 근거성이 입증되지는 않습니다.
-- **대표 사례:** 기준선과 **겹치는 3개 사례 ID**에서 답변·정책 판단이 어떻게 달라졌는지 봅니다. 해당 응답의 실제 MCP 문맥도 확인합니다. 기준선 3건과 IQ 12건의 **전체 평균끼리 비교하지 않습니다.**
-- **다음 결정:** “검색 근거는 ___이지만 업무 판단은 ___여서, 다음에는 ___ 지시를 개선한다”를 공유합니다. **검색에 충실한 답과 업무에 맞는 답이 다를 수 있음**을 확인하는 지점입니다.
-
-**완료 확인:** dev 12건의 실제 응답·`knowledge_base_retrieve` 호출/MCP 출력·업무 점수와 이유가 남았습니다. 다음 단계의 비교 기준선은 **`iq-dev`**입니다. `--interval-seconds 65`는 사례 간 대기이지 재시도가 아니며, 429·403·문맥 누락은 보존하고 중단합니다. 같은 run을 다른 평가 경로로 재채점하지 않습니다.
-
-<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 05. 지시 개선 →</a></p>
-
-## 05. Agent Optimizer 지시 개선 {#optimize}
+<a id="tune"></a>
 
 <div class="lab-concept" aria-label="05 학습 목표">
-<p><strong>경험할 기능:</strong> 평가 데이터와 기준으로 지시 후보를 만들고 비교하는 Agent Optimizer입니다. “프롬프트를 더 길게 다시 써 주는 기능”에 그치지 않고, 선택한 에이전트 버전의 원본과 후보를 같은 과제로 평가합니다.</p>
-<p><strong>왜 중요한가:</strong> 올바른 문서를 검색해도 조건을 누락하거나 잘못된 행동을 선택할 수 있습니다. 이때는 지식 추가보다 지시 개선이 필요할 수 있지만, 평균 상승 뒤에 중요한 실패나 과적합이 숨을 수 있습니다.</p>
-<p><strong>어떻게 경험하나:</strong> dev 12건, 같은 모델·IQ 연결, 지시만 변경, 작업 1회·후보 1개로 범위를 고정합니다. 서비스의 추천 이유를 읽고 별도 업무 Judge와 동일 문항으로 재확인합니다. 모델 가중치를 학습하는 SFT나 단일 프롬프트 재작성 기능과 다릅니다.</p>
+<p><strong>무엇:</strong> 지시만 개선하는 Agent Optimizer 후보 하나입니다. <strong>왜:</strong> 바꾸는 대상을 제한해야 이후 비교를 해석할 수 있습니다. <strong>어떻게:</strong> 에이전트 모델·도구·데이터·Judge를 유지하고 지시 차이를 살핀 뒤 별도 실습 버전을 만듭니다.</p>
 </div>
 
-**할 일:** 오류 없이 완료된 `iq-dev` 12건과 실제 MCP 출력을 기준으로 **Agent Optimizer 한 작업·후보 한 개**를 실행합니다. 모델과 IQ 연결은 유지하고 지시만 바꿉니다.
+**실제 영어 작업 성공:** `opt_e44bcf5701a348deb62a1cd4f9cb3910`, **후보 1개**, 지시 전용, 같은 데이터셋, `gpt-5.5` 생성, `gpt-6-luna` Judge, 모델 비교 없음입니다. Optimizer UI는 **0.635 → 0.646**, **표시된 변화 +0.010**, **보고 토큰 264,260**입니다. 직접 후보 평가 점수가 아니므로 표시값으로 다른 변화량을 재계산하거나 작업을 다시 제출하지 않습니다.
 
-지침은 **원본 → 개선본**으로 비교합니다. `baseline`과 `iq`는 같은 [`prompts/baseline.txt`](../prompts/baseline.txt)를 사용하고, `optimized`는 실제 서비스 결과에서 가져온 `optimizer/selected-prompt.txt`를 사용합니다. 고정된 `v1.txt`·`v2.txt`를 고르는 방식이 아니며, 지침이 길어졌다는 사실만으로 개선을 인정하지 않습니다.
+**Build → Agents → `contoso-eval-ko` → Optimize Preview**를 엽니다. 처음에는 **Optimize my agent → Agent**를 고르며 **Cost**는 선택하지 않습니다. 작업이 생긴 뒤에는 **Optimize → Agent**로 표시될 수 있습니다. 첫 화면의 세금 에이전트 벤치마크는 **제품 예시**이지 Contoso 결과가 아닙니다.
 
-**실행 명령 · 로컬 입력 준비:**
+**Create an optimization run**에서 [공식 프롬프트 에이전트 Optimizer 절차](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent)에 따라 설정합니다.
 
-```bash
-python -m lab optimize --run-id iq-dev
-python -m json.tool "$LAB_ARTIFACTS_DIR/optimizer/handoff.json"
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
+| 설정 | 정확한 실습 선택 |
 |---|---|
-| `optimize --run-id iq-dev` | 완료된 IQ dev와 실제 도구 출력·원본 해시를 검사한 뒤 `optimizer/`에 원본 지시, `dev-upload.jsonl`, `handoff.json`을 **로컬 준비**합니다. 이름과 달리 서비스 작업을 제출하지 않으며 모델 비용도 없습니다. 이미 handoff가 있으면 새로 만들지 않습니다. |
-| `json.tool .../handoff.json` | 업로드할 데이터와 정확한 Agent 이름·버전·원본 해시를 읽습니다. 이 파일이 포털 선택값과 연결되는 인계표입니다. |
-
-<p class="output-label" id="example-optimizer-handoff">출력 예시 · handoff.json 일부</p>
-
-```json
-{
-  "kind": "agent-optimizer-handoff",
-  "status": "PREPARED_NOT_SUBMITTED",
-  "source_run_id": "iq-dev",
-  "source_split": "dev",
-  "test_data_included": false
-}
-```
-
-**읽는 법:** 입력 파일 준비만 끝났습니다. **서비스 작업이나 새 Agent는 아직 없습니다.** 같은 파일의 `agent_name`·`agent_version`을 다음 화면에서 사용합니다.
-
-**이 단계의 작업 제출·후보 다운로드는 Foundry 포털에서 합니다.** 다른 단계의 화면은 CLI 결과를 대조하는 읽기용입니다. 같은 계정·프로젝트에서 **Build → Agents → handoff에 기록된 IQ agent → Optimize 탭 → Optimize 버튼 → Agent**를 선택합니다. 촬영 시 실제 메뉴 이름이며, 다른 UI 버전에서는 **Create optimization run**으로 보일 수 있습니다. **Cost**는 이 실습의 선택이 아닙니다. [공식 prompt-agent 안내](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent)와 함께 아래 값을 적용합니다.
-
-| 화면 | 실습에서 사용할 값 |
-|---|---|
-| Target | handoff의 정확한 IQ agent 버전. **Choose targets → Instruction만 체크**. Tool description·Model은 해제 |
-| 모델 | manifest의 실제 optimizer·judge 배포. **Model 비교 해제**. 이전 UI의 Compare across models도 끔 |
-| Max candidates | 기본값을 그대로 두지 말고 **1**. 작업도 1회만 제출 |
-| Data / Dataset | **Select dataset and criteria → Upload dataset** → `$LAB_ARTIFACTS_DIR/optimizer/dev-upload.jsonl`의 실제 파일. Generate data·다른 데이터셋 선택 안 함 |
-| Criteria | **Relevance + Task Adherence**, 각각 합격선 **4**. 입력 열 `query`, `context`, `ground_truth` 확인 |
-| Review | 같은 모델·IQ MCP 유지, dev 12건, 승인된 비용/작업 범위를 확인한 뒤 제출 |
-
-**화면을 읽는 법:** Relevance는 질문에 유용한 답인지, Task Adherence는 주어진 지시·제약을 따르는지 보는 내장 기준입니다. Contoso의 세부 정책 정확성 전체를 대신하지 않습니다. 이 마법사는 열 매핑을 지원하지 않으므로 준비한 JSONL의 정확한 열 이름을 유지합니다. 평가자가 사용하지 않는 `context`·`ground_truth`를 Agent의 질문에 합치지 않습니다.
-
-**Submit 직전:** 비용 추정은 지출 차단기가 아닙니다. 원본과 후보의 Agent 실행, 검색, Judge, 개선 생성의 사용량이 포함될 수 있어 “작업 1개 = 모델 호출 1회”가 아닙니다. 이미 완료한 작업이 있으면 새 마법사를 제출하지 말고 그 run을 엽니다. Agent Optimizer는 preview이며 메뉴가 보이지 않으면 접근/지원 상태를 운영자와 확인합니다.
+| Agent version | 직접 Evaluation에서 사용한 고정 기준선 **`contoso-eval-ko` 버전 `1`** |
+| Choose targets | **Model** 해제, **Instruction only** 선택, **Tool description 끄기** |
+| Max candidates | **1**. Model만 선택하면 비활성화될 수 있으므로 먼저 Model을 해제 |
+| Optimization model | **`lab-planner-dea3cec5`**, **`gpt-5.5` / `2026-04-24`** |
+| Evaluation model | **`lab-judge-luna-dea3cec5`**, 직접 Evaluation에서 사용한 동일한 검증 `gpt-6-luna` Judge |
+| 모델 비교 | 끄기. 개선 대상 에이전트 모델을 바꾸지 않음 |
 
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer 미제출 Target 화면. Instruction만 선택하고 후보 1개, planner와 judge 배포 지정" width="1210" height="968" loading="lazy">
-<figcaption><strong>화면 07 · Target 설정, 미제출.</strong> Choose targets → Instruction만 선택한 뒤 Max candidates 1과 Evaluation model을 확인합니다. 촬영 시 초기값은 후보 2개·agent 평가 모델이었으므로 그대로 넘기지 않았습니다. Goal의 “token cost left free”는 비용 제한을 목표로 고정하지 않는다는 뜻이지 무료 호출이 아닙니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/en/07-optimizer-target.png" alt="지시만 개선하고 후보 하나 및 별도 최적화·평가 모델을 선택한 Agent Optimizer 설정. 한국어 실행 결과가 아님" width="1210" height="968" loading="lazy">
+<figcaption><strong>후보 수보다 대상 선택이 먼저입니다.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. Instruction only는 모델 변경을 실험에서 제외합니다. Optimization model은 지시를 만들고 Evaluation model은 응답을 채점합니다. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
+
+**Next → Select dataset and criteria**에서 기준선과 **같은 `contoso-eval-ko-dev12` 데이터셋·버전**을 선택합니다. Generate data나 수정한 업로드를 사용하지 않고 같은 Judge와 정확히 Relevance·TaskAdherence를 유지합니다.
+
+Optimizer **Criteria**에 **No custom evaluators available**이 보이면 **Custom only를 OFF**로 바꾸거나 **View built-in evaluators**를 누릅니다. 평가자 행을 선택하면 **Configure...** 대화상자가 열립니다. **Relevance Threshold 4**, **TaskAdherence Threshold 1**을 설정하고 각각 **Apply**합니다. TaskAdherence는 이진 통과값 1이며 필터를 우회하려고 사용자 정의 평가자를 만들지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/08-optimizer-dataset.png" alt="Agent Optimizer 미제출 Dataset 화면의 Select dataset and criteria와 Upload dataset 버튼" width="1210" height="968" loading="lazy">
-<figcaption><strong>화면 08 · Data에서 Select dataset and criteria 선택 후.</strong> 이 선택을 하면 Dataset → Criteria → Review 순서가 나타납니다. 오른쪽 Upload dataset으로 준비한 dev 12건을 올립니다. 촬영에서는 업로드·제출하지 않았으며 목록의 다른 실행 데이터는 선택하지 않습니다. 생성자 정보는 가렸습니다. <a href="../web/assets/portal/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="기존 영어 dev12 데이터셋을 사용하는 Agent Optimizer 데이터·기준 선택 화면. 한국어 실행 결과가 아님" width="1210" height="968" loading="lazy">
+<figcaption><strong>등록한 데이터셋 재사용.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 자신의 데이터셋 버전과 12건 범위를 확인합니다. 5행 미리 보기가 전체 행 수를 바꾸지는 않습니다. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-**헷갈리기 쉬운 화면:** Generate data에서 Application Insights 접근 요청이나 Resolve가 보여도 본 실습을 위해 권한을 확대하지 않습니다. 여기서는 준비한 파일을 쓰므로 **Select dataset and criteria**를 선택합니다. 업로드한 파일의 행 수·열을 확인해야 Next로 진행할 수 있습니다. 이 문서의 사진을 따라 보기 위해 파일을 재업로드하거나 완료 작업을 재제출할 필요는 없습니다.
+새로 승인된 작업만 검토 후 한 번 제출합니다. 기록된 영어 작업은 기존 ID로 확인하며 승인 범위에서 **최대 60분** 기다립니다. 작업 하나에서도 여러 내부 호출이 발생하므로 무료 모델 요청 하나가 아닙니다. 차단되거나 대기 한도를 넘으면 상태를 기록하고 중복 제출하지 않습니다.
 
-작업당 최대 대기는 현재 승인 범위 안에서 **60분 이내**입니다. 시간 초과·지원/접근 차단이면 상태를 남기고 멈춥니다. Prompt Optimizer·수작업 지시·다른 모델로 대체해 완료 처리하지 않습니다.
-
-**작업이 `succeeded`이면:** 기준선과 후보의 지시 diff, 사례별 점수와 회귀를 읽습니다. 서비스 순위는 본 실습의 업무 Judge나 운영 승인을 대신하지 않습니다. 후보에 dev에서 유도한 예시가 들어갈 수 있으므로 독립 시험이 필요합니다.
+성공한 작업의 **original과 candidate**, **평가기별 결과**, **View changes**를 읽습니다. Optimizer의 **0–1 순위 점수**는 Relevance의 1–5점이나 통과율과 다릅니다. 순위 점수 상승이 정책 개선이나 직접 재평가를 대신하지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/09-optimizer-results.png" alt="실제 완료 Agent Optimizer 작업. 후보 하나의 점수 0.708과 기준선 0.677, 사용 토큰, 다운로드 및 변경 보기" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 09 · 기존 완료 run의 결과.</strong> 0.677 → 0.708은 서비스의 Task-weighted average(0–1)입니다. 아래 Avg tokens·Avg latency도 함께 읽습니다. View changes, Download JSON, Download config의 위치를 확인하되 Promote candidate는 누르지 않습니다. 기존 실습의 업무 판단은 HOLD입니다. <a href="../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/en/09-optimizer-results.png" alt="원본·후보 결과와 평가자 상세 및 후보 조작을 보여 주는 Agent Optimizer 화면. 한국어 실행 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>후보의 근거 읽기.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 실제 job/candidate ID와 평가자별 결과를 확인합니다. 추천이 개선 보장이나 운영 승인은 아닙니다. <a href="../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <figure class="portal-shot" id="portal-optimizer-diff">
-<img src="../web/assets/portal/10-optimizer-changes.png" alt="실제 서비스가 반환한 baseline과 candidate system_prompt의 나란한 변경 비교" width="1038" height="622" loading="lazy">
-<figcaption><strong>화면 10 · View changes.</strong> 왼쪽 원본과 오른쪽 후보의 system_prompt를 비교합니다. 녹색으로 길게 추가된 지시가 곧 좋은 지시는 아닙니다. dev 유래 “내장 정책 사실”, route 정의와 권한 경계도 검토해야 합니다. export의 tools: []를 IQ 삭제 지시로 해석하지 않습니다. <a href="../web/assets/portal/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/en/10-optimizer-changes.png" alt="원본과 후보 지시를 비교하는 Agent Optimizer View changes 화면. 한국어 실행 결과가 아님" width="1038" height="622" loading="lazy">
+<figcaption><strong>지시 차이 확인.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 정책 판단·추가 질문·권한 경계와 자신의 한국어 응답 계약이 유지되는지 확인합니다. 긴 지시가 항상 더 좋지는 않습니다. <a href="../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-evaluation">
-<img src="../web/assets/portal/11-evaluation-results.png" alt="Optimizer 후보의 실제 managed 평가 화면. Relevance 12/12와 Task adherence 8/12, 개별 질문 결과" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 11 · Candidate results → Score details의 evalrun 링크.</strong> 기존 후보의 서비스 평가에서 Relevance는 12/12, Task adherence는 8/12입니다. Completed와 각 기준 통과율을 구별하고, 아래 Detailed metrics result를 가로로 이동해 이유·다른 지표도 읽습니다. 이는 로컬 Contoso 업무 Judge나 최종 fresh 시험의 점수가 아닙니다. <a href="../web/assets/portal/11-evaluation-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
+같은 모델·도구·연결·응답 계약을 유지합니다. 내보낸 후보 설정에 도구가 빠져 있다고 기존 도구를 제거하지 않습니다. 지시 외의 변경이 제안되면 조건 불일치로 보고하며 통제된 개선이라고 주장하지 않습니다.
 
-**결과 화면의 세 숫자를 혼동하지 않습니다.** 화면 09의 0–1 종합 순위, 화면 11의 항목별 통과율, 아래 재평가의 1–5 업무 점수는 서로 다른 집계입니다. 이 사례에서는 추천 후보가 생겼어도 중요한 업무 실패가 남았습니다. 사진은 내 실행의 기대 점수나 채택 기준이 아닙니다.
+**실제 Promote로 `contoso-eval-en` v2를 만들고 지시 일치·모델·지식 도구 불변을 확인했습니다.** 활성 버전 변경은 **모든 채널에 영향**이 있어 **격리된 미게시 실습만 허용하고 운영 환경 승격은 금지**합니다. HOLD 후 활성 v1으로 복원했으며 v2와 평가 근거는 남아 있습니다. 재승격하거나 삭제하지 않습니다.
 
-<p class="share-checkpoint" id="share-optimizer">결과 공유 · Optimizer가 이 후보를 추천한 이유는?</p>
+<p class="share-checkpoint" id="share-optimizer"><strong>공유:</strong> 어떤 지시가 바뀌었고 어떤 실패를 줄일 수 있으며 무엇이 나빠질 수 있나요? Optimizer 내부 결과는 검증할 후보를 고르는 근거이며 다음 직접 Evaluation을 대신하지 않습니다.</p>
 
-- **실제 결과:** 포털의 **원본 대 후보** 평가별 점수, 사용한 척도·dev 12건·작업/후보 ID를 함께 읽습니다. 0–1 순위 점수와 본 실습의 1–5 업무 Judge 점수를 같은 숫자처럼 합치지 않습니다.
-- **대표 사례:** 지시 diff와 대표 응답을 연결해 무엇이 바뀌었는지 설명합니다. 서비스가 미완료·실패했다면 없는 점수나 개선율을 만들지 않습니다.
-- **다음 결정:** “서비스 기준으로 ___여서 이 후보를 **재평가**한다/보류한다”를 공유합니다. **Optimizer의 추천은 후보 선택 근거이지 최종 채택이나 운영 승인이 아닙니다.**
+**완료 신호:** 실제 영어 작업 성공과 검증된 실습 v2가 있습니다. 별도 네이티브 SDK 평가도 06단계 기록대로 완료됐으며 승격·Optimizer UI 점수는 운영 승인이 아닙니다.
 
-완료 run의 **Download JSON**과 후보의 **Download config**를 다음 비공개 파일명으로 저장합니다. 파일 선택기에는 `$LAB_ARTIFACTS_DIR`라는 글자 대신 **02에서 정한 실제 폴더**를 사용합니다. 포털의 Promote로 활성 버전을 바꾸지 않고 아래 CLI로 별도 실습 버전을 만듭니다.
+<p class="step-next no-print"><a href="#decision" data-next-step>다음: 06. 재평가·비교·종료 →</a></p>
 
-| 저장할 내용 | `$LAB_ARTIFACTS_DIR` 아래 경로 |
-|---|---|
-| 완료 run JSON | `optimizer/agent-optimizer-final.json` |
-| 후보 config JSON | `optimizer/agent-optimizer-candidate-config.json` |
-
-**실행 명령 · 서비스 후보 가져오기:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" optimizer-agent-result --result "$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-final.json" --candidate "$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-candidate-config.json"
-```
-
-**명령 해설:** `--result`는 완료 작업 JSON, `--candidate`는 그 작업의 실제 최우수 후보 config입니다. 원본 Agent·버전·지시 해시와 instruction-only 범위를 검사한 뒤 `selected-candidate.json`, `selected-prompt.txt`, `agent-changes.diff`를 로컬 저장합니다. 서비스 호출·포털 Promote·모델 변경·새 버전 생성은 하지 않습니다. 다음 명령이 가져온 지시를 사용하는 별도 버전을 만듭니다.
-
-<p class="output-label" id="example-optimizer-candidate">출력 예시 · 후보 import 결과 일부</p>
-
-```json
-{
-  "kind": "AGENT_OPTIMIZER_PORTAL_CANDIDATE_IMPORT",
-  "status": "CANDIDATE_CAPTURED_NOT_LAB_APPROVED",
-  "job_id": "EXAMPLE_JOB_ID",
-  "candidate_id": "EXAMPLE_CANDIDATE_ID",
-  "imported_fields": ["system_prompt"],
-  "human_operational_approval": "NOT_GRANTED"
-}
-```
-
-**읽는 법:** 실제 작업/후보의 지시를 `selected-prompt.txt`로 가져왔을 뿐 **실습 품질 통과는 아닙니다.** 지시만 가져오며 config의 `tools: []`로 IQ MCP를 지우지 않습니다. 파일이 없거나 계약이 다르면 가짜 결과를 만들지 않습니다.
-
-**실행 명령 · 새 버전 생성·같은 dev 12건 재평가, 유료:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" agent --stage optimized --confirm
-python -m lab --config "$LAB_ENV_FILE" run --stage optimized --split dev --run-id optimized-dev --interval-seconds 65 --confirm
-python -m lab --config "$LAB_ENV_FILE" judge score --run-id optimized-dev --interval-seconds 65 --confirm
-python -m lab score --run-id optimized-dev
-python -m lab explain --run-id optimized-dev --baseline iq-dev
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
-|---|---|
-| `agent --stage optimized --confirm` | 방금 가져온 `selected-prompt.txt`와 기존 모델·IQ 도구로 **별도 후보 버전**을 원격 생성합니다. `agents/optimized.json`에 기록하며 원본 IQ 버전을 활성 승격하거나 덮어쓰지 않습니다. |
-| `run --stage optimized --split dev --run-id optimized-dev ...` | 동일 dev 12건으로 후보를 실행합니다. 결과는 `runs/optimized-dev/`에 남고 모델·검색 사용량이 발생합니다. |
-| `judge score --run-id optimized-dev ...` | 새 후보의 실제 답변을 같은 업무 Judge로 유료 평가합니다. 포털의 순위 점수를 업무 점수로 복사하지 않습니다. |
-| `score --run-id optimized-dev` | 후보 결과를 로컬 집계합니다. 원본 `iq-dev` 보고서는 유지합니다. |
-| `explain --run-id optimized-dev --baseline iq-dev` | `--baseline`은 비교할 **저장된 실행 ID**입니다. 동일 데이터·Judge의 전후 변화와 설정된 회귀를 로컬 계산하며 추가 모델 호출은 없습니다. |
-
-**마지막 명령은 저장된 동일 문항의 전후 비교입니다.** 데이터·사례 ID·Judge/척도가 다르면 비교를 거부합니다. 기존 `compare_runs` 엔진으로 설정된 회귀 허용폭을 로컬 계산하며 새 모델 호출은 없습니다. dev의 종합 HOLD를 PASS로 바꾸지 않습니다.
-
-| 자동으로 계산하는 진단 | 현재 허용폭 |
-|---|---|
-| 형식·사람 판단 표시·금지 주장 통과율 하락 | 0%p |
-| route 정확도·인용 통과율 하락 | 각각 최대 5%p |
-| 검색 근거성·질문 적합성 평균 하락 | 각각 최대 0.2점 |
-| 지연 증가율 | 허용폭 미설정 — 자동 판정하지 않음 |
-
-**자동과 사람 판단을 구분합니다.** `score`/`finalize`는 한 실행의 게이트를 검사합니다. `explain --baseline`을 붙인 경우에만 전후 회귀 진단도 표시합니다. **업무 정확성의 전후 변화·지시 diff·실제 문장의 타당성·최종 채택**은 사람이 확인합니다. 정책 점수 하락의 별도 자동 허용폭은 설정되어 있지 않으며, 위 진단이 운영 승인은 아닙니다.
-
-<p class="share-checkpoint" id="share-optimized">결과 공유 · 같은 업무 기준으로도 개선됐을까?</p>
-
-- **실제 결과:** `explain --baseline`의 **같은 문항의 자동 회귀 진단**에서 원본/후보 값·하락폭·허용폭·미측정을 읽습니다. 평균뿐 아니라 **점수 있는 행 / 전체**, 오류·누락·critical 사례별 결과도 확인합니다.
-- **대표 사례:** 사례별 **이전 최종 응답·현재 응답·전후 점수·현재 Judge 이유**를 연결해 개선된 답과 나빠졌거나 여전히 부족한 답을 설명합니다. 해당 변화가 관측되지 않았다면 “관측 없음”으로 남깁니다. 이전 판단 이유는 원본 run의 `explain`으로 확인합니다.
-- **다음 결정:** “___는 좋아졌지만 ___ 위험이 남아 후보를 동결/보류한다”를 공유합니다. **평균 상승이 중요한 실패나 회귀를 상쇄하지 못함**을 확인합니다.
-
-**완료 확인:** `iq-dev`와 `optimized-dev`의 **같은 사례 ID**를 비교해 바뀐 답·점수·회귀를 설명할 수 있습니다. 검색 변동까지 통제한 “프롬프트 문구만의 인과 효과”로 과장하지 않습니다. critical 회귀·오류·누락이면 후보를 채택하지 않고 HOLD를 남기며 재제출하지 않습니다.
-
-<p class="step-next no-print"><a href="#decision" data-next-step>다음: 06. 최종 판정·종료 →</a></p>
-
-## 06. 최종 판정·종료 {#decision}
-
-<div class="lab-concept" aria-label="06 학습 목표">
-<p><strong>경험할 기능:</strong> 실험 동결, 새 holdout 평가, 실행 trace와 피드백 연결입니다. 동결은 후보와 평가 조건의 해시를 고정하는 로컬 계약이고, holdout은 후보 선택에 쓰지 않은 별도 시험 질문입니다. Trace는 실제 모델·도구 호출이 남긴 실행 경로입니다.</p>
-<p><strong>왜 중요한가:</strong> 개발 질문에만 잘 맞는 후보를 운영에 채택하지 않으려면 변경을 멈춘 뒤 새 질문으로 확인해야 합니다. 나중에 문제가 생겼을 때 어느 버전이 어떤 근거로 답했는지도 추적할 수 있어야 합니다.</p>
-<p><strong>어떻게 경험하나:</strong> 조건이 충족될 때만 동결 후 fresh12를 한 번 실행하고, 판정·미실행·사람 승인 부재를 분리해 기록합니다. 이 저장소의 governance 명령은 Foundry의 운영 정책을 설정하거나 실제 배포를 승인하는 기능이 아닙니다.</p>
-</div>
-
-**할 일:** 개선 후보를 동결한 뒤 새 질문으로 한 번 평가하고, 실제 상태와 다음 행동을 남깁니다. **앞 단계가 차단되었거나 교정·후보 근거가 불충분하면 아래 유료 최종 시험은 실행하지 않고 [종료 기록](#cleanup)만 작성합니다.** 미실행을 성공으로 바꾸는 대체 경로가 아닙니다.
-
-**실행 명령 · 교정·후보 검토가 끝난 경우에만 동결·새 holdout 생성:**
-
-```bash
-python -m json.tool config/evaluators/fresh-holdout-gates.v1.json
-python -m lab --config "$LAB_ENV_FILE" freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01
-python -m lab holdout create --freeze-id selected-v1 --holdout-id fresh-01 --count 12
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
-|---|---|
-| `json.tool .../fresh-holdout-gates.v1.json` | 원래 test20과 별도인 새 표본 계약을 로컬에서 읽습니다. 합격선을 수정하지 않습니다. |
-| `freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01` | 선택 Agent·교정·정책·검색·평가기·게이트의 정확한 상태를 `governance/freezes/selected-v1.json`에 봉인합니다. `--config`는 환경 일치를 확인하는 용도이며 원격 조회·배포·학습은 없습니다. 동결 기록 자체가 품질 PASS는 아닙니다. |
-| `holdout create --freeze-id ... --holdout-id fresh-01 --count 12` | **동결 이후** 고정된 작성 템플릿에서 합성 질문 12건을 생성·중복 검사·등록합니다. `governance/holdouts/fresh-01/`에 저장하며 모델이나 데이터 생성 서비스를 호출하지 않습니다. |
-
-**확인 후 계속:** 동결에 agent 버전·prompt/model/search/evaluator/gates/data/교정 해시가 묶이고, **동결 이후 생성·등록한 fresh12**가 그 동결을 참조해야 합니다. 원본 test20을 대체하거나 `config/gates.json`의 `minimum_test_rows: 20`을 낮추지 않습니다. 작성 템플릿의 변형인 합성 질문을 독립 고객 표본으로 과장하지 않습니다.
-
-**실행 명령 · 동결한 후보의 최종 12건 실행·채점, 유료:**
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" run --stage optimized --split test --run-id optimized-fresh --freeze-id selected-v1 --holdout-id fresh-01 --interval-seconds 65 --confirm
-python -m lab --config "$LAB_ENV_FILE" judge score --run-id optimized-fresh --interval-seconds 65 --confirm
-python -m lab score --run-id optimized-fresh
-python -m lab explain --run-id optimized-fresh
-python -m json.tool --json-lines "$LAB_ARTIFACTS_DIR/runs/optimized-fresh/outputs.jsonl"
-```
-
-**명령 해설:**
-
-| 명령 | 수행 내용·결과 |
-|---|---|
-| `run ... --split test --freeze-id selected-v1 --holdout-id fresh-01` | 여기서 `--split test`는 최종 시험 모드이며 **선택된 fresh holdout**을 실행합니다. 원본 `data/splits/test.jsonl` 20건을 읽는 일반 시험과 구별합니다. 동결·교정 검사를 통과해야 유료 추론이 시작됩니다. |
-| `judge score --run-id optimized-fresh ...` | 동결에 묶인 Judge로 최종 실제 응답을 유료 채점합니다. 같은 시험을 더 유리한 평가기로 다시 채점하지 않습니다. |
-| `score --run-id optimized-fresh` | 저장된 결과를 로컬 집계해 최종 보고서를 만듭니다. 원본 응답과 Judge 점수는 바꾸지 않습니다. |
-| `explain --run-id optimized-fresh` | 동결된 표본/게이트 기준으로 실제 원인을 읽습니다. 다른 문항인 dev를 전후 비교용 `--baseline`으로 지정하지 않습니다. |
-| `json.tool --json-lines .../outputs.jsonl` | 전체 최종 응답과 대화의 첫 턴·후속 발언을 직접 확인하는 로컬 읽기입니다. |
-
-이 설명에는 **동결된 fresh 표본 계약과 게이트**가 적용됩니다. 현재 개발용 게이트로 바꾸거나 기존 test20의 기준을 낮추지 않습니다. 다른 질문인 dev 결과를 `--baseline`으로 붙이지 않습니다.
-
-최종 사례는 12건이며 명시적 후속 발언이 있는 대화 때문에 정상 capture는 **13턴**입니다. 마지막 답뿐 아니라 초기 `clarify`·scripted-user 출처·최종 답을 모두 읽습니다. `schema_and_clarify_only/not_semantic_safety`는 초기 형식 검사이지 초기 설명의 의미 안전성 보증이 아닙니다.
-
-동결 후 지시·모델·데이터·평가기를 바꾸거나 결과가 나쁘다고 holdout을 다시 뽑지 않습니다. 오류와 점수 누락도 분모에 남깁니다. 중단된 배치는 [강사용 재개 안내](facilitator.md#resume)로 같은 ID·입력을 확인하며, 불명확한 제출·완료된 Judge를 재호출하지 않습니다.
+## 06. 재평가·비교·종료 {#decision}
 
 <a id="review"></a>
-
-**실행 명령 · 최종 판정, 로컬:**
-
-```bash
-python -m lab governance finalize --freeze-id selected-v1 --run-id optimized-fresh
-```
-
-**명령 해설:** 동결과 최종 응답·Judge·summary 해시가 일치하는지 검증하고 `governance/results/selected-v1.json`에 **한 번의 로컬 판정**을 기록합니다. 모델 호출·자동 배포·사람 운영 승인은 없습니다. 최종 run이 차단되어 존재하지 않으면 실행하지 않습니다.
-
-<p class="output-label" id="example-final-verdict">출력 예시 · 최종 실행 완료와 품질 HOLD가 함께 있는 경우</p>
-
-```json
-{
-  "sample_count": 12,
-  "execution_status": "completed",
-  "judge_execution_status": "completed",
-  "quality_status": "HOLD",
-  "manual_operational_approval": "not_granted",
-  "production_ready": false
-}
-```
-
-**읽는 법:** API 실행·채점 완료, 품질 판정, 운영 승인은 각각 다릅니다. 예시는 **실행은 끝났지만 채택은 보류**입니다. 최종 출력의 `gate.checks`에서 `passed: false`인 검사와, 앞서 읽은 `explain`의 원인·실제 문장·Judge 이유를 연결합니다. AI 검토를 사람 검토로 바꾸지 않습니다.
-
-이미 최종 판정이 있으면 `finalize`를 반복하지 않고 `python -m lab governance status --freeze-id selected-v1`로 읽습니다. 이 `status`는 해당 동결의 기존 판정/시도 상태를 로컬 조회하는 명령이며 새 판정이나 Azure 작업을 만들지 않습니다. 실제 사람 기록이 필요할 때만 [검토 형식](facilitator.md#review)을 사용하며, 승인 부재를 숨기지 않습니다.
-
-<p class="share-checkpoint" id="share-holdout">결과 공유 · 처음 보는 질문에도 통하고, 지금 채택해도 될까?</p>
-
-- **실제 결과:** `optimized-fresh`의 **동결 후 새 12건**에 대한 점수·coverage·누락·critical 결과와 최종 `quality_status`를 읽습니다. 실행 완료와 사람의 운영 승인도 따로 공유합니다.
-- **대표 사례:** 정상 답 하나와 중요 실패·확인 질문 대화 중 한 건을 정책과 대조합니다. 마지막 답만 보지 말고 초기 답과 후속 사용자 발언도 확인합니다.
-- **다음 결정:** 근거와 함께 채택/보류 이유를 말합니다. **dev 12건과 fresh12는 다른 질문이므로 전후 평균 개선율로 비교하지 않습니다.** 좋은 dev 점수만으로 일반화를 보장할 수 없고, 소규모 합성 시험 통과도 운영 안전 인증은 아닙니다.
-
 <a id="operate"></a>
-
-**실행 명령 · 실제 최종 run 관측, 읽기 전용:** 02에서 설정한 관측 ID를 그대로 사용합니다.
-
-```bash
-python -m lab --config "$LAB_ENV_FILE" control-plane --run-id optimized-fresh --app-insights-id "$APPLICATIONINSIGHTS_RESOURCE_ID"
-```
-
-**명령 해설:** `--run-id`의 실제 response ID와 Agent 버전에 연결되는 model/tool/evaluation trace를 지정한 Application Insights에서 **최근 1일 범위로 조회**합니다. `runs/optimized-fresh/control-plane/`에 조회 시각별 관측을 저장합니다. 새 추론이나 관측 연결/정책을 만들지 않으며 로그 수집·보존 비용은 별도입니다. 최종 run이 미실행이면 이 명령도 건너뛰고 “최종 run 없음”을 기록합니다.
-
-<p class="output-label" id="example-traces">출력 예시 · trace가 아직 관측되지 않은 경우</p>
-
-```json
-{
-  "status": "NOT_VERIFIED_NO_TRACES",
-  "observed_rows": 0,
-  "error_absence_claim": false,
-  "cost": {"status": "NOT_OBSERVED"}
-}
-```
-
-**읽는 법:** trace 0건은 **관측 미확인**이지 오류 0건·비용 0원이 아닙니다. 일부만 연결되면 `PARTIAL`, 필요한 연결이 확인되면 `VERIFIED_TRACE_MODEL_TOOL_EVAL_LINKS`입니다. trace를 만들려고 모델을 재호출하지 않으며 정책 적용·실제 청구도 별도로 확인합니다.
-
-**포털에서 같은 응답을 찾는 순서:** Build → Agents → 해당 Agent → **Traces** → 실행 시각이 포함된 Date range 선택 → `outputs.jsonl`의 실제 **response_id** 검색 → Trace ID 열기 → **Execute Tool / Chat** span과 **Input + Output**을 읽습니다. 목록 전체는 여러 버전·Optimizer 내부 실행을 포함할 수 있으므로 이름만 같다는 이유로 연결하지 않습니다.
-
-<figure class="portal-shot" id="portal-trace-search">
-<img src="../web/assets/portal/12-trace-lookup.png" alt="기존 iq-dev 응답 ID로 필터링해 실제 trace 하나를 찾은 Foundry Traces 화면" width="1440" height="800" loading="lazy">
-<figcaption><strong>화면 12 · 실제 response ID로 trace 검색.</strong> 조회 방법을 보여 주기 위해 기존 iq-dev의 atlas-dev-001을 찾았습니다. 최종 fresh run의 화면이 아닙니다. 이 행의 Evaluation은 --이며 자동 평가 연결을 확인했다고 주장하지 않습니다. Estimated cost는 실제 청구액이 아닙니다. <a href="../web/assets/portal/12-trace-lookup.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
-
-<figure class="portal-shot" id="portal-trace-detail">
-<img src="../web/assets/portal/13-trace-tool-call.png" alt="같은 IQ trace의 실제 MCP knowledge_base_retrieve span, 검색 질문과 ATLAS-SUB-001 도구 출력" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 13 · Trace ID → Execute Tool → Input + Output.</strong> 같은 실제 응답의 MCP 검색 질문, 반환 문서 ATLAS-SUB-001, 도구·모델 span을 연결한 화면입니다. 이 trace에는 3 spans·1 chat call·1 tool call이 표시됩니다. 한 응답의 실행 경로이지 전체 run의 품질 통과나 누락 없는 관측을 뜻하지 않습니다. <a href="../web/assets/portal/13-trace-tool-call.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
-</figure>
-
-도구 출력의 `\u...`는 JSON의 유니코드 이스케이프 표현입니다. 화면을 깔끔하게 만들려고 원본을 수정하지 않습니다. 검색 질문·문서 ID·해당 실행의 저장된 문맥을 함께 확인합니다. **최종 시험이 차단되었으면 그 상태는 유지**하며, 위 기존 IQ 화면을 최종 결과로 바꾸어 보고하지 않습니다.
-
-**실행 명령 · 다음 개선 질문 남기기, 로컬:**
-
-```bash
-python -m lab feedback --run-id iq-dev --feedback-id iq-dev-next-review
-```
-
-**명령 해설:** 실제 `iq-dev`의 실패와 response ID를 `feedback/iq-dev-next-review.json`에 **로컬 검토 대기열**로 내보냅니다. `--feedback-id`는 새 검토 기록 이름입니다. 정답을 작성하거나 학습 파일·Agent·외부 서비스에 자동 반영하지 않습니다. 해당 dev 결과가 없으면 실행하지 않습니다.
-
-실제 dev 실패·응답 ID에 연결된 사람 검토 대기열이며 `ground_truth`는 비어 있고 검토는 `PENDING`입니다. 자동 학습·배포가 아닙니다. 최종 test/fresh holdout을 개발·최적화 데이터로 옮기지 않습니다.
-
 <a id="cleanup"></a>
 
-**결과를 남기고 종료 — 정상 완료와 HOLD 모두 여기서 마칩니다.**
+<div class="lab-concept" aria-label="06 학습 목표">
+<p><strong>무엇:</strong> 기존 정의 안에서 v2를 평가하는 실제 Foundry 관리형 run입니다. <strong>왜:</strong> 포털 후보 폼이 제출 전에 실패합니다. <strong>어떻게:</strong> Azure AI Projects/OpenAI Evals SDK 명령 하나를 실행하고 Foundry 포털에서 원격 run을 비교합니다.</p>
+</div>
 
-| 기록할 것 | 남길 내용 |
-|---|---|
-| 예시와 실제 실행 | DEMO는 authored. 실제 버전·response/작업/평가 ID가 있는 것만 LIVE |
-| 개선 결과 | 변경한 지시, 정책·사례·문장 근거, 회귀와 누락 |
-| 최종 상태 | 실제 quality 결과, HOLD 이유, 차단되어 **미실행**인 단계 |
-| 사람 판단 | 실제 검토 출처와 운영 승인 부재. AI를 사람으로 표시하지 않음 |
-| 관측·보존 | trace 확인/부분/없음, 비용 확인 담당자·다음 확인 시점 |
+**실제 포털 차단:** Add run → Pin v2 → Individual turns 뒤 **Configure agents: Config required → Add custom prompt / User prompt**가 나타났습니다. `{{item.query}}`를 넣어도 Submit에서 **`Unable to create data source configuration from item schema`** 클라이언트 오류가 발생했습니다. **이 시도로 원격 후보 run은 제출되지 않았습니다.** 새 평가 정의를 만들어 우회하지 않습니다.
 
-**실행 명령 · 삭제하지 않는 로컬 정리 계획:** 02의 환경 연결이 완료된 경우에만 읽습니다. 환경 준비 전 중단했다면 실행하지 않고 준비 미완료를 기록합니다.
+저장소 루트의 bash/zsh/WSL2에서 아래 **네 자리표시자를 모두 교체**합니다. 프로젝트 endpoint·구독은 운영자에게 받고, 평가·기준선 실행 ID는 **자신의 기준선** 포털 URL 또는 **Raw JSON**에서 복사합니다. 한국어 실습에는 한국어 실행 ID를 사용하며, 이 가이드의 영문 리허설 ID를 그대로 복사하지 않습니다.
 
 ```bash
-python -m lab --config "$LAB_ENV_FILE" cleanup
+export AZURE_AI_PROJECT_ENDPOINT="OPERATOR_PROJECT_ENDPOINT"
+export AZURE_SUBSCRIPTION_ID="OPERATOR_SUBSCRIPTION_ID"
+export FOUNDRY_EVALUATION_ID="YOUR_EVALUATION_ID"
+export FOUNDRY_BASELINE_RUN_ID="YOUR_BASELINE_RUN_ID"
 ```
 
-**명령 해설:** 로컬 소유 원장을 읽어 정리 대상과 자동 삭제하지 않는 자원을 **계획으로 출력**합니다. 현재 명령에는 삭제 옵션이 없고 Azure 삭제 요청도 없습니다. 이름이 cleanup이라고 리소스·비용이 정리됐다고 해석하지 않습니다.
+**사전 준비:** `source .venv/bin/activate`로 준비된 venv를 활성화하고 `python -m pip install -r requirements.lock`으로 설치한 뒤 `az login`과 [계정·구독 확인](admin-setup.md#sdk-prerequisites)을 마칩니다. 운영자가 helper를 제공하며 다른 계정이나 미완료 준비 상태로 실행하지 않습니다.
 
-**삭제 승인은 없습니다.** `--confirm-prefix`를 추가하거나 포털에서 자원을 지우지 않습니다. 비공개 원본·실험 계약·새 RG를 보존합니다. 터미널을 닫아도 Search·로그·모델 호스팅 비용은 계속될 수 있습니다.
+**SDK 작업은 이 명령 하나입니다.** 기준선 `data_source`와 기존 평가 기준을 재사용하고 run 입력의 대상 버전만 바꿉니다. 같은 모델·도구를 검증하고 **동일 evalID 아래 실제 Foundry 평가 run**을 제출합니다. **로컬 Judge나 별도 클라우드 채점 구현이 아닙니다.**
 
-**완료 확인:** 다음 문장을 근거와 함께 완성하면 참가자 경로는 끝입니다. 읽음 체크만으로 LIVE 완료를 주장하지 않습니다.
+```bash
+python scripts/add_foundry_eval_run.py --endpoint "$AZURE_AI_PROJECT_ENDPOINT" --subscription "$AZURE_SUBSCRIPTION_ID" --evaluation "$FOUNDRY_EVALUATION_ID" --baseline "$FOUNDRY_BASELINE_RUN_ID" --version 2 --name candidate-v2 --out .lab/foundry-evaluations/candidate-v2.json
+```
 
-> “___ 지시를 바꿨고, 사례 ___의 정책/응답 ___를 근거로 후보를 ___한다. 최종 시험은 ___ 상태이며, 사람의 운영 승인은 ___이다. 남은 위험과 다음 행동은 ___이다.”
+최초 제출은 비공개 **receipt**를 저장합니다. 동일 명령·`--out` 경로를 반복하면 같은 run만 조회합니다. 로컬 receipt가 없어도 같은 이름의 원격 run이 있으면 중복 제출하지 않고 중단합니다. 기존 run을 열거나 원래 receipt를 복구하며, 유리한 결과를 얻으려고 이름·경로·평가 정의를 바꾸지 않습니다.
 
-**다른 실습을 추가로 끝낼 필요는 없습니다.** 실행 완료가 품질 합격은 아니며, 품질 HOLD를 정직하게 설명하는 것도 학습 결과입니다.
+**검증된 영어 SDK 결과:** 같은 **`eval_94feef6f6f644fabb22a5680f5f24fb1`** 아래 후보 run **`evalrun_f3b710fc835d444fb8aa0d2bb7797bdf`**, `contoso-eval-en` **v2**가 **Completed, 12행, 11 passed / 1 failed / 0 errored**입니다. v1은 **10 passed / 2 failed / 0 errored**였습니다. helper가 같은 데이터셋·평가자·Judge·모델·도구를 확인했으며 지시·버전만 바뀌었습니다. Optimizer 내부 점수가 아닌 실제 Foundry run입니다.
 
-결과가 없으면 **미실행/미측정**으로 공유하며, 설명용 예시나 다른 실행의 결과를 내 실행 결과로 제시하지 않습니다. 원본은 비공개로 보존합니다.
+영어는 **Build → Evaluations → `contoso-en-learning-loop` → Evaluation runs**에서 두 run 체크박스를 선택해 **Compare runs**를 엽니다. **Baseline 드롭다운에서 원래 `contoso-eval-en`을 명시적으로 선택합니다.** 기본값은 처음 선택한 행이며 실제로 `candidate-v2`였으므로 방향·검정을 읽기 전에 확인합니다. 한국어는 별도 정의의 원래 v1을 고릅니다. 비공개 루브릭 버전 고정은 여전히 미입증입니다.
 
-<a id="tune"></a>
+| 실제 비교, n = 12 | 원래 `contoso-eval-en` v1 | `candidate-v2` |
+|---|---|---|
+| 전체 기준 통과 / 실패 / 오류 | 10 / 2 / 0 | 11 / 1 / 0 |
+| Relevance 통과; 평균(1–5) | 10/12; **4.4167** | 11/12; **4.3333** |
+| TaskAdherence 통과; 이진 평균 | 12/12; **1.0** | 12/12; **1.0** |
+| Relevance 행 1 / 2 / 6 / 11 | 3 / 5 / 5 / 3 | 4 / 4 / 4 / 3 |
+| 지연 p50 (ms) | 5,891.09 | 7,287.52 |
+| 지연 p95 (ms) | 8,817.33 | 16,038.35 |
+| Agent 토큰 | 35,187 | 43,751 |
+
+<figure class="portal-shot" id="portal-evaluation-comparison">
+<img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="동일한 데이터셋·평가 설정의 기준선과 후보를 비교하는 Foundry Evaluations 화면. 한국어 실행 결과가 아님" width="1440" height="520" loading="lazy">
+<figcaption><strong>실제 네이티브 비교.</strong> 영문 UI·영문 데이터 리허설 화면; 한국어 실행 결과가 아님. 처음 선택된 candidate-v2 대신 <strong>Baseline → contoso-eval-en</strong>을 고릅니다. PairedTTest는 두 지표 모두 Inconclusive이며 평균 하락·지연·토큰 증가 때문에 채택은 HOLD입니다. <a href="../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+**결정 실행: 채택 HOLD, 활성 버전 1로 복원.** Compare에서 원래 Baseline을 명시 선택한 뒤 이 실습에서 원본을 유지하려면 **Agent Details → Agent configuration → Active version → Edit → Version 1**을 사용하며 운영자가 이미 완료했습니다. **후보 v2·두 평가 run·receipt는 삭제하지 않고 보존합니다.** 평균 하락·행별 회귀·지연·토큰 증가·Inconclusive는 전반적 개선을 입증하지 않으며 점수 때문에 정책 사실을 바꾸지 않습니다.
+
+<p class="share-checkpoint" id="share-optimized"><strong>종료 설명:</strong> 통과 한 건 증가뿐 아니라 행 2·6 회귀, 평균 하락, 지연·토큰 증가, Inconclusive 검정으로 HOLD를 설명합니다. Optimizer +0.010이나 네이티브 통과 건수만으로 판단하지 않습니다.</p>
+
+**완료 신호:** 실제 run ID, 측정된 상충 관계, HOLD 결정이 기록되어 있습니다. 추가 검토와 새 대표 사례는 다음 승인된 개선 주기의 과제이지 추가 필수 실습이나 유리할 때까지 반복하는 평가가 아닙니다.
+
+dev12 재사용은 통계적 유의성·운영 승인의 근거가 아닙니다. **운영용 Publish는 하지 않았고 운영 채널·트래픽도 구성하지 않았습니다.** Foundry는 Publish 없이도 **RBAC-only Responses/preview endpoints**를 자동 제공하므로 미게시를 endpoint 부재로 해석하지 않습니다.
+
 <a id="troubleshooting"></a>
 <a id="sources"></a>
 
-참고가 필요할 때만: [운영자 사전 준비](admin-setup.md) · [오류·재개 및 별도 진단](facilitator.md#resume) · [SFT/Frontier 부록](sft-appendix.md) · [데이터 설명](../data/README.md) · [최신 검증·출처](verification.md).
+**종료:** 실제 run/job/version 참조, 데이터셋 버전·해시, 관측한 실패와 남은 차단 사유를 운영자에게 전달합니다. 지속 비용과 승인된 정리의 책임자를 정합니다. 브라우저를 닫아도 과금은 멈추지 않습니다. 승인된 합성 예시와 가림 처리한 요약만 공유하며 자격 증명이나 비공개 환경 파일은 공유하지 않습니다.
 
-화면 상단의 **어둡게/밝게**는 선택을 기억합니다. **현재 인쇄**는 읽는 단계만, **전체 PDF**는 이 문서 전체를 인쇄 창으로 엽니다. PDF로 저장을 선택하면 되며, 인쇄 배경은 항상 밝게 유지합니다.
-
-문서 기준 **2026-09-30**, 가이드 **v1**. `python -m lab`는 이 저장소의 교육용 도구이며 Microsoft 공식 CLI가 아닙니다. 서비스 지원·리전·모델·비용은 바뀔 수 있으며, 기존 검증 기록은 참가자의 새 실행이나 운영 승인을 대신하지 않습니다.
+[데이터 계약](../data/README.md) · [강사·복구 안내](facilitator.md#resume) · [운영자 인수](admin-setup.md#handoff) · [실측 검증·출처](verification.md)

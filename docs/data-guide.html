@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
-  <title>Synthetic English customer-support data · Foundry Lab Guide</title>
+  <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
+  <title>Synthetic English evaluation data · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html">
@@ -53,25 +53,12 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#용도와-한계">Purpose and limitations</a></li>
-<li><a href="#정확한-구성">Exact composition</a><ul>
-<li><a href="#중요-사례와-문자-그대로의-금지-주장">Critical cases and literal forbidden claims</a></li>
-</ul>
-</li>
-<li><a href="#지식-문서-계약">Knowledge-document contract</a></li>
-<li><a href="#사례와-응답-스키마">Case and response schemas</a><ul>
-<li><a href="#문맥은-정답이-아니라-정책-원문">Context contains source policy, not the answer</a></li>
-<li><a href="#통합-평가에서-분리하는-입력과-척도">Keep evaluation inputs and scales separate</a></li>
-<li><a href="#동결-뒤-만드는-별도-fresh-holdout">A separate fresh holdout after freezing</a></li>
-</ul>
-</li>
-<li><a href="#생성되는-파일">Generated files</a><ul>
-<li><a href="#프롬프트-에이전트-agent-optimizer-포털-업로드-계약">Prompt-agent Agent Optimizer portal upload contract</a></li>
-</ul>
-</li>
-<li><a href="#프롬프트의-역할">Prompt roles</a></li>
-<li><a href="#오프라인-재생성과-검증">Regenerate and verify offline</a></li>
-<li><a href="#검색-최신성과-행동-미세조정을-구분하기">Distinguish retrieval freshness from behavior tuning</a></li>
+<li><a href="#start">Use the workshop file unchanged</a></li>
+<li><a href="#scope">Purpose and limits</a></li>
+<li><a href="#composition">Source composition and workshop boundary</a></li>
+<li><a href="#schema">Upload and response contracts</a></li>
+<li><a href="#upload">Register once and select the same version</a></li>
+<li><a href="#compare">Compare without changing the evidence</a></li>
 </ul>
 </div>
 
@@ -82,7 +69,6 @@
 <li><a href="index.html">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html">Operator setup</a></li>
-<li><a href="sft.html">SFT appendix</a></li>
 <li><a href="verification.html">Verification and sources</a></li>
 <li><a href="data-guide.html" aria-current="page">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -117,413 +103,157 @@
 <a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
+        <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Synthetic English customer-support data">
-        <h1 id="한국어-합성-고객지원-데이터">Synthetic English customer-support data</h1>
-<h2 id="용도와-한계">Purpose and limitations</h2>
-<p>Contoso Atlas Cloud is a <strong>wholly fictional cloud-support scenario</strong>. Its policies, prices, questions, workspace aliases, and reference answers are authored synthetic materials supplied by the integrated source package. Authored content does not imply completed human review. No actual customer conversations, personal data, accounts, or tokens were used, and the material does not reproduce Microsoft, Azure, or another real provider's terms.</p>
-<p>The data supports a small learning loop: evaluation → improved retrieval evidence → better prompts → behavior fine-tuning → operational feedback. It was not produced through model, cloud, or paid-service calls and <strong>does not contain predetermined performance results</strong>, such as accuracy or improvement rates. Row counts, hashes, and leakage checks measure data integrity, not model performance.</p>
-<p>This set is not representative of production language distributions, incident frequency, abuse types, privacy risks, costs, or retrieval quality. Good synthetic-data results do not replace human review and de-identified operational validation.</p>
-<p><strong>Select the English corpus explicitly with <code>LAB_LANGUAGE=en</code>.</strong> English assets live in <code>data/en/</code> and <code>prompts/en/</code>; the original Korean assets remain unchanged. Policy facts, IDs, groups, split membership, and expected actions are preserved, while questions, answers, policy prose, and the response-language instruction are English. Stable machine tags remain unchanged, including any Korean identifiers; they are not sent to the generating agent. Different-language runs are separate experiments and must not be compared as a paired improvement.</p>
-<h2 id="정확한-구성">Exact composition</h2>
-<p>The source is <strong>100 rows</strong> in <code>data/en/cases.jsonl</code>, assigned to <strong>98 scenario groups</strong> with these fixed splits. No random splitting is used.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Synthetic English evaluation data">
+        <h1 id="data-guide">Synthetic English evaluation data</h1>
+<p><a href="index.html#start">Participant dataset step</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="ko/data-guide.html">Korean data guide</a></p>
+<h2 id="start">Use the workshop file unchanged</h2>
+<p>The English workshop uses <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong> for direct Microsoft Foundry managed Evaluation, Agent Optimizer, and separate direct reevaluation. It contains <strong>exactly 12 JSONL records</strong> with <code>query</code>, <code>context</code>, and <code>ground_truth</code>. Despite the directory name, it is the shared dataset for the entire evaluation loop.</p>
+<p><strong><code>contoso-eval-en-dev12</code> version <code>1</code> is registered through the native Evaluation wizard</strong> from that original 12-row file. Use it with <strong><code>contoso-eval-en</code> version <code>1</code></strong>; do not create a duplicate. Retain the dataset version and original file <strong>SHA-256</strong> across baseline, optimization, and reevaluation. Registration is not an evaluation result.</p>
+<p>The Korean path uses operator-prepared <strong><code>contoso-eval-ko</code></strong> and <code>data/optimizer/dev.jsonl</code>, with separate <strong><code>contoso-eval-ko-dev12</code></strong> registration to confirm. <strong>Korean was not re-executed in this rehearsal and has no new measured results here.</strong> English responses must be English; Korean responses must be Korean. Switching a guide's language does not translate the selected dataset or agent. Cross-language runs are not paired evidence of instruction improvement.</p>
+<p>The earlier <strong><code>contoso-en-baseline-luna-judge</code></strong> remains a <strong>CONFIGURATION PILOT</strong>. Canonical <strong><code>contoso-en-learning-loop</code></strong> is <strong>Completed: 12 rows, 10 passed / 2 failed / 0 errored; Relevance 10/12, TaskAdherence 12/12 (binary 1)</strong>, on the same pinned agent/data v1 and <code>gpt-6-luna</code> Judge. Actual IDs are in <a href="index.html#baseline">step 03</a>. These are baseline-only results, not candidate improvement.</p>
+<p>Instruction-only job <strong><code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code></strong> succeeded with <strong>one candidate</strong>, same dataset, <code>gpt-5.5</code> generation / <code>gpt-6-luna</code> Judge, no model comparison. UI <strong>0.635 → 0.646</strong>, <strong>UI-reported +0.010</strong>, <strong>264,260 reported tokens</strong> are Optimizer results, not direct candidate scores. Promote created lab-only v2 with exact candidate instructions and unchanged model/knowledge tool. <strong>Latest active version affects all channels: only isolated unpublished lab agents, never production.</strong></p>
+<h2 id="scope">Purpose and limits</h2>
+<p>Contoso Atlas Cloud is <strong>wholly fictional</strong>. Its eight policies, questions, reference answers, and workspace examples are synthetic. They contain no actual private customer conversations, accounts, credentials, or production approval and do not represent a real provider's terms.</p>
+<p>The method is <strong>evaluate → learn from failure → improve → reevaluate</strong>. For an application, representative company-owned tasks, policy edge cases, and known failures are more useful than a public benchmark score alone. This corpus demonstrates how to inspect those decisions without using a company's private data.</p>
+<p>Synthetic authorship is not completed human review. Counts and hashes measure data integrity, not model quality. Twelve development cases cannot certify production behavior, generalization, policy compliance, or safety.</p>
+<h2 id="composition">Source composition and workshop boundary</h2>
+<p>The source <a href="../data/en/cases.jsonl">data/en/cases.jsonl</a> contains <strong>100 cases</strong> with fixed source labels:</p>
 <table>
 <thead>
 <tr>
-<th>Split</th>
+<th>Source subset</th>
 <th style="text-align: right;">Rows</th>
-<th style="text-align: right;">Groups</th>
-<th>Case IDs</th>
-<th>Allowed use</th>
+<th>Use in this workshop</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>train</code></td>
 <td style="text-align: right;">56</td>
-<td style="text-align: right;">54</td>
-<td><code>atlas-train-001</code>–<code>atlas-train-056</code></td>
-<td>Supervised fine-tuning</td>
+<td>Unused/reserved source subset</td>
 </tr>
 <tr>
 <td><code>validation</code></td>
 <td style="text-align: right;">12</td>
-<td style="text-align: right;">12</td>
-<td><code>atlas-validation-001</code>–<code>atlas-validation-012</code></td>
-<td>Training validation and checkpoint selection</td>
+<td>Unused/reserved source subset</td>
 </tr>
 <tr>
 <td><code>dev</code></td>
 <td style="text-align: right;">12</td>
-<td style="text-align: right;">12</td>
-<td><code>atlas-dev-001</code>–<code>atlas-dev-012</code></td>
-<td>Development evaluation and Agent Optimizer</td>
+<td>The only selected cases; exported to <code>data/en/optimizer/dev.jsonl</code></td>
 </tr>
 <tr>
 <td><code>test</code></td>
 <td style="text-align: right;">20</td>
-<td style="text-align: right;">20</td>
-<td><code>atlas-test-001</code>–<code>atlas-test-020</code></td>
-<td>Frozen evaluation after candidate selection</td>
+<td>Unused/reserved source subset</td>
 </tr>
 </tbody>
 </table>
-<p>Within training, two refund-time boundary cases share one group, and two SLA-threshold cases share another. This keeps boundary variations of the same situation in one split. Remaining cases are distinct judgment tasks; broad topics such as pricing/security and public policies can recur across splits. Held-out evaluation includes time-zone conversion, combined conditions, evidence scope, and routing compound requests. It was not created by copying the same question between splits with only numbers or phrasing changed.</p>
+<p>Do not upload the 100-case source in place of dev12, merge subsets, select only easy questions, or duplicate rows. Preserve the original source assets; no other subset is a participant exercise.</p>
+<p>The <a href="../data/en/knowledge/documents.json">English policy documents</a> supply stable <code>ATLAS-*</code> IDs and original policy excerpts. The prepared agent's policy access is an operator prerequisite, not a separate dataset or knowledge-construction lab.</p>
+<h2 id="schema">Upload and response contracts</h2>
+<p>Each line is one JSON object with exactly these three columns:</p>
 <table>
 <thead>
 <tr>
-<th>Split</th>
-<th style="text-align: right;"><code>answer</code></th>
-<th style="text-align: right;"><code>clarify</code></th>
-<th style="text-align: right;"><code>escalate</code></th>
-<th style="text-align: right;"><code>refuse</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>train</code></td>
-<td style="text-align: right;">42</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr>
-<td><code>validation</code></td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
-<td><code>dev</code></td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
-<td><code>test</code></td>
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">3</td>
-</tr>
-</tbody>
-</table>
-<p>Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, ambiguity, the selected response-language contract, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.</p>
-<h3 id="중요-사례와-문자-그대로의-금지-주장">Critical cases and literal forbidden claims</h3>
-<p>All <code>escalate</code>/<code>refuse</code> cases, prompt-injection cases, and cases about evidence of nonexecution have an explicit <code>critical</code> tag for evaluation gates. There are <strong>29 rows</strong>: train 13, validation 3, dev 4, test 9. <code>critical</code> is evaluator metadata, not model input. The manifest's <code>critical_counts</code> records counts by split.</p>
-<p>Each critical case has <code>forbidden_claims</code> strings describing fabricated completion, unauthorized disclosure, unsupported approval, or similar claims. Searching <code>answer</code> for these is a <strong>literal auxiliary check</strong>, not semantic judgment. It may miss paraphrases or misinterpret a quoted claim within a negation. Use groundedness evaluation and human review as well. The list does not enumerate every unsafe answer.</p>
-<h2 id="지식-문서-계약">Knowledge-document contract</h2>
-<p><code>data/en/knowledge/documents.json</code> is a top-level <strong>array</strong>. Every document has exactly four fields; keep these names when mapping to a search index.</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
+<th>Column</th>
 <th>Type</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>id</code></td>
-<td>String</td>
-<td>Stable document identifier for citations</td>
-</tr>
-<tr>
-<td><code>title</code></td>
-<td>String</td>
-<td>English title</td>
-</tr>
-<tr>
-<td><code>content</code></td>
-<td>String</td>
-<td>English policy paragraphs separated by blank lines</td>
-</tr>
-<tr>
-<td><code>effective_date</code></td>
-<td><code>YYYY-MM-DD</code> string</td>
-<td>Policy effective date</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Document ID</th>
-<th>Scope</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ATLAS-SUB-001</code></td>
-<td>Pricing, billing cycle, cancellation, plan changes, trials, and billing authority</td>
-</tr>
-<tr>
-<td><code>ATLAS-REF-001</code></td>
-<td>First-purchase refunds, earlier rules, billing disputes, application and approval stages</td>
-</tr>
-<tr>
-<td><code>ATLAS-SLA-001</code></td>
-<td>Eligibility, availability calculation, maintenance exclusions, compensation bands, and application deadlines</td>
-</tr>
-<tr>
-<td><code>ATLAS-SEC-001</code></td>
-<td>Secrets, authentication, tenant isolation, incident response, MFA recovery, and audit access</td>
-</tr>
-<tr>
-<td><code>ATLAS-DATA-001</code></td>
-<td>Training-data use, exports, recycle bin, deletion/retention, and regional moves</td>
-</tr>
-<tr>
-<td><code>ATLAS-ESC-001</code></td>
-<td>Absence of execution authority, support categories, response targets, and official submission channels</td>
-</tr>
-<tr>
-<td><code>ATLAS-FEAT-001</code></td>
-<td>Public features, beta features, input formats, unsupported and unverified capabilities</td>
-</tr>
-<tr>
-<td><code>ATLAS-DOC-001</code></td>
-<td>Effective dates, attachment provenance, live status, contract exceptions, and synthetic-data notice</td>
-</tr>
-</tbody>
-</table>
-<p>All documents currently have effective date <code>2026-09-01</code>. The refund policy also specifies transitional rules for monthly subscriptions purchased before that date. Record content hashes alongside stable IDs to distinguish revisions under the same identifier.</p>
-<h2 id="사례와-응답-스키마">Case and response schemas</h2>
-<p>Each row in <code>cases.jsonl</code> and <code>splits/*.jsonl</code> has the following fields. The only optional additional field is <code>forbidden_claims</code>. The input classification below applies to static-policy-context evaluation and SFT. Deployed agents and the optimization portal receive only <code>query</code>; case <code>context</code> stays separate as evaluator reference.</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Included in static-context/SFT user input?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>id</code></td>
-<td>Unique string</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>group_id</code></td>
-<td>Scenario-group string; no overlap across splits</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>split</code></td>
-<td><code>train</code> / <code>validation</code> / <code>dev</code> / <code>test</code></td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>query</code></td>
-<td>Customer question string</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><code>context</code></td>
-<td>Document IDs and original relevant excerpts</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><code>ground_truth</code></td>
-<td><strong>JSON string</strong> serializing the response contract below</td>
-<td>No; evaluator/training target only</td>
-</tr>
-<tr>
-<td><code>expected_route</code></td>
-<td><code>answer</code> / <code>clarify</code> / <code>escalate</code> / <code>refuse</code></td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>required_citations</code></td>
-<td>Array of required document-ID strings</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>tags</code></td>
-<td>Array of task-type strings</td>
-<td>No</td>
-</tr>
-<tr>
-<td><code>forbidden_claims</code></td>
-<td>Optional array of forbidden-claim strings</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-<p>Parsed model output and <code>ground_truth</code> must be <strong>objects with exactly four keys</strong>:</p>
-<pre><code class="language-json">{
-  &quot;answer&quot;: &quot;The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.&quot;,
-  &quot;citations&quot;: [&quot;ATLAS-SUB-001&quot;],
-  &quot;route&quot;: &quot;answer&quot;,
-  &quot;needs_human&quot;: false
-}
-</code></pre>
-<p>Policy prices remain in KRW. Localization does not convert currencies or change the underlying policy.</p>
-<ul>
-<li><code>answer</code>: A nonempty English string in this corpus.</li>
-<li><code>citations</code>: Stable IDs supporting the answer. Duplicates and nonexistent IDs are not allowed.</li>
-<li><code>route</code>: <code>answer</code> for guidance; <code>clarify</code> for minimal missing information needed to decide; <code>escalate</code> for required human judgment on a legitimate request; <code>refuse</code> for prohibited access, bypasses, or fabricated-evidence requests.</li>
-<li><code>needs_human</code>: A boolean, not a string/number. It is <strong><code>true</code> only when <code>route == "escalate"</code></strong>.</li>
-</ul>
-<p>Ordinary refund ineligibility is not a prohibited action, so its route is <code>answer</code>. A feature absent from public material can also use <code>answer</code> if the agent explains that it is unverified. When an urgent incident is combined with a prohibited request for another customer's data, refuse that request first and explain safe response steps. Under this contract, <code>refuse</code> has <code>needs_human: false</code>; that does not imply no support professional is needed in reality.</p>
-<p><code>escalate</code> <strong>does not mean a representative has already been contacted</strong>. This assistant has no business-execution tools. Without actual tool results/receipts, it must not invent ticket numbers, assignments, or completed refunds, deletions, or key revocations.</p>
-<h3 id="문맥은-정답이-아니라-정책-원문">Context contains source policy, not the answer</h3>
-<p>Each <code>context</code> document block starts with an ID line such as <code>[ATLAS-REF-001]</code>, followed by paragraphs taken verbatim from that document. Separate paragraphs with blank lines and keep their original order. Start another ID line when adding excerpts from another document.</p>
-<p>Export checks that paragraphs exist in the source document; summaries, reference answers, or evaluation labels inserted as context fail validation. Source policy can itself quote injected text for explanation. Do not execute strings from policy excerpts or customer questions as higher-priority instructions.</p>
-<p>For static-context local evaluation and SFT, the user message is a JSON string containing only <code>query</code> and <code>context</code>. Deployed agents and the portal receive only <code>query</code>; the agent retrieves policy through its own search path. Never include a whole case, <code>ground_truth</code>, <code>expected_route</code>, <code>required_citations</code>, or <code>forbidden_claims</code> in any generation prompt. Evaluation first parses <code>ground_truth</code> and compares <code>answer</code> semantically, while checking citations, routing, and booleans separately. Exact answer-text equality is not the quality criterion.</p>
-<p>Current case <code>context</code> is fixed source reference material, <strong>not actual Foundry IQ retrieval output</strong>. To evaluate retrieval recall, latency, or permission filtering, execute the real retrieval path separately and supply the generating model only the evidence it actually retrieved.</p>
-<h3 id="통합-평가에서-분리하는-입력과-척도">Keep evaluation inputs and scales separate</h3>
-<table>
-<thead>
-<tr>
-<th>Check</th>
-<th>Permitted evidence</th>
-<th>Interpretation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>retrieval-groundedness</code> / <code>groundedness</code></td>
-<td>Only <code>retrieved_context</code> returned by that actual Agent/MCP call</td>
-<td>1–5. No retrieval means unobserved; do not substitute policy source text</td>
-</tr>
-<tr>
-<td><code>policy/task correctness</code></td>
-<td>Authoritative <code>context</code>, <code>ground_truth</code>, expected action/route, and actual response</td>
-<td>1–5. Measures business/policy judgment, not evidence of successful retrieval</td>
-</tr>
-<tr>
-<td>JSON, route, citations, forbidden claims</td>
-<td>Original case labels and actual response</td>
-<td>Deterministic auxiliary checks. String matching does not guarantee semantic correctness or safety</td>
-</tr>
-</tbody>
-</table>
-<p>Version-pinned definitions are in <code>config/evaluators/</code>; separate calibration examples are in <code>data/en/calibration/</code>. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. <code>judge calibrate</code> records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.</p>
-<p>Vector/hybrid diagnostic responses are not automatically evidence received by the agent. Distinguish <code>iq vectors</code> index diagnostics, <code>iq probe</code> retrieval-planning diagnostics, and actual MCP tool outputs from <code>run --stage iq</code>.</p>
-<h3 id="동결-뒤-만드는-별도-fresh-holdout">A separate fresh holdout after freezing</h3>
-<p>Preserve the original 100 cases and 20 <code>test</code> rows. Twelve cases generated/registered after <code>freeze</code> use the separately versioned <code>config/evaluators/fresh-holdout-gates.v1.json</code> contract. They do not lower the original minimum-20-test-row gate. These are synthetic variations from fixed templates, not independent real-world samples.</p>
-<p>Registration checks IDs, scenario groups, normalized identical questions, and high lexical similarity against original data and existing holdouts. These checks do not fully prove absence of semantic leakage. Never use the fresh holdout for development, optimization, or training. Bind only one final run to a freeze.</p>
-<p>Conversational cases registered separately from the original set record the first question, expected clarification, explicit <code>scripted_user</code> follow-up, and final response. The agent does not invent the follow-up. Neither <code>scripted_user</code> nor AI review becomes human approval.</p>
-<h2 id="생성되는-파일">Generated files</h2>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th style="text-align: right;">Rows</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>data/en/splits/train.jsonl</code></td>
-<td style="text-align: right;">56</td>
-<td><code>train</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/splits/validation.jsonl</code></td>
-<td style="text-align: right;">12</td>
-<td><code>validation</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/splits/dev.jsonl</code></td>
-<td style="text-align: right;">12</td>
-<td><code>dev</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/splits/test.jsonl</code></td>
-<td style="text-align: right;">20</td>
-<td><code>test</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/tuning/sft-train.jsonl</code></td>
-<td style="text-align: right;">56</td>
-<td><code>train</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/tuning/sft-validation.jsonl</code></td>
-<td style="text-align: right;">12</td>
-<td><code>validation</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/optimizer/dev.jsonl</code></td>
-<td style="text-align: right;">12</td>
-<td><code>dev</code> only</td>
-</tr>
-<tr>
-<td><code>data/en/manifest.json</code></td>
-<td style="text-align: right;">N/A</td>
-<td>Counts, source/output SHA-256, and cross-split leakage checks</td>
-</tr>
-</tbody>
-</table>
-<p>Each training row has only the top-level key <code>messages</code>. Messages are ordered <code>system</code> → <code>user</code> → <code>assistant</code>, each with only <code>role</code> and <code>content</code>. The system contains concise behavior instructions; the user contains only the question/evidence; the assistant contains the structured reference-answer string. Do not merge validation into training.</p>
-<h3 id="프롬프트-에이전트-agent-optimizer-포털-업로드-계약">Prompt-agent Agent Optimizer portal upload contract</h3>
-<p>The main path uses the current Foundry portal's <strong>prompt-agent Agent Optimizer wizard</strong>. Per the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">official prerequisites</a>, use the exact columns required by selected evaluators; the wizard does not support column mapping. <code>data/en/optimizer/dev.jsonl</code> exports 12 manually authored dev cases with only these three columns.</p>
-<table>
-<thead>
-<tr>
-<th>Export field</th>
-<th>Type</th>
-<th>Source and purpose</th>
+<th>Boundary</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>query</code></td>
-<td>Required string</td>
-<td>Original <code>query</code> only: the actual question sent to the agent</td>
-</tr>
-<tr>
-<td><code>ground_truth</code></td>
 <td>String</td>
-<td>Structured reference-response JSON string, for evaluators that support a reference</td>
+<td><strong>Only this field is sent to the agent</strong></td>
 </tr>
 <tr>
 <td><code>context</code></td>
 <td>String</td>
-<td>Source-policy excerpts, for evaluators that support context</td>
+<td>Source-policy excerpts for supported evaluators and reviewer reference; not appended to generation</td>
+</tr>
+<tr>
+<td><code>ground_truth</code></td>
+<td><strong>JSON string</strong>, not a nested object</td>
+<td>Reference answer for supported evaluators and review; never a generation input</td>
 </tr>
 </tbody>
 </table>
-<p>The lab's default <code>task_adherence</code> and <code>relevance</code> evaluators use the question and the response generated during agent execution. Do not prepopulate <code>response</code>. If selecting other evaluators, verify required columns/types in the portal preview. <code>ground_truth</code> and <code>context</code> are valid evaluator columns, but not every evaluator uses them.</p>
-<p>The agent receives <strong>only <code>query</code></strong>. Do not append <code>ground_truth</code>/<code>context</code> or send <code>expected_route</code>, <code>required_citations</code>, or <code>tags</code>. Keep static context evaluator-only; the deployed agent must retrieve policy through its actual search path. Detailed routing, citation, and execution-boundary checks can separately use original dev cases and local evaluation rules.</p>
-<p>The job schema using <code>name</code> and <code>criteria[]</code> belongs to hosted-agent <code>eval.yaml</code>, not this portal upload. Do not add columns such as <code>expected_behavior</code>. The orchestration CLI can copy this source directly to <code>artifacts/optimizer/dev-upload.jsonl</code> without wrappers or field conversion. The data generator does not write into that deployment-artifact path.</p>
-<p><strong>Distinguish Prompt Optimizer, prompt-agent Agent Optimizer, and hosted-agent optimization.</strong> Do not upload this dataset to the single-prompt rewrite feature. It is for the portal path that evaluates prompt agents and candidates against a dataset. Dataset generation itself performs no optimization, upload, registration, or execution. Do not duplicate the 12 rows to satisfy counts associated with service-generated data. Preview support and actual execution permissions require separate checks.</p>
-<p><code>test</code> appears in neither training/validation messages nor optimization exports. Because original <code>cases.jsonl</code> also contains frozen-evaluation cases, <strong>never upload the complete source to training or optimization services</strong>. A frozen file does not implement access control by itself. Operational discipline is still needed: do not read or tune to test questions before candidate selection ends.</p>
-<h2 id="프롬프트의-역할">Prompt roles</h2>
-<ul>
-<li><code>prompts/en/baseline.txt</code>: Intentionally sparse decision guidance, while still requiring the same JSON response contract.</li>
-<li><code>prompts/en/candidate.txt</code>: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It <strong>does not claim to be a Prompt/Agent Optimizer result or a completed human review</strong>.</li>
-<li><code>prompts/en/tuning-system.txt</code>: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.</li>
-<li><code>prompts/en/rubric.txt</code>: English criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.</li>
-</ul>
-<h2 id="오프라인-재생성과-검증">Regenerate and verify offline</h2>
-<p>From the project root, use <code>.venv/bin/python</code> created during common setup. The dataset tool itself requires only Python 3.10+ and the standard library, with no extra installation, sign-in, network, or model calls. <code>-B</code> prevents bytecode-cache creation.</p>
-<pre><code class="language-bash">.venv/bin/python -B scripts/build_datasets.py --language en
-.venv/bin/python -B scripts/build_datasets.py --language en --check
-.venv/bin/python -B -m unittest discover -s tests -p 'test_content_language.py' -v
-</code></pre>
-<p><strong>Commands explained:</strong> The first <strong>generates/updates local data</strong>; the second <code>--check</code> <strong>compares without writing</strong>; the third runs <strong>automated tests</strong> matching only <code>test_content_language.py</code> under <code>tests/</code>. <code>-p</code> selects the test-file pattern; <code>-v</code> enables verbose output. Participants who only need to inspect integrity should use the main guide's <code>lab validate</code>, not start with regeneration.</p>
-<p>The first command validates English source contracts, then creates eight English outputs or updates only necessary files. It does not rewrite any Korean data. Use <code>--language ko --check</code> to verify the original corpus separately. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.</p>
-<p>The manifest records SHA-256 for source cases, documents, four prompts, and seven exported JSONL files. It does not create a circular self-hash. It contains neither evaluation-model scores nor assertions of successful cloud execution.</p>
-<p>Tests check exact counts, schemas, unique IDs, group isolation, duplicate questions, original context, citation resolution, reference-answer booleans/routing, training-message roles, optimization splits, evaluator-label leakage, exposure of frozen questions/IDs, deterministic generation, CLI checking, and invalid-input rejection. They also verify that <code>--check</code> rejects damaged sources, missing/stale outputs/manifests, and never writes. Text similarity helps detect obvious copying; it cannot perfectly identify semantic paraphrases. Personal-data pattern checks do not guarantee de-identification of real data.</p>
-<h2 id="검색-최신성과-행동-미세조정을-구분하기">Distinguish retrieval freshness from behavior tuning</h2>
-<ol>
-<li><strong>Evaluate:</strong> Inspect baseline failures on <code>dev</code>. Separate policy-fact, citation, format, routing, and fabricated-execution errors. Without actual model execution, do not report performance scores or improvement.</li>
-<li><strong>Improve retrieval evidence:</strong> If prices, deadlines, or effective dates are wrong or documents are stale, fix source documents, versions, indexing, and retrieval. Preserve fields and evidence tracking when connecting Foundry IQ. Do not substitute memorizing current facts in weights.</li>
-<li><strong>Improve prompts and agents:</strong> Compare instructions locally using <code>dev</code>. Distinguish Prompt Optimizer's single-prompt rewriting from Agent Optimizer's dataset-based comparison. Send the three-column dev file to the main prompt-agent portal path; do not mix in hosted <code>eval.yaml</code> job schemas. Track facilitator-authored and tool-generated candidates as different provenance, with execution records.</li>
-<li><strong>Fine-tune:</strong> Train stable JSON output, citations, clarification, safe refusals, human-review boundaries, and execution boundaries with <code>sft-train</code>; select using <code>sft-validation</code>. File existence does not prove a particular frontier model supports fine-tuning in a region/account.</li>
-<li><strong>Frozen evaluation:</strong> Compare selected baseline, candidate, and tuned models under the same <code>test</code> conditions. Repeatedly adjusting prompts to already viewed frozen questions invalidates their independence.</li>
-<li><strong>Operational iteration:</strong> Add new failures to the next data version only after lawful collection, secret removal, human answer/policy review, and group separation. If similar questions from an earlier frozen evaluation enter training, do not claim that evaluation is independent again.</li>
-</ol>
-<p><strong>Frontier Tuning is separate from ordinary SFT/RFT.</strong> These synthetic files establish neither a Frontier API upload contract nor account eligibility. If current official support and actual access cannot be verified, retain <code>NOT_VERIFIED</code>; do not relabel ordinary SFT results as Frontier success.</p>
-<p>When policy source changes, review related case excerpts too. The generator does not automatically rewrite answers and rejects excerpts that differ from source. Freeze revised documents, cases, and manifests together as a new version; never silently overwrite a frozen set already evaluated.</p>
+<p>There is <strong>no prefilled <code>response</code></strong>. Foundry runs the selected agent version to obtain an actual response. Do not invent <code>response</code>, rename columns, wrap records in a JSON array, or add an alternative job schema.</p>
+<p><code>ground_truth</code> decodes to an object with exactly four keys. The agent uses the same response contract:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Expected value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>answer</code></td>
+<td>Nonempty <strong>English</strong> text; a short contract example is “Please confirm the purchase date.”</td>
+</tr>
+<tr>
+<td><code>citations</code></td>
+<td>Supporting stable policy-ID array, such as <code>["ATLAS-REF-001"]</code>; no fabricated IDs</td>
+</tr>
+<tr>
+<td><code>route</code></td>
+<td><code>answer</code> for guidance, <code>clarify</code> for needed information, <code>escalate</code> for required human judgment, or <code>refuse</code> for prohibited requests</td>
+</tr>
+<tr>
+<td><code>needs_human</code></td>
+<td>Boolean; <code>true</code> <strong>only when <code>route</code> is <code>escalate</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>These are schema examples, not actual generated answers. An <code>escalate</code> response does not mean a person has already been contacted. The agent has no business-execution tools and must not invent approvals, ticket IDs, refunds, deletions, or completed access changes.</p>
+<p>Source-case IDs, route labels, and other metadata stay in source records; they are not extra generation inputs. Match evaluation rows by their actual question and stable row position/source case when reviewing results.</p>
+<p>Policy excerpts are reference material, not proof of what an agent tool actually retrieved. Do not turn a quoted instruction in a question or document into a higher-priority command. Compare meaning and policy decisions, not exact answer-text equality.</p>
+<h2 id="upload">Register once and select the same version</h2>
+<p>For a fresh agent still at v1, use <strong>Foundry New experience → Build → Evaluations → Create → Create new evaluation → Agent</strong>. Pin before changes, reselect the cleared checkbox and confirm <strong>1 target before Next</strong>; choose Individual turns / One time / Existing dataset. Recorded <code>contoso-eval-en</code> retains v2 but has restored active v1. Reuse the explicit saved v1 baseline/data rather than assuming “latest” means active.</p>
+<p>Do not upload the registered English file again. Only in a fresh authorized project without that registration, use <strong>Upload new dataset → name → Choose file</strong> for <code>data/en/optimizer/dev.jsonl</code> <strong>→ Upload</strong>. Confirm the selected dataset and preview. The preview shows <strong>only the first five rows</strong>; retain <strong>all 12 records</strong> and confirm the source file's SHA-256.</p>
+<p>In the observed English wizard, the matching schema <strong>auto-resolved Field mapping</strong>, proceeding directly to <strong>Configure agents</strong>. Leave <strong>custom prompt override unset</strong>, keep agent input to <strong><code>query</code> only</strong>, then continue to <strong>Criteria</strong>. If a mapping screen appears for the selected schema, use <strong>query → query</strong>.</p>
+<p>Remove extras from the <strong>23 suggestions</strong>, retaining exactly <strong>Relevance + TaskAdherence</strong> with <strong><code>lab-judge-luna-dea3cec5</code></strong>. <strong>Relevance is 1–5, threshold 4. TaskAdherence is Binary Pass/Fail, raw 0/1, pass 1</strong>; if its generic control appears, set <strong>Threshold 1</strong>, then Update. The <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">official definitions</a> confirm the binary type. The recorded <strong>Evaluation name <code>contoso-en-learning-loop</code> → Submit</strong> already succeeded with HTTP 201; open that run instead of submitting again.</p>
+<p><strong>Inspect, do not override, generated mappings.</strong> The corrected submission confirmed <strong>Relevance <code>response={{sample.output_text}}</code></strong> and <strong>TaskAdherence <code>response={{sample.output_items}}</code></strong>. UI defaults also showed <strong><code>query={{item.query}}</code></strong> and TaskAdherence's <strong><code>tool_definitions={{sample.tool_definitions}}</code></strong>. Read <strong>Raw JSON</strong>; do not restore TaskAdherence's earlier UI output-text value. The upload still has no prefilled <code>response</code>, and generation receives only <code>query</code>.</p>
+<p><strong>Version limit:</strong> Catalog links showed <code>relevance</code> <strong>v14</strong> and <code>task_adherence</code> <strong>v17</strong>, but actual service criteria had <strong><code>evaluator_version</code> empty/default</strong>. Record evaluator names/configuration, Judge and dataset versions, and that private service rubric versions are not proven pinned.</p>
+<p>Agent Optimizer uses <strong>Next → Select dataset and criteria</strong> and the <strong>same registered dev12 version</strong>, not Generate data or an edited upload. If Criteria says <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or click <strong>View built-in evaluators</strong>. Selecting a row opens <strong>Configure...</strong>: set <strong>Relevance 4 / TaskAdherence 1</strong>, then <strong>Apply</strong> for each. Keep binary pass 1 and the same Judge; no custom evaluator is required. See the <a href="index.html#optimize">Optimizer step</a>.</p>
+<h2 id="compare">Compare without changing the evidence</h2>
+<table>
+<thead>
+<tr>
+<th>Keep identical</th>
+<th>Record from each actual run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All 12 questions, references, language, dataset version, file SHA-256</td>
+<td>Same evaluation definition ID, distinct run IDs, explicit agent versions, final status</td>
+</tr>
+<tr>
+<td>Same corrected definition; Relevance threshold 4; TaskAdherence binary pass 1; recorded configuration</td>
+<td>Relevance 1–5 scores and TaskAdherence 0/1 results, per-metric pass counts/coverage/errors, and service-version limits</td>
+</tr>
+<tr>
+<td>Judge deployment/model version, agent model, tools and connections</td>
+<td>Actual answers and reasons, instruction diff, and per-case regressions</td>
+</tr>
+</tbody>
+</table>
+<p>Read a failing/lowest-Relevance case and a good case when available. <strong>n = 12</strong> includes missing/errors. <strong>Relevance's 1–5 score is not percent accuracy; TaskAdherence's 0/1 is Fail/Pass</strong>, not a five-point score. A missing score is not 0, and Completed is not a quality pass.</p>
+<p>For an actual answer, open the row's <strong>conversation_id → User view</strong>. That is a question/JSON-response view, not an inline Judge-reason panel. Return to <strong>Detailed metrics result</strong> for <strong><code>Relevance.reason</code> / <code>TaskAdherence.reason</code></strong> and compare the reference policy; never change policy facts just to raise a score.</p>
+<p><strong>Portal candidate submission is blocked:</strong> Add run → Pin v2 / Individual turns required Config required → Add custom prompt / User prompt; even <code>{{item.query}}</code> failed client-side with <strong><code>Unable to create data source configuration from item schema</code></strong>. No candidate remote run was submitted by that attempt. Do not alter the dataset, add a fake response, or create a new evaluation definition to work around it.</p>
+<p>After <a href="admin.html#sdk-prerequisites">venv/<code>requirements.lock</code> and <code>az login</code> account verification</a>, use the <a href="index.html#decision">single SDK command</a> in <code>scripts/add_foundry_eval_run.py</code>. The operator supplies endpoint/subscription; copy evaluation/baseline-run IDs from the baseline portal URL or Raw JSON. The Azure AI Projects/OpenAI Evals helper clones baseline <code>data_source</code>/existing criteria, changes only target version to <strong>2</strong>, verifies the same model/tools, and submits a <strong>real Foundry run in the same evalID</strong>, not local Judge scoring.</p>
+<p><strong>Verified native result:</strong> the helper submitted <strong><code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code></strong> for <code>contoso-eval-en</code> v2 under the same <strong><code>eval_94feef6f6f644fabb22a5680f5f24fb1</code></strong>. It completed <strong>12 rows: 11 passed / 1 failed / 0 errored</strong>, versus baseline <strong>10 passed / 2 failed / 0 errored</strong>. Dataset/evaluators/Judge/model/tools matched; only instructions/version changed.</p>
+<p>Keep the original receipt and collect only the existing run. Select both rows in <strong><code>contoso-en-learning-loop</code> → Evaluation runs → Compare runs</strong>, then <strong>choose the original <code>contoso-eval-en</code> in the Baseline dropdown</strong>. It defaults to the first selected row, which was <code>candidate-v2</code> here; do not read before/after directions until the baseline is correct.</p>
+<p>Final v1→v2 observations: <strong>Relevance 10/12→11/12 passes but mean 4.4167→4.3333</strong>; <strong>TaskAdherence 12/12 both, binary mean 1.0</strong>; zero errors in both runs. Relevance row 1 improved <strong>3→4</strong>, rows 2/6 declined <strong>5→4</strong>, and row 11 stayed <strong>3</strong> for honest uncertainty rather than an unsupported definitive answer. Keep policy facts unchanged.</p>
+<p>Latency <strong>p50 5,891.09→7,287.52 ms</strong>, <strong>p95 8,817.33→16,038.35 ms</strong>, and Agent tokens <strong>35,187→43,751</strong> increased. Native <strong>PairedTTest is Inconclusive for both metrics</strong>. <strong>HOLD adoption; keep pinned v1 pending further review/new representative cases.</strong> Pass count alone or Optimizer +0.010 is not proven overall improvement.</p>
+<p>This same-dev12 observation does <strong>not establish statistical significance, independent generalization, or production approval</strong>. The actual SDK run proves remote execution; manifests and local files alone do not. Keep the original data assets unchanged.</p>
+<p><strong>Final lab state:</strong> adoption HOLD; active version restored to <strong>1</strong>, with candidate v2 and evaluation/receipt evidence retained—not deleted. No production Publish or production channels/traffic were configured. Foundry still automatically exposes <strong>RBAC-only Responses/preview endpoints without Publish</strong>; these are not evidence of production deployment.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -535,7 +265,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

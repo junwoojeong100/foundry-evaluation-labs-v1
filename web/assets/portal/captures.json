@@ -113,14 +113,6 @@
       "redactions": ["dialog-only-account-header-excluded"],
       "width": 1440, "height": 1000,
       "sha256": "05fad7f92b63108cf788f449bb3b3f6ae4793b09c7ee70a676ccc6e9d31e6069"
-    },
-    {
-      "file": "14-sft-job.png",
-      "route": "/build/fine-tune/{existing-job}/details",
-      "state": "existing-completed-training",
-      "redactions": ["profile", "creator-field"],
-      "width": 1440, "height": 1000,
-      "sha256": "7b4b3f5ab55e2257ec3bcd914c5ea78ea0c9a7e8bffc626fc212a0c60d9e70fc"
     }
   ]
 }

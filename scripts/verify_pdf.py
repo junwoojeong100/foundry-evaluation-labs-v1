@@ -33,10 +33,10 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
                             x0 < -1 or y0 < -1 or x1 > page.rect.width + 1 or y1 > page.rect.height + 1
                         ):
                             outside.append({"page": number, "text": span["text"][:80], "bbox": span["bbox"]})
-        required = ("Frontier Tuning", "Foundry IQ", "Optimizer", "North Central US", "Foundry SFT") + (
-            ("준비 완료는 학습 완료가 아닙니다.", "학습 전", "미노출", "검증 기록과 한계")
+        required = ("Foundry Evaluation", "Agent Optimizer", "Relevance", "TaskAdherence", "gpt-6-luna") + (
+            ("평가기", "데이터셋", "검증")
             if language == "ko" else
-            ("Prepared does not mean trained.", "pretraining", "unseen", "verification record and limitations")
+            ("dataset", "evaluation", "Compare")
         )
         missing = [term for term in required if term not in normalized]
         almost_empty = [i + 1 for i, text in enumerate(texts) if len(text.strip()) < 80]
@@ -53,11 +53,13 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
             "almost_empty_pages": almost_empty,
             "local_machine_links": local_links,
             "out_of_page_text": outside,
+            "removed_sft_content_present": bool(re.search(r"\bSFT\b|Supervised Fine.Tuning", normalized, re.I)),
         }
         result["status"] = "PASS" if (
             result["pages"] > 0
             and result["korean_characters" if language == "ko" else "latin_characters"] > 1000
             and not missing and not almost_empty and not local_links and not outside
+            and not result["removed_sft_content_present"]
         ) else "FAIL"
         return result
 

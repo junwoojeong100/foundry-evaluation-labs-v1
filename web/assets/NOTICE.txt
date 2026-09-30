@@ -56,7 +56,7 @@ cropping or framing.
 Microsoft Foundry portal screenshots
 ===================================
 
-Files: portal/01-project-overview.png through portal/14-sft-job.png.
+Files: portal/01-project-overview.png through portal/13-trace-tool-call.png.
 Product UI: Microsoft Corporation. Source: https://ai.azure.com/
 Captured: 2026-09-30, using the playwright-headless MCP browser after the user
 completed normal authentication in an interactive browser.
@@ -74,3 +74,23 @@ The captures illustrate this educational guide and do not imply Microsoft
 endorsement, confer product rights, or change the existing artwork terms.
 Authentication state, cookies, signed download URLs and raw browser snapshots
 are not part of these distributable assets.
+
+English rehearsal portal screenshots
+====================================
+
+Files: portal/en/*.png. See portal/en/captures.json for exact captures.
+Product UI: Microsoft Corporation. Sources: https://ai.azure.com/ and
+https://portal.azure.com/.
+
+These separate captures show the newly provisioned English-data rehearsal.
+The English corpus, prompts, and actual service results are not translations
+overlaid on the earlier Korean screenshots. The user completed interactive
+authentication, and subsequent navigation/capture used Playwright Headless
+with the matching lab tenant and English UI.
+
+The rehearsal includes approved resource creation and paid lab operations;
+reading or photographing their results does not submit extra model calls.
+Individual capture states distinguish unsubmitted settings from actual job
+results. Only cropping and opaque privacy masks are applied. Identifying
+account, creator, subscription, and endpoint values are excluded; actual
+statuses, instruction text, synthetic data, and scores are not altered.

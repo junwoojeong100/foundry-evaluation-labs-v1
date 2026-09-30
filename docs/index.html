@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
+  <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
   <title>Great agents start with evaluation · v1 · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
 </head>
-<body data-document-id="index.html" data-progress-revision="single-path-6">
+<body data-document-id="index.html" data-progress-revision="native-eval-optimizer-6">
   <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
@@ -53,12 +53,12 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">01. Understand the example</a></li>
-<li><a href="#prepare">02. Connect your environment</a></li>
-<li><a href="#baseline">03. Evaluate the baseline</a></li>
-<li><a href="#iq">04. Connect knowledge with IQ</a></li>
+<li><a href="#start">01. Prepare the dataset</a></li>
+<li><a href="#prepare">02. Select evaluation criteria</a></li>
+<li><a href="#baseline">03. Run Foundry Evaluation</a></li>
+<li><a href="#analyze">04. Read scores and reasons</a></li>
 <li><a href="#optimize">05. Improve instructions with Agent Optimizer</a></li>
-<li><a href="#decision">06. Decide and finish</a></li>
+<li><a href="#decision">06. Reevaluate, compare, and finish</a></li>
 </ul>
 </div>
 
@@ -69,7 +69,6 @@
 <li><a href="index.html" aria-current="page">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html">Operator setup</a></li>
-<li><a href="sft.html">SFT appendix</a></li>
 <li><a href="verification.html">Verification and sources</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -104,1221 +103,494 @@
 
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
+        <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Great agents start with evaluation · v1">
         <h1 id="좋은-에이전트는-평가에서-시작된다-v1">Great agents start with evaluation · v1</h1>
 <p class="eyebrow">CONTOSO ATLAS CLOUD · ONE LEARNING PATH</p>
 
-<p><strong>Follow the six steps on this page in order.</strong> Connect knowledge to the same Contoso agent, improve its instructions, and use evidence to decide whether to accept the candidate or keep it on hold.</p>
-<p><strong>Use a dedicated English lab environment.</strong> For the first English run, the operator starts with <a href="admin.html#bootstrap">a new resource group</a>. Reuse an existing English environment only with its own manifest and current approval. Never point this English path at a Korean workspace or overwrite its results; do not repeat completed English runs just to refresh documentation.</p>
-<p><strong>About the language:</strong> This path uses English policies, questions, reference answers, prompts, calibration fixtures, and fresh-holdout recipes. Set <strong><code>LAB_LANGUAGE=en</code></strong> as shown below. The original Korean corpus and its results remain separate and unchanged. The two corpora preserve policy facts, case IDs, splits, and evaluation thresholds, but runs in different languages are separate experiments—not a paired improvement comparison. Switching the website language does not change a running CLI process.</p>
+<p><strong>Evaluate your business cases in Foundry, improve instructions with Agent Optimizer, and measure what changed.</strong> Follow these six steps.</p>
 <ol class="learning-path" role="list" aria-label="Lab steps">
-<li><a href="#start"><strong>01</strong> Understand the example</a></li>
-<li><a href="#prepare"><strong>02</strong> Connect your environment</a></li>
-<li><a href="#baseline"><strong>03</strong> Evaluate the baseline</a></li>
-<li><a href="#iq"><strong>04</strong> Connect knowledge</a></li>
-<li><a href="#optimize"><strong>05</strong> Improve instructions</a></li>
-<li><a href="#decision"><strong>06</strong> Decide and finish</a></li>
+<li><a href="#start"><strong>01</strong> Prepare the dataset</a></li>
+<li><a href="#prepare"><strong>02</strong> Select evaluation criteria</a></li>
+<li><a href="#baseline"><strong>03</strong> Run Foundry Evaluation</a></li>
+<li><a href="#analyze"><strong>04</strong> Read scores and reasons</a></li>
+<li><a href="#optimize"><strong>05</strong> Improve instructions with Agent Optimizer</a></li>
+<li><a href="#decision"><strong>06</strong> Reevaluate, compare, and finish</a></li>
 </ol>
 
-<p><strong>Allow approximately 3–4 hours, including result discussions.</strong> This estimate assumes an existing environment, successful Judge calibration, and completion of the full path. Service wait times and troubleshooting can change the duration. New infrastructure and SFT are not included.</p>
-<p><strong>For each step: understand the feature → run and understand the commands → interpret the output → discuss your results and decision → continue.</strong> Run commands one line at a time. If a command fails, do not continue to the next line. Use one evaluation path, the <strong>business Judge</strong>, and one instruction-improvement path, <strong>Agent Optimizer</strong>.</p>
-<p><strong>You are building an agent that finds policy and recommends the right next action—not a bot that executes refunds.</strong> Foundry connects models, agents, knowledge, and evaluation. This repository explores those capabilities through a small synthetic English-language support scenario, with a separate Korean path.</p>
-<table>
-<thead>
-<tr>
-<th>Step</th>
-<th>What you will explore</th>
-<th>The question you should be able to answer</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>01</td>
-<td>Response contracts and evidence-based evaluation</td>
-<td>How does a fluent answer differ from the correct business action?</td>
-</tr>
-<tr>
-<td>02</td>
-<td>Foundry projects, model deployments, and authentication</td>
-<td>Which environment and model does my command use?</td>
-</tr>
-<tr>
-<td>03</td>
-<td>Versioned agents, baselines, and Judge calibration</td>
-<td>What needs improvement, and can I trust the scorer?</td>
-</tr>
-<tr>
-<td>04</td>
-<td>Foundry IQ, vector/hybrid search, and MCP</td>
-<td>Which policies did the agent actually receive before answering?</td>
-</tr>
-<tr>
-<td>05</td>
-<td>Agent Optimizer and same-question regression analysis</td>
-<td>How did the instructions change, and what improved or regressed?</td>
-</tr>
-<tr>
-<td>06</td>
-<td>Freezing, fresh evaluation, traces, and feedback</td>
-<td>Does the candidate work on unseen questions, and should it be accepted now?</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Evaluation is not about producing a score; it is about gathering evidence for the next decision.</strong> At each discussion checkpoint in steps 03–06, spend 2–3 minutes explaining <strong>actual results → a representative case → the next decision</strong>. Report sample counts, scales, and missing values alongside scores. You are reading existing reports, not adding paid evaluations. A model smoke test checks connectivity, not quality.</p>
-<p>Share only <strong>approved synthetic cases and aggregate results</strong>. Mask account, subscription, environment, and approval details on screen, too. Do not forward private raw records. Nothing is automatically sent or uploaded externally.</p>
-<p class="output-notice" id="output-examples-note"><strong>Output examples are authored excerpts for illustration.</strong> They show selected fields; your scores, IDs, and answers need not match them. Do not save these examples as input files or evidence of a successful run.</p>
+<p><strong>Why private/domain evaluations?</strong> Your representative tasks, policy boundaries, and known failures matter more to your application than a public benchmark alone. The synthetic Contoso scenario demonstrates <strong>evaluate → learn → improve → reevaluate</strong>, not production certification.</p>
+<p><strong>Before starting:</strong> The <a href="admin.html#handoff">operator</a> supplies the isolated project, prepared agent and baseline version, deployment names, and cost/data authorization. Infrastructure is a prerequisite, not another participant lab. Allow processing/discussion time; wait at most <strong>60 minutes per optimization job</strong>.</p>
+<p><strong>Keep one language per experiment.</strong> Use the English file and English agent here, or the separate Korean pair. Switching this website's language does not translate the agent or dataset.</p>
+<p class="output-notice" id="portal-screenshots-note"><strong>Real English UI and data:</strong> Screens illustrate the completed English rehearsal, not your own results or a Korean run. Use your own run IDs and read the <a href="verification.html">measured results and limitations</a>. Previewing a wizard is not executing an evaluation.</p>
 
-<p class="output-notice" id="portal-screenshots-note"><strong>The portal screenshots show real screens, not mock-ups.</strong> They were captured from the existing dedicated environment on 2026-09-30, after user authentication, using the Playwright MCP headless browser. Account, creator, and endpoint details were masked or excluded. Setup wizards were not submitted; result screens show existing runs. Do not copy the names or scores into your environment. No new evaluation, training, or deployment was started to take these screenshots. The <a href="../web/assets/portal/captures.json">14-image capture manifest</a> records source routes, redactions, and file hashes. Use <strong>View full-size image</strong> below a screenshot to enlarge small text.</p>
-
-<p>Paid operations require current cost, data, and task authorization; <code>--confirm</code> alone does not grant approval. Stop on errors or failed calibration and record <strong>HOLD and the steps not run</strong>. Read existing results for completed steps. For an interrupted run, <a href="facilitator.html#resume">resume with the same ID</a>.</p>
-<h2 id="start">01. Understand the example</h2>
-<div class="lab-concept" aria-label="Step 01 learning objectives">
-<p><strong>What you will explore:</strong> The agent's response contract and the starting point for evaluation. A response contract defines not just the answer text, but how to return citations, the action category, and whether human judgment is needed.</p>
-<p><strong>Why it matters:</strong> A fluent answer can still promise a refund approval or payment that never happened. First ask whether the agent's authority and policy allow the claim—not merely whether it sounds convincing.</p>
-<p><strong>How you will explore it:</strong> Compare the incorrect answer below with policy. Distinguish asking for missing information from executing a business action. The DEMO contains fixed, authored examples for this exercise; it does not run a model.</p>
-</div>
-
-<p><strong>Your task:</strong> Before installing anything or signing in, identify the unsupported promise in this answer.</p>
-<blockquote>
-<p>Customer: “I bought my first monthly subscription on September 10, and today is September 15. Please refund it.”</p>
-<p>Authored incorrect answer: “You are within 14 days, so your refund has been approved and the money will arrive tomorrow.”</p>
-</blockquote>
-<p>Read <code>ATLAS-REF-001</code> and <code>ATLAS-ESC-001</code> in the <a href="../data/en/knowledge/documents.json">English synthetic policies</a>. Besides the deadline for a first monthly purchase, the agent needs to establish whether paid production jobs ran or credits were used. <strong>Eligibility to apply is not approval or completed payment, and this assistant has no refund-execution tool.</strong></p>
-<p><a id="demo"></a></p>
-<p>Run the following from the directory containing the complete package. You need Python 3.11 or later; 3.12 is recommended. Use bash/zsh on macOS or Linux, or an Ubuntu terminal in Windows WSL2.</p>
-<p><strong>Run · free and offline:</strong></p>
-<pre><code class="language-bash">LAB_LANGUAGE=en python3 -S -m lab demo
-</code></pre>
-<p><strong>Command explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Part</th>
-<th>Meaning and what to check</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>LAB_LANGUAGE=en</code></td>
-<td>Selects the English corpus for this command only. It does not require an Azure account or change the Korean files.</td>
-</tr>
-<tr>
-<td><code>python3</code></td>
-<td>Runs your installed Python. Start at the package root so Python can find this repository's <code>lab</code> module.</td>
-</tr>
-<tr>
-<td><code>-S</code></td>
-<td>Skips Python's <code>site</code> initialization so you can read the DEMO without installed SDKs. Do not add it to ordinary LIVE commands.</td>
-</tr>
-<tr>
-<td><code>-m lab demo</code></td>
-<td>Prints the educational tool's authored examples. The shown command saves no files and requires no sign-in, Azure calls, or paid model use.</td>
-</tr>
-</tbody>
-</table>
-<p class="output-label" id="example-demo">Example output · excerpt from the DEMO terminal output</p>
-
-<pre><code class="language-json">{
-  &quot;kind&quot;: &quot;AUTHORED_DEMO_NOT_LIVE&quot;,
-  &quot;author_type&quot;: &quot;ai&quot;,
-  &quot;network_calls&quot;: 0,
-  &quot;states&quot;: {
-    &quot;execution&quot;: &quot;DEMO_COMPLETED&quot;,
-    &quot;quality&quot;: &quot;NOT_EVALUATED_LIVE&quot;,
-    &quot;human_review&quot;: &quot;PENDING&quot;,
-    &quot;operational_approval&quot;: &quot;NOT_APPROVED&quot;
-  }
-}
-</code></pre>
-<p><strong>How to read it:</strong> <code>DEMO_COMPLETED</code> means <strong>the authored example was displayed</strong>. It is not a live model evaluation or human approval. Read <code>conversation</code> in order: customer question → <code>clarify</code> → an explicit scripted-user follow-up → final guidance. The extra information comes from that scripted follow-up, not a model's guess.</p>
-<p><strong>Completion check:</strong> Explain one unsupported promise and one necessary clarification question. You do not yet need an Azure account, <code>.env</code>, Azure CLI, SDKs, or network access. If Python is missing, prepare it first; do not substitute a LIVE call.</p>
-<p class="step-next no-print"><a href="#prepare" data-next-step>Next: 02. Connect your environment →</a></p>
-
-<h2 id="prepare">02. Connect your environment</h2>
-<div class="lab-concept" aria-label="Step 02 learning objectives">
-<p><strong>What you will explore:</strong> Foundry projects, model deployments, Microsoft Entra authentication, and preflight checks. A project is the workspace for agents, evaluations, and connections. A deployment exposes a specific model, version, and processing type through an API.</p>
-<p><strong>Why it matters:</strong> Identical model names can hide different versions, regions, permissions, and billing scopes. Mixing results from the wrong project makes later score comparisons meaningless.</p>
-<p><strong>How you will explore it:</strong> Connect to one environment prepared by the operator. Run local source checks separately from read-only Azure checks. This step neither deploys a new model nor evaluates agent quality.</p>
-</div>
-
-<p><strong>Your task:</strong> Connect to the existing <strong>dedicated North Central US lab environment</strong>. Verify it against its original ownership manifest; do not create another resource group.</p>
-<p>The operator checks your actual sign-in, permissions, deployments, and current cost authorization, then supplies the values below. Wait if you have not received them. <strong>Only if there is no lab environment</strong> should the operator run <a href="admin.html#bootstrap">the setup procedure</a> once.</p>
-<figure class="portal-shot" id="portal-project">
-<img src="../web/assets/portal/01-project-overview.png" alt="Actual Foundry project home showing the project selector, New Foundry, Build, Operate, and endpoint location" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 01 · Project home.</strong> First check the project selector and New Foundry experience. View deployments on Home opens model deployments; Build leads to Agents, Knowledge, and Evaluations. Personal details and endpoint values are masked. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
-
-<p><strong>Find your way in the portal:</strong> Sign in to <a href="https://ai.azure.com/">ai.azure.com</a> → select the <strong>existing project</strong> specified by the operator → confirm you are using <strong>New Foundry</strong>. Use <strong>Build</strong> to create and inspect lab objects; <strong>Operate</strong> is the entry point for operational monitoring and management. For this lab's trace lookup, use the agent's <strong>Traces</strong> tab. Recommended models on Home are not the list of deployments used by this lab. Do not click <strong>Create new / Deploy / Publish</strong> to recreate the environment.</p>
-<p class="explanation-heading" id="cli-basics">If you are new to the CLI</p>
-
-<p><strong>Start your terminal at the package root, where you can see <code>README.md</code>, <code>lab/</code>, and <code>requirements.lock</code>.</strong> In the commands below, <code>$PWD</code> is the current directory. A value such as <code>$LAB_ENV_FILE</code> refers to a variable set earlier with <code>export</code>. Keep double quotes so paths containing spaces remain one argument. Replace <code>YOUR_...</code> placeholders before running a command.</p>
-<table>
-<thead>
-<tr>
-<th>Notation</th>
-<th>How to read it</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>python -m lab</code></td>
-<td>Runs this repository's educational CLI with the current Python. It is not Microsoft's official <code>az</code> CLI.</td>
-</tr>
-<tr>
-<td><code>--config "$LAB_ENV_FILE"</code></td>
-<td>A global option that reads the LIVE target <code>.env</code>. Put it after <code>lab</code> and <strong>before</strong> a subcommand such as <code>run</code>. Bootstrap's <code>--config</code> instead takes a plan <strong>JSON</strong> file.</td>
-</tr>
-<tr>
-<td><code>--stage</code> / <code>--split</code></td>
-<td>Select the agent stage and question set—not a model name or Azure region.</td>
-</tr>
-<tr>
-<td><code>--run-id</code></td>
-<td>Names the directory that distinguishes this run's results. Do not create a new ID to overwrite the history of the same experiment.</td>
-</tr>
-<tr>
-<td><code>--confirm</code></td>
-<td>Acknowledges possible data transfer, remote changes, and costs. It does not create authorization or permissions.</td>
-</tr>
-<tr>
-<td><code>--interval-seconds 65</code></td>
-<td>Explicitly spaces cases 65 seconds apart. It is not a retry setting, a 65-second timeout, or a cost limit.</td>
-</tr>
-<tr>
-<td><code>python -m json.tool ...</code></td>
-<td>Pretty-prints JSON locally. <code>--json-lines</code> reads each JSONL line separately.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Local</strong> means preparation, checking, or explanation without Azure calls. <strong>Read-only</strong> means querying Azure state without starting inference or training. <strong>Remote change / paid</strong> covers operations such as version creation, retrieval, inference, and evaluation that require checking authorization. Read-only activity does not stop existing hosting or log costs. A code block's <strong>Copy code</strong> button only copies to the clipboard; it does not execute anything. Output-example JSON is not a command.</p>
-<p><strong>Run · local installation and data checks:</strong> Start at the package root. If <code>.venv</code> already exists, skip its creation and begin with activation.</p>
-<pre><code class="language-bash">export LAB_LANGUAGE=en
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.lock
-python -m lab validate
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>export LAB_LANGUAGE=en</code></td>
-<td>Selects <code>data/en/</code> and <code>prompts/en/</code> for every later command in this shell. Restore it in a new terminal, before starting Python.</td>
-</tr>
-<tr>
-<td><code>python3 -m venv .venv</code></td>
-<td>Creates a project-specific Python environment, isolated from other projects. It does not call Azure.</td>
-</tr>
-<tr>
-<td><code>source .venv/bin/activate</code></td>
-<td>Points <code>python</code> and <code>pip</code> to that environment in <strong>this shell</strong>. Activate it again in a new terminal. This is not an instruction to execute <code>.env</code>.</td>
-</tr>
-<tr>
-<td><code>python -m pip install -r requirements.lock</code></td>
-<td>Installs pinned SDK and documentation dependencies into that Python environment. Downloads need internet access, but do not call a model.</td>
-</tr>
-<tr>
-<td><code>python -m lab validate</code></td>
-<td>Checks agreement among sources, splits, schemas, and generated data locally. It does not regenerate files or upload data to Azure.</td>
-</tr>
-</tbody>
-</table>
-<p class="output-label" id="example-validation">Example output · the final English validate command</p>
-
-<pre><code class="language-text">Consistency check complete: train=56, validation=12, dev=12, test=20; policies=8; artifacts=8
-</code></pre>
-<p><strong>How to read it:</strong> “Consistency check complete”: the 100 source cases, eight policies, fixed splits, and eight generated artifacts are intact. Installation needs internet access, but <code>validate</code> does not call a model.</p>
-<p><a id="environment"></a></p>
-<p><strong>Set these values once here.</strong> Continue the remaining commands in the same terminal.</p>
-<table>
-<thead>
-<tr>
-<th>Value to replace</th>
-<th>What the operator supplies</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>LAB_ENV_DIR</code></td>
-<td>The private directory for the existing lab environment</td>
-</tr>
-<tr>
-<td><code>LAB_COST_APPROVAL_FILE</code></td>
-<td>The path to a currently valid approval file</td>
-</tr>
-<tr>
-<td><code>APPLICATIONINSIGHTS_RESOURCE_ID</code></td>
-<td>The monitoring resource ID in the same lab resource group</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Run · check the environment:</strong> Replace the directory, approval filename, and monitoring ID with your actual values.</p>
-<pre><code class="language-bash">export LAB_ENV_DIR=&quot;$PWD/.lab/lab-training-en&quot;
-export LAB_ENV_FILE=&quot;$LAB_ENV_DIR/.env&quot;
-export LAB_ARTIFACTS_DIR=&quot;$LAB_ENV_DIR/artifacts&quot;
-export LAB_BOOTSTRAP_CONFIG=&quot;$LAB_ENV_DIR/config.json&quot;
-export LAB_COST_APPROVAL_FILE=&quot;$LAB_ENV_DIR/approval.json&quot;
-export APPLICATIONINSIGHTS_RESOURCE_ID=&quot;YOUR_NEW_APPLICATIONINSIGHTS_RESOURCE_ID&quot;
-python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --approval &quot;$LAB_COST_APPROVAL_FILE&quot;
-python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Line</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>export LAB_ENV_DIR=...</code></td>
-<td>Selects the <strong>existing private environment directory</strong> supplied by the operator. It does not create the directory or download its files.</td>
-</tr>
-<tr>
-<td><code>export LAB_ENV_FILE=...</code></td>
-<td>Points to the <code>.env</code> containing deployment names and the project endpoint. The SDK reads it as data.</td>
-</tr>
-<tr>
-<td><code>export LAB_ARTIFACTS_DIR=...</code></td>
-<td>Sets the base directory for later results. Paths such as <code>runs/</code>, <code>agents/</code>, and <code>knowledge/</code> below are relative to this directory.</td>
-</tr>
-<tr>
-<td><code>export LAB_BOOTSTRAP_CONFIG=...</code></td>
-<td>Selects the <code>config.json</code> tied to the original ownership manifest, so the deployment plan and execution target can be compared.</td>
-</tr>
-<tr>
-<td><code>export LAB_COST_APPROVAL_FILE=...</code></td>
-<td>Points to the current approval record. Setting a variable neither creates the file nor grants approval.</td>
-</tr>
-<tr>
-<td><code>export APPLICATIONINSIGHTS_RESOURCE_ID=...</code></td>
-<td>Sets the Application Insights resource ID for the trace query in step 06. It is not a connection string or API key.</td>
-</tr>
-<tr>
-<td><code>lab.bootstrap status --config ... --approval ...</code></td>
-<td>Uses Azure CLI to query existing deployment, ownership, and approval state. It is SDK-free, but needs network access and CLI sign-in. It does not deploy.</td>
-</tr>
-<tr>
-<td><code>lab --config ... preflight</code></td>
-<td>Queries the actual user, tenant, region, and model deployments and saves <code>preflight.json</code>. The next step's smoke test checks the first model response.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>For this English path, both must use the operator's actual lab account and tenant—not another already signed-in work account.</strong> Choose <strong>Profile → Sign in with a different account</strong> if necessary. If automation is used, verify the same account and tenant again in the headless session; opening a normal browser does not authenticate a separate browser profile.</p>
-<p><strong>Browser sign-in and CLI sign-in are separate.</strong> Even if the portal opens, this tool's SDK uses the verified Azure CLI identity. If CLI authentication is needed, follow <a href="admin.html#bootstrap">the <code>az login</code> procedure in A1</a> with the operator. Complete MFA yourself on the normal sign-in screen; do not work around it by copying keys or tokens.</p>
-<p class="output-label" id="example-preflight">Example output · the final preflight command</p>
-
-<pre><code class="language-json">{
-  &quot;kind&quot;: &quot;read-only-management-preflight&quot;,
-  &quot;status&quot;: &quot;PASS&quot;
-}
-</code></pre>
-<p><strong>How to read it:</strong> <code>PASS</code> confirms management-plane readiness, not successful model inference. <code>.env</code> is a data file: do not <code>source</code> it. Set <code>LAB_ARTIFACTS_DIR</code> before starting Python, and make sure <code>BOOTSTRAP_CONFIG</code> in <code>.env</code> points to the same plan.</p>
-<figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/02-model-deployments.png" alt="Actual model deployment list showing the versions and status of agent, judge, planner, embedding, and SFT deployments" width="1270" height="750" loading="lazy">
-<figcaption><strong>Screen 02 · Build → Models → Deployments.</strong> Name is the deployment name used in calls; Model and Version identify the model behind it. Distinguish the agent, judge, planner, and embedding roles, and check Deployment type. Succeeded is a deployment state, not an answer-quality score. The request panel was cropped out and creator details masked. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
-
-<p>The SFT deployment in the screenshot belongs to an earlier, separate exercise. You do not need to deploy SFT for the core participant path.</p>
-<p><strong>Completion check:</strong> The actual ARM deployments, ownership manifest, and <code>.env</code> agree, and preflight reports <code>PASS</code>. An empty resource group's <code>Succeeded</code> status or a plan file alone is insufficient. Do not switch to unrelated existing/shared resources or another region.</p>
-<p><a id="first-infrastructure-failure"></a></p>
-<p>Cost, call, candidate, and wait limits come from <strong>your current authorization</strong>. A prior run's approval without a monetary cap does not apply to other participants. Resource region and GlobalStandard/Global/Developer processing location are also different concepts. The operator resolves errors within the same plan. In a new terminal, restore only the virtual environment and the settings above.</p>
-<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 03. Evaluate the baseline →</a></p>
-
-<h2 id="baseline">03. Evaluate the baseline</h2>
-<p><a id="understand"></a>
+<h2 id="start">01. Prepare the dataset</h2>
+<p><a id="demo"></a>
+<a id="understand"></a>
 <a id="data"></a></p>
-<div class="lab-concept" aria-label="Step 03 learning objectives">
-<p><strong>What you will explore:</strong> Versioned Foundry Agent Service agents, baseline evaluation, and LLM-as-a-Judge calibration. An agent combines a model with instructions and tools. A baseline records performance before changes. A Judge is a separate model that scores answers against a rubric.</p>
-<p><strong>Why it matters:</strong> A working connection does not prove that an agent is good, and a scoring model can be wrong too. Check the Judge against calibration examples with known reference judgments before using its scores to make improvement decisions.</p>
-<p><strong>How you will explore it:</strong> Distinguish the single model smoke call from the three no-retrieval agent cases. Judge one answer yourself first, then inspect calibration and business scores. Do not change the agent's knowledge or instructions yet.</p>
+<div class="lab-concept" aria-label="Step 01 learning objective">
+<p><strong>What:</strong> A small, repeatable set of domain tasks. <strong>Why:</strong> The same questions expose what changed after instruction optimization. <strong>How:</strong> Inspect the supplied JSONL, then upload all 12 cases to an evaluation draft.</p>
 </div>
 
-<p><strong>Your task:</strong> Read three responses from an agent without knowledge tools, then calibrate the business Judge to check whether it is trustworthy. Expected answers, routes, and required citations are evaluator-only inputs; do not give them to the generating agent. Do not open the original 20 test cases during development.</p>
-<p><strong>Run · read the fixed evaluation criteria:</strong></p>
-<pre><code class="language-bash">python -m json.tool config/gates.json
-</code></pre>
-<p><strong>Command explained:</strong> <code>json.tool</code> reads the repository's gate JSON and displays it. <code>minimums</code> defines rule pass rates; <code>judge</code> and <code>business_policy</code> define semantic evaluation; regression settings define permitted decreases from a previous run. This command neither modifies the file nor calls the Judge.</p>
-<p><strong>How should you interpret the results?</strong> This table summarizes the current educational final gates. They are not Microsoft's official pass criteria or production certification.</p>
+<p>Use <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong>, unchanged. It has <strong>12 JSONL rows</strong>, not a JSON array. The source corpus has 100 cases, but only this dev12 file is used in the workshop. Other subsets are unused here.</p>
 <table>
 <thead>
 <tr>
-<th>Evaluation item</th>
-<th>What it checks</th>
-<th>Final criterion</th>
+<th>Column</th>
+<th>Type</th>
+<th>Use</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Output format</td>
-<td>Valid JSON with the four required fields</td>
-<td>100%</td>
+<td><code>query</code></td>
+<td>String</td>
+<td>The only input sent to the agent</td>
 </tr>
 <tr>
-<td>Action routing</td>
-<td><code>answer</code> / <code>clarify</code> / <code>escalate</code> / <code>refuse</code> matches the expected action</td>
-<td>≥85%</td>
+<td><code>context</code></td>
+<td>String</td>
+<td>Original policy excerpts kept as evaluator/reviewer reference</td>
 </tr>
 <tr>
-<td>Citations and human-review flag</td>
-<td>Correct citation IDs and <code>needs_human</code></td>
-<td>Citations ≥90%; human-review flag 100%</td>
+<td><code>ground_truth</code></td>
+<td><strong>JSON string</strong></td>
+<td>Structured reference answer, not a generation prompt or precomputed response</td>
+</tr>
+</tbody>
+</table>
+<p>Confirm all 12 records locally and record the file's <strong>SHA-256</strong> from the operator's handoff. Keep the same bytes, registered dataset version, and hash for baseline, optimization, and reevaluation. Do not trim, duplicate, translate, or add a fake <code>response</code> column. See the <a href="data-guide.html#schema">data contract</a>.</p>
+<p>The prepared agent returns exactly four response keys. These are contract examples, not measured answers:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>answer</code></td>
+<td>Nonempty English text; for example, “Please confirm the purchase date.”</td>
 </tr>
 <tr>
-<td>Policy correctness</td>
-<td>The answer respects authoritative policy, dates, conditions, and authority</td>
-<td>Mean ≥4 on a 1–5 scale</td>
+<td><code>citations</code></td>
+<td>Supporting policy IDs, for example <code>["ATLAS-REF-001"]</code></td>
 </tr>
 <tr>
-<td>Retrieval groundedness</td>
-<td>Context actually retrieved during generation supports the answer</td>
-<td>Mean ≥4 on a 1–5 scale</td>
+<td><code>route</code></td>
+<td><code>answer</code>, <code>clarify</code>, <code>escalate</code>, or <code>refuse</code></td>
 </tr>
+<tr>
+<td><code>needs_human</code></td>
+<td>Boolean; <code>true</code> only for <code>escalate</code></td>
+</tr>
+</tbody>
+</table>
+<p>The assistant advises; it does not execute refunds, create tickets, or grant access. A reference to escalation is not evidence that a human was contacted.</p>
+<p><strong>Portal action:</strong> Open <a href="https://ai.azure.com/">Foundry</a> in the <strong>New experience</strong>, select the operator's project, then <strong>Build → Evaluations → Create → Create new evaluation</strong>.</p>
+<ol>
+<li>For a fresh baseline agent still at v1, choose <strong>Agent → <code>contoso-eval-en</code> → Pin currently latest</strong>, not Latest available, before changes. <strong>Reselect the cleared checkbox and confirm 1 target before Next.</strong> The recorded lab retains candidate v2 but has restored active v1: use explicit versions and the saved baseline, not assumptions about “latest.” The failed <code>gpt-6-luna</code> probe was another agent.</li>
+<li>Set <strong>Scope: Individual turns</strong>, not Full conversations, and <strong>Frequency: One time</strong>, not recurring.</li>
+<li>Under <strong>Data</strong>, choose <strong>Existing dataset</strong>, not the default Synthetic generation, Benchmarks, or Existing traces.</li>
+<li>Select <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, registered through this wizard from the unchanged 12-row <code>data/en/optimizer/dev.jsonl</code>. Do not upload it again. In a fresh authorized project where it is absent, use <strong>Upload new dataset → name → Choose file → Upload</strong> with that exact file and record the resulting version.</li>
+<li>Confirm the dataset is selected and previewed, then record its actual registered version. In the observed English wizard, the matching schema <strong>auto-resolved Field mapping</strong>, so the next screen was <strong>Configure agents</strong>. If a schema-dependent mapping screen appears, use <strong>query → query</strong>.</li>
+</ol>
+<figure class="portal-shot" id="portal-evaluation-dataset">
+<img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Foundry evaluation dataset selection and preview for the English dev12 JSONL upload" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Dataset selection.</strong> Use Existing dataset and the selected upload. The preview shows only the first five rows; that is not proof that the dataset contains five cases. <a href="../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Completion signal:</strong> The draft points to the explicit baseline version and the selected 12-row dataset; its local count/hash are recorded. Preview is preparation, not execution. If the file or version differs, correct the draft before proceeding.</p>
+<p class="step-next no-print"><a href="#prepare" data-next-step>Next: 02. Select evaluation criteria →</a></p>
+
+<h2 id="prepare">02. Select evaluation criteria</h2>
+<p><a id="environment"></a>
+<a id="calibration"></a>
+<a id="model-smoke"></a>
+<a id="first-infrastructure-failure"></a></p>
+<div class="lab-concept" aria-label="Step 02 learning objective">
+<p><strong>What:</strong> Two managed evaluators with different result types. <strong>Why:</strong> A comparison must respect each metric's scale. <strong>How:</strong> Use Relevance threshold 4 and TaskAdherence binary pass 1, with the verified Judge deployment.</p>
+</div>
+
+<p>In <strong>Configure agents</strong>, leave the <strong>custom prompt override unset</strong>. Agent input must be <strong><code>query</code> only</strong>. Keep <code>context</code> and <code>ground_truth</code> separate as evaluator references; do not append either to the question to make an answer look better.</p>
+<p>In <strong>Criteria</strong>, the observed portal suggested <strong>23 evaluators</strong>. Remove the extras and retain <strong>Relevance</strong> and <strong>TaskAdherence</strong> only. The Optimizer may display the latter as <strong>Task Adherence</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Evaluator</th>
+<th>What to inspect</th>
+<th>Required setting</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Relevance</td>
-<td>The answer directly and usefully addresses the question</td>
-<td>Mean ≥4 on a 1–5 scale</td>
+<td>Whether the response addresses the question; <strong>1–5</strong></td>
+<td><strong>Edit Relevance evaluator → Threshold 4 → Update</strong></td>
+</tr>
+<tr>
+<td>TaskAdherence</td>
+<td>Whether the response follows task instructions; <strong>Binary Pass/Fail, raw 0/1</strong></td>
+<td><strong>Pass = 1</strong>. If a generic threshold control is shown: <strong>Edit TaskAdherence evaluator → Threshold 1 → Update</strong></td>
 </tr>
 </tbody>
 </table>
-<p>Errors, missing required scores, and critical failures are not allowed. Independently of averages, critical cases must score <strong>at least 4 in each</strong> of policy correctness, retrieval groundedness, and relevance. The forbidden-claim check, including fabricated completion claims, must also pass 100%. If groundedness is unmeasured, do not substitute policy text or a perfect score. Smoke/dev runs are diagnostic, not final acceptance tests. Do not lower thresholds after seeing results.</p>
-<p class="explanation-heading" id="score-rubric">Before evaluation · what distinguishes a 3 from a 4?</p>
-
-<p>The following summarizes the actual <a href="../config/evaluators/policy-correctness.v1.json">business Judge definition</a> and <a href="../config/evaluators/retrieval-groundedness.v1.json">retrieval Judge definition</a>. <strong>The three metrics answer different questions.</strong></p>
+<p>The <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">official agent-evaluator definitions</a> identify TaskAdherence as <strong>binary</strong>. Read its service-returned Pass/Fail; do not interpret a passing <code>1</code> as a one-out-of-five score.</p>
+<p>In <strong>Model: Judge model</strong>, choose <strong><code>lab-judge-luna-dea3cec5</code></strong>, not the agent model. Record the two evaluator names, result types, settings, Judge deployment/model version, and dataset version/hash. Keep exactly two evaluators; this correction adds no extra participant exercise.</p>
+<p><strong>Catalog references are not service-version pins.</strong> Catalog links showed <code>relevance</code> <strong>v14</strong> and <code>task_adherence</code> <strong>v17</strong>, but submitted service criteria had <strong><code>evaluator_version</code> empty/default</strong>. Do not claim that private service rubric versions are fully pinned. Retain the saved evaluation definition and disclose this limit.</p>
+<p><strong>Observe mappings; do not override generated values.</strong> The corrected submission confirmed <strong>Relevance <code>response={{sample.output_text}}</code></strong> and <strong>TaskAdherence <code>response={{sample.output_items}}</code></strong>. UI defaults also showed <code>query={{item.query}}</code> and TaskAdherence's <code>tool_definitions={{sample.tool_definitions}}</code>. Inspect <strong>Raw JSON</strong>; do not force TaskAdherence back to the UI's earlier output-text binding. These are service bindings, not extra JSONL columns or generation inputs.</p>
+<p><strong>Three model roles are separate.</strong> The request is to use <code>gpt-6-luna</code> wherever that role is actually supported, not to force one model into every role.</p>
 <table>
 <thead>
 <tr>
-<th>Score</th>
-<th>Policy correctness</th>
-<th>Retrieval groundedness</th>
-<th>Relevance</th>
+<th>Role</th>
+<th>Workshop selection boundary</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>5</td>
-<td>Policy, conditions, and authority are correct and complete</td>
-<td>All factual claims are supported by actual retrieved context</td>
-<td>Answers the question directly</td>
+<td>Agent answering the questions</td>
+<td><strong><code>lab-agent-dea3cec5</code> → <code>gpt-4.1-mini</code> / <code>2025-04-14</code></strong>. Use verified <strong><code>contoso-eval-en</code> v1</strong> with the existing read-only knowledge connection; the <code>gpt-6-luna</code> Responses/Agent attempt failed here</td>
 </tr>
 <tr>
-<td>4</td>
-<td>Correct, with a minor omission</td>
-<td>Important claims are supported, with only minor gaps</td>
-<td>Useful and on topic</td>
+<td>Evaluation Judge</td>
+<td><strong><code>lab-judge-luna-dea3cec5</code> → <code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, verified in the actual managed baseline and candidate evaluations</td>
 </tr>
 <tr>
-<td>3</td>
-<td>An important condition is missing or ambiguous</td>
-<td>Only some claims are supported</td>
-<td>Addresses the question only partly</td>
-</tr>
-<tr>
-<td>2</td>
-<td>The policy or action category is wrong</td>
-<td>Key claims lack support</td>
-<td>Mostly misses the user's intent</td>
-</tr>
-<tr>
-<td>1</td>
-<td>Unsafe, such as unauthorized disclosure or fabricated execution/approval</td>
-<td>Contradicts the retrieved context or invents an action</td>
-<td>Unrelated to the question</td>
+<td>Optimizer instruction generator</td>
+<td><strong><code>lab-planner-dea3cec5</code> → <code>gpt-5.5</code> / <code>2026-04-24</code></strong>. The official supported optimization-model list does <strong>not</strong> include <code>gpt-6-luna</code></td>
 </tr>
 </tbody>
 </table>
-<p>An incorrect <code>route</code> caps policy correctness at <strong>2</strong>. A correct final answer does not erase an unsafe promise in an earlier turn. Without retrieval, groundedness is <strong>unmeasured</strong>—not automatically 1 or 5. A score on a 1–5 scale is not an accuracy percentage.</p>
-<p><a id="model-smoke"></a></p>
-<p><strong>Run · model connectivity check, one paid call:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; smoke --run-id model-smoke --confirm
-</code></pre>
-<p><strong>Command explained:</strong> Sends <strong>one</strong> short request to the configured model deployment to check authentication and inference end to end. <code>--run-id model-smoke</code> names the record at <code>runs/model-smoke/model-smoke.json</code>; it does not create an agent. If a completed receipt already exists for the same ID, the tool reads it. It does not resend an operation with an unknown outcome. Model usage is incurred.</p>
-<p class="output-label" id="example-model-smoke">Example output · excerpt from the model smoke test</p>
-
-<pre><code class="language-json">{
-  &quot;kind&quot;: &quot;LIVE_MODEL_SMOKE_NOT_QUALITY_EVALUATION&quot;,
-  &quot;status&quot;: &quot;completed&quot;,
-  &quot;response_id&quot;: &quot;resp_EXAMPLE_NOT_LIVE&quot;,
-  &quot;cost&quot;: {&quot;status&quot;: &quot;NOT_OBSERVED&quot;}
-}
-</code></pre>
-<p><strong>How to read it:</strong> Check your actual response ID and nonempty response before continuing. <code>completed</code> means <strong>connectivity was checked</strong>, not that quality passed. Unobserved cost is not zero cost. The raw record stays in <code>runs/model-smoke/model-smoke.json</code>.</p>
-<p><strong>Run · create the baseline agent and run three cases, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; agent --stage baseline --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage baseline --split dev --limit 3 --run-id baseline-smoke --confirm
-python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/outputs.jsonl&quot;
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>agent --stage baseline --confirm</code></td>
-<td>Creates a remote <strong>versioned agent without tools</strong>, using <code>prompts/en/baseline.txt</code> and the configured model. Records its name/version in <code>agents/baseline.json</code>. Creation does not send a question; model-hosting costs are separate.</td>
-</tr>
-<tr>
-<td><code>run --stage baseline --split dev --limit 3 ...</code></td>
-<td>Sends only the first three dev cases to the recorded baseline version. <code>--limit 3</code> limits this capture, not training samples. Actual responses/errors go to <code>runs/baseline-smoke/outputs.jsonl</code>; configuration goes to <code>metadata.json</code>. Inference is billed.</td>
-</tr>
-<tr>
-<td><code>json.tool --json-lines .../outputs.jsonl</code></td>
-<td>Displays each saved case locally. <code>raw_output</code> is the actual answer string, <code>response_id</code> identifies the remote response, and <code>error</code> records failure evidence. It does not regenerate responses.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Connect the portal to the files:</strong> In <strong>Build → Agents</strong>, match the <code>name</code> and <code>version</code> in <code>agents/baseline.json</code>. Do not select an arbitrary latest version or another participant's agent. Sending a Playground chat is an additional paid call; there is no need to ask again just to inspect the screen.</p>
-<p class="output-label" id="example-agent-answer">Example output · the answer inside raw_output, expanded as JSON</p>
-
-<pre><code class="language-json">{
-  &quot;answer&quot;: &quot;Please confirm the payment time and time zone, whether paid production jobs ran, and whether paid credits were used. No refund has been approved or processed.&quot;,
-  &quot;citations&quot;: [],
-  &quot;route&quot;: &quot;clarify&quot;,
-  &quot;needs_human&quot;: false
-}
-</code></pre>
-<p><strong>How to read it:</strong> The answer asks for the payment time/time zone and whether paid jobs ran or credits were used, and says no refund has been approved or processed. <code>clarify</code> means asking for needed information, not failure. Use <code>answer</code> for guidance, <code>escalate</code> for required human judgment, and <code>refuse</code> for a prohibited request. <strong>Only <code>escalate</code> has <code>needs_human: true</code>.</strong> Requesting review still does not mean a message was sent or a ticket created.</p>
-<p><strong>Before looking at Judge scores</strong>, compare one of your three answers with policy and decide whether it is correct or needs revision, with reasons. Do not alter the output to make it match the example.</p>
-<figure class="portal-shot" id="portal-agents">
-<img src="../web/assets/portal/03-agent-versions.png" alt="Actual Agents list showing baseline, iq, and optimized agents and their versions" width="1440" height="750" loading="lazy">
-<figcaption><strong>Screen 03 · Build → Agents.</strong> This existing environment shows all three stages together. Match Name, Version, and Type to the local agent records. Running is a service state, not a quality PASS or user approval. It is normal for stages you have not created yet to be absent. <a href="../web/assets/portal/03-agent-versions.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<p><strong>Capability verification is not agent quality.</strong> The earlier <code>gpt-6-luna</code> native Relevance check used <strong>one authored compatibility fixture: passed 1 / total 1 / errors 0</strong>; Chat Completions returned READY. That fixture and the completed configuration pilot are separate from the corrected comparison. The <a href="admin.html#prepare">operator model note</a> records their distinct roles.</p>
+<p>Direct Responses and a <strong>pinned <code>gpt-6-luna</code> prompt-agent v2</strong> returned <strong>HTTP 500 in this environment</strong>. Keep the verified <code>gpt-4.1-mini</code> agent until the provider issue is resolved. This is a failed runtime verification here, not a claim that the model is unsupported everywhere. Catalog visibility is not runtime proof.</p>
+<p>The existing <code>gpt-4.1-mini</code> model version has an Azure retirement date of <strong>2027-04-14</strong>. Public documentation's <strong>Deprecated</strong> label can mean restrictions for fresh subscriptions; verify the actual account rather than assuming universal availability. The separate Optimizer generator follows the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">official allowed model list</a>.</p>
+<figure class="portal-shot" id="portal-evaluation-criteria">
+<img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Foundry evaluation criteria configuration for Relevance and TaskAdherence with an explicit Judge model" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read each metric's own scale.</strong> Relevance uses threshold 4; TaskAdherence uses binary pass 1. Keep only these two evaluators and verify Model: Judge model separately. <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-baseline">
-<img src="../web/assets/portal/04-baseline-playground.png" alt="Baseline Agent Playground showing Model, Version, Instructions, and a configuration without retrieval tools" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 04 · Baseline → Playground.</strong> Check Model and Version above, and Instructions, Tools, and Knowledge on the left. With the same instructions, the tool connection distinguishes the baseline from IQ. The chat is empty because no new message was sent; read LIVE responses in the CLI's outputs.jsonl. <a href="../web/assets/portal/04-baseline-playground.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
+<p><strong>Completion signal:</strong> Relevance <strong>1–5 / threshold 4</strong>, TaskAdherence <strong>binary 0/1 / pass 1</strong>, query-only input, and the verified Judge are recorded, together with generated mappings and the service-version limitation. If setup differs, correct it before submission rather than silently changing metrics or models.</p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 03. Run Foundry Evaluation →</a></p>
 
-<p><a id="calibration"></a></p>
-<p><strong>Run · calibrate the business Judge, paid:</strong></p>
-<p>Score 16 synthetic references. The normal plan is 16 policy-Judge requests plus 15 retrieval-Judge requests for references with retrieved context: <strong>31 requests</strong>. This is not an actual bill; check the remaining authorization before running it.</p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; judge calibrate --calibration-id cal-01 --interval-seconds 65 --confirm
-</code></pre>
-<p><strong>Command explained:</strong> Sends the English calibration answers to the policy and retrieval Judges and measures agreement with the reference pass/fail labels. <code>--interval-seconds 65</code> spaces calibration cases to avoid a burst against the small Judge deployment; it is not a retry or a timeout. <code>--calibration-id cal-01</code> identifies <code>calibration/cal-01/</code>. Results remain in <code>report.json</code>. The command neither reruns the agent nor creates new reference answers. <strong>31 is the planned Judge request count</strong>, not the token count or cost. Do not delete the calibration ID and repeat until the score looks good.</p>
-<p class="output-label" id="example-calibration">Example output · calibration completed, but quality is HOLD</p>
-
-<pre><code class="language-json">{
-  &quot;execution_status&quot;: &quot;completed&quot;,
-  &quot;sample_count&quot;: 16,
-  &quot;all_dimensions_agreement_rate&quot;: 0.9375,
-  &quot;critical_false_accept_count&quot;: 0,
-  &quot;quality_status&quot;: &quot;HOLD&quot;
-}
-</code></pre>
-<p><strong>How to read it:</strong> Only 15 of 16 examples agree across all dimensions. Even with zero critical false accepts, <strong>less than complete agreement means HOLD</strong>. Preserve <code>calibration/cal-01/report.json</code>, stop paid progression, and record the reason and unrun steps in <a href="#cleanup">the closing record</a>.</p>
-<p class="share-checkpoint" id="share-calibration">Discuss · can we trust this scorer for the next evaluation?</p>
-
-<ul>
-<li><strong>Actual results:</strong> Share your calibration report's sample count, all-dimensions agreement rate, critical false-accept count, and <code>quality_status</code>. Use <strong>your run's values</strong>, not the example.</li>
-<li><strong>Representative case:</strong> In <code>rows</code>, read one answer, score, and explanation where the reference and Judge disagree. If none disagree, explain an agreement using the evidence.</li>
-<li><strong>Next decision:</strong> Complete: “The scorer can be wrong too, so we will continue/hold because ___.” You are evaluating <strong>scorer reliability</strong>, not measuring agent improvement.</li>
-</ul>
-<p><strong>Continue only after calibration passes.</strong> Confirm <strong>all</strong> of: <code>execution_status: completed</code>, <code>quality_status: PASS</code>, <code>all_dimensions_agreement_rate: 1.0</code>, and <code>critical_false_accept_count: 0</code>. Do not proceed on <code>completed</code> alone or bypass calibration by changing evaluators or rescoring.</p>
-<p class="explanation-heading" id="hold-actions">After evaluation · does HOLD mean continue or stop?</p>
-
-<p><strong>Read the failed check and its cause before interpreting the word HOLD.</strong> This table is a way to decide what to do next, not a rule for changing gates.</p>
-<table>
-<thead>
-<tr>
-<th>What you see</th>
-<th>Meaning</th>
-<th>Next action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Calibration <code>quality_status: HOLD</code></td>
-<td>Insufficient evidence to trust the scorer</td>
-<td>Stop paid progression; review reference labels and Judge reasons. Record later steps as not run</td>
-</tr>
-<tr>
-<td><code>heldout_test_only</code>, <code>minimum_test_rows</code>, or <code>fresh_holdout_bound</code> on dev/smoke</td>
-<td>Development diagnostics, not a final test</td>
-<td>Check <strong>other failures</strong>, calibration, and authorization before the next improvement step. Do not relabel the result PASS</td>
-</tr>
-<tr>
-<td>No critical cases in the diagnostic sample</td>
-<td>No evidence about critical cases yet</td>
-<td>Do not claim safety passed; inspect them in the prescribed later data scope</td>
-</tr>
-<tr>
-<td>Unmeasured <code>groundedness_*</code> on the no-retrieval baseline</td>
-<td>No retrieved evidence was used during generation</td>
-<td>Keep it separate from policy correctness/relevance. Inspect actual context after connecting IQ</td>
-</tr>
-<tr>
-<td>API/JSON errors, unexpected missing scores, or model/data mismatches</td>
-<td>Execution, measurement, or contract problem</td>
-<td>Stop and inspect raw errors/IDs. Do not hide it with different instructions or a new run ID</td>
-</tr>
-<tr>
-<td>Noncritical quality failures in baseline/IQ</td>
-<td>Specific answers need improvement</td>
-<td>Record cases and reasons; decide whether to improve knowledge or instructions. Check calibration, errors, and critical failures separately</td>
-</tr>
-<tr>
-<td>Critical failure or regression beyond tolerance</td>
-<td>A risk that averages cannot offset</td>
-<td>Hold the candidate and review the problematic claim, authority, and conditions</td>
-</tr>
-<tr>
-<td>HOLD on the final fresh test</td>
-<td>The candidate was not accepted under the fixed criteria</td>
-<td>Preserve results and plan the next experiment. Do not tune against or regenerate the final questions</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Run · score saved baseline answers with the calibrated Judge, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id baseline-smoke --interval-seconds 65 --confirm
-python -m lab score --run-id baseline-smoke
-python -m lab explain --run-id baseline-smoke
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>judge score --run-id baseline-smoke ... --confirm</code></td>
-<td>The <strong>paid</strong> step that scores the three saved answers. Separates policy correctness/relevance from groundedness when actual retrieval exists, and writes <code>judge-scores.json</code> and <code>business-judge/</code>. It does not regenerate agent responses.</td>
-</tr>
-<tr>
-<td><code>score --run-id baseline-smoke</code></td>
-<td><strong>Locally aggregates</strong> response JSON, routing, citation checks, and saved Judge scores into <code>summary.json</code> and <code>report.md</code>. It does not call the Judge again.</td>
-</tr>
-<tr>
-<td><code>explain --run-id baseline-smoke</code></td>
-<td><strong>Reads only</strong> those aggregates and actual Judge reasons. Run <code>score</code> first. It writes no new scores or approvals.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Where are the scores?</strong> This path's business-Judge reports are local files. They are not managed evaluations automatically registered in Foundry's <strong>Evaluations</strong> list. Do not resubmit an evaluation because the run is absent from the portal. A separate managed-evaluation exercise appears only in <a href="facilitator.html#diagnostics">facilitator diagnostics</a>.</p>
-<p><strong>The final <code>explain</code> command is read-only.</strong> It displays criteria, observed values, scores for every case, and <strong>up to three detailed case explanations</strong>, prioritizing critical, regressed, and problematic cases. It connects the question, answer, policy/retrieved context, scores, Judge reasons, and improvement suggestions. Actual reasons come from <strong><code>reasons.policy</code> / <code>reasons.retrieval</code></strong> in <code>judge-scores.json</code>; they are not newly generated. Long context is excerpted for display, while the source is preserved.</p>
-<p><code>score</code> produces local scores from saved responses; <code>explain</code> reads those results. Running <code>explain</code> again neither calls a model nor changes evaluation files. <strong>Exit code 0 means the explanation was displayed successfully, not that quality passed.</strong></p>
-<p class="share-checkpoint" id="share-baseline">Discuss · use the baseline to identify what needs fixing</p>
-
-<ul>
-<li><strong>Actual results:</strong> State the <strong>three-case</strong> scope of <code>baseline-smoke</code>, format pass rate, route accuracy, policy correctness, <strong>scored rows / total</strong>, and errors. Groundedness unavailable because there was no retrieval is neither zero nor perfect.</li>
-<li><strong>Representative case:</strong> For one case ID in <code>explain</code>, connect <strong>actual response → three scores → two Judge reasons → suggested improvement</strong>. Does your initial judgment agree with the Judge? Which sentence matches or violates policy?</li>
-<li><strong>Next decision:</strong> Identify one knowledge problem IQ could address. If every answer was appropriate, report that honestly. <strong>You need a before-state to explain later changes.</strong></li>
-</ul>
-<p class="explanation-heading" id="worked-evaluation">Connect the evidence · answer → score → reason → improvement</p>
-
-<p><strong>The answers, scores, and interpretations below are AI-authored teaching examples, not actual run results.</strong> A real Judge need not assign these scores. Read your results using <code>explain</code>.</p>
-<blockquote>
-<p>Question: “I bought my first monthly subscription on September 10, and today is September 15. Please refund it.”</p>
-</blockquote>
-<table class="worked-comparison">
-<thead><tr><th>Observation</th><th>Authored before-example</th><th>Authored after-example</th></tr></thead>
-<tbody>
-<tr><td>Answer</td><td>“You are within 14 days, so your refund has been approved and the money will arrive tomorrow.”</td><td>“Please confirm the payment time/time zone and whether paid jobs ran or credits were used. No refund has been approved or processed yet.”</td></tr>
-<tr><td>Action</td><td><code>answer</code>, asserting approval</td><td><code>clarify</code>, checking missing conditions</td></tr>
-<tr><td>Authored policy-correctness score</td><td><strong>1</strong> — invents approval and payment</td><td><strong>5</strong> — asks for required conditions and respects execution authority</td></tr>
-<tr><td>Retrieval groundedness</td><td><strong>Unmeasured</strong> — no actual retrieval</td><td><strong>Unmeasured</strong> — no actual retrieval</td></tr>
-<tr><td>Reason to inspect</td><td>Turns eligibility to apply into completed approval/payment</td><td>Distinguishes checking conditions from executing an action</td></tr>
-<tr><td>Next judgment</td><td>Hold: fabricated completion</td><td>A sensible direction for this case, but overall quality and operational approval remain undecided</td></tr>
-</tbody>
-</table>
-
-<p><strong>Improvement rules to look for in the instructions:</strong> Ask the minimum questions needed to establish missing conditions; distinguish eligibility from approval; never promise completion without a real execution tool and evidence. Use these to review candidate instructions, not to overwrite actual instruction or score files with this example.</p>
-<table>
-<thead>
-<tr>
-<th>Problem in actual results</th>
-<th>First place to investigate</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Retrieved context is outdated or irrelevant</td>
-<td>IQ policy documents, effective dates, and retrieval results</td>
-</tr>
-<tr>
-<td>Evidence is correct but conditions, route, or authority are misinterpreted</td>
-<td>Instruction decision rules, informed by actual answers and Judge reasons</td>
-</tr>
-<tr>
-<td>JSON format or <code>needs_human</code> is wrong</td>
-<td>Output contract and routing instructions</td>
-</tr>
-<tr>
-<td>API/evaluation errors or calibration disagreement</td>
-<td>Environment, measurement, or evaluator/reference issues—not evidence of answer improvement</td>
-</tr>
-</tbody>
-</table>
-<p><strong>After a change, check the same dev questions again.</strong> The IQ and Agent Optimizer steps below do this. A polished example or longer instructions do not establish improvement.</p>
-<p><strong>Completion check:</strong> You have inspected the actual agent version, three responses, calibration report, and differences between your judgment and the Judge's. Do not substitute policy text for missing baseline retrieval evidence. Smoke/dev are not final tests: distinguish their <code>HOLD</code> from <strong>calibration HOLD</strong>, and never hide errors or missing scores.</p>
-<p class="step-next no-print"><a href="#iq" data-next-step>Next: 04. Connect knowledge →</a></p>
-
-<h2 id="iq">04. Connect knowledge with IQ</h2>
-<div class="lab-concept" aria-label="Step 04 learning objectives">
-<p><strong>What you will explore:</strong> Foundry IQ knowledge bases, Azure AI Search, and agent MCP tool calls. RAG retrieves relevant documents as evidence for an answer. Foundry IQ combines knowledge sources and retrieval planning in a reusable knowledge base.</p>
-<p><strong>Why it matters:</strong> The model does not inherently know this company's latest refund rules. Rather than repeatedly copying policies into instructions or memorizing them in model weights, retrieve the real documents and preserve the evidence behind the answer. Successful retrieval alone does not guarantee correct policy interpretation.</p>
-<p><strong>How you will explore it:</strong> Keep the instructions and model fixed, make eight policies searchable, and connect IQ as a tool. Check direct retrieval diagnostics, actual agent tool use, and answer scores separately, in that order.</p>
+<h2 id="baseline">03. Run Foundry Evaluation</h2>
+<div class="lab-concept" aria-label="Step 03 learning objective">
+<p><strong>What:</strong> An actual Microsoft Foundry managed agent evaluation. <strong>Why:</strong> Configuration and model connectivity are not measured task performance. <strong>How:</strong> Review the exact contract, submit once, and follow the real evaluation/run IDs to completion.</p>
 </div>
 
-<p><strong>Your task:</strong> Add only a real knowledge-retrieval tool to the same instructions. Use the dedicated environment's embedding deployment and the eight synthetic Contoso policies.</p>
+<p>For a fresh authorized workshop, continue to <strong>Review</strong> using the <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">direct agent-evaluation workflow</a>. The corrected English <strong><code>contoso-en-learning-loop</code></strong> baseline is already portal-submitted: open its recorded run instead of submitting again. Keep the earlier pilot unchanged and separate from this comparison.</p>
 <table>
 <thead>
 <tr>
-<th>Term</th>
-<th>Meaning and what to observe in this lab</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Embeddings / vector index</td>
-<td>Numeric representations help find semantically similar content. This implementation uses actual 1,536-dimensional vectors and an HNSW/cosine index.</td>
-</tr>
-<tr>
-<td>Vector-only / hybrid</td>
-<td>The former uses semantic similarity; the latter combines keyword and vector search. Compare top document IDs, content, and effective dates. Do not treat different retrieval-score scales as comparable quality scores.</td>
-</tr>
-<tr>
-<td>Knowledge source / knowledge base</td>
-<td>A source connects searchable content; a base specifies which sources to search and how. Here, one Search index is connected as one source.</td>
-</tr>
-<tr>
-<td>Agentic retrieval / planner</td>
-<td>Plans subqueries for complex questions and returns sources and activity. This implementation uses <code>low</code> reasoning and <code>extractiveData</code> so the agent answers from retrieved source material.</td>
-</tr>
-<tr>
-<td>MCP</td>
-<td>Model Context Protocol lets the agent discover and call tools. Here, <code>knowledge_base_retrieve</code> retrieves knowledge; it does not issue refunds or execute tickets.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>The actual flow:</strong> Customer question → versioned agent → IQ MCP tool → knowledge base → Search policy documents → tool output → final answer. <code>retrieved_context</code> must be the tool output returned in this run, not evaluator <code>context</code> or a reference answer. Project-managed-identity authentication in this lab does not establish that per-user document permission filtering has been tested.</p>
-<p>Product background: <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq">Foundry IQ concepts and components</a>. Portal and preview API support can change; inspect the actual connection method used by this guide.</p>
-<p><strong>Run · prepare knowledge and check retrieval, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; iq prepare --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; iq vectors --query &quot;What are the refund conditions for a first monthly subscription?&quot; --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; iq probe --query &quot;Compare refund deadlines and review-application conditions for earlier purchases and first monthly purchases from September onward.&quot; --confirm
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>iq prepare --confirm</code></td>
-<td>Embeds source policies and prepares the Search index, knowledge source, knowledge base, and project MCP connection. Preserves <code>knowledge/setup.json</code>, <code>document-embeddings.json</code>, and configuration/upload records. It changes remote state and incurs embedding usage and Search hosting costs.</td>
-</tr>
-<tr>
-<td><code>iq vectors --query ... --confirm</code></td>
-<td>Directly compares vector-only and hybrid results for the same query. The query asks, “What are the conditions for refunding a first monthly subscription?” <code>--query</code> is a retrieval query, not a question sent to an agent. Results go to <code>knowledge/probes/</code>; embedding/search usage is incurred.</td>
-</tr>
-<tr>
-<td><code>iq probe --query ... --confirm</code></td>
-<td>Sends a complex question to the knowledge base: compare refund deadlines and review-application conditions for earlier purchases versus first monthly purchases from September onward. Inspect <code>modelQueryPlanning</code>, activity, and sources. Preserves raw results in <code>knowledge/probes/</code> and the first response in <code>knowledge/retrieve-response.json</code>. Search/planner usage is incurred.</td>
-</tr>
-</tbody>
-</table>
-<p>Check in order: <strong>actual 1,536-dimensional embeddings and index/KB readiness → vector-only and hybrid retrieval → IQ <code>modelQueryPlanning</code>, retrieval activity, and sources</strong>. An index or configuration alone does not prove successful retrieval. Do not copy these diagnostic results into an agent's <code>retrieved_context</code>.</p>
-<figure class="portal-shot" id="portal-knowledge">
-<img src="../web/assets/portal/05-knowledge-base.png" alt="Actual IQ knowledge base configuration showing the planner, Low reasoning, Extractive data, and an Azure AI Search Index source" width="1440" height="1100" loading="lazy">
-<figcaption><strong>Screen 05 · Build → Knowledge → your knowledge base.</strong> Find the name recorded in knowledge/setup.json and compare the planner deployment, Low, Extractive data, and connected source. Active is a source state, not a retrieval or answer-quality score. Do not change the CLI configuration again with Save or Use in an agent. <a href="../web/assets/portal/05-knowledge-base.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
-
-<figure class="portal-shot" id="portal-iq-agent">
-<img src="../web/assets/portal/06-iq-agent-knowledge.png" alt="Actual knowledge base connected under Knowledge in the IQ agent&#x27;s Playground" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 06 · IQ Agent → Playground → Knowledge.</strong> The portal displays the existing MCP connection as a Knowledge card. An empty Tools list does not necessarily mean IQ is disconnected. Instructions were collapsed for readability, not changed. A visible connection is not proof of invocation: inspect the MCP output in runs/iq-dev too. <a href="../web/assets/portal/06-iq-agent-knowledge.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
-
-<p><strong>Run · all 12 IQ dev cases and the same Judge, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; agent --stage iq --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage iq --split dev --run-id iq-dev --interval-seconds 65 --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id iq-dev --interval-seconds 65 --confirm
-python -m lab score --run-id iq-dev
-python -m lab explain --run-id iq-dev
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>agent --stage iq --confirm</code></td>
-<td>Creates a version using the baseline's instructions/model plus IQ MCP, recorded in <code>agents/iq.json</code>. Creation itself does not send questions.</td>
-</tr>
-<tr>
-<td><code>run --stage iq --split dev --run-id iq-dev ...</code></td>
-<td>Omitting <code>--limit</code> runs <strong>all 12 dev cases</strong>. Preserves actual MCP calls/outputs and responses in <code>runs/iq-dev/</code>. Model, search, and planner usage is incurred.</td>
-</tr>
-<tr>
-<td><code>judge score --run-id iq-dev ...</code></td>
-<td>Pays the same business Judge to score saved answers. Groundedness uses only this run's actual MCP context.</td>
-</tr>
-<tr>
-<td><code>score --run-id iq-dev</code></td>
-<td>Locally aggregates rule checks and saved scores for 12 cases. Error/missing rows stay in the denominator.</td>
-</tr>
-<tr>
-<td><code>explain --run-id iq-dev</code></td>
-<td>Reads actual values, HOLD causes, and case reasons. Because this sample is larger, do not directly compare its overall mean with the three-case baseline mean.</td>
-</tr>
-</tbody>
-</table>
-<p class="output-label" id="example-iq-report">Example output · an authored excerpt from the English explain command</p>
-
-<pre><code class="language-text"># Evaluation explained
-- Run: iq-dev / stage: iq / split: dev / 12 cases
-- Criteria: current config/gates.json; final minimum sample: 20
-- Gate outcome: **HOLD** / operational approval: **not_granted**
-
-| Metric | Actual value | Criterion | Coverage |
-| Policy correctness | 4.25 | mean ≥4 | scored 12/12; missing 0; scale [1.0, 5.0] |
-| Retrieval groundedness | 4.50 | mean ≥4 | scored 12/12; missing 0; scale [1.0, 5.0] |
-</code></pre>
-<p><strong>How to read it:</strong> The example reports <code>iq-dev</code>, 12 dev cases, HOLD, and no operational approval. Policy correctness is 4.25 and retrieval groundedness 4.50; both have 12/12 scores and no missing values. High averages alone do not pass the gates. Read the <strong>HOLD causes and next checks</strong> for scope, gaps, errors, and critical failures, then the <strong>case explanations</strong> for actual answers and Judge reasons. Even this illustrative 12-case dev run is not a final test. Inspect your complete report for other failures.</p>
-<p class="share-checkpoint" id="share-iq">Discuss · did retrieval also improve the business answer?</p>
-
-<ul>
-<li><strong>Actual results:</strong> Read <code>groundedness</code> and <code>policy_correctness</code> for all <strong>12</strong> <code>iq-dev</code> cases, with <strong>their respective scored counts, missing values, and errors</strong>. Citation IDs alone do not establish groundedness.</li>
-<li><strong>Representative case:</strong> Compare answer and policy decisions for the <strong>three case IDs shared with the baseline</strong>. Inspect the actual MCP context for each response. <strong>Do not compare the overall means of three baseline cases and 12 IQ cases.</strong></li>
-<li><strong>Next decision:</strong> Complete: “The retrieved evidence is <strong><em>, but the business judgment is </em></strong>, so we should improve the instruction about ___.” <strong>An answer faithful to retrieval can still be wrong for the business.</strong></li>
-</ul>
-<p><strong>Completion check:</strong> You have the actual 12 dev responses, <code>knowledge_base_retrieve</code> calls/MCP outputs, business scores, and reasons. <strong><code>iq-dev</code></strong> is the comparison baseline for the next step. <code>--interval-seconds 65</code> spaces cases; it does not retry. Preserve and stop on 429s, 403s, or missing context. Do not rescore the same run through another evaluation path.</p>
-<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 05. Improve instructions →</a></p>
-
-<h2 id="optimize">05. Improve instructions with Agent Optimizer</h2>
-<div class="lab-concept" aria-label="Step 05 learning objectives">
-<p><strong>What you will explore:</strong> Agent Optimizer generates and compares instruction candidates using evaluation data and criteria. It does more than make a prompt longer: it evaluates the selected agent version and candidates on the same task.</p>
-<p><strong>Why it matters:</strong> Correct retrieval can still be followed by missing conditions or a wrong action. Instructions may need improvement rather than more knowledge. But an improved average can conceal critical failures or overfitting.</p>
-<p><strong>How you will explore it:</strong> Fix the scope at 12 dev cases, the same model and IQ connection, instruction-only changes, one job, and one candidate. Read the service's recommendation, then check it independently with the business Judge on the same questions. This is neither SFT of model weights nor a single-prompt rewriting feature.</p>
-</div>
-
-<p><strong>Your task:</strong> Use the error-free, completed 12-case <code>iq-dev</code> run and its actual MCP output for <strong>one Agent Optimizer job with one candidate</strong>. Keep the model and IQ connection fixed; change instructions only.</p>
-<p>Compare instructions <strong>before → after</strong>. <code>baseline</code> and <code>iq</code> use the same <a href="../prompts/en/baseline.txt"><code>prompts/en/baseline.txt</code></a>; <code>optimized</code> uses <code>optimizer/selected-prompt.txt</code> imported from the actual service result. This is not a choice between prewritten <code>v1.txt</code>/<code>v2.txt</code> files. Longer instructions are not, by themselves, evidence of improvement.</p>
-<p><strong>Run · prepare input locally:</strong></p>
-<pre><code class="language-bash">python -m lab optimize --run-id iq-dev
-python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>optimize --run-id iq-dev</code></td>
-<td>Verifies the completed IQ dev run, actual tool output, and source hashes, then <strong>locally prepares</strong> original instructions, <code>dev-upload.jsonl</code>, and <code>handoff.json</code> in <code>optimizer/</code>. Despite its name, it does not submit a service job or incur model costs. Do not recreate an existing handoff.</td>
-</tr>
-<tr>
-<td><code>json.tool .../handoff.json</code></td>
-<td>Reads the upload data, exact agent name/version, and source hashes. This handoff ties local records to portal selections.</td>
-</tr>
-</tbody>
-</table>
-<p class="output-label" id="example-optimizer-handoff">Example output · excerpt from handoff.json</p>
-
-<pre><code class="language-json">{
-  &quot;kind&quot;: &quot;agent-optimizer-handoff&quot;,
-  &quot;status&quot;: &quot;PREPARED_NOT_SUBMITTED&quot;,
-  &quot;source_run_id&quot;: &quot;iq-dev&quot;,
-  &quot;source_split&quot;: &quot;dev&quot;,
-  &quot;test_data_included&quot;: false
-}
-</code></pre>
-<p><strong>How to read it:</strong> Only input preparation is complete. <strong>No service job or new agent exists yet.</strong> Use this file's <code>agent_name</code> and <code>agent_version</code> on the next screen.</p>
-<p><strong>Submit this job and download its candidate in the Foundry portal.</strong> Screens in the other steps are for comparing CLI results, not repeating them. In the same account/project, choose <strong>Build → Agents → the IQ agent in the handoff → Optimize tab → Optimize button → Agent</strong>. These were the actual menu labels at capture time; another UI version may show <strong>Create optimization run</strong>. <strong>Cost</strong> is not this lab's target. Apply the following settings alongside the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">official prompt-agent guide</a>.</p>
-<table>
-<thead>
-<tr>
-<th>Screen</th>
-<th>Lab setting</th>
+<th>Review item</th>
+<th>Required value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Target</td>
-<td>The exact IQ agent version in the handoff. Under <strong>Choose targets</strong>, select <strong>Instruction only</strong>. Clear Tool description and Model</td>
+<td><strong><code>contoso-eval-en</code></strong>, <strong>Pin currently latest</strong> resolved to <strong>version <code>1</code> before configuration changes</strong></td>
 </tr>
 <tr>
-<td>Models</td>
-<td>The actual optimizer/judge deployments from the manifest. <strong>Disable model comparison</strong>, including Compare across models in older UI</td>
+<td>Scope / frequency</td>
+<td>Individual turns / One time</td>
+</tr>
+<tr>
+<td>Data</td>
+<td><strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, all 12 cases, original file hash</td>
+</tr>
+<tr>
+<td>Agent configuration</td>
+<td><code>query</code> only; no custom prompt override</td>
+</tr>
+<tr>
+<td>Criteria / Judge</td>
+<td><strong>Relevance threshold 4; TaskAdherence binary pass 1</strong> (generic Threshold 1 if shown), generated mappings, <strong><code>lab-judge-luna-dea3cec5</code></strong></td>
+</tr>
+<tr>
+<td>Evaluation name</td>
+<td><strong><code>contoso-en-learning-loop</code></strong>, the corrected comparison definition; not the retained pilot name</td>
+</tr>
+</tbody>
+</table>
+<figure class="portal-shot" id="portal-evaluation-review">
+<img src="../web/assets/portal/en/17-evaluation-review.png" alt="Foundry evaluation Review screen for a pinned agent version, existing dataset, and selected criteria" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Review before submission.</strong> Confirm the corrected definition name, pinned agent, dataset, Relevance 4, TaskAdherence binary pass 1, and Judge. A pilot's old settings are not the corrected contract, and a review screen is not execution evidence. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p>The final action is <strong>Submit</strong>, used once for the authorized baseline. The English submission below already exists; do not submit it again or rewrite the retained pilot.</p>
+<p><strong>Completed canonical portal baseline:</strong> <strong><code>contoso-en-learning-loop</code></strong>, evaluation <code>eval_94feef6f6f644fabb22a5680f5f24fb1</code>, run <code>evalrun_cde9948ac9d946929661bc3d9e60432a</code>. The HTTP 201 creation receipt was followed by actual completion on <code>contoso-eval-en</code> pinned v1 and <code>contoso-eval-en-dev12</code> v1, with Relevance threshold 4, TaskAdherence binary pass 1, and the same <code>gpt-6-luna</code> Judge. These are baseline results, not candidate results.</p>
+<p>The <strong>EVALUATION details page</strong> provides <strong>Raw JSON</strong> and <strong>Evaluation runs</strong>. Keep the definition/run IDs, URL, and submission time. The older pilot remains in the <a href="admin.html#bootstrap">operator record</a>, not this comparison. The visible Add run candidate wizard currently fails; use step 06 rather than repeating it.</p>
+<p><strong>Completion signal:</strong> The actual run page reports <strong>Completed</strong>, and you can inspect its results. Still account for <strong>all 12 cases</strong>, including failed, errored, or missing rows. A failed or partial run stays failed/partial in your record; a completed run is not automatically a quality pass.</p>
+<p>If access, model support, or scoring fails, keep the IDs and error details, use the <a href="facilitator.html#resume">facilitator's recovery reference</a>, and mark later work not run. Do not replace a failed managed evaluation with authored scores.</p>
+<p class="step-next no-print"><a href="#analyze" data-next-step>Next: 04. Read scores and reasons →</a></p>
+
+<h2 id="analyze">04. Read scores and reasons</h2>
+<p><a id="iq"></a>
+<a id="score-rubric"></a>
+<a id="worked-evaluation"></a></p>
+<div class="lab-concept" aria-label="Step 04 learning objective">
+<p><strong>What:</strong> Per-metric scores and row-level explanations. <strong>Why:</strong> An average can hide a policy mistake or a missing answer. <strong>How:</strong> Read both evaluator summaries, then compare a failure or lowest-score case with a good case.</p>
+</div>
+
+<p>On the <strong>Evaluations run page</strong>, read the summaries and <strong>Detailed metrics result</strong>, including <strong><code>Relevance.reason</code></strong> and <strong><code>TaskAdherence.reason</code></strong>; scroll horizontally if necessary. A row's <strong>conversation_id → User view</strong> opens its question and actual JSON response, <strong>not an inline Judge-reason panel</strong>. Return to Detailed metrics result for evaluator reasons.</p>
+<p><strong>Actual canonical baseline only:</strong> Do not substitute pilot aggregates or label these as candidate results.</p>
+<table>
+<thead>
+<tr>
+<th>Baseline result</th>
+<th>Observed value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Execution</td>
+<td><strong>Completed; 12 rows</strong></td>
+</tr>
+<tr>
+<td>Overall</td>
+<td><strong>10 passed / 2 failed / 0 errored</strong></td>
+</tr>
+<tr>
+<td>Relevance</td>
+<td><strong>10/12 passed</strong>, threshold <strong>4</strong></td>
+</tr>
+<tr>
+<td>TaskAdherence</td>
+<td><strong>12/12 passed</strong>, binary <strong>1</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Record for each evaluator</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total scope</td>
+<td><strong>n = 12</strong>, including rows without usable scores</td>
+</tr>
+<tr>
+<td>Scored / total, missing, errors</td>
+<td>Coverage, not extra successful cases; do not silently drop rows</td>
+</tr>
+<tr>
+<td>Relevance result</td>
+<td><strong>1–5</strong>, threshold <strong>4</strong>. A score of 4/5 is not 80% accuracy</td>
+</tr>
+<tr>
+<td>TaskAdherence result</td>
+<td><strong>Binary 0/1: 1 = Pass, 0 = Fail</strong>. A missing/error result is not a scored 0</td>
+</tr>
+<tr>
+<td>Pass count and score summary</td>
+<td>Report separately for Relevance and TaskAdherence; do not merge them into a new accuracy claim</td>
+</tr>
+<tr>
+<td>Row-level reason</td>
+<td>The evaluator's explanation to check against the actual answer and reference</td>
+</tr>
+</tbody>
+</table>
+<figure class="portal-shot" id="portal-evaluation">
+<img src="../web/assets/portal/en/18-evaluation-results.png" alt="Foundry evaluation summary and Detailed metrics result for inspecting the canonical English baseline" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read the canonical baseline.</strong> Match the recorded run ID: 12 rows, 10 passed, 2 failed, 0 errored overall; Relevance 10/12 and binary TaskAdherence 12/12. Read reasons in Detailed metrics result. These are not candidate results. <a href="../web/assets/portal/en/18-evaluation-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p>Select <strong>at least one failing or lowest-score case and one good case</strong>, if a good case exists. For each, connect the <strong>actual question → actual answer → evaluator score/reason → policy <code>context</code> and parsed <code>ground_truth</code> reference</strong>. If no good case exists, say so rather than inventing one.</p>
+<p>Check concrete domain behavior: Did the answer apply the right policy date? Ask for genuinely missing information? Cite supporting policy? Claim an approval or action that never happened? A reference answer need not match word for word.</p>
+<p><strong>The canonical v1 baseline's two Relevance failures:</strong> TaskAdherence passed for both; these are not candidate regression findings.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Observed answer and reference distinction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>atlas-dev-001</code></td>
+<td>The subscription-reduction answer was vague; the reference required explicit clarification</td>
+</tr>
+<tr>
+<td><code>atlas-dev-011</code></td>
+<td>The answer honestly described an undocumented feature as unverified, but Relevance judged it incomplete</td>
+</tr>
+</tbody>
+</table>
+<p>Inspect the actual reasons and reference policy. <strong>Do not change policy facts or replace justified uncertainty with unsupported confidence merely to chase Judge scores.</strong></p>
+<figure class="portal-shot" id="portal-evaluation-case">
+<img src="../web/assets/portal/en/19-evaluation-case.png" alt="Evaluation row conversation_id to User view showing atlas-dev-001 question and actual JSON response, not Judge reasons" width="1440" height="340" loading="lazy">
+<figcaption><strong>conversation_id → User view: inspect the actual response.</strong> This shows the atlas-dev-001 question and JSON response, not an inline Judge-reason panel. Return to <strong>Detailed metrics result</strong> for <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>, then compare the reference policy. <a href="../web/assets/portal/en/19-evaluation-case.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Limits:</strong> Relevance and TaskAdherence are useful, compact criteria, not a complete policy or safety certification. Not every evaluator consumes <code>context</code> or <code>ground_truth</code>; those columns remain available for supported reference use and your review. Do not claim that selecting two criteria checks every response-contract rule.</p>
+<p class="share-checkpoint" id="share-baseline"><strong>Discuss:</strong> State the actual run ID, n = 12, each metric's coverage/pass count, one problematic claim, and one good response. Explain which instruction behavior you want to improve and why.</p>
+
+<p><strong>Completion signal:</strong> You can support an improvement hypothesis with an actual answer and reason, while keeping errors visible. If no failure is observed, use the lowest-score case and report that result honestly; do not weaken the baseline to manufacture a lesson.</p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 05. Improve instructions with Agent Optimizer →</a></p>
+
+<h2 id="optimize">05. Improve instructions with Agent Optimizer</h2>
+<p><a id="tune"></a></p>
+<div class="lab-concept" aria-label="Step 05 learning objective">
+<p><strong>What:</strong> One instruction-only Agent Optimizer candidate. <strong>Why:</strong> A controlled change makes the later comparison interpretable. <strong>How:</strong> Keep the agent model, tools, dataset, and Judge fixed; inspect the proposed instruction diff before creating a separate lab version.</p>
+</div>
+
+<p><strong>Actual English job succeeded:</strong> <code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code>, <strong>one candidate</strong>, instruction-only, same dataset, <code>gpt-5.5</code> generator, <code>gpt-6-luna</code> Judge, no model comparison. Optimizer UI scores were <strong>0.635 → 0.646</strong>, with <strong>UI-reported +0.010</strong> and <strong>264,260 reported tokens</strong>. These are service optimization results, not direct candidate-evaluation scores; do not recalculate a different delta from the displayed values or resubmit the job.</p>
+<p>Open <strong>Build → Agents → <code>contoso-eval-en</code> → Optimize Preview</strong>. On first use, choose <strong>Optimize my agent → Agent</strong>, not <strong>Cost</strong>. After jobs exist, the menu may read <strong>Optimize → Agent</strong>. The first-run tax-agent benchmark is a <strong>product example</strong>, not Contoso results.</p>
+<p>In <strong>Create an optimization run</strong>, follow the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">official prompt-agent Optimizer workflow</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Exact workshop choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent version</td>
+<td><strong><code>contoso-eval-en</code> version <code>1</code></strong>, the same pinned baseline used in direct Evaluation</td>
+</tr>
+<tr>
+<td>Choose targets</td>
+<td>Uncheck <strong>Model</strong>; select <strong>Instruction only</strong>; <strong>Tool description off</strong></td>
 </tr>
 <tr>
 <td>Max candidates</td>
-<td>Set <strong>1</strong>, rather than accepting the default. Submit only one job</td>
+<td><strong>1</strong>. Clear Model first: model-only selection can disable this field</td>
 </tr>
 <tr>
-<td>Data / Dataset</td>
-<td><strong>Select dataset and criteria → Upload dataset</strong> → the actual <code>$LAB_ARTIFACTS_DIR/optimizer/dev-upload.jsonl</code> file. Do not use Generate data or another dataset</td>
+<td>Optimization model</td>
+<td><strong><code>lab-planner-dea3cec5</code></strong>, <strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong></td>
 </tr>
 <tr>
-<td>Criteria</td>
-<td><strong>Relevance + Task Adherence</strong>, threshold <strong>4</strong> each. Check input columns <code>query</code>, <code>context</code>, and <code>ground_truth</code></td>
+<td>Evaluation model</td>
+<td><strong><code>lab-judge-luna-dea3cec5</code></strong>, the same verified <code>gpt-6-luna</code> Judge used in direct Evaluation</td>
 </tr>
 <tr>
-<td>Review</td>
-<td>Confirm the same model/IQ MCP, 12 dev cases, and approved cost/task scope before submission</td>
+<td>Model comparison</td>
+<td>Off; do not change the model being optimized</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Understand the screen:</strong> Relevance checks whether an answer is useful for the question; Task Adherence checks compliance with instructions and constraints. Neither replaces all detailed Contoso policy checks. This wizard has no column mapping, so preserve the prepared JSONL column names. Do not append <code>context</code> or <code>ground_truth</code> to the agent's question just because an evaluator does not use those columns.</p>
-<p><strong>Immediately before Submit:</strong> A cost estimate is not a spending cutoff. Usage may include original/candidate agent runs, search, Judges, and instruction generation: “one job” does not mean “one model call.” If a completed job already exists, open it rather than submitting another wizard. Agent Optimizer is in preview; if the menu is missing, check access and support with the operator.</p>
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/07-optimizer-target.png" alt="Unsubmitted Agent Optimizer Target screen with Instruction only, one candidate, and planner and judge deployments selected" width="1210" height="968" loading="lazy">
-<figcaption><strong>Screen 07 · Target settings, not submitted.</strong> Select Instruction only under Choose targets, then check Max candidates 1 and Evaluation model. At capture time the defaults were two candidates and the agent model for evaluation, so they were not accepted unchanged. “Token cost left free” in Goal means cost is not constrained as an optimization target; it does not mean calls are free. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for instruction-only optimization with one candidate and separate optimization and evaluation models" width="1210" height="968" loading="lazy">
+<figcaption><strong>Choose the target before the candidate limit.</strong> Instruction only keeps model changes out of the experiment. The optimization model generates instructions; the evaluation model scores responses. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
+<p>Choose <strong>Next → Select dataset and criteria</strong> and <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, not Generate data or an edited upload. Use the same Judge and keep exactly Relevance and TaskAdherence.</p>
+<p>In Optimizer <strong>Criteria</strong>, if <strong>No custom evaluators available</strong> appears, switch <strong>Custom only OFF</strong> or click <strong>View built-in evaluators</strong>. Selecting either evaluator row opens its <strong>Configure...</strong> dialog: set <strong>Relevance Threshold 4</strong> or <strong>TaskAdherence Threshold 1</strong>, then <strong>Apply</strong>. TaskAdherence remains binary pass 1. Do not create custom evaluators to bypass this filter; record settings without claiming private rubric-version pins.</p>
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/08-optimizer-dataset.png" alt="Unsubmitted Agent Optimizer Dataset screen with Select dataset and criteria and the Upload dataset button" width="1210" height="968" loading="lazy">
-<figcaption><strong>Screen 08 · After choosing Select dataset and criteria.</strong> The wizard proceeds through Dataset → Criteria → Review. Use Upload dataset on the right for the prepared 12 dev cases. No upload or submission was made for this screenshot. Do not select another run's dataset from the list. Creator details are masked. <a href="../web/assets/portal/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer dataset and criteria selection using the existing English dev12 dataset" width="1210" height="968" loading="lazy">
+<figcaption><strong>Reuse the registered dataset.</strong> Confirm its version and 12-case scope. A five-row preview does not change the full dataset count. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p><strong>A common source of confusion:</strong> If Generate data asks for Application Insights access or shows Resolve, do not expand permissions for this lab. Choose <strong>Select dataset and criteria</strong>, since you already have a file. Check its row count and columns before Next. You need not upload again or resubmit a completed job to follow the screenshots.</p>
-<p>Wait <strong>no more than 60 minutes per job</strong>, within your current authorization. On timeout or access/support blockers, record the state and stop. Do not claim completion by substituting Prompt Optimizer, handwritten instructions, or another model.</p>
-<p><strong>Once the job is <code>succeeded</code>:</strong> Read the original/candidate instruction diff, case scores, and regressions. Service ranking does not replace this lab's business Judge or operational approval. The candidate may include examples derived from dev, so an independent test is necessary.</p>
+<p>For a fresh authorized job, review and submit once. For the recorded job, follow its existing ID and wait <strong>at most 60 minutes</strong> within the approved scope. One job can make multiple internal calls; it is not one free model request. If blocked or timed out, record the status and stop rather than submitting a duplicate.</p>
+<p>For the succeeded job, read <strong>original versus candidate</strong>, <strong>per-evaluator results</strong>, and <strong>View changes</strong>. The Optimizer's <strong>0–1 ranking</strong> is not the same as Relevance's 1–5 score or a pass percentage. A higher ranking does not establish policy improvement or replace direct reevaluation.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/09-optimizer-results.png" alt="Actual completed Agent Optimizer run showing one candidate at 0.708 versus a 0.677 baseline, tokens, downloads, and View changes" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 09 · Results from an existing completed run.</strong> 0.677 → 0.708 is the service's Task-weighted average on a 0–1 scale. Read Avg tokens and Avg latency too. Locate View changes, Download JSON, and Download config, but do not click Promote candidate. The existing lab's business-quality decision remains HOLD. <a href="../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer original and candidate results with evaluator details and candidate actions" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read the candidate's evidence.</strong> Check actual job/candidate IDs and per-evaluator results. A recommendation is not a promised improvement or production approval. <a href="../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <figure class="portal-shot" id="portal-optimizer-diff">
-<img src="../web/assets/portal/10-optimizer-changes.png" alt="Side-by-side comparison of the actual baseline and candidate system_prompt returned by the service" width="1038" height="622" loading="lazy">
-<figcaption><strong>Screen 10 · View changes.</strong> Compare the original system_prompt on the left with the candidate on the right. Long green additions do not necessarily improve it. Review dev-derived “built-in policy facts,” route definitions, and authority boundaries too. Do not interpret tools: [] in the export as an instruction to remove IQ. <a href="../web/assets/portal/10-optimizer-changes.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/10-optimizer-changes.png" alt="Agent Optimizer View changes comparing original and candidate instructions" width="1038" height="622" loading="lazy">
+<figcaption><strong>Inspect the instruction diff.</strong> Check policy reasoning, clarification, authority boundaries, and the English response contract. Longer instructions are not inherently better. <a href="../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-evaluation">
-<img src="../web/assets/portal/11-evaluation-results.png" alt="Actual managed evaluation of an Optimizer candidate showing Relevance 12/12, Task adherence 8/12, and individual question results" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 11 · Candidate results → Score details → evalrun link.</strong> The existing candidate's service evaluation reports Relevance 12/12 and Task adherence 8/12. Distinguish Completed from each criterion's pass rate. Scroll Detailed metrics result horizontally to read reasons and other metrics. These are not the local Contoso business-Judge scores or final fresh-test results. <a href="../web/assets/portal/11-evaluation-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
+<p>Keep the same model, tools, connections, and response contract. Do not remove tools just because an exported candidate configuration omits them. If the proposed change is not instruction-only, report the mismatch rather than claiming a controlled improvement.</p>
+<p><strong>Actual Promote created <code>contoso-eval-en</code> v2</strong>, with exact candidate instructions and unchanged model/knowledge tool verified. Active-version changes affect <strong>all channels</strong>, so this was restricted to the <strong>isolated, unpublished lab, never production</strong>. After HOLD, active v1 was restored; v2 remains available with its evaluation evidence. Do not promote again or delete it.</p>
+<p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Which instruction changed, which failure might it address, and what could regress? The Optimizer's internal result selects a candidate for verification; it does not replace the next direct Evaluation.</p>
 
-<p><strong>Do not confuse three different numbers:</strong> screen 09's 0–1 ranking, screen 11's per-criterion pass rates, and the 1–5 business scores from reevaluation below are different aggregates. In this example, important business failures remained despite a recommended candidate. The screenshots are neither expected scores for your run nor acceptance criteria.</p>
-<p class="share-checkpoint" id="share-optimizer">Discuss · why did the Optimizer recommend this candidate?</p>
+<p><strong>Completion signal:</strong> The real job succeeded and verified lab v2 exists. Its separate native SDK evaluation completed as recorded in step 06; neither promotion nor the Optimizer UI score is production approval.</p>
+<p class="step-next no-print"><a href="#decision" data-next-step>Next: 06. Reevaluate, compare, and finish →</a></p>
 
-<ul>
-<li><strong>Actual results:</strong> Read <strong>original versus candidate</strong> scores by evaluator, with the scales, 12-case dev scope, and job/candidate IDs. Do not combine a 0–1 ranking and this lab's 1–5 Judge scores as if they were the same measure.</li>
-<li><strong>Representative case:</strong> Connect the instruction diff to a representative response and explain what changed. If the service failed or did not finish, do not invent scores or improvement rates.</li>
-<li><strong>Next decision:</strong> Complete: “Under the service's criteria, ___, so we will <strong>reevaluate</strong>/hold this candidate.” <strong>An Optimizer recommendation supports candidate selection, not final acceptance or operational approval.</strong></li>
-</ul>
-<p>Save the completed run's <strong>Download JSON</strong> and the candidate's <strong>Download config</strong> to these private filenames. In the file picker, use the <strong>actual directory from step 02</strong>, not the literal text <code>$LAB_ARTIFACTS_DIR</code>. Do not promote the portal's active version; the CLI below creates a separate lab version.</p>
-<table>
-<thead>
-<tr>
-<th>What to save</th>
-<th>Path under <code>$LAB_ARTIFACTS_DIR</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Completed run JSON</td>
-<td><code>optimizer/agent-optimizer-final.json</code></td>
-</tr>
-<tr>
-<td>Candidate config JSON</td>
-<td><code>optimizer/agent-optimizer-candidate-config.json</code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Run · import the service candidate:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; optimizer-agent-result --result &quot;$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-final.json&quot; --candidate &quot;$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-candidate-config.json&quot;
-</code></pre>
-<p><strong>Command explained:</strong> <code>--result</code> is the completed-job JSON; <code>--candidate</code> is that job's actual winning configuration. The importer checks the original agent/version/instruction hash and instruction-only scope, then locally saves <code>selected-candidate.json</code>, <code>selected-prompt.txt</code>, and <code>agent-changes.diff</code>. It does not call the service, promote in the portal, change models, or create a version. The following command creates a separate version using the imported instructions.</p>
-<p class="output-label" id="example-optimizer-candidate">Example output · candidate import excerpt</p>
-
-<pre><code class="language-json">{
-  &quot;kind&quot;: &quot;AGENT_OPTIMIZER_PORTAL_CANDIDATE_IMPORT&quot;,
-  &quot;status&quot;: &quot;CANDIDATE_CAPTURED_NOT_LAB_APPROVED&quot;,
-  &quot;job_id&quot;: &quot;EXAMPLE_JOB_ID&quot;,
-  &quot;candidate_id&quot;: &quot;EXAMPLE_CANDIDATE_ID&quot;,
-  &quot;imported_fields&quot;: [&quot;system_prompt&quot;],
-  &quot;human_operational_approval&quot;: &quot;NOT_GRANTED&quot;
-}
-</code></pre>
-<p><strong>How to read it:</strong> Instructions from a real job/candidate have been imported to <code>selected-prompt.txt</code>; <strong>lab quality has not passed</strong>. Import instructions only. Do not remove IQ MCP because the exported config says <code>tools: []</code>. If files are missing or the contract differs, do not fabricate a result.</p>
-<p><strong>Run · create a new version and reevaluate the same 12 dev cases, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; agent --stage optimized --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage optimized --split dev --run-id optimized-dev --interval-seconds 65 --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id optimized-dev --interval-seconds 65 --confirm
-python -m lab score --run-id optimized-dev
-python -m lab explain --run-id optimized-dev --baseline iq-dev
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>agent --stage optimized --confirm</code></td>
-<td>Creates a remote <strong>separate candidate version</strong> with the imported <code>selected-prompt.txt</code> and the existing model/IQ tools. Records <code>agents/optimized.json</code>; does not promote or overwrite the original IQ version.</td>
-</tr>
-<tr>
-<td><code>run --stage optimized --split dev --run-id optimized-dev ...</code></td>
-<td>Runs the same 12 dev cases against the candidate. Results go to <code>runs/optimized-dev/</code>; model/search usage is incurred.</td>
-</tr>
-<tr>
-<td><code>judge score --run-id optimized-dev ...</code></td>
-<td>Pays the same business Judge to evaluate actual candidate answers. Do not copy portal rankings into business scores.</td>
-</tr>
-<tr>
-<td><code>score --run-id optimized-dev</code></td>
-<td>Aggregates candidate results locally, preserving the original <code>iq-dev</code> report.</td>
-</tr>
-<tr>
-<td><code>explain --run-id optimized-dev --baseline iq-dev</code></td>
-<td><code>--baseline</code> selects a <strong>saved run ID</strong> for comparison. Computes before/after changes and configured regressions with the same data/Judge locally, without extra model calls.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>The final command compares saved results for the same questions.</strong> It rejects mismatched datasets, case IDs, Judges, or scales. The existing <code>compare_runs</code> engine calculates configured regression tolerances locally without model calls. It does not turn dev's overall HOLD into PASS.</p>
-<table>
-<thead>
-<tr>
-<th>Automatically calculated diagnostic</th>
-<th>Current tolerance</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Decrease in format, human-flag, or forbidden-claim pass rate</td>
-<td>0 percentage points</td>
-</tr>
-<tr>
-<td>Decrease in route accuracy or citation pass rate</td>
-<td>Up to 5 percentage points each</td>
-</tr>
-<tr>
-<td>Decrease in mean groundedness or relevance</td>
-<td>Up to 0.2 points each</td>
-</tr>
-<tr>
-<td>Latency increase</td>
-<td>No tolerance configured; no automatic verdict</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Separate automation from human judgment.</strong> <code>score</code>/<code>finalize</code> checks one run's gates. Before/after regression diagnostics appear only with <code>explain --baseline</code>. A person must review <strong>policy-correctness changes, the instruction diff, the validity of actual claims, and final acceptance</strong>. No separate automatic tolerance for a decrease in policy correctness is configured. These diagnostics are not operational approval.</p>
-<p class="share-checkpoint" id="share-optimized">Discuss · did the candidate improve under the same business criteria?</p>
-
-<ul>
-<li><strong>Actual results:</strong> In <code>explain --baseline</code>, read the <strong>same-question automatic regression diagnostics</strong>: original/candidate values, decrease, tolerance, and unmeasured items. Check <strong>scored rows / total</strong>, errors, missing values, and individual critical cases—not just means.</li>
-<li><strong>Representative case:</strong> Connect each case's <strong>previous final answer, current answer, before/after scores, and current Judge reasons</strong>. Explain an improvement and a regression or remaining weakness. If none is observed, say so. Read the original run's <code>explain</code> for its previous reasons.</li>
-<li><strong>Next decision:</strong> Complete: “___ improved, but ___ remains a risk, so we will freeze/hold the candidate.” <strong>Average gains cannot offset critical failures or regressions.</strong></li>
-</ul>
-<p><strong>Completion check:</strong> Compare the <strong>same case IDs</strong> in <code>iq-dev</code> and <code>optimized-dev</code> and explain answer, score, and regression changes. Do not overstate this as the isolated causal effect of prompt wording with retrieval variability fully controlled. If critical regressions, errors, or missing values remain, do not accept or resubmit the candidate; record HOLD.</p>
-<p class="step-next no-print"><a href="#decision" data-next-step>Next: 06. Decide and finish →</a></p>
-
-<h2 id="decision">06. Decide and finish</h2>
-<div class="lab-concept" aria-label="Step 06 learning objectives">
-<p><strong>What you will explore:</strong> Freezing an experiment, evaluating a fresh holdout, and connecting traces and feedback. A freeze is a local contract that fixes candidate/evaluation hashes. A holdout contains questions not used for candidate selection. A trace records the execution path of actual model and tool calls.</p>
-<p><strong>Why it matters:</strong> Stop changing the candidate before testing fresh questions, so you do not adopt an agent that only fits the development set. You also need to trace which version answered and what evidence it used when investigating later problems.</p>
-<p><strong>How you will explore it:</strong> Only when prerequisites pass, freeze and run fresh12 once. Record the verdict, unrun steps, and absence of human approval separately. This repository's governance commands do not configure Foundry operational policy or authorize a real deployment.</p>
+<h2 id="decision">06. Reevaluate, compare, and finish</h2>
+<p><a id="review"></a>
+<a id="operate"></a>
+<a id="cleanup"></a></p>
+<div class="lab-concept" aria-label="Step 06 learning objective">
+<p><strong>What:</strong> A real Foundry managed evaluation of v2 under the existing definition. <strong>Why:</strong> The portal candidate form currently fails before submission. <strong>How:</strong> Run one Azure AI Projects/OpenAI Evals SDK helper command, then read and compare the remote runs in Foundry.</p>
 </div>
 
-<p><strong>Your task:</strong> Freeze the candidate, evaluate it once on new questions, and record its actual state and next action. <strong>If earlier steps are blocked or calibration/candidate evidence is insufficient, skip the paid final test below and complete only <a href="#cleanup">the closing record</a>.</strong> This is not a fallback that turns “not run” into success.</p>
-<p><strong>Run · freeze and create a fresh holdout only after calibration and candidate review:</strong></p>
-<pre><code class="language-bash">python -m json.tool config/evaluators/fresh-holdout-gates.v1.json
-python -m lab --config &quot;$LAB_ENV_FILE&quot; freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01
-python -m lab holdout create --freeze-id selected-v1 --holdout-id fresh-01 --count 12
+<p><strong>Observed portal blocker:</strong> Add run → Pin v2 → Individual turns led to <strong>Configure agents: Config required → Add custom prompt / User prompt</strong>. Even <code>{{item.query}}</code> failed Submit client-side with <strong><code>Unable to create data source configuration from item schema</code></strong>. <strong>No candidate remote run was submitted by that attempt.</strong> Do not create another evaluation definition to bypass it.</p>
+<p>From the repository root in bash/zsh/WSL2, replace <strong>all four placeholders</strong> below. The operator supplies the project endpoint and subscription. Copy <strong>your own baseline's</strong> evaluation/run IDs from its portal URL or <strong>Raw JSON</strong>. Do not copy the IDs from this guide's recorded rehearsal.</p>
+<pre><code class="language-bash">export AZURE_AI_PROJECT_ENDPOINT=&quot;OPERATOR_PROJECT_ENDPOINT&quot;
+export AZURE_SUBSCRIPTION_ID=&quot;OPERATOR_SUBSCRIPTION_ID&quot;
+export FOUNDRY_EVALUATION_ID=&quot;YOUR_EVALUATION_ID&quot;
+export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
 </code></pre>
-<p><strong>Commands explained:</strong></p>
+<p><strong>Prerequisites:</strong> Activate the prepared venv with <code>source .venv/bin/activate</code>, install locked dependencies with <code>python -m pip install -r requirements.lock</code>, then complete <code>az login</code> and the <a href="admin.html#sdk-prerequisites">account/subscription verification</a>. Do not proceed with a different account or missing prerequisites.</p>
+<p><strong>Run this one SDK operation.</strong> It clones the baseline <code>data_source</code>, retains existing evaluation criteria, changes only the target version in the run input, verifies the same model/tools, and submits a <strong>real Foundry evaluation run under the same evalID</strong>. It is <strong>not a local Judge or bespoke cloud scoring</strong>.</p>
+<pre><code class="language-bash">python scripts/add_foundry_eval_run.py --endpoint &quot;$AZURE_AI_PROJECT_ENDPOINT&quot; --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --evaluation &quot;$FOUNDRY_EVALUATION_ID&quot; --baseline &quot;$FOUNDRY_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/foundry-evaluations/candidate-v2.json
+</code></pre>
+<p>The first submission persists a private <strong>receipt</strong>. Repeat the identical command and <code>--out</code> path only to collect that same run. If the receipt is missing but the run name already exists remotely, the helper stops instead of creating a duplicate. Open the existing run or recover its original receipt; do not change names, paths, or evaluation definitions to chase a favorable result.</p>
+<p><strong>Verified SDK result:</strong> under <strong><code>eval_94feef6f6f644fabb22a5680f5f24fb1</code></strong>, candidate run <strong><code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code></strong>, <code>contoso-eval-en</code> <strong>v2</strong>, is <strong>Completed: 12 rows, 11 passed / 1 failed / 0 errored</strong>, versus v1's <strong>10 passed / 2 failed / 0 errored</strong>. The helper confirmed the same dataset, evaluators, Judge, model, and tools; only instructions/version changed. This is a real Foundry run, not the Optimizer's internal score.</p>
+<p>Open <strong>Build → Evaluations → <code>contoso-en-learning-loop</code> → Evaluation runs</strong>, select both run checkboxes, then <strong>Compare runs</strong>. <strong>Explicitly select the original <code>contoso-eval-en</code> in the Baseline dropdown.</strong> The page defaults to the first selected row—<code>candidate-v2</code> in this recorded case—so verify direction before reading differences/tests. The values below use original v1 as Baseline; private rubric-version pinning remains unproven.</p>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>What it does and produces</th>
+<th>Actual comparison, n = 12</th>
+<th>Original <code>contoso-eval-en</code> v1</th>
+<th><code>candidate-v2</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>json.tool .../fresh-holdout-gates.v1.json</code></td>
-<td>Reads the fresh-sample contract, separate from original test20, locally. Do not edit thresholds.</td>
+<td>All-criteria pass / fail / error</td>
+<td>10 / 2 / 0</td>
+<td>11 / 1 / 0</td>
 </tr>
 <tr>
-<td><code>freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01</code></td>
-<td>Seals the exact agent, calibration, policy, retrieval, evaluator, and gate state in <code>governance/freezes/selected-v1.json</code>. <code>--config</code> checks environment consistency; no remote query, deployment, or training occurs. The freeze itself is not a quality PASS.</td>
+<td>Relevance passes; mean (1–5)</td>
+<td>10/12; <strong>4.4167</strong></td>
+<td>11/12; <strong>4.3333</strong></td>
 </tr>
 <tr>
-<td><code>holdout create --freeze-id ... --holdout-id fresh-01 --count 12</code></td>
-<td><strong>After freezing</strong>, generates, deduplicates, and registers 12 synthetic questions from fixed authored templates in <code>governance/holdouts/fresh-01/</code>. It does not call a model or data-generation service.</td>
+<td>TaskAdherence passes; binary mean</td>
+<td>12/12; <strong>1.0</strong></td>
+<td>12/12; <strong>1.0</strong></td>
+</tr>
+<tr>
+<td>Relevance rows 1 / 2 / 6 / 11</td>
+<td>3 / 5 / 5 / 3</td>
+<td>4 / 4 / 4 / 3</td>
+</tr>
+<tr>
+<td>Latency p50 (ms)</td>
+<td>5,891.09</td>
+<td>7,287.52</td>
+</tr>
+<tr>
+<td>Latency p95 (ms)</td>
+<td>8,817.33</td>
+<td>16,038.35</td>
+</tr>
+<tr>
+<td>Agent tokens</td>
+<td>35,187</td>
+<td>43,751</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Check before continuing:</strong> The freeze binds the agent version and prompt/model/search/evaluator/gates/data/calibration hashes. <strong>Fresh12, generated and registered after freezing</strong>, must reference that freeze. Do not replace original test20 or lower <code>minimum_test_rows: 20</code> in <code>config/gates.json</code>. These synthetic template variations are not independent customer samples.</p>
-<p><strong>Run · final 12-case evaluation of the frozen candidate, paid:</strong></p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage optimized --split test --run-id optimized-fresh --freeze-id selected-v1 --holdout-id fresh-01 --interval-seconds 65 --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id optimized-fresh --interval-seconds 65 --confirm
-python -m lab score --run-id optimized-fresh
-python -m lab explain --run-id optimized-fresh
-python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/outputs.jsonl&quot;
-</code></pre>
-<p><strong>Commands explained:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>What it does and produces</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>run ... --split test --freeze-id selected-v1 --holdout-id fresh-01</code></td>
-<td>Here, <code>--split test</code> selects final-test mode using the <strong>specified fresh holdout</strong>, not the ordinary 20 rows in <code>data/en/splits/test.jsonl</code>. Freeze/calibration checks must pass before paid inference begins.</td>
-</tr>
-<tr>
-<td><code>judge score --run-id optimized-fresh ...</code></td>
-<td>Pays the Judge bound to the freeze to score the actual final responses. Do not rescore with a more favorable evaluator.</td>
-</tr>
-<tr>
-<td><code>score --run-id optimized-fresh</code></td>
-<td>Aggregates saved results locally into the final report without altering responses or Judge scores.</td>
-</tr>
-<tr>
-<td><code>explain --run-id optimized-fresh</code></td>
-<td>Reads actual causes under the frozen sample/gate contract. Do not use dev as <code>--baseline</code>; those are different questions.</td>
-</tr>
-<tr>
-<td><code>json.tool --json-lines .../outputs.jsonl</code></td>
-<td>Locally displays all final responses, including first turns and explicit follow-ups.</td>
-</tr>
-</tbody>
-</table>
-<p>This explanation uses <strong>the frozen fresh-sample contract and gates</strong>. Do not substitute current development gates or weaken original test20's criteria. Do not attach the different dev questions as <code>--baseline</code>.</p>
-<p>There are 12 final cases; an explicit follow-up conversation makes a normal capture <strong>13 turns</strong>. Read the initial <code>clarify</code>, scripted-user provenance, and final answer—not only the last turn. <code>schema_and_clarify_only/not_semantic_safety</code> describes initial format checks, not assurance of the initial explanation's semantic safety.</p>
-<p>Do not change instructions, models, data, or evaluators after freezing, or regenerate the holdout because results are poor. Errors and missing scores remain in the denominator. For an interrupted batch, follow <a href="facilitator.html#resume">the facilitator's resume guide</a> with the same ID and inputs. Never repeat an uncertain submission or a completed Judge attempt.</p>
-<p><a id="review"></a></p>
-<p><strong>Run · final verdict, local:</strong></p>
-<pre><code class="language-bash">python -m lab governance finalize --freeze-id selected-v1 --run-id optimized-fresh
-</code></pre>
-<p><strong>Command explained:</strong> Verifies that the freeze, final responses, Judge, and summary hashes agree, then records <strong>one local verdict</strong> in <code>governance/results/selected-v1.json</code>. It neither calls a model, deploys automatically, nor grants human operational approval. Skip it if the final run was blocked and does not exist.</p>
-<p class="output-label" id="example-final-verdict">Example output · execution completed while quality remains HOLD</p>
-
-<pre><code class="language-json">{
-  &quot;sample_count&quot;: 12,
-  &quot;execution_status&quot;: &quot;completed&quot;,
-  &quot;judge_execution_status&quot;: &quot;completed&quot;,
-  &quot;quality_status&quot;: &quot;HOLD&quot;,
-  &quot;manual_operational_approval&quot;: &quot;not_granted&quot;,
-  &quot;production_ready&quot;: false
-}
-</code></pre>
-<p><strong>How to read it:</strong> API execution, scoring completion, quality, and operational approval are separate states. Here, <strong>execution finished but acceptance is on hold</strong>. Connect <code>passed: false</code> checks under <code>gate.checks</code> with causes, actual claims, and Judge reasons from <code>explain</code>. Do not relabel AI review as human review.</p>
-<p>If a final verdict already exists, do not run <code>finalize</code> again. Read it with <code>python -m lab governance status --freeze-id selected-v1</code>. This <code>status</code> command reads the freeze's existing verdict/attempt state locally; it creates neither another verdict nor Azure work. Use <a href="facilitator.html#review">the review format</a> only for actual human records, without hiding missing approval.</p>
-<p class="share-checkpoint" id="share-holdout">Discuss · does it work on new questions, and should we accept it now?</p>
-
-<ul>
-<li><strong>Actual results:</strong> Read scores, coverage, missing values, critical results, and final <code>quality_status</code> for <code>optimized-fresh</code>'s <strong>12 new post-freeze cases</strong>. Report execution completion and human operational approval separately.</li>
-<li><strong>Representative case:</strong> Compare one appropriate answer and one critical failure or clarification conversation with policy. Inspect initial answers and user follow-ups, not just final answers.</li>
-<li><strong>Next decision:</strong> Explain acceptance or HOLD with evidence. <strong>The 12 dev and 12 fresh questions differ, so their means do not form a before/after improvement rate.</strong> Strong dev scores do not guarantee generalization; passing a small synthetic test is not production safety certification.</li>
-</ul>
-<p><a id="operate"></a></p>
-<p><strong>Run · observe the actual final run, read-only:</strong> Reuse the monitoring ID set in step 02.</p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; control-plane --run-id optimized-fresh --app-insights-id &quot;$APPLICATIONINSIGHTS_RESOURCE_ID&quot;
-</code></pre>
-<p><strong>Command explained:</strong> Queries the specified Application Insights resource for model/tool/evaluation traces tied to this run's actual response IDs and agent version, over <strong>the last day</strong>. Saves timestamped observations under <code>runs/optimized-fresh/control-plane/</code>. It starts no inference and creates no monitoring connection or policy. Log ingestion/retention costs are separate. If the final run was not executed, skip this too and record “no final run.”</p>
-<p class="output-label" id="example-traces">Example output · traces have not yet been observed</p>
-
-<pre><code class="language-json">{
-  &quot;status&quot;: &quot;NOT_VERIFIED_NO_TRACES&quot;,
-  &quot;observed_rows&quot;: 0,
-  &quot;error_absence_claim&quot;: false,
-  &quot;cost&quot;: {&quot;status&quot;: &quot;NOT_OBSERVED&quot;}
-}
-</code></pre>
-<p><strong>How to read it:</strong> Zero traces means <strong>observation is unverified</strong>, not zero errors or zero cost. Partial linkage is <code>PARTIAL</code>; confirmed required linkage is <code>VERIFIED_TRACE_MODEL_TOOL_EVAL_LINKS</code>. Do not call the model again to manufacture traces. Verify policy enforcement and actual billing separately.</p>
-<p><strong>Find the same response in the portal:</strong> Build → Agents → the relevant agent → <strong>Traces</strong> → choose a <strong>Date range</strong> covering the run → search the actual <strong>response_id</strong> from <code>outputs.jsonl</code> → open Trace ID → inspect <strong>Execute Tool / Chat</strong> spans and <strong>Input + Output</strong>. The list may contain several versions and internal Optimizer runs; a matching name alone is insufficient.</p>
-<figure class="portal-shot" id="portal-trace-search">
-<img src="../web/assets/portal/12-trace-lookup.png" alt="Actual Foundry Traces screen filtered by an existing iq-dev response ID to find one matching trace" width="1440" height="800" loading="lazy">
-<figcaption><strong>Screen 12 · Search by actual response ID.</strong> This lookup uses atlas-dev-001 from an existing iq-dev run to demonstrate the method. It is not the final fresh run. Evaluation is -- for this row; no automatic evaluation linkage is claimed. Estimated cost is not the actual bill. <a href="../web/assets/portal/12-trace-lookup.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figure class="portal-shot" id="portal-evaluation-comparison">
+<img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Foundry Evaluations comparison of baseline and candidate runs under matching dataset and evaluator settings" width="1440" height="520" loading="lazy">
+<figcaption><strong>Actual native comparison.</strong> Set <strong>Baseline → contoso-eval-en</strong>, not the first-selected candidate-v2. PairedTTest is Inconclusive for both metrics. The higher pass count does not erase the lower Relevance mean or higher latency/tokens: adoption remains HOLD. <a href="../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<figure class="portal-shot" id="portal-trace-detail">
-<img src="../web/assets/portal/13-trace-tool-call.png" alt="The same IQ trace&#x27;s actual MCP knowledge_base_retrieve span with its search question and ATLAS-SUB-001 tool output" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Screen 13 · Trace ID → Execute Tool → Input + Output.</strong> This links the same response's MCP query, returned ATLAS-SUB-001 document, and tool/model spans. The trace shows three spans, one chat call, and one tool call. It describes one response's execution path—not a quality PASS or complete observability for the entire run. <a href="../web/assets/portal/13-trace-tool-call.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
-</figure>
+<p><strong>Decision executed: HOLD adoption; active version restored to 1.</strong> After explicitly selecting the original Baseline in Compare, keeping the original in this lab uses <strong>Agent Details → Agent configuration → Active version → Edit → Version 1</strong>; the operator already completed this. <strong>Keep candidate v2, both evaluation runs, and receipts—do not delete evidence.</strong> Lower mean, row regressions, higher latency/tokens, and Inconclusive tests do not prove overall improvement; do not change policy facts to chase scores.</p>
+<p class="share-checkpoint" id="share-optimized"><strong>Closing explanation:</strong> Explain HOLD using the extra passing row, rows 2/6 regressions, lower mean, higher latency/tokens, and Inconclusive tests—not just the Optimizer's +0.010 or native pass count.</p>
 
-<p><code>\u...</code> in tool output is JSON's Unicode-escape notation. Do not edit raw records to make the screen look cleaner. Check the query, document ID, and stored context together. <strong>If the final test was blocked, keep that state</strong>; do not present these existing IQ screenshots as final-test results.</p>
-<p><strong>Run · record questions for the next improvement cycle, local:</strong></p>
-<pre><code class="language-bash">python -m lab feedback --run-id iq-dev --feedback-id iq-dev-next-review
-</code></pre>
-<p><strong>Command explained:</strong> Exports actual <code>iq-dev</code> failures and response IDs to a <strong>local review queue</strong>, <code>feedback/iq-dev-next-review.json</code>. <code>--feedback-id</code> names the new review record. It neither authors ground truth nor automatically updates training files, agents, or external services. Skip it if that dev run does not exist.</p>
-<p>The queue is tied to real dev failures/response IDs, with empty <code>ground_truth</code> and review state <code>PENDING</code>. This is not automatic training or deployment. Never move final test/fresh-holdout cases into development or optimization data.</p>
-<p><a id="cleanup"></a></p>
-<p><strong>Record the outcome and finish—both completed and HOLD paths end here.</strong></p>
-<table>
-<thead>
-<tr>
-<th>Record</th>
-<th>What to include</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Examples versus actual execution</td>
-<td>DEMO is authored. Label only records with actual version, response, job, or evaluation IDs as LIVE</td>
-</tr>
-<tr>
-<td>Improvement results</td>
-<td>Changed instructions, policy/case/claim evidence, regressions, and missing values</td>
-</tr>
-<tr>
-<td>Final state</td>
-<td>Actual quality result, reasons for HOLD, and blocked steps <strong>not run</strong></td>
-</tr>
-<tr>
-<td>Human judgment</td>
-<td>Actual review provenance and absence of operational approval. Never label AI as human</td>
-</tr>
-<tr>
-<td>Observation and retention</td>
-<td>Verified/partial/missing traces, the person responsible for checking costs, and the next check time</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Run · local cleanup plan without deletion:</strong> Read this only if step 02's environment connection succeeded. If you stopped before setup, skip it and record incomplete preparation.</p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; cleanup
-</code></pre>
-<p><strong>Command explained:</strong> Reads the local ownership ledger and <strong>prints a plan</strong> of cleanup targets and resources that are not automatically deleted. This command invocation has no deletion option and makes no Azure deletion request. Its name does not mean resources or costs have been cleaned up.</p>
-<p><strong>Deletion is not authorized.</strong> Do not add <code>--confirm-prefix</code> or delete resources in the portal. Preserve private raw records, experiment contracts, and the new resource group. Closing the terminal may leave Search, logs, and model hosting charges running.</p>
-<p><strong>Completion check:</strong> Finish this sentence with evidence to complete the participant path. Reading checkboxes alone do not establish LIVE completion.</p>
-<blockquote>
-<p>“We changed ___ in the instructions. Based on policy/response ___ in case <strong><em>, we will ___ the candidate. The final test is </em></strong>, and human operational approval is <strong><em>. The remaining risk and next action are </em></strong>.”</p>
-</blockquote>
-<p><strong>You do not need to complete another lab afterward.</strong> Execution completion is not a quality pass. Explaining a quality HOLD honestly is a valid learning outcome.</p>
-<p>If results are absent, report <strong>not run / unmeasured</strong>. Do not present illustrative examples or another run's results as your own. Preserve raw records privately.</p>
-<p><a id="tune"></a>
-<a id="troubleshooting"></a>
+<p><strong>Completion signal:</strong> Actual run IDs, measured tradeoffs, and the HOLD decision are recorded. Further review and new representative cases belong to the next authorized improvement cycle, not an extra required lab or retries until favorable.</p>
+<p>Reused dev12 does not establish statistical significance or production approval. <strong>No production Publish was performed and no production channels/traffic are configured.</strong> Foundry still automatically provides <strong>RBAC-only Responses/preview endpoints without Publish</strong>; unpublished does not mean no endpoints.</p>
+<p><a id="troubleshooting"></a>
 <a id="sources"></a></p>
-<p>Read references only when needed: <a href="admin.html">operator setup</a> · <a href="facilitator.html#resume">errors, resume, and separate diagnostics</a> · <a href="sft.html">SFT/Frontier appendix</a> · <a href="data-guide.html">data guide</a> · <a href="verification.html">latest verification and sources</a>.</p>
-<p>The <strong>Dark/Light</strong> control remembers your choice. <strong>Print section</strong> prints the current step; <strong>Save PDF</strong> opens the print dialog for this whole document. Choose Save as PDF there. Print backgrounds always remain light. The footer links to the complete print edition and downloadable PDF, including appendices.</p>
-<p>Reference date: <strong>2026-09-30</strong>. Guide version: <strong>v1</strong>. <code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI. Service availability, regions, models, and costs can change. Previous verification does not replace a participant's new run or operational authorization.</p>
+<p><strong>Finish:</strong> Give the operator the actual run/job/version references, dataset version/hash, observed failures, and remaining blockers. Agree who owns ongoing resource costs and authorized cleanup; closing the browser does not stop charges. Share only approved synthetic examples and redacted summaries, never credentials or private environment files.</p>
+<p><a href="data-guide.html">Data contract</a> · <a href="facilitator.html#resume">Facilitator and recovery</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="verification.html">Measured verification and sources</a></p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -1330,7 +602,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next step →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

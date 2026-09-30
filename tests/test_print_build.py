@@ -28,7 +28,7 @@ def source_fixtures() -> dict[str, str]:
         sources[document.source] = (
             f"# {document.label}\n\n## 시작 {{#start}}\n\n"
             f"[이 문서](#start) [참가자]({targets['index']}#start) "
-            f"[SFT]({targets['sft']}#start) [강사]({targets['facilitator']}#start)\n\n"
+            f"[강사]({targets['facilitator']}#start)\n\n"
             f"[관리자]({targets['admin']}) [검증]({targets['verification']}) "
             f"[데이터]({targets['data-guide']}#start)\n\n"
             f"[코드 파일]({prefix}scripts/demo.py) [평가 데이터]({prefix}data/splits/test.jsonl)\n\n"
@@ -73,7 +73,7 @@ class PrintBuildTests(unittest.TestCase):
 
     def test_book_is_deterministic_and_uses_fixed_reference_date(self) -> None:
         self.assertEqual(self.rendered, build_print.render_book(self.sources, self.template))
-        self.assertIn('datetime="2026-09-30"', self.rendered)
+        self.assertIn('datetime="2026-10-01"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         plain = {source: "# 제목\n\n## 시작 {#start}\n\n본문" for source in self.sources}
         self.assertNotRegex(build_print.render_book(plain, self.template), r"\{\{[A-Z_]+\}\}")
@@ -83,7 +83,7 @@ class PrintBuildTests(unittest.TestCase):
         self.assertEqual([attrs["id"] for attrs in sections], ["book-" + key for key in build_print.BOOK_ORDER])
         self.assertNotIn("book-appendix", sections[0]["class"])
         self.assertTrue(all("book-appendix" in attrs["class"] for attrs in sections[1:]))
-        self.assertIn("Appendix 1 · SFT appendix", self.rendered)
+        self.assertIn("Appendix 1 · Facilitator guide", self.rendered)
 
     def test_all_heading_ids_are_unique_and_fragment_links_resolve(self) -> None:
         ids = [attrs["id"] for _, attrs in self.page.elements if "id" in attrs]
@@ -99,11 +99,11 @@ class PrintBuildTests(unittest.TestCase):
                     self.assertIn(target, ids)
 
     def test_cross_document_links_target_the_book_not_html_or_markdown_pages(self) -> None:
-        for target in ("index", "sft", "facilitator", "data-guide"):
+        for target in ("index", "facilitator", "data-guide"):
             self.assertIn(f'href="#book-{target}--start"', self.rendered)
         self.assertIn('href="#book-admin"', self.rendered)
         self.assertIn('href="#book-verification"', self.rendered)
-        self.assertNotIn('href="sft.html', self.rendered)
+        self.assertNotIn('href="facilitator.html', self.rendered)
         self.assertNotIn('href="guide/', self.rendered)
         self.assertIn('href="https://learn.microsoft.com/azure/foundry/"', self.rendered)
 
@@ -119,7 +119,7 @@ class PrintBuildTests(unittest.TestCase):
     def test_raw_html_and_local_preview_urls_are_portable(self) -> None:
         sources = dict(self.sources)
         sources["guide/en/handbook.md"] += (
-            '\n<a href="sft-appendix.md#start">원시 HTML</a>\n'
+            '\n<a href="facilitator.md#start">원시 HTML</a>\n'
             '<img src="../../web/assets/example-diagram.svg" alt="구조">\n\n'
             "[미리보기](http://localhost:8000/facilitator.html#start)\n\n"
             "[로컬 파일](http://127.0.0.1:8000/scripts/demo.py)\n"
@@ -127,7 +127,7 @@ class PrintBuildTests(unittest.TestCase):
         rendered = build_print.render_book(sources, self.template)
         page = BookInspector()
         page.feed(rendered)
-        self.assertIn('href="#book-sft--start">원시 HTML</a>', rendered)
+        self.assertIn('href="#book-facilitator--start">원시 HTML</a>', rendered)
         self.assertIn('href="#book-facilitator--start">미리보기</a>', rendered)
         self.assertIn('src="../web/assets/example-diagram.svg"', rendered)
         for tag, attrs in page.elements:
@@ -161,8 +161,8 @@ class PrintBuildTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "guide/verification.md"):
             build_print.render_book(missing, self.template)
         broken = dict(self.sources)
-        broken["guide/en/handbook.md"] += "\n\n[없는 제목](sft-appendix.md#missing)\n"
-        with self.assertRaisesRegex(ValueError, "sft-appendix.md#missing"):
+        broken["guide/en/handbook.md"] += "\n\n[없는 제목](facilitator.md#missing)\n"
+        with self.assertRaisesRegex(ValueError, "facilitator.md#missing"):
             build_print.render_book(broken, self.template)
 
     def test_duplicate_raw_anchors_fail_instead_of_generating_ambiguous_targets(self) -> None:
@@ -206,12 +206,12 @@ class PrintBuildTests(unittest.TestCase):
     def test_korean_book_preserves_its_language_and_nested_links(self) -> None:
         rendered = build_print.render_book(self.sources, self.template, language="ko")
         self.assertIn('<html lang="ko">', rendered)
-        self.assertIn("부록 1 · SFT 심화 부록", rendered)
+        self.assertIn("부록 1 · 강사용 진행 가이드", rendered)
         self.assertIn('href="../../web/styles.css"', rendered)
         self.assertIn('href="index.html"', rendered)
         self.assertIn('href="../print.html" lang="en"', rendered)
         self.assertIn("파일: <code>data/splits/test.jsonl</code>", rendered)
-        self.assertIn('href="#book-sft--start"', rendered)
+        self.assertIn('href="#book-facilitator--start"', rendered)
         self.assertNotIn('class="book-section guide-content" lang="en"', rendered)
 
 

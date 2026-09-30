@@ -25,7 +25,7 @@ from markdown import Markdown
 from markdown.extensions.toc import slugify_unicode
 from markdown.treeprocessors import Treeprocessor
 
-BUILD_DATE = "2026-09-30"
+BUILD_DATE = "2026-10-01"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIRECTORY = "docs"
 SITE_URL = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
@@ -51,13 +51,11 @@ DOCUMENTS = (
     Document("guide/en/handbook.md", "index.html", "Participant guide"),
     Document("guide/en/facilitator.md", "facilitator.html", "Facilitator guide"),
     Document("guide/en/admin-setup.md", "admin.html", "Operator setup"),
-    Document("guide/en/sft-appendix.md", "sft.html", "SFT appendix"),
     Document("guide/en/verification.md", "verification.html", "Verification and sources"),
     Document("data/README.en.md", "data-guide.html", "Data guide"),
     Document("guide/handbook.md", "ko/index.html", "참가자 실습 가이드", "ko"),
     Document("guide/facilitator.md", "ko/facilitator.html", "강사용 진행 가이드", "ko"),
     Document("guide/admin-setup.md", "ko/admin.html", "관리자 사전 준비", "ko"),
-    Document("guide/sft-appendix.md", "ko/sft.html", "SFT 심화 부록", "ko"),
     Document("guide/verification.md", "ko/verification.html", "최신 검증·출처", "ko"),
     Document("data/README.md", "ko/data-guide.html", "데이터 설명", "ko"),
 )
@@ -298,7 +296,7 @@ def render_guide(
         "PDF_HREF": site_href(f"Foundry-Learning-Loop-Lab-{language.upper()}.pdf"),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(filename, quote=True),
-        "PROGRESS_REVISION": "" if auxiliary else "single-path-6",
+        "PROGRESS_REVISION": "" if auxiliary else "native-eval-optimizer-6",
         "CHAPTER_UNIT": chapter_unit,
         "CONTENTS_LABEL": text["REFERENCE_CONTENTS" if auxiliary else "MAIN_CONTENTS"],
         "SIDEBAR_NOTE": text["REFERENCE_NOTE" if auxiliary else "MAIN_NOTE"],

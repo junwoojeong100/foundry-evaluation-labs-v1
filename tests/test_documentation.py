@@ -1,7 +1,7 @@
-import contextlib
+"""Check the published, native Foundry Evaluation and Agent Optimizer guide."""
+
 import hashlib
 from html.parser import HTMLParser
-import io
 import json
 from pathlib import Path
 import re
@@ -10,14 +10,13 @@ import struct
 import unittest
 from urllib.parse import unquote, urlsplit
 
-from lab.cli import parser as lab_parser
-from lab.sft import parser as sft_parser
 from scripts.build_guide import DOCUMENTS, SITE_URL, documents_for
-
+from scripts.package_lab import GUIDE_FILES, package_files
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "docs"
 PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "print.html", "ko/print.html")
+STEPS = ["start", "prepare", "baseline", "analyze", "optimize", "decision"]
 
 
 class LinkParser(HTMLParser):
@@ -83,38 +82,6 @@ class LearningPathParser(LinkParser):
             self.in_overview = False
 
 
-class OutputExampleParser(LearningPathParser):
-    def __init__(self):
-        super().__init__()
-        self.examples = {}
-        self.chapter = None
-        self.pending = None
-        self.current = None
-
-    def handle_starttag(self, tag, attrs):
-        super().handle_starttag(tag, attrs)
-        attrs = dict(attrs)
-        if self.in_article and tag == "h2":
-            self.chapter = attrs["id"]
-        if self.in_article and tag == "p" and "output-label" in attrs.get("class", "").split():
-            self.pending = attrs["id"]
-        if tag == "pre" and self.pending:
-            self.current = {"chapter": self.chapter, "language": "", "text": ""}
-        if tag == "code" and self.current is not None:
-            self.current["language"] = attrs.get("class", "").removeprefix("language-")
-
-    def handle_data(self, data):
-        if self.current is not None:
-            self.current["text"] += data
-
-    def handle_endtag(self, tag):
-        if tag == "pre" and self.current is not None:
-            self.examples[self.pending] = self.current
-            self.current = None
-            self.pending = None
-        super().handle_endtag(tag)
-
-
 class PortalFigureParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -150,7 +117,6 @@ class ArticleTextParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.in_article = False
-        self.in_code = False
         self.text = []
         self.alt = []
 
@@ -158,544 +124,258 @@ class ArticleTextParser(HTMLParser):
         attrs = dict(attrs)
         if tag == "article" and attrs.get("id") == "guide-start":
             self.in_article = True
-        if self.in_article and tag == "pre":
-            self.in_code = True
         if self.in_article and tag == "img":
             self.alt.append(attrs.get("alt", ""))
 
     def handle_endtag(self, tag):
-        if tag == "pre":
-            self.in_code = False
         if tag == "article":
             self.in_article = False
 
     def handle_data(self, data):
-        if self.in_article and not self.in_code:
+        if self.in_article:
             self.text.append(data)
 
 
 class DocumentationTests(unittest.TestCase):
-    def test_generated_files_are_grouped_behind_a_small_root_entry(self):
+    def source(self, language):
+        return (ROOT / ("guide/en/handbook.md" if language == "en" else "guide/handbook.md")).read_text(encoding="utf-8")
+
+    def test_english_is_the_default_and_all_guides_are_packaged(self):
         self.assertEqual({path.name for path in ROOT.glob("*.html")}, {"index.html"})
         self.assertFalse(list(ROOT.glob("*.pdf")))
-        for name in (*PAGES, "Foundry-Learning-Loop-Lab-EN.pdf", "Foundry-Learning-Loop-Lab-KO.pdf"):
-            self.assertTrue((SITE / name).is_file(), name)
         entry = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('"docs/index.html" + window.location.search + window.location.hash', entry)
-        self.assertIn('<noscript><meta http-equiv="refresh"', entry)
-        self.assertIn('href="docs/index.html"', entry)
-        self.assertNotIn('class="guide-content"', entry)
         self.assertIn('<html lang="en">', entry)
+        self.assertIn('"docs/index.html" + window.location.search + window.location.hash', entry)
+        self.assertIn("<noscript>", entry)
+        self.assertIn('href="docs/ko/index.html"', entry)
+        self.assertTrue((ROOT / ".nojekyll").is_file())
+        packaged = {path.relative_to(ROOT).as_posix() for path in package_files(ROOT)}
+        self.assertTrue(set(GUIDE_FILES).issubset(packaged))
+        self.assertIn(".nojekyll", packaged)
+        for name in PAGES:
+            self.assertTrue((SITE / name).is_file(), name)
 
-    def test_only_the_latest_verification_and_current_guides_are_retained(self):
-        evidence = ROOT / "evidence"
+    def test_only_the_current_verification_record_is_published(self):
         self.assertEqual(
-            {path.relative_to(evidence).as_posix() for path in evidence.rglob("*") if path.is_file()},
+            {path.relative_to(ROOT / "evidence").as_posix() for path in (ROOT / "evidence").rglob("*") if path.is_file()},
             {"latest.json"},
         )
-        latest = json.loads((evidence / "latest.json").read_text(encoding="utf-8"))
+        latest = json.loads((ROOT / "evidence/latest.json").read_text())
         self.assertEqual(latest["schema_version"], 1)
         for name in ("README.md", "README.en.md", "README.ko.md"):
-            self.assertIn("evidence/latest.json", (ROOT / name).read_text(encoding="utf-8"))
-        self.assertFalse((ROOT / "guide/integration-migration.md").exists())
-        self.assertFalse((ROOT / "migration.html").exists())
+            self.assertIn("evidence/latest.json", (ROOT / name).read_text())
 
-    def test_pages_entry_uses_the_public_static_project_site(self):
-        url = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
-        self.assertTrue((ROOT / ".nojekyll").is_file())
-        for name in ("README.md", "README.ko.md"):
-            source = (ROOT / name).read_text(encoding="utf-8")
-            self.assertIn(f"{url}#start", source)
-            self.assertIn(".nojekyll", source)
-            self.assertIn("`main`", source)
-        from scripts.package_lab import package_files
-
-        self.assertIn(ROOT / ".nojekyll", package_files(ROOT))
-
-    def test_each_participant_step_explains_the_feature_purpose_and_usage(self):
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        steps = re.split(r"^## ", source, flags=re.MULTILINE)[1:]
-        self.assertEqual(len(steps), 6)
-        for step in steps:
-            with self.subTest(step=step.splitlines()[0]):
-                introduction = step.split("**할 일:**", 1)[0]
-                self.assertIn('class="lab-concept"', introduction)
-                for label in ("경험할 기능:", "왜 중요한가:", "어떻게 경험하나:"):
-                    self.assertIn(label, introduction)
-
-    def test_each_instruction_block_has_a_command_explanation(self):
-        for name in ("handbook.md", "admin-setup.md", "facilitator.md", "sft-appendix.md"):
-            source = (ROOT / "guide" / name).read_text(encoding="utf-8")
-            blocks = list(re.finditer(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL))
-            self.assertTrue(blocks, name)
-            for index, block in enumerate(blocks):
-                end = blocks[index + 1].start() if index + 1 < len(blocks) else len(source)
-                with self.subTest(document=name, command=block.group(1).splitlines()[0]):
-                    self.assertIn("**명령 해설:**", source[block.end():end])
-
-    def test_portal_media_is_captioned_local_and_matches_capture_provenance(self):
-        directory = ROOT / "web/assets/portal"
-        manifest = json.loads((directory / "captures.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["portal_origin"], "https://ai.azure.com")
-        self.assertEqual(manifest["captured_date"], "2026-09-30")
-        self.assertTrue(manifest["headless_verified"])
-        self.assertFalse(manifest["new_paid_runs_submitted"])
-        self.assertFalse(manifest["cloud_configuration_changed"])
-        captures = {item["file"]: item for item in manifest["screenshots"]}
-        self.assertEqual(len(captures), 14)
-        self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
-        for filename, record in captures.items():
-            with self.subTest(screenshot=filename):
-                data = (directory / filename).read_bytes()
-                self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
-                self.assertEqual(struct.unpack(">II", data[16:24]), (record["width"], record["height"]))
-                self.assertEqual(hashlib.sha256(data).hexdigest(), record["sha256"])
-                self.assertTrue(record["redactions"])
-                self.assertNotIn("?", record["route"])
-
-        figures = []
-        for name in ("index.html", "sft.html"):
-            page = PortalFigureParser()
-            page.feed((SITE / name).read_text(encoding="utf-8"))
-            self.assertEqual(len(page.figures), 13 if name == "index.html" else 1)
-            figures.extend(page.figures)
-        self.assertEqual(len({figure["id"] for figure in figures}), 14)
-        self.assertEqual({Path(figure["images"][0]["src"]).name for figure in figures}, set(captures))
-        for figure in figures:
-            with self.subTest(figure=figure["id"]):
-                self.assertEqual(len(figure["images"]), 1)
-                image = figure["images"][0]
-                record = captures[Path(image["src"]).name]
-                self.assertTrue(image["src"].startswith("../web/assets/portal/"))
-                self.assertEqual(
-                    (SITE / image["src"]).resolve().parent, ROOT / "web/assets/portal"
-                )
-                self.assertGreater(len(image["alt"]), 20)
-                self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
-                self.assertIn(image["src"], figure["links"])
-                self.assertIn("View full-size image", figure["caption"])
-                self.assertGreater(len(figure["caption"]), 80)
-        book = PortalFigureParser()
-        book.feed((SITE / "print.html").read_text(encoding="utf-8"))
-        self.assertEqual(len(book.figures), 14)
-        self.assertTrue(all(figure["id"].startswith("book-") for figure in book.figures))
-
-    def test_current_portal_navigation_does_not_imply_extra_runs_or_promotions(self):
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        for text in (
-            "Optimize 버튼 → Agent",
-            "Choose targets → Instruction만 체크",
-            "Select dataset and criteria → Upload dataset",
-            "사진은 작성 예시가 아닌 실제 화면",
-            "로컬 Contoso 업무 Judge나 최종 fresh 시험의 점수가 아닙니다",
-            "최종 fresh run의 화면이 아닙니다",
-            "Promote candidate는 누르지 않습니다",
-        ):
-            self.assertIn(text, source)
-        css = (ROOT / "web/styles.css").read_text(encoding="utf-8")
-        print_css = css.split("@media print", 1)[1]
-        self.assertIn(".guide-content .portal-shot", print_css)
-        self.assertIn("max-height: 112mm", print_css)
-
-    def test_guide_version_labels_are_v1_without_rewriting_judge_history(self):
-        sources = [
+    def test_removed_training_guides_do_not_return_in_any_edition(self):
+        for name in ("guide/sft-appendix.md", "guide/en/sft-appendix.md", "docs/sft.html", "docs/ko/sft.html", "web/assets/portal/14-sft-job.png"):
+            self.assertFalse((ROOT / name).exists(), name)
+        paths = [
+            *(ROOT / "guide").rglob("*.md"),
             ROOT / "README.md", ROOT / "README.en.md", ROOT / "README.ko.md",
             ROOT / "data/README.md", ROOT / "data/README.en.md",
-            ROOT / "infra/README.md", *(ROOT / "guide").rglob("*.md"),
+            *(SITE / name for name in PAGES),
         ]
-        for path in [*sources, *(SITE / name for name in PAGES)]:
-            with self.subTest(document=path.name):
-                self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bv1\.1\b")
-        handbook = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        self.assertTrue(handbook.startswith("# 좋은 에이전트는 평가에서 시작된다 · v1\n"))
-        verification = (ROOT / "guide/verification.md").read_text(encoding="utf-8")
-        self.assertIn("검색 Judge 1.1.0", verification)
+        for path in paths:
+            with self.subTest(document=path.relative_to(ROOT)):
+                self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bSFT\b|sft-appendix|sft\.html|Supervised Fine.Tuning")
+        self.assertTrue(all(document.key != "sft" for document in DOCUMENTS))
 
-    def test_source_attribution_uses_the_archived_repository_not_the_reused_name(self):
-        source = (ROOT / "guide/verification.md").read_text(encoding="utf-8")
-        references = re.findall(r"^\[source-workshop\]: (\S+)", source, flags=re.MULTILINE)
-        self.assertEqual(len(references), 1)
-        for reference in references:
-            self.assertTrue(reference.startswith("https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/"))
-            self.assertIn("93bc07e31373c4cfc278a2dc3757785946404cf2", reference)
+    def test_both_participant_guides_have_exactly_one_six_step_path(self):
+        for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
+            with self.subTest(language=language):
+                page = LearningPathParser()
+                page.feed((SITE / filename).read_text())
+                links = ["#" + step for step in STEPS]
+                self.assertEqual(page.chapters, STEPS)
+                self.assertEqual(page.subchapters, [])
+                self.assertEqual(page.toc_links, links)
+                self.assertEqual(page.overview_links, links)
+                self.assertEqual(page.next_links, links[1:])
+                self.assertIn('data-progress-revision="native-eval-optimizer-6"', (SITE / filename).read_text())
+                self.assertLess(len(self.source(language).splitlines()), 500)
 
-    def test_readable_gate_summary_matches_the_actual_workshop_configuration(self):
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        gates = json.loads((ROOT / "config/gates.json").read_text(encoding="utf-8"))
+    def test_native_foundry_actions_not_a_custom_local_judge_are_the_core(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            with self.subTest(language=language):
+                for required in (
+                    "Foundry Evaluation", "Agent Optimizer", "Evaluations", "Create",
+                    "Individual turns", "One time", "Existing dataset", "Relevance",
+                    "TaskAdherence", "Submit", "Compare runs", "12",
+                ):
+                    self.assertIn(required, source)
+                self.assertNotRegex(source, r"python(?:3)?\s+-m\s+lab\s+(?:judge|freeze|governance|tune-prepare|demo)\b")
+                self.assertNotIn("iq prepare", source)
+                self.assertIn("add_foundry_eval_run.py", source)
+                self.assertIn("{{item.query}}", source)
+                self.assertIn("--baseline", source)
+                self.assertIn("--version", source)
 
-        def criterion(label):
-            return next(
-                line.split("|")[3].strip()
-                for line in source.splitlines() if line.startswith(f"| {label} |")
-            )
+    def test_the_two_datasets_and_evaluator_scales_are_not_conflated(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            with self.subTest(language=language):
+                self.assertIn("data/en/optimizer/dev.jsonl" if language == "en" else "data/optimizer/dev.jsonl", source)
+                self.assertIn("ground_truth", source)
+                self.assertIn("context", source)
+                self.assertIn("query", source)
+                self.assertRegex(source, r"0\s*(?:/|–|-|또는|or)\s*1|Pass/Fail")
+                self.assertRegex(source, r"1\s*(?:–|-|~|to)\s*5")
+                self.assertRegex(source, r"(?:Threshold|threshold|임계값|기준).{0,80}4|4.{0,80}(?:Threshold|threshold|임계값|기준)")
+                self.assertNotIn("TaskAdherence 4", source)
+                self.assertNotIn("Task Adherence 4", source)
 
-        minimums = gates["minimums"]
-        self.assertEqual(criterion("출력 형식"), f"{minimums['format_pass_rate']:.0%}")
-        self.assertEqual(criterion("행동 분류"), f"≥{minimums['route_accuracy']:.0%}")
-        self.assertEqual(
-            criterion("인용·사람 판단 표시"),
-            f"인용 ≥{minimums['citation_pass_rate']:.0%}, 사람 판단 표시 {minimums['human_flag_accuracy']:.0%}",
-        )
-        for label, score in (
-            ("업무 정확성", gates["business_policy"]["minimum_mean"]),
-            ("검색 근거성", gates["judge"]["minimum_mean"]["groundedness"]),
-            ("질문 적합성", gates["judge"]["minimum_mean"]["relevance"]),
-        ):
-            self.assertEqual(criterion(label), f"1–5점 평균 ≥{score:g}")
-        self.assertIn(f"금지 주장 검사도 {minimums['forbidden_claim_pass_rate']:.0%} 통과", source)
+    def test_verified_model_roles_and_the_real_runtime_limitation_are_visible(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            admin = (ROOT / ("guide/en/admin-setup.md" if language == "en" else "guide/admin-setup.md")).read_text()
+            with self.subTest(language=language):
+                self.assertIn("gpt-6-luna", source + admin)
+                self.assertIn("gpt-5.5", source + admin)
+                self.assertIn("gpt-4.1-mini", source + admin)
+                self.assertIn("500", source + admin)
+                self.assertIn("2027-04-14", source + admin)
+                self.assertIn("agent-optimizer-overview#models", source + admin)
 
-    def test_each_existing_evaluation_has_a_sharing_checkpoint_in_the_same_path(self):
-        page = LearningPathParser()
-        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
-        self.assertEqual(page.sharing_checkpoints, [
-            ("share-calibration", "baseline"),
-            ("share-baseline", "baseline"),
-            ("share-iq", "iq"),
-            ("share-optimizer", "optimize"),
-            ("share-optimized", "optimize"),
-            ("share-holdout", "decision"),
-        ])
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        for run_id in ("baseline-smoke", "iq-dev", "optimized-dev", "optimized-fresh"):
-            score = f"python -m lab score --run-id {run_id}"
-            report = f"python -m lab explain --run-id {run_id}"
-            self.assertIn(report, source)
-            self.assertLess(source.index(score), source.index(report))
-        self.assertIn("겹치는 3개 사례 ID", source)
-        self.assertIn("dev 12건과 fresh12는 다른 질문", source)
-        self.assertIn("자동 외부 전송·업로드는 없습니다", source)
+    def test_optimizer_changes_only_instructions_and_requires_a_real_reevaluation(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            with self.subTest(language=language):
+                for required in ("Choose targets", "Instruction", "Max candidates", "Custom only", "View built-in evaluators"):
+                    self.assertIn(required, source)
+                self.assertIn("Promote", source)
+                self.assertIn("version" if language == "en" else "버전", source)
+                self.assertIn("0–1", source)
+                self.assertIn("same" if language == "en" else "같은", source)
+                self.assertIn("production" if language == "en" else "운영", source)
 
-    def test_criteria_reasons_hold_actions_and_improvements_are_connected(self):
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        for anchor in ("score-rubric", "hold-actions", "worked-evaluation"):
-            self.assertIn(f'id="{anchor}"', source)
-        self.assertLess(source.index('id="score-rubric"'), source.index("judge calibrate"))
-        self.assertIn("reasons.policy", source)
-        self.assertIn("reasons.retrieval", source)
-        self.assertIn("python -m lab explain --run-id optimized-dev --baseline iq-dev", source)
-        self.assertNotIn("explain --run-id optimized-fresh --baseline", source)
-        self.assertIn("답변·점수·해석은 AI가 작성한 교육 예시", source)
-        self.assertIn('<table class="worked-comparison">', source)
-        self.assertIn("정책 점수 하락의 별도 자동 허용폭은 설정되어 있지 않으며", source)
+    def test_source_attribution_keeps_the_archived_repository_reference(self):
+        for name in ("guide/verification.md", "guide/en/verification.md"):
+            source = (ROOT / name).read_text()
+            references = re.findall(r"^\[source-workshop\]: (\S+)", source, re.MULTILINE)
+            self.assertEqual(len(references), 1)
+            self.assertIn("foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2", references[0])
 
-    def output_examples(self):
-        page = OutputExampleParser()
-        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
-        return page.examples
-
-    def assert_excerpt(self, example, actual):
-        self.assertIs(type(example), type(actual))
-        if isinstance(example, dict):
-            for key, value in example.items():
-                self.assertIn(key, actual)
-                self.assert_excerpt(value, actual[key])
-        else:
-            self.assertEqual(example, actual)
-
-    def test_every_step_has_labelled_non_executable_output_examples(self):
-        examples = self.output_examples()
-        self.assertEqual(len(examples), 11)
-        self.assertEqual({item["chapter"] for item in examples.values()}, {
-            "start", "prepare", "baseline", "iq", "optimize", "decision",
-        })
-        for identifier, example in examples.items():
-            with self.subTest(example=identifier):
-                self.assertIn(example["language"], {"json", "text"})
-                if example["language"] == "json":
-                    self.assertIsInstance(json.loads(example["text"]), dict)
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        self.assertIn("출력 예시는 설명용으로 작성한 발췌", source)
-        self.assertEqual(source.count("**완료 확인:**"), 6)
-        shell_blocks = "\n".join(re.findall(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL))
-        self.assertEqual(shell_blocks.count('export APPLICATIONINSIGHTS_RESOURCE_ID='), 1)
-        self.assertLess(source.index('export APPLICATIONINSIGHTS_RESOURCE_ID='), source.index("## 03."))
-        self.assertEqual(source.count("python -m lab score --run-id baseline-smoke"), 1)
-        for step in re.split(r"^## ", source, flags=re.MULTILINE)[1:]:
-            self.assertIn("**실행 명령", step)
-            self.assertIn('class="output-label"', step)
-            self.assertIn("**완료 확인:**", step)
-
-    def test_demo_example_matches_actual_offline_output(self):
-        from lab.demo import run_demo
-
-        example = json.loads(self.output_examples()["example-demo"]["text"])
-        self.assert_excerpt(example, run_demo())
-
-    def test_calibration_example_is_hold_with_one_disagreement_not_a_false_pass(self):
-        from lab.calibration import load_fixtures, summarize_calibration
-
-        fixtures = load_fixtures()
-        records = [{
-            "id": fixture["id"],
-            "judge": {
-                **{
-                    metric: None if expected is None else 5 if expected else 2
-                    for metric, expected in fixture["reference_labels"].items()
-                },
-                "critical_failure": "critical" in fixture["tags"] and not fixture["reference_labels"]["policy_correctness"],
-            },
-        } for fixture in fixtures]
-        index = next(index for index, fixture in enumerate(fixtures) if fixture["reference_labels"]["relevance"] is True)
-        records[index]["judge"]["relevance"] = 2
-        report = {"execution_status": "completed", **summarize_calibration(fixtures, records)}
-        example = json.loads(self.output_examples()["example-calibration"]["text"])
-        self.assert_excerpt(example, report)
-        self.assertEqual(report["quality_status"], "HOLD")
-
-    def test_trace_example_does_not_claim_no_errors_or_zero_cost(self):
-        from lab.control_plane import classify_trace_result
-
-        result = classify_trace_result({"tables": []}, ["resp_EXAMPLE_NOT_LIVE"])
-        example = json.loads(self.output_examples()["example-traces"]["text"])
-        self.assert_excerpt(example, result)
-
-    def test_candidate_and_final_examples_never_grant_production_approval(self):
-        examples = self.output_examples()
-        candidate = json.loads(examples["example-optimizer-candidate"]["text"])
-        verdict = json.loads(examples["example-final-verdict"]["text"])
-        self.assertEqual(candidate["status"], "CANDIDATE_CAPTURED_NOT_LAB_APPROVED")
-        self.assertEqual(candidate["imported_fields"], ["system_prompt"])
-        self.assertEqual(candidate["human_operational_approval"], "NOT_GRANTED")
-        self.assertEqual(verdict["quality_status"], "HOLD")
-        self.assertEqual(verdict["manual_operational_approval"], "not_granted")
-        self.assertIs(verdict["production_ready"], False)
-
-    def test_participant_has_exactly_six_steps_and_one_forward_path(self):
-        page = LearningPathParser()
-        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
-        expected = ["start", "prepare", "baseline", "iq", "optimize", "decision"]
-        links = ["#" + chapter for chapter in expected]
-        self.assertEqual(page.chapters, expected)
-        self.assertEqual(page.subchapters, [])
-        self.assertEqual(page.toc_links, links)
-        self.assertEqual(page.overview_links, links)
-        self.assertEqual(page.next_links, links[1:])
-
-    def test_old_participant_anchors_remain_resolvable(self):
-        page = LinkParser()
-        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
-        self.assertTrue({
-            "start", "demo", "prepare", "environment", "first-infrastructure-failure",
-            "understand", "data", "baseline", "model-smoke", "calibration",
-            "iq", "optimize", "decision", "review", "operate", "cleanup",
-            "tune", "troubleshooting", "sources",
-        }.issubset(page.ids))
-
-    def test_participant_commands_keep_one_judge_and_optimizer_without_reprovisioning(self):
-        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
-        commands = []
-        paid_commands = []
-        for block in re.findall(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL):
-            for line in block.replace("\\\n", " ").splitlines():
-                tokens = shlex.split(line, comments=True)
-                if "-m" not in tokens:
-                    continue
-                position = tokens.index("-m")
-                module = tokens[position + 1]
-                args = tokens[position + 2:]
-                self.assertNotEqual(module, "lab.sft")
-                if module == "lab.bootstrap":
-                    self.assertEqual(args[0], "status")
-                if module == "lab":
-                    parsed = lab_parser().parse_args(args)
-                    commands.append(parsed.command)
-                    if getattr(parsed, "confirm", False):
-                        if parsed.command == "judge":
-                            paid_commands.append(("judge", parsed.judge_action, getattr(parsed, "run_id", getattr(parsed, "calibration_id", None))))
-                        elif parsed.command == "agent":
-                            paid_commands.append(("agent", parsed.stage))
-                        elif parsed.command == "iq":
-                            paid_commands.append(("iq", parsed.action))
-                        else:
-                            paid_commands.append((parsed.command, parsed.run_id))
-                    self.assertNotIn(parsed.command, {
-                        "evaluate", "optimizer-result", "tune-prepare", "bootstrap", "review",
-                    })
-                    if parsed.command == "agent":
-                        self.assertIsNone(parsed.prompt)
-                    if parsed.command == "cleanup":
-                        self.assertIsNone(parsed.confirm_prefix)
-        self.assertEqual(commands.count("demo"), 1)
-        self.assertEqual(commands.count("optimize"), 1)
-        self.assertEqual(commands.count("optimizer-agent-result"), 1)
-        self.assertEqual(commands.count("judge"), 5)
-        self.assertEqual(paid_commands, [
-            ("smoke", "model-smoke"),
-            ("agent", "baseline"), ("run", "baseline-smoke"),
-            ("judge", "calibrate", "cal-01"), ("judge", "score", "baseline-smoke"),
-            ("iq", "prepare"), ("iq", "vectors"), ("iq", "probe"),
-            ("agent", "iq"), ("run", "iq-dev"), ("judge", "score", "iq-dev"),
-            ("agent", "optimized"), ("run", "optimized-dev"), ("judge", "score", "optimized-dev"),
-            ("run", "optimized-fresh"), ("judge", "score", "optimized-fresh"),
-        ])
-        self.assertLess(source.index("judge calibrate"), source.index("freeze --freeze-id"))
-        self.assertLess(source.index("freeze --freeze-id"), source.index("holdout create"))
-        self.assertLess(source.index("holdout create"), source.index("run --stage optimized --split test"))
-
-    def test_every_rendered_page_has_resolvable_local_links_and_unique_ids(self):
+    def test_all_rendered_links_and_fragments_resolve_without_private_paths(self):
         parsed = {}
         for path in [ROOT / "index.html", *(SITE / name for name in PAGES)]:
-            self.assertTrue(path.is_file(), f"Run the full guide/print builders first: {path}")
             page = LinkParser()
-            page.feed(path.read_text(encoding="utf-8"))
-            self.assertFalse(page.duplicate_ids, (path.name, page.duplicate_ids))
+            page.feed(path.read_text())
+            self.assertFalse(page.duplicate_ids, (path, page.duplicate_ids))
             parsed[path.resolve()] = page
         for path, page in parsed.items():
             for href in page.links:
-                url = urlsplit(href)
-                if url.scheme or url.netloc:
-                    self.assertFalse(url.hostname in {"127.0.0.1", "localhost"}, (path.name, href))
-                    continue
-                target = (path.parent / unquote(url.path)).resolve() if url.path else path
-                self.assertTrue(target.is_relative_to(ROOT), (path.name, href))
-                self.assertTrue(target.exists(), (path.name, href))
-                if url.fragment and target in parsed:
-                    self.assertIn(unquote(url.fragment), parsed[target].ids, (path.name, href))
+                with self.subTest(page=path.name, link=href):
+                    url = urlsplit(href)
+                    self.assertNotIn("sig=", url.query)
+                    if url.scheme or url.netloc:
+                        self.assertNotEqual(url.scheme, "file")
+                        self.assertNotIn(url.hostname, {"localhost", "127.0.0.1", "::1"})
+                        continue
+                    target = (path.parent / unquote(url.path)).resolve() if url.path else path
+                    self.assertTrue(target.is_relative_to(ROOT))
+                    self.assertFalse(target.is_relative_to(ROOT / ".lab"))
+                    self.assertTrue(target.exists())
+                    if url.fragment and target in parsed:
+                        self.assertIn(unquote(url.fragment), parsed[target].ids)
 
-    def test_workshop_cli_commands_in_markdown_are_parseable(self):
-        checked = 0
-        for path in (ROOT / "guide").rglob("*.md"):
-            source = path.read_text(encoding="utf-8")
-            for block in re.findall(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL):
-                for line in block.replace("\\\n", " ").splitlines():
-                    tokens = shlex.split(line, comments=True)
-                    if "-m" not in tokens:
-                        continue
-                    position = tokens.index("-m")
-                    if len(tokens) <= position + 1:
-                        continue
-                    module = tokens[position + 1]
-                    if module not in {"lab", "lab.sft"}:
-                        continue
-                    command_parser = lab_parser() if module == "lab" else sft_parser()
-                    with self.subTest(document=path.name, command=line), \
-                         contextlib.redirect_stdout(io.StringIO()), \
-                         contextlib.redirect_stderr(io.StringIO()):
-                        try:
-                            command_parser.parse_args(tokens[position + 2:])
-                        except SystemExit as exc:
-                            self.assertEqual(exc.code, 0, f"Documented CLI syntax is invalid: {line}")
-                    checked += 1
-        self.assertGreaterEqual(checked, 40)
-
-    def test_bilingual_guides_preserve_sections_and_operation_contracts(self):
-        def operations(source):
-            result = []
-            valued = {
-                "--stage", "--split", "--limit", "--kind", "--run-id",
-                "--freeze-id", "--holdout-id", "--calibration-id", "--capacity",
-            }
-            flags = {"--confirm", "--resume", "--new-version"}
-            for block in re.findall(r"```bash\s*\n(.*?)```", source, re.DOTALL):
-                for line in block.replace("\\\n", " ").splitlines():
-                    words = shlex.split(line, comments=True)
-                    if "-m" not in words:
-                        continue
-                    module_index = words.index("-m") + 1
-                    if words[module_index] not in {"lab", "lab.sft", "lab.bootstrap"}:
-                        continue
-                    arguments = words[module_index + 1:]
-                    action = []
-                    options = []
-                    index = 0
-                    while index < len(arguments):
-                        word = arguments[index]
-                        if word in flags:
-                            options.append((word, True))
-                        elif word.startswith("--"):
-                            if word in valued:
-                                options.append((word, arguments[index + 1]))
-                            index += 1
-                        else:
-                            action.append(word)
-                        index += 1
-                    result.append((words[module_index], action, options))
-            return result
-
+    def test_language_links_and_sections_are_reciprocal(self):
         english = {document.key: document for document in documents_for("en")}
-        self.assertEqual(set(english), {document.key for document in documents_for("ko")})
         for korean in documents_for("ko"):
-            with self.subTest(document=korean.key):
-                counterpart = english[korean.key]
-                en_source = (ROOT / counterpart.source).read_text(encoding="utf-8")
-                ko_source = (ROOT / korean.source).read_text(encoding="utf-8")
-                blocks = r"```(\w+)\s*\n(.*?)```"
-                self.assertEqual(operations(en_source), operations(ko_source))
-                for _, block in re.findall(blocks, en_source, re.DOTALL):
-                    self.assertNotRegex(block, r"[가-힣]")
-                en_page, ko_page = LearningPathParser(), LearningPathParser()
-                en_page.feed((SITE / counterpart.output).read_text(encoding="utf-8"))
-                ko_page.feed((SITE / korean.output).read_text(encoding="utf-8"))
-                self.assertEqual(en_page.ids, ko_page.ids)
-                self.assertEqual(en_page.chapters, ko_page.chapters)
-                self.assertEqual(en_page.subchapters, ko_page.subchapters)
-                self.assertEqual(en_page.sharing_checkpoints, ko_page.sharing_checkpoints)
-                self.assertEqual(en_page.next_links, ko_page.next_links)
-
-    def test_english_commands_select_the_real_english_corpus(self):
-        source = (ROOT / "guide/en/handbook.md").read_text(encoding="utf-8")
-        self.assertIn("LAB_LANGUAGE=en python3 -S -m lab demo", source)
-        self.assertIn("export LAB_LANGUAGE=en", source)
-        self.assertLess(source.index("export LAB_LANGUAGE=en"), source.index("python -m lab validate"))
-        self.assertIn("data/en/knowledge/documents.json", source)
-        self.assertIn("prompts/en/baseline.txt", source)
-        self.assertIn("judge calibrate --calibration-id cal-01 --interval-seconds 65", source)
-        self.assertNotIn("scenario still uses the original Korean", source)
-
-    def test_english_prose_and_image_descriptions_are_translated_not_just_the_shell(self):
-        originals = {
-            document.key: (ROOT / document.source).read_text(encoding="utf-8")
-            for document in documents_for("ko")
-        }
-        for document in documents_for("en"):
-            with self.subTest(document=document.key):
-                page = ArticleTextParser()
-                page.feed((SITE / document.output).read_text(encoding="utf-8"))
-                text = "".join(page.text)
-                self.assertGreater(len(text), 2000)
-                self.assertNotRegex(text + "".join(page.alt), r"[가-힣]")
-                if "HOLD" in originals[document.key]:
-                    self.assertIn("HOLD", text)
-
-    def test_language_links_are_reciprocal_and_each_page_declares_its_language(self):
-        pages = [(document.output, document.language) for document in DOCUMENTS]
-        pages += [("print.html", "en"), ("ko/print.html", "ko")]
-        for output, language in pages:
-            with self.subTest(page=output):
-                path = SITE / output
-                rendered = path.read_text(encoding="utf-8")
-                self.assertIn(f'<html lang="{language}">', rendered)
-                links = re.findall(
-                    r'<a href="([^"]+)" lang="(en|ko)" hreflang="\2" data-language-link([^>]*)>',
-                    rendered,
-                )
+            en_page, ko_page = LearningPathParser(), LearningPathParser()
+            en_page.feed((SITE / english[korean.key].output).read_text())
+            ko_page.feed((SITE / korean.output).read_text())
+            self.assertEqual(en_page.chapters, ko_page.chapters, korean.key)
+            for document in (korean, english[korean.key]):
+                path = SITE / document.output
+                rendered = path.read_text()
+                self.assertIn(f'<html lang="{document.language}">', rendered)
+                links = re.findall(r'<a href="([^"]+)" lang="(en|ko)" hreflang="\2" data-language-link([^>]*)>', rendered)
                 self.assertEqual(len(links), 2)
                 for href, code, attributes in links:
-                    prefix = "ko/" if code == "ko" else ""
-                    self.assertEqual((path.parent / href).resolve(), SITE / prefix / path.name)
-                    self.assertEqual('aria-current="page"' in attributes, code == language)
-                if path.name != "print.html":
-                    self.assertIn(f'rel="canonical" href="{SITE_URL}docs/{output}"', rendered)
-                    self.assertIn(f'hreflang="x-default" href="{SITE_URL}docs/{path.name}"', rendered)
-                    self.assertIn(
-                        f'Foundry-Learning-Loop-Lab-{language.upper()}.pdf', rendered
-                    )
+                    target = SITE / ("ko" if code == "ko" else "") / path.name
+                    self.assertEqual((path.parent / href).resolve(), target)
+                    self.assertEqual('aria-current="page"' in attributes, code == document.language)
 
-    def test_all_readme_html_links_open_published_pages(self):
+    def test_english_content_and_accessibility_text_are_actually_english(self):
+        for document in documents_for("en"):
+            page = ArticleTextParser()
+            page.feed((SITE / document.output).read_text())
+            text = "".join(page.text)
+            self.assertGreater(len(text), 500)
+            self.assertNotRegex(text + "".join(page.alt), r"[가-힣]", document.key)
+
+    def test_readme_html_links_open_pages_not_github_source_views(self):
         for name in ("README.md", "README.en.md", "README.ko.md"):
-            source = (ROOT / name).read_text(encoding="utf-8")
+            source = (ROOT / name).read_text()
             links = re.findall(r"\]\(([^)\s]+\.html[^)\s]*)\)", source)
-            self.assertTrue(links)
+            self.assertTrue(links, name)
             for href in links:
-                with self.subTest(readme=name, href=href):
-                    self.assertTrue(href.startswith(SITE_URL), href)
-                    relative = urlsplit(href.removeprefix(SITE_URL)).path
-                    self.assertTrue((ROOT / relative).is_file(), relative)
+                self.assertTrue(href.startswith(SITE_URL), (name, href))
+                self.assertTrue((ROOT / urlsplit(href.removeprefix(SITE_URL)).path).is_file(), href)
         for name in ("README.md", "README.ko.md"):
-            source = (ROOT / name).read_text(encoding="utf-8")
+            source = (ROOT / name).read_text()
             for output in PAGES:
                 if output != "english.html":
                     self.assertIn(SITE_URL + "docs/" + output, source)
+
+    def test_actual_screenshot_provenance_dimensions_and_redactions_match(self):
+        directory = ROOT / "web/assets/portal/en"
+        manifest = json.loads((directory / "captures.json").read_text())
+        self.assertTrue(manifest["headless_verified"])
+        self.assertEqual(manifest["data_language"], "en")
+        self.assertEqual(manifest["ui_language"], "en-US")
+        captures = {item["file"]: item for item in manifest["screenshots"]}
+        self.assertTrue({
+            "15-evaluation-dataset.png", "16-evaluation-criteria.png", "17-evaluation-review.png",
+            "18-evaluation-results.png", "19-evaluation-case.png", "20-evaluation-comparison.png",
+            "07-optimizer-target.png", "08-optimizer-dataset.png", "09-optimizer-results.png", "10-optimizer-changes.png",
+        }.issubset(captures))
+        self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
+        for name, record in captures.items():
+            image = (directory / name).read_bytes()
+            self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertEqual(struct.unpack(">II", image[16:24]), (record["width"], record["height"]))
+            self.assertEqual(hashlib.sha256(image).hexdigest(), record["sha256"])
+            self.assertTrue(record["redactions"])
+            self.assertNotIn("?", record["route"])
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            count = 0
+            for document in documents_for(language):
+                path = SITE / document.output
+                page = PortalFigureParser()
+                page.feed(path.read_text())
+                count += len(page.figures)
+                for figure in page.figures:
+                    self.assertTrue(figure["id"])
+                    self.assertEqual(len(figure["images"]), 1)
+                    image = figure["images"][0]
+                    image_path = (path.parent / image["src"]).resolve()
+                    self.assertEqual(image_path.parent, directory)
+                    record = captures[image_path.name]
+                    self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
+                    self.assertGreater(len(image["alt"]), 15)
+                    self.assertIn(image["src"], figure["links"])
+                    self.assertGreater(len(figure["caption"]), 60)
+            self.assertGreaterEqual(count, 10)
+            book = PortalFigureParser()
+            book.feed((SITE / prefix / "print.html").read_text())
+            self.assertEqual(len(book.figures), count)
+            self.assertTrue(all(figure["id"].startswith("book-") for figure in book.figures))
+
+    def test_documented_native_add_run_command_is_parseable(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            blocks = re.findall(r"```(?:bash|sh)\s*\n(.*?)```", source, re.DOTALL)
+            commands = [
+                shlex.split(line, comments=True)
+                for block in blocks for line in block.replace("\\\n", " ").splitlines()
+                if "scripts/add_foundry_eval_run.py" in line
+            ]
+            self.assertTrue(commands, language)
+            for command in commands:
+                for flag in ("--endpoint", "--subscription", "--evaluation", "--baseline", "--version", "--out"):
+                    self.assertIn(flag, command)
+                self.assertEqual(command[command.index("--version") + 1], "2")
 
 
 if __name__ == "__main__":

@@ -78,9 +78,9 @@ class GuideBuildTests(unittest.TestCase):
         cls.page.feed(cls.rendered)
 
     def test_build_is_deterministic_and_date_is_fixed(self) -> None:
-        self.assertEqual(build_guide.BUILD_DATE, "2026-09-30")
+        self.assertEqual(build_guide.BUILD_DATE, "2026-10-01")
         self.assertEqual(self.rendered, build_guide.render_guide(FIXTURE, self.template))
-        self.assertIn('datetime="2026-09-30"', self.rendered)
+        self.assertIn('datetime="2026-10-01"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         self.assertFalse(self.rendered.endswith("\n\n"))
 
@@ -146,7 +146,7 @@ class GuideBuildTests(unittest.TestCase):
         source = (
             "# 문서 연결\n\n## 시작\n\n"
             "[강사](facilitator.md#준비) [관리자](admin-setup.md?mode=read#rbac)\n\n"
-            "[SFT](sft-appendix.md) [검증](verification.md) [데이터](../data/README.md)\n\n"
+            "[검증](verification.md) [데이터](../data/README.md)\n\n"
             '<a href="../guide/handbook.md#start">참가자</a>\n\n'
             '<img src="../web/assets/example-diagram.svg" alt="구조">\n'
         )
@@ -154,7 +154,7 @@ class GuideBuildTests(unittest.TestCase):
             source, self.template, relative_base="guide", link_map=build_guide.DOCUMENT_LINKS
         )
         for href in (
-            "docs/ko/facilitator.html#준비", "docs/ko/admin.html?mode=read#rbac", "docs/ko/sft.html",
+            "docs/ko/facilitator.html#준비", "docs/ko/admin.html?mode=read#rbac",
             "docs/ko/verification.html", "docs/ko/data-guide.html", "docs/ko/index.html#start",
         ):
             self.assertIn(f'href="{href}"', rendered)
@@ -255,7 +255,7 @@ class GuideBuildTests(unittest.TestCase):
             page.feed(pages["docs/" + name])
             body = next(attrs for tag, attrs in page.elements if tag == "body")
             self.assertEqual(body["data-document-id"], Path(name).name)
-            self.assertEqual(body["data-progress-revision"], "single-path-6" if Path(name).name == "index.html" else "")
+            self.assertEqual(body["data-progress-revision"], "native-eval-optimizer-6" if Path(name).name == "index.html" else "")
         self.assertIn("Lab steps", pages["docs/index.html"])
         self.assertIn("In this reference guide", pages["docs/admin.html"])
         self.assertIn("실습 순서", pages["docs/ko/index.html"])

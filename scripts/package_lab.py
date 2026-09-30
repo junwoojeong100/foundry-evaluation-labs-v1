@@ -11,9 +11,9 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 GUIDE_FILES = (
-    "docs/index.html", "docs/facilitator.html", "docs/admin.html", "docs/sft.html",
+    "docs/index.html", "docs/facilitator.html", "docs/admin.html",
     "docs/english.html", "docs/verification.html", "docs/data-guide.html", "docs/print.html",
-    "docs/ko/index.html", "docs/ko/facilitator.html", "docs/ko/admin.html", "docs/ko/sft.html",
+    "docs/ko/index.html", "docs/ko/facilitator.html", "docs/ko/admin.html",
     "docs/ko/verification.html", "docs/ko/data-guide.html", "docs/ko/print.html",
     "docs/Foundry-Learning-Loop-Lab-EN.pdf", "docs/Foundry-Learning-Loop-Lab-KO.pdf",
 )
@@ -25,7 +25,7 @@ ROOT_FILES = (
 )
 SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra")
 ARCHIVE_ROOT = "foundry-evaluation-labs-v1.1"
-FIXED_TIME = (2026, 9, 30, 12, 0, 0)
+FIXED_TIME = (2026, 10, 1, 12, 0, 0)
 
 
 def package_files(root: Path) -> list[Path]:
@@ -56,7 +56,7 @@ def build_archive(root: Path, destination: Path) -> dict:
         raise ValueError("Required deliverables are missing: " + ", ".join(missing))
     manifest = {
         "version": "1.1.0",
-        "guide_checked_date": "2026-09-30",
+        "guide_checked_date": "2026-10-01",
         "excluded": [".env", ".venv", ".lab", "artifacts", "credentials", "raw live evaluation/training results"],
         "included_evidence": "Only evidence/latest.json and the current documentation screenshots.",
         "files": {

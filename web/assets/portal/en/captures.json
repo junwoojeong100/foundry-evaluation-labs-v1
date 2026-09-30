@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "captured_date": "2026-10-01",
+  "date_timezone": "Asia/Seoul",
+  "recorded_at": "2026-09-30T17:22:05.253478+00:00",
+  "portal_origin": "https://ai.azure.com",
+  "additional_portal_origin": "https://portal.azure.com",
+  "tool": "playwright-headless.browser_run_code_unsafe",
+  "headless_verified": true,
+  "ui_language": "en-US",
+  "data_language": "en",
+  "dataset": "contoso-atlas-cloud-en-v1/dev12",
+  "authentication": "User completed normal interactive authentication; matching lab tenant verified in the headless session. Authentication state is excluded.",
+  "scope": "Dedicated NCUS English rehearsal: native Foundry Evaluation, Agent Optimizer and same-definition reevaluation. These are not Korean-data run results.",
+  "new_paid_runs_submitted": true,
+  "cloud_configuration_changed": true,
+  "screenshot_only_extra_model_calls": false,
+  "edits": "Opaque privacy masks and cropping only. No scores, statuses, instructions or synthetic data were replaced.",
+  "screenshots": [
+    {
+      "file": "00-resource-group.png",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{english-lab-resource-group}/overview",
+      "state": "new-owned-resource-group; unrelated inherited policy failure remains visible",
+      "capture_session_date": "2026-09-30",
+      "redactions": [
+        "account-menu",
+        "subscription-name",
+        "subscription-id"
+      ],
+      "width": 1600,
+      "height": 1000,
+      "sha256": "dab5ef443b70c67253352ca7fc6ce2754b299e094a7f6696c3405a98ca55d525"
+    },
+    {
+      "file": "02-model-deployments.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/models/deployments",
+      "state": "actual deployments including Luna diagnostic slots; deployment success is not agent-runtime success",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "creator-column",
+        "request-panel-excluded-by-crop"
+      ],
+      "width": 1271,
+      "height": 820,
+      "sha256": "655ea2f7ffee38c4df4802cc5202414d52ff9f682fc50a01fa13ec6dc1dc5f4a"
+    },
+    {
+      "file": "07-optimizer-target.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization",
+      "state": "before submission: original v1, instruction-only, one candidate, gpt-5.5 optimizer, gpt-6-luna Judge",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ],
+      "width": 1210,
+      "height": 968,
+      "sha256": "2e6a5a4597897d4fb128edd54de995638ed6006b2968417c23218ef7b0fb0568"
+    },
+    {
+      "file": "08-optimizer-dataset.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization",
+      "state": "same registered English dev12 dataset selected before submission",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "dialog-only-account-header-excluded",
+        "creator-column"
+      ],
+      "width": 1210,
+      "height": 968,
+      "sha256": "33232ecc24b90fa9a59922d104b9cd6cf82d22b93ac83a3a7e12e9b855e49ab4"
+    },
+    {
+      "file": "09-optimizer-results.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
+      "state": "succeeded; one candidate; small service ranking increase, not an independent quality pass",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "profile"
+      ],
+      "width": 1440,
+      "height": 1000,
+      "sha256": "51a3868f84825d8a7656e62dff14af2fcc55eaceec5b333f2dd966335b48c055"
+    },
+    {
+      "file": "10-optimizer-changes.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
+      "state": "actual service-generated instruction diff",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ],
+      "width": 1038,
+      "height": 622,
+      "sha256": "425ef360ff663491c7c1ffd2acf87492a51c1dbdade150eddaed3e3752f533f3"
+    },
+    {
+      "file": "15-evaluation-dataset.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "state": "registered English dev12 dataset with query/context/ground_truth; five-row preview is not the dataset size",
+      "capture_session_date": "2026-09-30",
+      "redactions": [
+        "profile",
+        "creator-column"
+      ],
+      "width": 1440,
+      "height": 1000,
+      "sha256": "9401d3ee13757a33a0ccc2dc1c33bf6f7692890bc2a8120fb4154d333395cc48"
+    },
+    {
+      "file": "16-evaluation-criteria.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "state": "Relevance threshold4 and binary TaskAdherence threshold1; gpt-6-luna Judge",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "profile"
+      ],
+      "width": 1440,
+      "height": 1000,
+      "sha256": "9169797763083abd7efe46497e99762caaa1a8b5a984b781548ac4870bffbbc0"
+    },
+    {
+      "file": "17-evaluation-review.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "state": "before actual submission: pinned original agent v1, individual turns, one-time native evaluation",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "profile"
+      ],
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7bffa91e315d8993082ad9077d7f685b86267d42efaa0df1aa3d0c3c8c548c3a"
+    },
+    {
+      "file": "18-evaluation-results.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{comparison-evaluation}/run/{baseline-run}",
+      "state": "actual completed baseline; Relevance10/12 and TaskAdherence12/12",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "profile",
+        "creator"
+      ],
+      "width": 1440,
+      "height": 1000,
+      "sha256": "12c9b1021f5456a59c1dffb747faef3b4b10f523436c391c7de9c4e253a0eab2"
+    },
+    {
+      "file": "19-evaluation-case.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{comparison-evaluation}/run/{baseline-run}",
+      "state": "actual atlas-dev-001 conversation opened from its conversation_id; User view",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "fullscreen-dialog-excludes-account-header",
+        "empty-area-cropped"
+      ],
+      "width": 1440,
+      "height": 340,
+      "sha256": "54bc98ecd6f8607d585ed70193c534c3307a39059a286699688c1894c315fc3d"
+    },
+    {
+      "file": "20-evaluation-comparison.png",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{comparison-evaluation}/compare",
+      "state": "actual baseline selected explicitly; Relevance mean4.42 vs4.33 and PairedTTest Inconclusive",
+      "capture_session_date": "2026-10-01",
+      "redactions": [
+        "profile",
+        "empty-area-cropped"
+      ],
+      "width": 1440,
+      "height": 520,
+      "sha256": "be93509f521bf25ac6a0fe9ba707169640947352a1f7adc41f3595b59ba73567"
+    }
+  ]
+}

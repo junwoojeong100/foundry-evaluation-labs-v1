@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
-  <title>Latest verification record and limitations · Foundry Lab Guide</title>
+  <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
+  <title>Verification record and limitations · Foundry Evaluation · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html">
@@ -54,8 +54,9 @@
           <div class="toc">
 <ul>
 <li><a href="#local">What is checked</a></li>
-<li><a href="#status">Keep verification separate from LIVE outcomes</a></li>
-<li><a href="#checks">Retention boundaries</a></li>
+<li><a href="#status">Actual managed-evaluation results</a></li>
+<li><a href="#models">Model roles and issues found during execution</a></li>
+<li><a href="#checks">Retention, deletion, and publication boundaries</a></li>
 <li><a href="#sources">Sources</a></li>
 <li><a href="#update">Recheck locally</a></li>
 </ul>
@@ -68,7 +69,6 @@
 <li><a href="index.html">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html">Operator setup</a></li>
-<li><a href="sft.html">SFT appendix</a></li>
 <li><a href="verification.html" aria-current="page">Verification and sources</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -103,70 +103,159 @@
 <a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
+        <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Latest verification record and limitations">
-        <h1 id="최신-검증-기록과-한계">Latest verification record and limitations</h1>
-<p>The <strong><a href="../evidence/latest.json">latest result JSON</a></strong> records the verification time, targets, and outcomes for the current distribution. This is the only verification record retained in the public package. Earlier verification, migration, and temporary evidence files remain in Git history, not in the current distribution.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Verification record and limitations · Foundry Evaluation">
+        <h1 id="verification-record-and-limitations-foundry-evaluation">Verification record and limitations · Foundry Evaluation</h1>
+<p>The <strong><a href="../evidence/latest.json">latest result JSON</a></strong> separates documentation checks from the actual English rehearsal. The core workshop is <strong>Foundry Evaluation → Agent Optimizer → same-criteria reevaluation</strong>. It measures changes on the same Contoso business questions, rather than relying on a public benchmark score.</p>
 <h2 id="local">What is checked</h2>
 <table>
 <thead>
 <tr>
 <th>Target</th>
-<th>Checks</th>
+<th>Evidence</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Source data</td>
-<td>Eight policies, 100 cases, and unchanged splits: train 56 / validation 12 / dev 12 / test 20</td>
+<td>Data</td>
+<td>Separate English and Korean corpora; only each language's 12 dev cases are used in this loop</td>
 </tr>
 <tr>
-<td>Guides</td>
-<td>Complete English/Korean guides in <code>docs/</code>, English-default root entry, language navigation, CLI syntax/explanations, and relative links</td>
+<td>Actual evaluation</td>
+<td>Foundry managed evaluation/run IDs, all 12 output items, metric scores, reasons, and errors</td>
 </tr>
 <tr>
-<td>Portal screenshots</td>
-<td>Fourteen actual screens: provenance, redactions, dimensions, hashes, display, and full-size links</td>
+<td>Optimizer</td>
+<td>One actual instruction-only job, one candidate, and the original/candidate instruction diff</td>
 </tr>
 <tr>
-<td>Web and print</td>
-<td>Desktop/mobile, light/dark themes, localized controls, print contents, and links</td>
+<td>Reevaluation</td>
+<td>Same evaluation definition, dataset version, evaluator settings, Judge, agent model, and tools; only instructions/version change</td>
 </tr>
 <tr>
-<td>PDF</td>
-<td>English/Korean text and required content; no blank/clipped pages or local-machine links; screenshots included</td>
+<td>Portal</td>
+<td>User authentication followed by Playwright Headless in the matching lab tenant, with English UI/data</td>
 </tr>
 <tr>
-<td>Package</td>
-<td>Current files and one verification record only; no private environments, authentication data, or raw run records</td>
+<td>Distribution</td>
+<td>Both HTML/print/PDF editions, language switching, mobile layout, links, copying, and reading progress</td>
 </tr>
 </tbody>
 </table>
-<p><code>status: PASS</code> in the verification JSON means <strong>only the documentation/package checks explicitly listed in that file passed</strong>. It is not Azure execution success, an agent-quality pass, or human operational approval. GitHub Pages serves generated static guides; it does not run the CLI or models.</p>
-<h2 id="status">Keep verification separate from LIVE outcomes</h2>
-<p>The last reported <strong>LIVE quality verdict on 2026-09-30 was HOLD</strong>. Calibration disagreement and critical failures remained, the final fresh test was blocked, and human operational approval was absent. Evaluation definitions—including <strong>retrieval Judge 1.1.0</strong>—gates, and lab data remain unchanged.</p>
-<p>This documentation translation/publication does not rerun paid models, evaluations, optimization, or training. Earlier scores/job IDs are not relabeled as new results, and successful documentation checks do not resolve the existing HOLD.</p>
-<p>The real portal images were captured from the existing environment using headless Playwright. Check provenance and state in the <a href="../web/assets/portal/captures.json">capture manifest</a>. Unsubmitted setup screens, existing service results, and the current participant's results are different things.</p>
-<h2 id="checks">Retention boundaries</h2>
+<p>A documentation <code>PASS</code> is not an Azure quality pass or operational approval. The Korean guide describes the same procedure, but the numbers below are <strong>actual English-data results</strong>, not a Korean-language execution.</p>
+<h2 id="status">Actual managed-evaluation results</h2>
+<p>Versions 1 and 2 of <code>contoso-eval-en</code> were evaluated in the newly provisioned dedicated North Central US environment.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Baseline v1</th>
+<th style="text-align: right;">Candidate v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cases</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>Cases passing every selected evaluator</td>
+<td style="text-align: right;">10/12</td>
+<td style="text-align: right;">11/12</td>
+</tr>
+<tr>
+<td>Relevance passes, threshold 4/5</td>
+<td style="text-align: right;">10/12</td>
+<td style="text-align: right;">11/12</td>
+</tr>
+<tr>
+<td>Mean Relevance, 1–5 scale</td>
+<td style="text-align: right;">4.42</td>
+<td style="text-align: right;">4.33</td>
+</tr>
+<tr>
+<td>TaskAdherence passes, binary Pass/Fail</td>
+<td style="text-align: right;">12/12</td>
+<td style="text-align: right;">12/12</td>
+</tr>
+<tr>
+<td>Execution errors</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Agent p50 latency</td>
+<td style="text-align: right;">5.89 s</td>
+<td style="text-align: right;">7.29 s</td>
+</tr>
+<tr>
+<td>Agent p95 latency</td>
+<td style="text-align: right;">8.82 s</td>
+<td style="text-align: right;">16.04 s</td>
+</tr>
+<tr>
+<td>Observed agent tokens</td>
+<td style="text-align: right;">35,187</td>
+<td style="text-align: right;">43,751</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Adoption is on hold.</strong> One more case passed, but mean Relevance declined and agent latency/token usage increased. The portal's <strong>Compare runs → PairedTTest</strong> also reported <strong>Inconclusive</strong> for both metrics. One small synthetic dev comparison does not establish a meaningful overall improvement or generalization. The dedicated lab agent's active version was <strong>restored to 1</strong>; candidate 2 and its evidence remain available.</p>
+<p>The actual evaluation definition is <code>eval_94feef6f6f644fabb22a5680f5f24fb1</code>. Baseline run: <code>evalrun_cde9948ac9d946929661bc3d9e60432a</code>. Candidate run: <code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code>. Local custom-Judge scores were not substituted for these service results.</p>
+<p>Optimizer job <code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code> succeeded. Its displayed ranking moved from approximately <strong>0.635 to 0.646</strong>, with a displayed delta of <strong>+0.010</strong>. That is an internal 0–1 aggregate, not the same measure as the separate managed-evaluation pass rates or means above. The job reported <strong>264,260 total tokens</strong>; actual billing requires a separate check.</p>
+<h2 id="models">Model roles and issues found during execution</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Model used in this rehearsal</th>
+<th>Evidence and limitation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent</td>
+<td><code>gpt-4.1-mini</code> · <code>2025-04-14</code></td>
+<td>Retained the verified working configuration. <code>gpt-6-luna</code> Responses and agent probes returned HTTP 500 in this environment and were not labeled successful</td>
+</tr>
+<tr>
+<td>Foundry Evaluation Judge</td>
+<td><code>gpt-6-luna</code> · <code>2026-09-22</code></td>
+<td>Verified through Chat Completions and actual managed Foundry evaluations</td>
+</tr>
+<tr>
+<td>Optimizer generation model</td>
+<td><code>gpt-5.5</code> · <code>2026-04-24</code></td>
+<td>Retained because <code>gpt-6-luna</code> is not in the current <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported optimization-model list</a></td>
+</tr>
+</tbody>
+</table>
+<p>Catalog visibility is not runtime verification. The observed HTTP 500 errors do not establish a global lack of agent support. The published <a href="https://learn.microsoft.com/azure/foundry/openai/concepts/model-retirement-schedule">retirement date</a> for <code>gpt-4.1-mini</code> is <strong>2027-04-14</strong>; new subscriptions can face deprecation restrictions. Operators must verify actual model access before class.</p>
+<p>The rehearsal identified and addressed these issues:</p>
 <ul>
-<li>Keep current runtime code, policies, data, evaluators, all 14 portal screenshots, and current bilingual HTML/PDF in <code>docs/</code>.</li>
-<li>Private <code>.lab/</code> execution, approval, and ownership records are not repository-cleanup targets.</li>
-<li>Do not change or delete Azure resources/permissions. Hosting/log costs do not stop automatically.</li>
-<li>Update <code>evidence/latest.json</code> when publishing new verification; do not add dated copies.</li>
+<li><strong>TaskAdherence is binary 0/1 Pass/Fail, not a 1–5 score.</strong> The first generic-threshold UI check was retained as a configuration pilot. The actual comparison started with Relevance 4 and TaskAdherence 1. The pilot was not overwritten or relabeled as the comparison baseline.</li>
+<li><strong>Portal Add run item-schema error:</strong> The UI returned <code>Unable to create data source configuration from item schema</code>. The supplied <code>scripts/add_foundry_eval_run.py</code> added the candidate to the <strong>same Foundry evaluation definition and dataset</strong> using the official SDK. This is actual managed evaluation, not local scoring.</li>
+<li><strong>Honest uncertainty can receive a low Relevance score:</strong> <code>atlas-dev-011</code> passed TaskAdherence but received Relevance 3 for declining to assert an unverified feature status. Do not invent policies or capabilities to increase a Judge score; inspect its reasoning against your own business criteria.</li>
+<li><strong>Separate resource-group policy failure:</strong> The lab ARM deployment succeeded. A separate organization-policy deployment failed because its organization-managed log target was absent. Shared policy was not changed and the failure was not hidden.</li>
 </ul>
+<h2 id="checks">Retention, deletion, and publication boundaries</h2>
+<p>The excluded training exercise's two dedicated jobs, trained model/checkpoint, model deployment, four uploaded files, and two result files were deleted and their absence verified. Its 202 local execution/log files were also removed. Shared models, the Foundry project, Search, and the current evaluation evidence remain. Deletion does not reverse charges already incurred.</p>
+<p>Raw evaluation responses and the deletion audit remain private. Public deliverables exclude authentication state, cookies, tokens, approval files, and signed download URLs. No claim is made that Git history or Azure's general activity/billing records were erased.</p>
 <h2 id="sources">Sources</h2>
-<p>Contoso Atlas Cloud, its policies, and cases are synthetic materials for this lab—not actual provider terms or customer data.</p>
-<p>The earlier workshop design reference is <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">a pinned commit in foundry-evaluation-labs-v0.9</a>. That archived repository may require separate access. Detailed migration history remains in this repository's Git history. Public access does not itself grant further reuse rights to referenced source material.</p>
-<p>The official Microsoft Foundry icon and portal screenshots are attributed in <a href="../web/assets/NOTICE.txt">NOTICE</a>, including their permitted usage. Preserve the official icon's original bytes and usage terms.</p>
+<p>Contoso Atlas Cloud policies, questions, and reference responses are synthetic—not actual customer data or provider terms. Earlier design references are preserved at <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">the archived repository's pinned commit</a>.</p>
+<p>The <a href="../web/assets/portal/en/captures.json">English capture manifest</a> records actual screen provenance, redactions, dimensions, and hashes. <a href="../web/assets/NOTICE.txt">NOTICE</a> records usage boundaries for Microsoft artwork and portal captures. Only cropping and privacy masks are applied; scores, states, and data are not rewritten.</p>
+<p>Official procedures: <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">Evaluate Foundry agents</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a> · <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">Evaluator-specific scales</a>.</p>
 <h2 id="update">Recheck locally</h2>
-<pre><code class="language-bash">python -m lab validate
+<pre><code class="language-bash">python scripts/build_datasets.py --language ko --check
+python scripts/build_datasets.py --language en --check
 python scripts/build_guide.py
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 </code></pre>
-<p><strong>Commands explained:</strong> In order: validate source data, generate HTML in both languages, check freshness without writing, and run local tests. These commands do not call Azure. Regenerate/check PDFs and the ZIP separately, then record only the checks actually performed in the latest JSON.</p>
+<p><strong>Commands explained:</strong> Verify both source corpora without modification, generate both HTML editions, check generated-file freshness, and run local tests. These commands do not start Azure evaluations. Refresh PDFs and the distribution ZIP separately, then record only checks actually performed in the latest JSON.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -178,7 +267,7 @@ python -m unittest discover -s tests -q
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

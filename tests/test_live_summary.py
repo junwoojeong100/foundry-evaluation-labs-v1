@@ -31,6 +31,28 @@ class LiveSummaryTests(unittest.TestCase):
             self.assertEqual(result["human_operational_approval"], "NOT_GRANTED")
             self.assertEqual(result["sft"]["status"], "NOT_SUBMITTED")
 
+    def test_final_result_and_attempt_are_not_hardcoded_to_a_previous_freeze(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "config.json").write_text(json.dumps({
+                "names": {"resource_group": "rg-fixture"}, "location": "northcentralus",
+            }))
+            (root / "manifest.json").write_text(json.dumps({"phase": "succeeded", "resources": {}}))
+            governance = root / "artifacts/governance"
+            (governance / "attempts").mkdir(parents=True)
+            (governance / "results").mkdir()
+            (governance / "attempts/selected-v1.json").write_text("{}")
+            (governance / "results/selected-v1.json").write_text(json.dumps({
+                "freeze_id": "selected-v1", "run_id": "optimized-fresh",
+                "quality_status": "HOLD", "production_ready": False,
+                "manual_operational_approval": "not_granted",
+            }))
+            result = summarize(root)
+            self.assertTrue(result["fresh_gate"]["attempt_created"])
+            self.assertEqual(result["fresh_gate"]["status"], "FINALIZED")
+            self.assertEqual(result["final_results"]["selected-v1"]["quality_status"], "HOLD")
+            self.assertFalse(result["final_results"]["selected-v1"]["production_ready"])
+
 
 if __name__ == "__main__":
     unittest.main()

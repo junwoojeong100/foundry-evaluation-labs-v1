@@ -1,289 +1,548 @@
 {
   "schema_version": 1,
+  "checked_at": "2026-09-30T19:06:50.584855+00:00",
+  "guide_reference_date": "2026-10-01",
+  "kind": "NATIVE_FOUNDRY_REHEARSAL_AND_BILINGUAL_GUIDE_VERIFICATION",
   "status": "PASS",
-  "scope": "English-first bilingual guide content, navigation, PDF, and offline distribution; no new Azure execution.",
-  "new_azure_calls": false,
-  "last_known_live_result": {
-    "reported_date": "2026-09-30",
-    "quality_status": "HOLD",
-    "fresh_holdout_execution": "BLOCKED",
-    "human_operational_approval": "NOT_GRANTED",
-    "revalidated_in_this_revision": false
-  },
-  "tests": {
-    "status": "PASS",
-    "modules": [
-      "test_documentation",
-      "test_guide_build",
-      "test_print_build",
-      "test_branding",
-      "test_package",
-      "test_datasets",
-      "test_demo",
-      "test_live_summary"
-    ],
-    "count": 114,
-    "failures": 0,
-    "errors": 0,
-    "skipped": 0
-  },
-  "verified_at": "2026-09-30T10:32:50.802572+00:00",
-  "layout": {
-    "root_files": [
-      ".env.example",
-      ".gitignore",
-      ".nojekyll",
-      "README.en.md",
-      "README.ko.md",
-      "README.md",
-      "index.html",
-      "pyproject.toml",
-      "requirements-verification.lock",
-      "requirements.lock"
-    ],
-    "root_file_count": 10,
-    "generated_directory": "docs",
-    "root_entry": "index.html",
-    "guide_entry": "docs/index.html",
-    "runtime_data_assets_moved": false
-  },
-  "html": {
-    "pages": [
-      "docs/admin.html",
-      "docs/data-guide.html",
-      "docs/english.html",
-      "docs/facilitator.html",
-      "docs/index.html",
-      "docs/ko/admin.html",
-      "docs/ko/data-guide.html",
-      "docs/ko/facilitator.html",
-      "docs/ko/index.html",
-      "docs/ko/print.html",
-      "docs/ko/sft.html",
-      "docs/ko/verification.html",
-      "docs/print.html",
-      "docs/sft.html",
-      "docs/verification.html",
-      "index.html"
-    ],
-    "sha256": {
-      "docs/admin.html": "94f39a87e01603cfd7c4203e1e773d6d4f671f339899f21254bb2f62228d8776",
-      "docs/data-guide.html": "c0c3c41553f878762ca33e30009ed5aa80554bef49deec1b2fcf021083243b29",
-      "docs/english.html": "0174e93a4de5ecc9366ff321fc15a42c37a840b3500f6c0e9b88f5a5205645b6",
-      "docs/facilitator.html": "c94b14778cd91a788e3744f59b482d6328279b7b2d004b1d0b51258012b3f448",
-      "docs/index.html": "9a7ac3113e600525bff9e503f0f146a6bac2fbcbe9001762811a3c1d6725ae75",
-      "docs/ko/admin.html": "09bd89550b401fc72943741088daffb15841788ac1cfe019246cd548f4bcca49",
-      "docs/ko/data-guide.html": "e571393123500767c0b5ea1c98378d531de4cc50d795b0dea05ac5c39b9291fd",
-      "docs/ko/facilitator.html": "9f3e4b059222d3f73900df0deb8b8d278815835f26749c5ed6df637fc5f13521",
-      "docs/ko/index.html": "b88301a9a4e3e53d380dc2055a5408ec573a0cc6f924701c2b0f947ab71496ac",
-      "docs/ko/print.html": "34fc0c78c545768d1bf36d82e4590bb6971952969b2ad46eb904c46f31ab467e",
-      "docs/ko/sft.html": "60b8d20af151e5dc60c2a72297c2261e7377f038229f7ec721815d1d2c5cb81b",
-      "docs/ko/verification.html": "e506966abb060828b06f05f693c99f8f2d4f2093593f8f6acc464fbc12f4429d",
-      "docs/print.html": "53efd5faeee65ea9abac13661ba57845da670609921dad02869216e8b6b01264",
-      "docs/sft.html": "ac54ef6b77fa38b56d0e63c97268042675490e99d0d510b1e06939c15c45742d",
-      "docs/verification.html": "7af73d9faabc6914f953cca64acc3984828dc4b07af774f351a6ad832483841e",
-      "index.html": "5b2d6f0358fd6cee3028422c249a907dc82feed7b9c775d9b40066dbacf3b385"
-    },
-    "assets_sha256": {
-      "web/styles.css": "98f0876b9b19366e6135fe0f25c142b0b5b20e1b001b9f3266ceb8f62a2075b8",
-      "web/app.js": "576799fb43a8dd1a3451579c83f6218aab633614e4d1422380fed2892d9b670c",
-      "web/theme.js": "bee47defa55575e3e1c7d53c8bddcbabf4ca3d997012fb08d6854991bd3dc39c",
-      "web/locales.json": "d0254f1eab0637da82d8d5e66fec9fab0188fcc0ee28c7a5eb3de3cef6cfbbc5"
-    }
-  },
-  "browser": {
-    "status": "PASS",
-    "engine": "playwright-headless",
-    "languages": [
-      "en",
-      "ko"
-    ],
-    "english_default_with_korean_browser_locale": true,
-    "root_query_fragment_preserved": true,
-    "language_query_fragment_preserved": true,
-    "manually_scrolled_section_preserved": true,
-    "shared_reading_progress": true,
-    "shared_theme": true,
-    "no_javascript_fallback": true,
-    "clipboard_exact": true,
-    "section_print_restored": true,
-    "explicit_localized_storage_errors": true,
-    "mobile_navigation": true,
-    "keyboard_navigation": true,
-    "legacy_english_redirect": true,
-    "participant_steps": 6,
-    "total_portal_photos": 14,
-    "viewports": [
-      1440,
-      1024,
-      768,
-      480,
-      390,
-      375,
-      320
-    ],
-    "themes": [
-      "light",
-      "dark"
-    ],
-    "horizontal_overflow": false,
-    "full_guide_page_viewports": 28,
-    "responsive_header_checks": 12,
-    "unbroken_step_number_checks": 4,
-    "unobscured_section_headings": true,
-    "javascript_errors": [],
-    "failed_local_requests": [],
-    "print_scripts": 0
-  },
-  "pdf": {
-    "file": "Foundry-Learning-Loop-Lab-EN.pdf",
-    "language": "en",
-    "sha256": "4722f5cef3a0384200092a13eff2712424c2a13fde4df0641d6f1750b766f5b4",
-    "pages": 91,
-    "bytes": 4288641,
-    "korean_characters": 346,
-    "latin_characters": 141396,
-    "minimum_page_characters": 285,
-    "missing_required_text": [],
-    "almost_empty_pages": [],
-    "local_machine_links": [],
-    "out_of_page_text": [],
-    "status": "PASS",
-    "path": "docs/Foundry-Learning-Loop-Lab-EN.pdf",
-    "exact_portal_image_pixel_matches": {
-      "08-optimizer-dataset.png": [
-        26
-      ],
-      "04-baseline-playground.png": [
-        14
-      ],
-      "06-iq-agent-knowledge.png": [
-        21
-      ],
-      "05-knowledge-base.png": [
-        20
-      ],
-      "14-sft-job.png": [
-        46
-      ],
-      "03-agent-versions.png": [
-        13
-      ],
-      "01-project-overview.png": [
-        5
-      ],
-      "13-trace-tool-call.png": [
-        36
-      ],
-      "09-optimizer-results.png": [
-        27
-      ],
-      "10-optimizer-changes.png": [
-        28
-      ],
-      "02-model-deployments.png": [
-        9
-      ],
-      "07-optimizer-target.png": [
-        25
-      ],
-      "12-trace-lookup.png": [
-        36
-      ],
-      "11-evaluation-results.png": [
-        29
-      ]
-    }
-  },
-  "runtime_data_prompts_gates_unchanged": true,
-  "pages_configuration": {
-    "url": "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/",
-    "branch": "main",
-    "path": "/",
-    "nojekyll": true,
-    "root_entry_redirects_to": "docs/index.html",
-    "default_language": "en"
-  },
-  "package": {
-    "status": "PASS",
-    "file": "dist/foundry-evaluation-labs-v1.1.zip",
-    "files": 154,
-    "html_pages": 16,
-    "verification_records": 1,
-    "resolved_local_links": 744,
-    "bytes_match_source": true
-  },
-  "bilingual": {
+  "meaning": "Local guide/package checks and recorded service execution succeeded; candidate adoption remains HOLD and production approval is not granted.",
+  "scope": {
     "default_language": "en",
-    "languages": [
+    "supported_languages": [
       "en",
       "ko"
     ],
-    "english_entry": "docs/index.html",
-    "korean_entry": "docs/ko/index.html",
-    "translated_source_documents": 6,
-    "preserved_command_and_output_blocks": 65,
-    "runtime_scenario_language": "ko",
-    "shared_section_ids": true
+    "participant_steps": [
+      "dataset",
+      "evaluators",
+      "Foundry Evaluation",
+      "case analysis",
+      "Agent Optimizer",
+      "same-criteria reevaluation"
+    ],
+    "new_english_live_execution": true,
+    "new_korean_live_execution": false,
+    "original_korean_corpus_preserved": true,
+    "raw_private_records_and_authentication_published": false
   },
-  "pdf_ko": {
-    "file": "Foundry-Learning-Loop-Lab-KO.pdf",
-    "language": "ko",
-    "sha256": "b5463d84095d193c26f2570d4e3595580a57d5bd000bf308bd35184030de29aa",
-    "pages": 80,
-    "bytes": 5239690,
-    "korean_characters": 43901,
-    "latin_characters": 28915,
-    "minimum_page_characters": 234,
-    "missing_required_text": [],
-    "almost_empty_pages": [],
-    "local_machine_links": [],
-    "out_of_page_text": [],
-    "status": "PASS",
-    "path": "docs/Foundry-Learning-Loop-Lab-KO.pdf",
-    "exact_portal_image_pixel_matches": {
-      "08-optimizer-dataset.png": [
-        24
+  "local": {
+    "unittests": {
+      "count": 542,
+      "status": "PASS"
+    },
+    "dataset_freshness": {
+      "en": "PASS",
+      "ko": "PASS"
+    },
+    "guide_freshness": "PASS",
+    "html_documents": {
+      "index.html": {
+        "sha256": "5b2d6f0358fd6cee3028422c249a907dc82feed7b9c775d9b40066dbacf3b385",
+        "ids": 0,
+        "links": 3
+      },
+      "docs/index.html": {
+        "sha256": "27ba9a00fd22e83fd10bad220f621052b8d2f557beab1bde88d79e6e6e765832",
+        "ids": 53,
+        "links": 77
+      },
+      "docs/facilitator.html": {
+        "sha256": "20ac966ed584e35c70b5fcebe18a260266178a8fc14bba623a2690adeddec760",
+        "ids": 26,
+        "links": 45
+      },
+      "docs/admin.html": {
+        "sha256": "e8b56773539a455ebf8e91df5a073209620d801aee0cf43ffb5bf1a416f262f7",
+        "ids": 28,
+        "links": 45
+      },
+      "docs/verification.html": {
+        "sha256": "e78797d35d3a14514b083fef4b125105e7e07b67762d4196c85ccb11bcd7a6e9",
+        "ids": 23,
+        "links": 39
+      },
+      "docs/data-guide.html": {
+        "sha256": "87f7167b2ee117a348da73502f016d116e72ffb21c0489f6ee5219947aa39505",
+        "ids": 23,
+        "links": 41
+      },
+      "docs/ko/index.html": {
+        "sha256": "9c0da0619b14b8590813526893634ffad315bc50fbea2edd384e4dd54f4b5079",
+        "ids": 53,
+        "links": 77
+      },
+      "docs/ko/facilitator.html": {
+        "sha256": "b7c5230ba264dc0b3ed9e13f396e229b7e5b70e089d66da9936599f62fa9956c",
+        "ids": 26,
+        "links": 45
+      },
+      "docs/ko/admin.html": {
+        "sha256": "b508e9c206ea7962b83c7f8a0f7f7d8412d4f8d625d4260cf446266a4a68d94f",
+        "ids": 28,
+        "links": 45
+      },
+      "docs/ko/verification.html": {
+        "sha256": "8f88c09ee652438b2f9b3d60dfa8b7d33da5feed12c61c0874a8075ded6bb6a4",
+        "ids": 23,
+        "links": 39
+      },
+      "docs/ko/data-guide.html": {
+        "sha256": "388f2087aebcbd72be79de01fb7a9bbb1fe566506e8f60d52acf1513911a80b6",
+        "ids": 23,
+        "links": 41
+      },
+      "docs/print.html": {
+        "sha256": "4ef931cbe088aaa0c02cef16aa585dcd1c48b4978b976db94a377468e9d989f1",
+        "ids": 80,
+        "links": 87
+      },
+      "docs/ko/print.html": {
+        "sha256": "08529d9064387a25531a06fa8066d983516f9fbb866bc62547bb009ec2dbb92a",
+        "ids": 80,
+        "links": 87
+      },
+      "docs/english.html": {
+        "sha256": "0174e93a4de5ecc9366ff321fc15a42c37a840b3500f6c0e9b88f5a5205645b6",
+        "ids": 0,
+        "links": 3
+      }
+    },
+    "browser": {
+      "engine": "playwright-headless",
+      "status": "PASS",
+      "page_viewport_checks": 24,
+      "widths": [
+        1440,
+        1024,
+        768,
+        480,
+        390,
+        375,
+        320
       ],
-      "04-baseline-playground.png": [
-        12
-      ],
-      "06-iq-agent-knowledge.png": [
-        19
-      ],
-      "05-knowledge-base.png": [
-        18
-      ],
-      "14-sft-job.png": [
-        42
-      ],
-      "03-agent-versions.png": [
-        12
-      ],
-      "01-project-overview.png": [
-        5
-      ],
-      "13-trace-tool-call.png": [
-        34
-      ],
-      "09-optimizer-results.png": [
-        25
-      ],
-      "10-optimizer-changes.png": [
-        26
-      ],
-      "02-model-deployments.png": [
-        8
-      ],
-      "07-optimizer-target.png": [
-        23
-      ],
-      "12-trace-lookup.png": [
-        33
-      ],
-      "11-evaluation-results.png": [
-        27
-      ]
+      "english_default_with_korean_browser_locale": true,
+      "shared_language_progress_and_theme": true,
+      "manual_reading_position_language_switch": true,
+      "exact_code_copy": true,
+      "keyboard_and_mobile_navigation": true,
+      "current_section_print_and_restore": true,
+      "no_javascript_fallback": true,
+      "javascript_errors": [],
+      "missing_assets": [],
+      "private_paths_not_served": true
+    },
+    "pdf": {
+      "en": {
+        "file": "Foundry-Learning-Loop-Lab-EN.pdf",
+        "language": "en",
+        "sha256": "52c0e00ab35aac1902b83b19929d416cb991777edff8be30ac013889c80a9999",
+        "pages": 47,
+        "bytes": 2981737,
+        "korean_characters": 0,
+        "latin_characters": 67784,
+        "minimum_page_characters": 235,
+        "missing_required_text": [],
+        "almost_empty_pages": [],
+        "local_machine_links": [],
+        "out_of_page_text": [],
+        "removed_sft_content_present": false,
+        "status": "PASS",
+        "portal_image_count": 12,
+        "all_portal_images_match_exact_source_pixels": true,
+        "portal_image_pages": {
+          "08-optimizer-dataset.png": [
+            13
+          ],
+          "20-evaluation-comparison.png": [
+            17
+          ],
+          "16-evaluation-criteria.png": [
+            6
+          ],
+          "00-resource-group.png": [
+            28
+          ],
+          "09-optimizer-results.png": [
+            14
+          ],
+          "10-optimizer-changes.png": [
+            15
+          ],
+          "02-model-deployments.png": [
+            30
+          ],
+          "07-optimizer-target.png": [
+            12
+          ],
+          "17-evaluation-review.png": [
+            7
+          ],
+          "19-evaluation-case.png": [
+            10
+          ],
+          "18-evaluation-results.png": [
+            9
+          ],
+          "15-evaluation-dataset.png": [
+            3
+          ]
+        }
+      },
+      "ko": {
+        "file": "Foundry-Learning-Loop-Lab-KO.pdf",
+        "language": "ko",
+        "sha256": "0814e48492542e7857f6413c6f6f1107192a0485106578c3dc3a32251134e786",
+        "pages": 41,
+        "bytes": 3712050,
+        "korean_characters": 20669,
+        "latin_characters": 16560,
+        "minimum_page_characters": 346,
+        "missing_required_text": [],
+        "almost_empty_pages": [],
+        "local_machine_links": [],
+        "out_of_page_text": [],
+        "removed_sft_content_present": false,
+        "status": "PASS",
+        "portal_image_count": 12,
+        "all_portal_images_match_exact_source_pixels": true,
+        "portal_image_pages": {
+          "08-optimizer-dataset.png": [
+            12
+          ],
+          "20-evaluation-comparison.png": [
+            16
+          ],
+          "16-evaluation-criteria.png": [
+            5
+          ],
+          "00-resource-group.png": [
+            24
+          ],
+          "09-optimizer-results.png": [
+            13
+          ],
+          "10-optimizer-changes.png": [
+            13
+          ],
+          "02-model-deployments.png": [
+            26
+          ],
+          "07-optimizer-target.png": [
+            11
+          ],
+          "17-evaluation-review.png": [
+            7
+          ],
+          "19-evaluation-case.png": [
+            10
+          ],
+          "18-evaluation-results.png": [
+            9
+          ],
+          "15-evaluation-dataset.png": [
+            3
+          ]
+        }
+      }
+    },
+    "portal_captures": {
+      "count": 12,
+      "manifest": "web/assets/portal/en/captures.json",
+      "manifest_sha256": "f519dc59391197b10fd341c255bf88597a5ab29dbf1e90ee7359c145752f42bb",
+      "ui_language": "en-US",
+      "data_language": "en",
+      "real_product_ui_not_mockups": true,
+      "edits": "privacy masks and cropping only"
     }
-  }
+  },
+  "native_foundry": {
+    "region": "northcentralus",
+    "dataset": {
+      "name": "contoso-eval-en-dev12",
+      "version": "1",
+      "language": "en",
+      "rows": 12,
+      "source": "data/en/optimizer/dev.jsonl",
+      "sha256": "db26e45288afc98a6cc48f91e8862edbf8346e793007970f931d968fd4647a3f",
+      "agent_input": "query only; reference context/answers are not injected"
+    },
+    "criteria": [
+      {
+        "name": "Relevance",
+        "score_scale": [
+          1,
+          5
+        ],
+        "pass_threshold": 4
+      },
+      {
+        "name": "TaskAdherence",
+        "score_scale": [
+          0,
+          1
+        ],
+        "pass_threshold": 1,
+        "meaning": "binary service Pass/Fail"
+      }
+    ],
+    "private_service_rubric_version_attested": false,
+    "baseline": {
+      "evaluation_id": "eval_94feef6f6f644fabb22a5680f5f24fb1",
+      "run_id": "evalrun_cde9948ac9d946929661bc3d9e60432a",
+      "status": "completed",
+      "agent_name": "contoso-eval-en",
+      "agent_version": "1",
+      "case_count": 12,
+      "result_counts": {
+        "errored": 0,
+        "failed": 2,
+        "passed": 10,
+        "total": 12,
+        "skipped": 0
+      },
+      "per_evaluator": [
+        {
+          "failed": 0,
+          "passed": 12,
+          "testing_criteria": "TaskAdherence",
+          "errored": 0,
+          "skipped": 0
+        },
+        {
+          "failed": 2,
+          "passed": 10,
+          "testing_criteria": "Relevance",
+          "errored": 0,
+          "skipped": 0
+        }
+      ],
+      "mean_scores": {
+        "Relevance": 4.416666666666667,
+        "TaskAdherence": 1.0
+      },
+      "latency": {
+        "target": {
+          "p50_ms": 5891.09,
+          "p95_ms": 8817.33,
+          "sample_count": 12
+        }
+      },
+      "model_usage": [
+        {
+          "cached_tokens": 0,
+          "completion_tokens": 6385,
+          "invocation_count": 24,
+          "run_model_name": "gpt-6-luna-2026-09-22",
+          "prompt_tokens": 72136,
+          "total_tokens": 78521,
+          "model_name": "gpt-6-luna-2026-09-22"
+        },
+        {
+          "cached_tokens": 0,
+          "completion_tokens": 1888,
+          "invocation_count": 12,
+          "run_model_name": "lab-agent-dea3cec5",
+          "prompt_tokens": 33299,
+          "total_tokens": 35187,
+          "model_name": "lab-agent-dea3cec5"
+        }
+      ],
+      "output_items_sha256": "7433ef746b047c9954507467270c8c3359f8b928142a55978a1b103dacd203e7"
+    },
+    "candidate": {
+      "evaluation_id": "eval_94feef6f6f644fabb22a5680f5f24fb1",
+      "run_id": "evalrun_f3b710fc835d444fb8aa0d2bb7797bdf",
+      "status": "completed",
+      "agent_name": "contoso-eval-en",
+      "agent_version": "2",
+      "case_count": 12,
+      "result_counts": {
+        "errored": 0,
+        "failed": 1,
+        "passed": 11,
+        "total": 12,
+        "skipped": 0
+      },
+      "per_evaluator": [
+        {
+          "failed": 0,
+          "passed": 12,
+          "testing_criteria": "TaskAdherence",
+          "errored": 0,
+          "skipped": 0
+        },
+        {
+          "failed": 1,
+          "passed": 11,
+          "testing_criteria": "Relevance",
+          "errored": 0,
+          "skipped": 0
+        }
+      ],
+      "mean_scores": {
+        "Relevance": 4.333333333333333,
+        "TaskAdherence": 1.0
+      },
+      "latency": {
+        "target": {
+          "p50_ms": 7287.52,
+          "p95_ms": 16038.35,
+          "sample_count": 12
+        }
+      },
+      "model_usage": [
+        {
+          "cached_tokens": 0,
+          "completion_tokens": 4922,
+          "invocation_count": 24,
+          "run_model_name": "gpt-6-luna-2026-09-22",
+          "prompt_tokens": 65697,
+          "total_tokens": 70619,
+          "model_name": "gpt-6-luna-2026-09-22"
+        },
+        {
+          "cached_tokens": 0,
+          "completion_tokens": 1473,
+          "invocation_count": 12,
+          "run_model_name": "lab-agent-dea3cec5",
+          "prompt_tokens": 42278,
+          "total_tokens": 43751,
+          "model_name": "lab-agent-dea3cec5"
+        }
+      ],
+      "output_items_sha256": "d978ff3cea00095b180588c2bc2f7fe694954dba39a6d677125166f30ac13a65"
+    },
+    "comparison": {
+      "same_evaluation_definition": true,
+      "same_dataset_and_queries": true,
+      "same_evaluator_settings_and_judge": true,
+      "same_agent_model_and_tools": true,
+      "only_instructions_and_version_changed": true,
+      "source_contract_checked": true,
+      "case_score_changes": [
+        {
+          "case_id": "atlas-dev-001",
+          "metric": "Relevance",
+          "baseline": 3.0,
+          "candidate": 4.0
+        },
+        {
+          "case_id": "atlas-dev-002",
+          "metric": "Relevance",
+          "baseline": 5.0,
+          "candidate": 4.0
+        },
+        {
+          "case_id": "atlas-dev-006",
+          "metric": "Relevance",
+          "baseline": 5.0,
+          "candidate": 4.0
+        }
+      ],
+      "remaining_failures": [
+        {
+          "case_id": "atlas-dev-011",
+          "metric": "Relevance",
+          "score": 3.0
+        }
+      ],
+      "portal_method": "PairedTTest",
+      "portal_result": {
+        "Relevance": "Inconclusive",
+        "TaskAdherence": "Inconclusive"
+      },
+      "decision": "HOLD_ADOPTION",
+      "active_lab_agent_version_restored": "1",
+      "candidate_retained": "2",
+      "production_approval": "NOT_GRANTED",
+      "interpretation": "A passing case increased, but mean relevance declined and latency/agent tokens increased. This small reused development set does not establish generalization."
+    },
+    "optimizer": {
+      "job_id": "opt_e44bcf5701a348deb62a1cd4f9cb3910",
+      "status": "succeeded",
+      "target_attributes": [
+        "instruction"
+      ],
+      "max_candidates": 1,
+      "baseline_candidate_id": "cand_opt_e44bcf5701a348deb62a1cd4f9cb3910_0000",
+      "selected_candidate_id": "cand_opt_e44bcf5701a348deb62a1cd4f9cb3910_0001",
+      "displayed_scores": {
+        "baseline": 0.635,
+        "candidate": 0.646,
+        "delta": 0.01
+      },
+      "displayed_scores_are_rounded_internal_ranking_not_direct_evaluation": true,
+      "token_usage": [
+        {
+          "layer": "agent",
+          "model": "lab-agent-dea3cec5",
+          "input_tokens": 104581,
+          "output_tokens": 5336,
+          "total_tokens": 109917,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        {
+          "layer": "judge",
+          "model": "gpt-6-luna-2026-09-22",
+          "input_tokens": 124720,
+          "output_tokens": 20001,
+          "total_tokens": 144721,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        {
+          "layer": "reflection",
+          "model": "lab-planner-dea3cec5",
+          "input_tokens": 5252,
+          "output_tokens": 4370,
+          "total_tokens": 9622,
+          "cached_tokens": 0,
+          "reasoning_tokens": 2048
+        }
+      ],
+      "reported_total_tokens": 264260,
+      "source_response_sha256": "63c61da97540afcfb7b42195347ea6b9447a4f81b2832b1ae73ccb81d2f66f1a",
+      "candidate_config_sha256": "566298ddfa0d99af23b1499d925bd0a667234adf934867d9dda84afd1c0b47e1"
+    },
+    "models": {
+      "agent": {
+        "name": "gpt-4.1-mini",
+        "version": "2025-04-14",
+        "retirement_date": "2027-04-14"
+      },
+      "judge": {
+        "name": "gpt-6-luna",
+        "version": "2026-09-22",
+        "native_evaluation_verified": true
+      },
+      "optimizer": {
+        "name": "gpt-5.5",
+        "version": "2026-04-24"
+      },
+      "luna_agent_migration": "HTTP_500_NOT_VERIFIED_IN_THIS_ENVIRONMENT; working agent retained, failed trial evidence preserved",
+      "luna_optimizer_migration": "NOT_IN_OFFICIAL_SUPPORTED_OPTIMIZATION_MODEL_LIST"
+    },
+    "observed_portal_add_run_error": "Unable to create data source configuration from item schema",
+    "working_reevaluation_path": "scripts/add_foundry_eval_run.py uses actual Foundry Evals SDK and the same existing evaluation/data_source",
+    "actual_invoice": null,
+    "cost_status": "NOT_OBSERVED_NOT_ZERO; resources retained except explicitly removed training targets"
+  },
+  "excluded_training_cleanup": {
+    "jobs_deleted_and_404_verified": 2,
+    "trained_model_and_checkpoints_removed": true,
+    "dedicated_deployment_removed": 1,
+    "uploaded_files_removed": 4,
+    "result_files_removed": 2,
+    "local_execution_and_log_files_removed": 202,
+    "shared_resources_preserved": true,
+    "private_deletion_receipt_sha256": "dbffc87603df60687c5c553d860366767702c60a3083c9686100eedba659fe2b",
+    "historical_charges_reversed": false,
+    "git_history_or_general_azure_audit_deleted": false
+  },
+  "source_references": [
+    "https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent",
+    "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent",
+    "https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models",
+    "https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators"
+  ]
 }

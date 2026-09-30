@@ -2,7 +2,7 @@
   "en": {
     "shell": {
       "SITE_TITLE": "Foundry Lab Guide",
-      "DESCRIPTION": "An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.",
+      "DESCRIPTION": "An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.",
       "SKIP_LINK": "Skip to content",
       "MENU_OPEN": "Open contents",
       "MENU_CLOSE": "Close contents",
@@ -104,7 +104,7 @@
       "SKIP_LINK": "Skip to the print edition",
       "RETURN_LABEL": "← Back to the web guide",
       "PRINT_NOTE": "Complete print edition · Use your browser's print command to save an A4 PDF.",
-      "INTRODUCTION": "Participants need only the six steps in the first guide. The operator, diagnostic, and advanced appendices are not additional completion requirements. Cross-document links point within this book; lab files are shown as paths within the package.",
+      "INTRODUCTION": "Follow the six participant steps for Foundry Evaluation, Agent Optimizer, and same-criteria comparison. Operator, facilitator, data, and verification references are included but are not extra labs. Cross-document links stay within this book; file references use package paths.",
       "DOCUMENT_DATE": "As of",
       "CONTENTS": "Included documents",
       "APPENDIX": "Appendix",
@@ -115,7 +115,7 @@
   "ko": {
     "shell": {
       "SITE_TITLE": "Foundry 실습 가이드",
-      "DESCRIPTION": "Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어·영어 실습 가이드",
+      "DESCRIPTION": "Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 같은 업무 데이터의 개선 전후를 비교하는 한국어·영어 실습 가이드",
       "SKIP_LINK": "본문으로 바로 가기",
       "MENU_OPEN": "학습 목차 열기",
       "MENU_CLOSE": "학습 목차 닫기",
@@ -217,7 +217,7 @@
       "SKIP_LINK": "인쇄본 본문으로 바로 가기",
       "RETURN_LABEL": "← 웹 가이드로 돌아가기",
       "PRINT_NOTE": "통합 인쇄본 · 브라우저의 인쇄 기능으로 A4 PDF를 저장하세요.",
-      "INTRODUCTION": "참가자는 맨 앞 가이드의 6단계만 순서대로 진행하면 됩니다. 뒤의 운영자·진단·심화 부록은 추가 완료 조건이 아닙니다. 문서 간 링크는 책 안으로 연결되며, 실습 파일은 패키지 내 경로로 표시됩니다.",
+      "INTRODUCTION": "Foundry Evaluation, Agent Optimizer, 같은 기준의 비교를 참가자 6단계로 진행합니다. 운영자·강사·데이터·검증 문서는 참고 자료이며 추가 실습이 아닙니다. 문서 링크는 책 안으로, 파일 참조는 패키지 경로로 연결됩니다.",
       "DOCUMENT_DATE": "문서 기준",
       "CONTENTS": "수록 문서",
       "APPENDIX": "부록",

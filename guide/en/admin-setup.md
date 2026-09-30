@@ -1,370 +1,197 @@
-# Operator guide · a dedicated NCUS environment and safe resumption {#운영자-안내-새-ncus-환경과-안전한-재개}
+# Operator prerequisites · an isolated NCUS workshop {#operator-guide}
 
-[Back to the participant path](handbook.md#environment) · [Infrastructure contract (Korean)](../../infra/README.md) · [Verification status](verification.md)
+[Participant path](handbook.md#start) · [Facilitator](facilitator.md#prepare) · [Measured verification](verification.md)
 
-**Prepare a dedicated English environment once, before the participant session.** The first English run starts with a new North Central US (NCUS) resource group and new supporting resources. Do not reuse the Korean environment or its artifacts as an English rehearsal. If an English environment already exists, check its own ownership manifest and current authorization rather than redeploying. Do not adopt unrelated existing/shared resources. Put identifying values only in private plan files.
+Prepare the project and sample agent **before** participants begin. The participant path is dataset preparation, managed Evaluation, failure analysis, instruction-only Agent Optimizer, and matching reevaluation—not infrastructure deployment.
 
-**What you will explore and why:** Connect Azure identity, resource scope, declarative deployment, and ownership records. The ability to click Create is not the same as authorization to use that environment. Keeping these separate makes results and costs traceable. A1–A4 establish identity and the plan; only A5 applies approved infrastructure. A6 connects the result to the participant's runtime.
+## Start with the prepared lab environment {#start}
 
-| Term | Meaning and role in this lab |
+The operator has provisioned a **new, isolated North Central US (NCUS) resource group** for this rehearsal. Confirm its actual identity, ownership, and readiness from the private preparation evidence. Do not recreate it merely because the documentation changed or use a shared production environment.
+
+Keep three claims separate: **resources exist**, **the intended runtime works**, and **task quality is acceptable**. A successful deployment proves neither agent execution nor managed-evaluator support. Record measured preparation and run outcomes in [verification](verification.md), not by copying a screenshot's status.
+
+<figure class="portal-shot" id="portal-resource-group">
+<img src="../../web/assets/portal/en/00-resource-group.png" alt="Dedicated new English rehearsal resource group with lab resources and deployment status" width="1600" height="1000" loading="lazy">
+<figcaption><strong>Prepared resource group.</strong> The visible Failed count includes a separate organization-policy deployment failure involving its logging target. Do not hide it, repair shared policy as part of this workshop, or confuse it with the lab deployment's status. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+## Verify three separate model roles {#prepare}
+
+Use the **actual deployment names below**, not model family names in deployment fields, after confirming the authorized project. The separate English baseline is now **`contoso-eval-en` version `1`**, verified working with its existing **read-only knowledge connection preserved**. Keep this role mapping unchanged through the comparison.
+
+| Role | Required decision |
 |---|---|
-| Tenant / Subscription / Resource group | Identity directory / billing and management scope / container for lab resources. They are not interchangeable identifiers. |
-| Foundry resource / Project / Deployment | Shared resource providing capabilities such as models / workspace for agents, evaluations, and connections / callable model-version-SKU target. |
-| ARM template / Manifest | Declaration of infrastructure to create / record of actual ownership and execution state. A plan file does not mean Azure resources exist. |
-| Managed identity / RBAC | Identity used by an Azure service / operations allowed for that identity. Check user, project MI, and Search MI permissions separately. |
+| Agent runtime | **`lab-agent-dea3cec5` → `gpt-4.1-mini` / `2025-04-14`**, verified on **`contoso-eval-en` v1**. Preserve its read-only knowledge connection; `gpt-6-luna` Responses/Agent verification failed here |
+| Evaluation Judge | **`lab-judge-luna-dea3cec5` → `gpt-6-luna` / `2026-09-22`**, verified in the actual managed baseline and candidate evaluations |
+| Optimizer instruction generator | **`lab-planner-dea3cec5` → `gpt-5.5` / `2026-04-24`**. The [official optimization-model list](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models) does **not** list `gpt-6-luna` |
 
-See [participant step 02](handbook.md#cli-basics) for CLI notation and virtual environments, and [the model-deployment screenshot](handbook.md#portal-models) for portal locations. Screenshots are read-only references from the existing environment, not instructions to repeat setup.
+**Observed capability evidence:** `gpt-6-luna` version `2026-09-22` is GA in NCUS with **GlobalStandard**. The new deployments are `lab-agent-luna-dea3cec5` and `lab-judge-luna-dea3cec5`; Chat Completions returned **READY**. An actual native Foundry **Relevance** evaluation completed with **passed 1 / total 1 / errors 0** on **one authored compatibility fixture**: evaluation `eval_589a069bfd8343cf980b4b88f57771e8`, run `evalrun_e662077a904543d6bd1420b202a1b078`.
 
-> **Historical Korean rehearsal, not evidence of this English run**
->
-> Following draft validation, actual responses exposed a retired-model rejection, concurrent project/model creation conflict, and missing monitoring-connection metadata. These were resolved. ARM `Succeeded` and 25 ownership records were confirmed in the same new NCUS resource group. Before generating model responses, gpt-4.1-mini / 2025-04-14 / Standard was explicitly selected, without switching regions or reusing existing resources. The [verification record](verification.md) distinguishes resource creation, data-plane execution, and quality outcomes.
+That earlier record verifies Judge capability, **not agent quality**. It is separate from the configuration pilot below and from the clean corrected comparison; do not merge their counts or IDs.
 
-## Approval, ownership, and readiness are different states {#scope}
+**Runtime limit:** Direct Responses and a **pinned `gpt-6-luna` prompt-agent v2** both returned **HTTP 500 in this environment**. Do not claim model-wide lack of support; runtime verification failed here. Keep the verified `gpt-4.1-mini` agent until the provider issue is resolved, without silently selecting the experimental agent.
 
-The table below describes the earlier rehearsal's scope, not transferable authorization. The English rehearsal has its own private, scope-bound approval and finite operating limits. Every participant needs authorization for their actual account, resources, processing locations, and costs.
+The `gpt-4.1-mini` / `2025-04-14` Azure retirement date is **2027-04-14**. A **Deprecated** label in public documentation can restrict fresh subscriptions; it does not erase the existing deployment's observed usability. Verify the actual account and existing deployment before handoff rather than promising access to every new subscription.
 
-| Check | Scope of the recorded setup run |
+The user requested `gpt-6-luna` **where supported**, acknowledging that the three roles need not support it equally. Catalog visibility, deployment success, and a chat response do not verify every API/runtime. Do not silently switch a role after baseline or report a model change as an instruction-only gain.
+
+The optimization model **writes candidate instructions**; it is separate from the agent model being optimized and the Judge that scores responses. Use the same verified Judge for direct Evaluation, Optimizer evaluation, and direct reevaluation.
+
+<figure class="portal-shot" id="portal-models">
+<img src="../../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployments showing distinct deployment names and model versions for the rehearsal" width="1271" height="820" loading="lazy">
+<figcaption><strong>Deployments are role inputs, not runtime proof.</strong> Check model version and deployment name against the private handoff. A listed deployment alone does not establish Agent, Responses, evaluator, or Optimizer compatibility. <a href="../../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+## Prepare the project and sample agent {#bootstrap}
+
+Use the official [direct agent-evaluation prerequisites](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent#prerequisites) and [prompt-agent Optimizer prerequisites](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites). They define the supported project, agent, model, and access requirements. Do not require participants to run a whole legacy bootstrap sequence.
+
+| Preparation | Evidence required before handoff |
 |---|---|
-| Region and target | Only a new resource group and new resources in `northcentralus` |
-| Monetary limit | The user **explicitly approved no monetary cap**. The earlier USD 50 proposal was not a blocking condition |
-| Work limits | At most 300 model/Judge/planner calls combined; one job and at most two candidates per Optimizer; one SFT job with 56 train / 12 validation cases and one epoch; fresh12; at most 60 minutes waiting per job |
-| Data and processing | Approved synthetic data with GlobalStandard/Global/Developer processing. No expansion to actual customer data |
-| Permissions | Only minimum required RBAC on new resources. No permission/policy changes on existing/shared scopes |
-| Retention | Preserve the new resource group and evidence for user review. Deletion was not authorized |
+| Intended account and project | Actual signed-in tenant/account, subscription, resource group, and project match the authorized lab. Check portal and any operator CLI/SDK identity separately |
+| Prepared Contoso agent | Existing **`contoso-eval-en` version `1`** on **`lab-agent-dea3cec5`**; read-only knowledge connection preserved. Check the English four-key response contract without changing the baseline configuration |
+| Runtime | Actual response from that pinned agent through the intended runtime; a model chat smoke is not a substitute |
+| Managed Evaluation | **`contoso-en-learning-loop`** is **Completed**: 12 rows, 10 passed / 2 failed / 0 errored; Relevance 10/12 and binary TaskAdherence 12/12. Keep the pilot separate |
+| Agent Optimizer | Optimize Preview access, Instruction-only target, Max candidates 1, **`lab-planner-dea3cec5`**, and the same Judge **`lab-judge-luna-dea3cec5`** |
+| Dataset | **`contoso-eval-en-dev12` version `1`**, registered through the native Evaluation wizard from unchanged `data/en/optimizer/dev.jsonl`, exactly 12 rows; retain the original file SHA-256 |
 
-That authorization applies **only to the recorded operational scope**. It does not authorize spending or tenant access for another customer or participant who downloads the package. Keep original approval evidence and signed/approval files private; exclude them from HTML, PDF, and ZIP deliverables.
+Configure policy access before class, then hold it constant. Participants neither build a separate knowledge system nor repair infrastructure to obtain a better score. If the prepared agent lacks needed evidence, report the setup blocker rather than appending reference answers to its input.
 
-Do not overwrite an infrastructure failure with a later success, or misdescribe a real service error as missing cost approval. However, `BLOCKED_AWAITING_APPROVAL` is a legitimate tool state if a particular new plan lacks a valid approval file. Actual consent and the machine-readable record binding that consent to a plan are separate.
+For a fresh baseline still at v1, select **Pin currently latest**, reselect the cleared checkbox, and confirm **1 target before Next**. The recorded agent retains candidate v2, but **active version is restored to 1**. Use explicit versions and saved evaluation IDs; do not equate “latest” with active. The failed `gpt-6-luna` v2 was another agent.
 
-## A1–A6. Prepare once, then continue in the same environment {#bootstrap}
+In the English pilot, **Existing dataset** with matching schema auto-resolved **Field mapping**, then proceeded to **Configure agents → custom prompt override unset → Criteria**. For the corrected run, remove extras from the 23 suggestions and retain exactly two evaluators: **Relevance Threshold 4**, **TaskAdherence binary pass 1** (**Threshold 1** if a generic control is shown).
 
-### A1. Check the intended account and subscription {#a1-의도한-계정과-구독-확인}
+The [official agent-evaluator definitions](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators) identify TaskAdherence as **Binary Pass/Fail, raw 0/1**, not 1–5. The pilot UI accepted TaskAdherence Threshold 4, but actual `score=1` returned `passed=true`; that generic setting was not meaningful. Preserve the pilot and start a clean corrected comparison instead of changing its historical definition.
 
-**Purpose:** Prevent CLI, SDK, and browser operations from silently using different accounts.
+Use the English dataset with `contoso-eval-en`. The Korean counterpart is operator-prepared **`contoso-eval-ko` v1**, using `data/optimizer/dev.jsonl`, `contoso-eval-ko-dev12`, and a Korean response contract. **Korean was not re-executed in this rehearsal; no new Korean measured results or registration are claimed.** Verify its preparation separately rather than relabeling English evidence.
 
-**Your task:** Have Python 3.11+ and Azure CLI installed locally. Values below are placeholders; use actual values only in your terminal/private files.
+**Retained CONFIGURATION PILOT — portal execution, not the corrected baseline:**
 
-**Run:**
+| Recorded item | Value |
+|---|---|
+| Pilot evaluation name | `contoso-en-baseline-luna-judge` |
+| Pilot evaluation definition ID | `eval_06d9c6cb93df4c7bad2bc3a62da9bc90` |
+| Pilot run ID | `evalrun_98ac1b10a98d4ebe9d72bed5c66ed0f2` |
+| Inputs | `contoso-eval-en` pinned v1; `contoso-eval-en-dev12` version 1; all 12 cases |
+| Pilot configuration issue | Relevance threshold 4; generic TaskAdherence threshold 4 was **not meaningful for its binary output**. Judge: `lab-judge-luna-dea3cec5` / `gpt-6-luna` |
+| Reported status | **Completed; 12 output items** |
+| Pilot Agent usage | **12 invocations**, `contoso-eval-en` pinned v1 on `gpt-4.1-mini` |
+| Pilot service-reported Judge usage | **24 `gpt-6-luna-2026-09-22` invocations; 83,492 tokens**; not corrected-comparison usage |
+
+**Completed canonical baseline — portal; SDK candidate execution verified below:**
+
+| Recorded item | Value |
+|---|---|
+| Corrected Evaluation name | **`contoso-en-learning-loop`** |
+| Corrected evaluation ID | `eval_94feef6f6f644fabb22a5680f5f24fb1` |
+| Corrected baseline run ID | `evalrun_cde9948ac9d946929661bc3d9e60432a` |
+| Inputs | `contoso-eval-en` pinned v1; `contoso-eval-en-dev12` version 1; the same 12 cases |
+| Criteria / Judge | Relevance threshold 4; TaskAdherence binary threshold/pass 1; `lab-judge-luna-dea3cec5` / `gpt-6-luna` |
+| Confirmed response bindings | Relevance `response={{sample.output_text}}`; TaskAdherence `response={{sample.output_items}}` |
+| Execution / overall | **Completed; 12 rows; 10 passed / 2 failed / 0 errored** |
+| Per-evaluator results | **Relevance 10/12**, threshold 4; **TaskAdherence 12/12**, binary 1 |
+| Relevance failures | `atlas-dev-001`: vague subscription-reduction answer versus explicit clarification in the reference. `atlas-dev-011`: honest unverified-feature answer judged incomplete |
+| Evidence boundary | HTTP 201 was the creation receipt; completion is now separately confirmed. These are baseline-only results; do not change policy facts to chase scores |
+
+Baseline Review used **Evaluation name → Submit**. Candidate **Add run** under the same definition did not work end-to-end: Pin v2 / Individual turns led to **Configure agents: Config required → Add custom prompt / User prompt**. Even `{{item.query}}` failed client-side with **`Unable to create data source configuration from item schema`**. **No candidate remote run was submitted by that portal attempt.** Do not create another definition as a workaround.
+
+**Optimizer succeeded with one candidate:** `opt_e44bcf5701a348deb62a1cd4f9cb3910`, instruction-only, same dataset, `gpt-5.5` generator, `gpt-6-luna` Judge, no model comparison. UI scores: **0.635 → 0.646**, **UI-reported +0.010**, **264,260 reported tokens**. Preserve the displayed delta rather than deriving a different one from rounded display fields. This is not the direct candidate evaluation.
+
+**Portal Promote created lab-only `contoso-eval-en` v2.** The operator verified exact candidate instructions and unchanged model/knowledge tool. **Latest active version affects all channels**: only an **isolated, unpublished lab agent** may use this promotion; **never production**. V1 remains the explicit recorded baseline. Do not repeat promotion or treat v2 activation as production approval.
+
+In Optimizer **Criteria**, **No custom evaluators available** is a filter state: switch **Custom only OFF** or choose **View built-in evaluators**. Select a Relevance or TaskAdherence row to open **Configure...**, set **Relevance 4 / TaskAdherence 1**, then **Apply**. Do not add custom evaluators as a workaround.
+
+<a id="sdk-prerequisites"></a>
+
+**Prerequisites for the single SDK step:** Supply Python 3.11+ (3.12 recommended), Azure CLI, the operator-owned `scripts/add_foundry_eval_run.py`, and the current `requirements.lock`. From the repository root, use the approved **project endpoint** and subscription, not an endpoint guessed from a model deployment:
 
 ```bash
-export AZURE_SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
-export AZURE_TENANT_ID="YOUR_TENANT_ID"
-export EXPECTED_AZURE_USER="operator@example.invalid"
-az login --tenant "$AZURE_TENANT_ID"
+export AZURE_AI_PROJECT_ENDPOINT="OPERATOR_PROJECT_ENDPOINT"
+export AZURE_SUBSCRIPTION_ID="OPERATOR_SUBSCRIPTION_ID"
+```
+
+Only if `.venv` is absent, prepare it once with `python3 -m venv .venv`. Activate/install the locked environment and verify the actual account:
+
+```bash
+source .venv/bin/activate
+python -m pip install -r requirements.lock
+az login
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az account show --query "{user:user.name,tenant:tenantId,subscription:id}" -o json
 ```
 
-**Commands explained:**
+Check user, tenant, and subscription against the operator's approval and portal identity; do not proceed with another cached identity. Role assignment is not part of this check. Copy `FOUNDRY_EVALUATION_ID` and `FOUNDRY_BASELINE_RUN_ID` from the canonical baseline portal URL or **Raw JSON**, using the actual IDs above, never the pilot or Optimizer job ID.
 
-| Command | What it does and what to watch |
-|---|---|
-| `export AZURE_SUBSCRIPTION_ID=...` | Sets the approved subscription ID in this shell. It neither selects nor creates a subscription. |
-| `export AZURE_TENANT_ID=...` | Sets the directory ID for sign-in, avoiding a similarly named account in another directory. |
-| `export EXPECTED_AZURE_USER=...` | Identifies the expected actual user. Replace the example email; this is not a password/token field. |
-| `az login --tenant ...` | Performs normal sign-in/MFA for that tenant. CLI authentication is separate from portal sign-in. |
-| `az account set --subscription ...` | Selects the active subscription for later CLI calls. Grants no permissions and deploys no resources. |
-| `az account show --query ... -o json` | Queries only the actual CLI user, tenant, and subscription as JSON. Its identifying values must not be published in guides or classroom screenshots. |
+The [single command in step 06](handbook.md#decision) uses Azure AI Projects/OpenAI Evals SDKs to clone baseline `data_source`, retain existing criteria, change only target version to 2, and verify identical model/tools. It submits **one real Foundry evaluation run under the same evalID**, not a local Judge or bespoke cloud scoring. Its `.lab/foundry-evaluations/candidate-v2.json` receipt is private; repeating the identical command collects the same run. Do not delete/change the receipt or create another definition to force a retry.
 
-**Completion signal:** The actual signed-in user, tenant, and subscription match the authorized scope. Check the browser account too. Bootstrap separately verifies the user's actual object ID.
+**Verified end-to-end SDK execution:** the helper actually submitted candidate run **`evalrun_f3b710fc835d444fb8aa0d2bb7797bdf`** under the **same `eval_94feef6f6f644fabb22a5680f5f24fb1`**, targeting **`contoso-eval-en` v2**. It is **Completed: 12 rows, 11 passed / 1 failed / 0 errored**, versus baseline **10 passed / 2 failed / 0 errored**. The helper confirmed identical dataset/evaluators/Judge/model/tools; only instructions/version changed.
 
-**Errors/recovery:** Do not work around a wrong account, service principal, or missing permission by using another cached credential. Never copy tokens, keys, or passwords into documentation.
+Reuse the receipt and open **`contoso-en-learning-loop` → Evaluation runs → baseline/candidate checkboxes → Compare runs**. **Set the Baseline dropdown to the original `contoso-eval-en`.** It defaults to the first selected row, which was `candidate-v2` here; confirm direction before interpreting results. The portal item-schema failure remains real; the completed candidate came from the SDK.
 
-**Resume:** Authenticate again only when needed, such as after expiry. In the recorded checks, Azure MCP's subscription lookup was correct, but **Foundry MCP's data-plane token belonged to another tenant**, so the request was rejected. No changes were made through that path. The verified CLI/SDK identity and browser were used instead. An MCP subscription list alone does not establish the principal or data-plane identity.
-
-**Next:** A2. If a private plan already exists, reuse its path rather than creating another.
-
-### A2. Create a new plan locally {#a2-신규-계획을-로컬에-생성}
-
-**Purpose:** Fix resource names, models, capacity, processing scope, and ownership markers before remote changes.
-
-**Your task:** Run this only for an environment being prepared for the first time. This standard-library path does not contact Azure.
-
-**Run:**
-
-```bash
-python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training-en --agent-sku Standard --root .lab --location northcentralus
-```
-
-**Command explained:** `plan` **creates local files**. `--subscription`, `--tenant`, and `--expected-user` fix the identity to verify; `--environment` and `--root` locate the private plan; `--location` fixes the allowed region. `--agent-sku Standard` selects the base agent deployment type, not the Judge/planner/embedding SKUs. The `-S` path needs no SDK and performs no remote creation or billable model call.
-
-Use an environment name such as `lab-training-en` that **starts with a lowercase letter**. A name starting only with date digits fails current validation. Environment and resource-group names are different fields. Do not arbitrarily rename an existing resource group or plan to silence an error.
-
-**Completion signal:** `plan_status: CREATED_LOCAL_ONLY`, `mutations_performed: false`. By default, `.lab/lab-training-en/` contains the following.
-
-The documented candidate for a new agent/SFT base is **gpt-4.1-mini / 2025-04-14 / Standard**. Inspect the actual model/version in the output. Do not apply an older plan containing gpt-4o-mini; prepare a new plan instead. `--agent-sku` selects the SKU, not a workaround for changing model name/version.
-
-| File or directory | Purpose |
-|---|---|
-| `config.json`, `template.json` | Exact new resources, deployments, and template hashes |
-| `manifest.json` | Target IDs, creation intent, ownership, and stage records |
-| `approval.example.json` | **Unapproved** format example |
-| `group-authorization.example.json` | Unapproved example for separate resource-group creation |
-| `cost-ledger.json` | Distinguishes SKUs, owned targets, and unknown costs |
-| `artifacts/`, `evidence/` | Private execution/observation records for this environment only |
-| `.gitignore` | Excludes this environment directory's records from Git |
-
-Planning does not create `.env`. It is generated only after full deployment and ownership verification. Do not copy the private directory into a customer ZIP.
-
-**Errors/recovery:** If the directory already exists, find the original plan rather than overwriting it. Do not resolve resource collisions by deleting an existing group or copying tags.
-
-**Resume:** Use the same `config.json` for all later commands. Changes to model defaults, names, capacity, or retention need a separately approved plan that preserves the original state.
-
-**Resource names:** Let bootstrap generate its owned resource names. The current validator requires the `rg-foundry-eval-v11-<date>-<suffix>` resource-group pattern; an arbitrary `rg-foundry-eval-en-...` override is rejected before Azure is called. The English environment directory, corpus selection, and agent metadata distinguish the language; a resource name alone does not.
-
-**Next:** A3.
-
-#### Optional: plan a base deployment compatible with later SFT {#sft-base}
-
-The new bootstrap agent candidate is **gpt-4.1-mini / 2025-04-14 / Standard**, and SFT uses the same base family/version. Explicit `--agent-sku Standard` fixes that SKU; the default requested ARM capacity is 20. Keep the approved role models for Judge, planner, and embeddings.
-
-If you do not have a plan, check this candidate in A2. **If an older gpt-4o-mini or GlobalStandard-agent plan exists and the intended new resource group is still empty**, create a new plan in a separate local environment without editing the failed/previous plan. Replace the resource-group value below with the **same new group's name** from the original private record.
-
-```bash
-export NEW_RESOURCE_GROUP="YOUR_EXISTING_EMPTY_NEW_LAB_RESOURCE_GROUP"
-python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training-sft --root .lab --resource-group "$NEW_RESOURCE_GROUP" --agent-sku Standard
-```
-
-**Commands explained:** `export NEW_RESOURCE_GROUP` identifies only the **still-empty lab group created under the original intent**. The following `plan` creates a **separate local plan** with that explicit target. Knowing a group name neither proves ownership nor deploys to it. Binding to the original receipt and validating fresh approval still follow.
-
-In A3, select the actual new `lab-training-sft` directory and prepare complete approval for that scope. In A5, bind the original intent/creation receipt with read-only checks, then apply **only the selected new plan**. Do not automatically convert or apply the failed gpt-4o-mini or previous GlobalStandard plans as well. If the local directory exists, choose another new name instead of overwriting it. Do not force the empty-group procedure onto a group that already contains resources.
-
-The exact base Standard quota name is **`OpenAI.Standard.gpt4.1-mini`**; the separate tuned quota is **`OpenAI.Standard.gpt4.1-mini-finetune`**. Unlike model name `gpt-4.1-mini`, the usageName has no hyphen after `gpt`. Do not infer these by modifying a GlobalStandard quota or an older model name. Observed headroom was 5000 base and 500 fine-tuned, in the ARM/quota units at observation time—not free usage or a guarantee of success. A tuned Standard deployment is a separate step after a successful SFT job.
-
-### A3. Run read-only preflight checks {#a3-읽기-전용-사전-점검}
-
-**Purpose:** Check identity, region, providers, permissions, model versions, and quotas without deployment.
-
-**Your task:** Set the first line to your actual directory. Use the original path if your plan is elsewhere.
-
-**SDK-free does not mean offline.** `plan`, help, and local schema inspection do not call Azure. `preflight` and `status` are **read-only Azure queries** requiring CLI sign-in and network access. `-S` does not make every bootstrap command offline or eliminate existing resource costs.
-
-**Run:**
-
-```bash
-export LAB_ENV_DIR="$PWD/.lab/lab-training-en"
-export LAB_BOOTSTRAP_CONFIG="$LAB_ENV_DIR/config.json"
-export LAB_COST_APPROVAL_FILE="$LAB_ENV_DIR/approval.json"
-python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG"
-python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG"
-```
-
-**Commands explained:**
-
-| Line | What it does and records |
-|---|---|
-| The three `export` lines | Pass the same environment directory, plan JSON, and approval path to later commands. They do not create a missing approval file or change approval state. |
-| `preflight --config ...` | Makes **read-only Azure checks** of identity, region, model/SKU, quota, permissions, and available provider validation. Records readiness/blocker evidence privately. |
-| `status --config ...` | Queries actual resources, deployments, and ownership connected to the existing plan. Does not replace full preflight or model inference. Both commands take plan JSON—not `.env`—as `--config`. |
-
-**Completion signal:** The read-only report identifies the identity, NCUS, exact model/version/SKU, quota family, and regional capacity. If you have not supplied approval yet, read the top-level approval blocker separately from `readiness_status`. `READY` or `OBSERVED` does not verify inference.
-
-| Output | Exact interpretation |
-|---|---|
-| `CREATED_LOCAL_ONLY` | Plan files created; the default approval example is unapproved |
-| `BLOCKED_AWAITING_APPROVAL` with readiness `READY` | Technical readiness is separate from **a valid approval file for this plan** |
-| `READY_FOR_APPROVED_APPLY` / `APPROVED` / `PENDING_EXECUTION` | Approval/read-only readiness checked, not proof of apply or actual service execution |
-| `OBSERVED` / `NOT_CHECKED_BY_STATUS` | Remote state observed; status did not repeat full readiness checks |
-| `BLOCKED` | Technical/scope error. Do not automatically bypass with another region, account, or permission scope |
-
-The [infrastructure document](../../infra/README.md) and plan define model deployment candidates. These recorded role examples do not guarantee current availability or success.
-
-| Role | Model and version | Caveat |
+| Final observed comparison, n = 12 | Baseline v1 | Candidate v2 |
 |---|---|---|
-| Agent / same-base SFT | gpt-4.1-mini / 2025-04-14 / Standard | Explicit new candidate; catalog `Legacy` and fineTune markers were observed. Verify actual creation/training support |
-| Judge | gpt-5.4-mini / 2026-03-17 | Actual evaluation-request support and permissions are separate |
-| Planner / Optimizer | gpt-5.5 / 2026-04-24 | Roles can share a model; do not automatically substitute another |
-| Embedding | text-embedding-3-small / 1 | Later verify index dimensions against actual responses |
+| All-criteria passes; errors | 10/12; 0 | 11/12; 0 |
+| Relevance passes; mean (1–5) | 10/12; 4.4167 | 11/12; 4.3333 |
+| TaskAdherence passes; binary mean | 12/12; 1.0 | 12/12; 1.0 |
+| Relevance rows 1 / 2 / 6 / 11 | 3 / 5 / 5 / 3 | 4 / 4 / 4 / 3 |
+| Latency p50 (ms) | 5,891.09 | 7,287.52 |
+| Latency p95 (ms) | 8,817.33 | 16,038.35 |
+| Agent tokens | 35,187 | 43,751 |
 
-ARM `capacity` units depend on the model/SKU. Do not multiply every value by 1,000 TPM. If catalog minimum/step is `null`, do not invent a value. Distinguish the base model's exact `usageName` from `-finetune` quota.
+Native **PairedTTest: Inconclusive** for **both Relevance and TaskAdherence**. Row 1 crossed the pass threshold, but rows 2/6 declined and row 11 stayed at 3 for honest uncertainty rather than an unsupported definitive answer. Do not change policy facts to chase scores. **HOLD adoption; keep pinned v1 pending further review/new representative cases.** Higher pass count does not offset the lower mean and observed latency/token tradeoffs or prove overall improvement. No production approval is granted.
 
-**Errors/recovery:** If the current identity cannot query providers, create resources, or assign roles, the operator must follow the approved permission path. The tool does not automatically register providers, modify shared permissions, or change regions.
+## Bound the actual workshop {#scope}
 
-**The first observed failure:** Despite catalog `Deprecating`/fineTune markers and quota, Azure validation rejected gpt-4o-mini / 2024-07-18 with `ServiceModelDeprecated`, citing **retirement from 2026-03-31**. Preserve the first rejected creation request, zero child resources, and original ARM deployment 404. Selecting a new candidate before generating responses was environment recovery—not an experiment showing model-quality improvement. Metadata alone does not establish success for the replacement either.
+<a id="approval"></a>
 
-**Resume:** Repeat only read-only preflight/status for the same plan. Quota headroom is neither free calls nor deployment success.
+Agree current authorization for the **actual account, project, data, processing locations, and costs**. Another rehearsal's approval is not transferable. GlobalStandard describes a processing arrangement, not a promise that every request is processed only in NCUS.
 
-**Next:** A4.
-
-### A4. Bind actual approval to the plan {#approval}
-
-**Purpose:** Prevent billable changes based on a different scope's approval or a mere example file.
-
-**Your task:** An authorized operator prepares this plan's private approval file using actual consent. Inspect the [approval schema](../../infra/approval.schema.json) and the plan-generated example. Neither a participant nor AI should invent approval on someone's behalf.
-
-To inspect the public format without exposing identities or approval contents:
-
-```bash
-python3 -S -m json.tool infra/plan.schema.json
-python3 -S -m json.tool infra/approval.schema.json
-```
-
-**Commands explained:** The first line displays the plan's field contract; the second displays the approval-record contract locally. They read public **schemas**, without filling in or signing approval values. A file hash checks content consistency; it is not itself a signature proving human consent.
-
-**Run · validate an already prepared approval record only:**
-
-```bash
-python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-```
-
-**Command explained:** Adds `--approval` to A3's checks to verify that the current approval file matches **this plan's scope, hashes, validity period, and limits**. It combines Azure state queries with local approval validation—not apply or paid model inference. Do not continue if the file is missing or invalid.
-
-Check plan/template hashes, models, scope, approver, validity, actual retention, Global processing, call/candidate/epoch/job/wait limits, and separate resource-creation/RBAC approvals. Review lifecycle conditions, ongoing hosting, and uncertain costs too. A checkbox acknowledging retirement does not re-enable a model the provider refuses.
-
-**A scope summary is not a complete approval file.** Do not pass a private summary's `budget_cap: null` directly to bootstrap. Using `approval_template(config)` or the plan's example, the authorized operator records real consent in the complete schema.
-
-For the recorded no-cap authorization, bootstrap fields were `budget_policy: NO_MONETARY_CAP_EXPLICITLY_APPROVED`, `budget_amount: null`, `acknowledge_no_monetary_cap: true`, and **nonempty private `request_evidence`**. Actual approver/time/validity, USD currency, exact scope/models, creation/RBAC/Global-processing approval, retention, and finite work limits must also validate. Describing these fields is neither an approval file nor authorization for another user's spending.
-
-`null` does not mean missing approval, zero cost, or free service. Do not block the recorded authorization with the obsolete USD 50 proposal or fabricate a numeric cap for convenience. A finite-budget policy may be chosen for a separately authorized scope, but must not be silently substituted here.
-
-Technical minimum log retention and user-authorized retention are different. Do not turn an example's 30 days into an approval fact. Other workshops must use their own customer's actual cost, processing, and retention authorization.
-
-**Completion signal:** Approval validation passes for the exact scope, and separate readiness is healthy. This alone creates no resources and runs no model.
-
-**Errors/recovery:** If real approval and schema/code disagree, fix and verify the integration contract rather than distorting consent. Do not turn no-cap approval into a finite budget or reuse the file for another plan.
-
-**Resume:** Preserve the original approval record. Explicitly supply the current approval rather than silently overwriting the initial path recorded in `.env`.
-
-**Next:** A5, only after checking valid approval, current readiness, and provider validation for the new plan.
-
-### A5. Apply the same new environment once {#a5-같은-신규-환경을-한-번만-적용}
-
-**Purpose:** Create only approved resources in the ownership-verified new group, and safely resume partial execution.
-
-**Your task:** Ensure no other operator/process is applying the same environment. **This step changes Azure and creates billable resources. The recorded integration reached actual `APPLIED` after recovery that preserved the failure history.**
-
-**If only the resource group has already been created, bind it first:** An integration operator with the **original precreation intent and actual creation receipt** can perform the following read-only binding. Replace paths with original private records. Do not fabricate example JSON to claim past creation. For an ordinary new plan with no group yet, skip this binding; apply records ownership intent before creation.
-
-```bash
-export RG_INTENT_FILE="YOUR_PRIVATE_PRECREATION_INTENT_JSON"
-export RG_CREATED_FILE="YOUR_PRIVATE_CREATION_RECEIPT_JSON"
-python3 -S -m lab.bootstrap bind-group --config "$LAB_BOOTSTRAP_CONFIG" --intent "$RG_INTENT_FILE" --created "$RG_CREATED_FILE"
-```
-
-**Commands explained:** The exports point to existing private **precreation intent** and **creation receipt** files. `bind-group` checks those records against the current plan and the empty group in Azure, then binds the local ownership ledger. It does not manufacture ownership by changing names/tags, create Azure resources, or modify permissions.
-
-The actual new group's scope, original tags, and creation evidence must match. A matching group name is not enough. `prepare-group` is used **before** external group creation; `confirm-group` is the read-only confirmation of that original intent. `bind-group` likewise does not retroactively fix tags/permissions or modify existing resources.
-
-**Run · operator only, after approval and ownership checks:**
-
-```bash
-python3 -S -m lab.bootstrap apply --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
-```
-
-**Commands explained:**
-
-| Command | What it does and its cost boundary |
+| Work | Bound |
 |---|---|
-| `apply --config ... --approval ...` | After checking plan, approval, identity, ownership, and provider validation, applies **real ARM resources and approved RBAC**. Ongoing billable resources may result. Deployment IDs, partial successes, and errors are preserved. This is not an ordinary participant connection command. |
-| `status --config ... --approval ...` | Queries remote state/ownership for **the same plan** just applied. Does not submit another apply or generate a model response. After completion, use status and participant preflight to connect. |
+| Baseline | One correctly configured direct managed evaluation of all 12 cases; the retained pilot is not this baseline |
+| Optimization | One instruction-only job, **Max candidates 1**, wait **at most 60 minutes** |
+| Candidate check | One SDK-submitted real Foundry run in the **same evalID**, same data/version/hash, Relevance 4 / TaskAdherence binary pass 1 / Judge; receipt-based collection, portal comparison |
+| Agent changes | Lab v2 only; latest-active changes affect all channels. Promotion is restricted to the isolated unpublished agent, never production |
+| Extra features | Unverified features are not run; no alternate exercise is used to claim completion |
 
-Bootstrap saves the intent ID, checks target ownership, then uses a group-scoped Incremental deployment. It does not adopt existing groups/resources or another environment by name alone. Unknown targets, model changes, or permission-scope changes are stop conditions.
+Setup checks have their own authorized usage; one Optimizer job can include many internal calls. An error is not permission to repeat jobs, widen scope, change regions, or rerun until a preferred result appears.
 
-**Completion signal:** Actual ARM deployment completes, manifest/inventory agree, and `.env` is generated. Bootstrap reports `APPLIED` alongside `data_plane_verified: false` / `live_status: NOT_VERIFIED`. Infrastructure verification does not prove inference, MCP, calibration, or trace ingestion succeeded.
+## Verify identities and least-privilege access {#rbac}
 
-**Errors/recovery:** A timeout does not prove resources are absent. Check saved deployment IDs, ledgers, and remote state. Do not change shared environments through automatic rollback, deletion, or permission repair.
+Check the current [Foundry RBAC guidance](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry) against the operations actually needed. Role-assignment authority is separate from permission to run an agent.
 
-**Resume:** First inspect `status`, then continue `apply` with the same config and valid approval. Remove a stale lock only after confirming the recorded PID has exited and no other operation is active. Do not arbitrarily defeat locking.
-
-Do not add `--confirm`, `--resume`, `--force`, `--adopt`, or `--delete` to bootstrap apply. Those differ from batch `run --resume`. `apply --what-if` is a read-only comparison only for an already ownership-verified group, yielding `WHAT_IF_ONLY`. Do not create a group just to run what-if, or interpret it as cost authorization or deployment success.
-
-**Next:** A6.
-
-### A6. Check the runtime and hand it to participants {#a6-런타임-환경-확인-후-참가자에게-전달}
-
-**SDKs are required from this step onward.** Unlike SDK-free bootstrap in A1–A5, runtime preflight uses the `.venv` prepared in [participant step 02](handbook.md#prepare). Activate an existing environment instead of restarting with installation/deployment.
-
-**Purpose:** Use the exact newly created deployment, Search, and monitoring endpoints, and keep evidence separate by environment.
-
-**Your task:** Read the private `.env` and compare deployment names/endpoints with the actual manifest. Do not substitute `.env.example` placeholders or old workshop values. Do not execute `.env` as shell code.
-
-**Run:**
-
-```bash
-export LAB_LANGUAGE=en
-export LAB_ENV_FILE="$LAB_ENV_DIR/.env"
-export LAB_ARTIFACTS_DIR="$LAB_ENV_DIR/artifacts"
-python -m lab --config "$LAB_ENV_FILE" preflight
-python -m lab validate
-```
-
-**Commands explained:** `LAB_LANGUAGE=en` selects the independent English corpus and must be set before Python starts. `LAB_ENV_FILE` points to the generated `.env`; `LAB_ARTIFACTS_DIR` selects the same environment's results directory. Runtime `preflight` queries the identity/deployments the SDK will use and records `preflight.json`; `lab validate` locally checks the 100 source cases and generated data. Neither evaluates quality nor tests the first model response.
-
-Set `LAB_ARTIFACTS_DIR` in each Python process's environment **before it starts**. Restore exports in new terminals/processes. Do not change the path after importing modules and mix evidence across environments.
-
-**Completion signal:** `preflight: PASS`, all 100 cases intact, and the correct actual environment. `.env` records `EMBEDDING_DEPLOYMENT`, `LAB_ARTIFACTS_DIR`, `LAB_BOOTSTRAP_CONFIG` and `BOOTSTRAP_CONFIG` pointing to the same plan, the initial `LAB_COST_APPROVAL_FILE`, and new monitoring resource IDs. No keys/passwords are required.
-
-After bootstrap, main-CLI `--confirm` operations and SFT deployment use `BOOTSTRAP_CONFIG` to verify completed bootstrap ownership and the actual new group/account. Ownership does not grant current task authorization; validate private approval and call/job limits separately. Do not bypass with old environment values or fabricated hashes/receipts.
-
-**Errors/recovery:** If code forces out-of-repository artifact paths through `.relative_to(ROOT)`, use the `artifact_reference` contract instead. Do not hide the problem by copying private files into the repository.
-
-**Resume:** Restore the same `.venv` and variables after reopening a terminal. Do not restart from package installation, redeployment, or resource-group creation.
-
-**Participant handoff:** Supply the actual account/tenant/subscription and explicitly require `LAB_LANGUAGE=en`, private `LAB_ENV_DIR` and current `LAB_COST_APPROVAL_FILE` paths, current authorization scope, new `APPLICATIONINSIGHTS_RESOURCE_ID`, and retention/cost-check responsibilities. Never publish `.env`, manifests, or approval files in public channels/packages. Give participants accessible actual paths, not example directory names.
-
-**Next:** Participants set these values once in [step 02](handbook.md#prepare), then continue through 03–06 in the same environment. The operator checks prompt-agent **Agent Optimizer** access, actual optimizer/judge deployments, and the one-candidate setting beforehand. Do not make Prompt Optimizer, separate managed evaluations, or SFT extra prerequisites. Do not precreate participant responses/evaluation results or count connectivity checks as quality evaluation.
-
-## Which identity needs which permissions? {#rbac}
-
-This is a **plan for new resources only**. Check actual role definitions and API operations first. Reading the table is not evidence that roles were assigned.
-
-| Identity | Operation | Roles to review at minimum scope |
-|---|---|---|
-| Operator / participant | Foundry account data operations and model calls | Task-appropriate Azure AI Developer / Cognitive Services OpenAI User on the new account |
-| Operator / participant | Current Agent Service project operations | Foundry User on the new project. Do not assume Azure AI Developer alone covers agent CRUD |
-| Operator / participant | Prepare Search schema/content | Search Service Contributor + Search Index Data Contributor on the new Search service |
-| Project MI | Read IQ search content | Search Index Data Reader on the new Search service |
-| Project MI | Model/monitoring access | Appropriate model role on the new account and publishing permissions on new monitoring resources |
-| Search MI | LLM query planning and vectorizer model access | Check Cognitive Services User on the new Foundry account against current official documentation |
-| Observability user | Read traces | Task-appropriate read roles on new Application Insights / Log Analytics resources |
-
-Permission to assign roles is a separate administrative capability. Do not simplify setup by newly granting participants subscription Owner/Contributor. Do not confuse the Search MI with the project MI.
-
-Cognitive Services User may include key-list operations. That is not an instruction to use key authentication. Preserve bootstrap's Entra-authentication and disabled-local-auth boundaries; do not retrieve or distribute keys.
-
-References: [Foundry RBAC](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry) · [Search RBAC](https://learn.microsoft.com/en-us/azure/search/search-security-rbac) · [Search MI access for model-backed knowledge bases](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-create-knowledge-base#configure-access)
-
-### Official implementation contracts {#references}
-
-These official contracts informed infrastructure preparation. They are **planning references**, not proof of completed role assignment, deployment, or execution.
-
-| Contract to check | Official reference |
+| Identity | Access to verify at the narrowest appropriate lab scope |
 |---|---|
-| Foundry account/project system identities and project properties | [accounts/projects · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects) |
-| Pinned model versions, NoAutoUpgrade, SKUs, and tags | [accounts/deployments · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/deployments) |
-| Search MI, Basic, and disableLocalAuth | [searchServices · 2025-05-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.search/2025-05-01/searchservices) |
-| Extension-role scope limited to new resources | [ARM extension resource scope](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/scope-extension-resources) |
-| AAD authentication for project connections | [accounts/projects/connections · 2025-06-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2025-06-01/accounts/projects/connections) |
-| Log Analytics pricing plan and retention | [workspaces · 2023-09-01](https://learn.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2023-09-01/workspaces) |
-| Workspace-based Application Insights | [components · 2020-02-02](https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/2020-02-02/components) |
+| Participant/operator | Open the project, read the pinned agent, upload/select a dataset, create/read evaluations, and use Agent Optimizer |
+| Project managed identity | Required model and existing tool/connection access |
+| Supporting service identities | Only the access required by the prepared agent's actual connections |
+| Operator maintaining the lab | Authorized version creation, resource/cost inspection, and any separately approved lifecycle actions |
 
-Do not combine Search `disableLocalAuth: true` with incompatible `authOptions`. This is a check against the new template/API contract, not an instruction to read keys or change an existing Search service.
+Do not give participants subscription-wide Owner access as a shortcut, expose credentials, change organization policy, or bypass network restrictions. An account shown in a portal tab is not proof that a different client uses the same identity.
 
-## Costs, retention, and access to newer features {#cost}
+## Cost and end-of-session ownership {#cost}
 
-| Cost category | How to interpret it |
+Costs include agent responses, Judge evaluation, instruction generation, internal Optimizer calls, policy tools, and any continuously running supporting resources or logs. **Unknown cost is not zero**, quota is not a free allowance, and closing a browser does not stop hosting charges.
+
+Name the operator responsible for remaining jobs, cost inspection, and authorized cleanup of workshop resources. Do not turn resource deletion or broad account changes into participant exercises. Keep credentials, private configuration, and raw account identifiers out of shared guides and packages.
+
+## Hand off a usable participant contract {#handoff}
+
+| Give participants | Required specificity |
 |---|---|
-| Search Basic | Read-only NCUS price reference: USD 0.101/hour, approximately USD 2.424 per 24 hours or USD 73.73 per 730 hours. Not an actual bill or total lab cost |
-| Model / Judge / planner / embedding | Actual requests/tokens for each. Quota headroom is not a free allowance |
-| Optimizer | Candidate, agent, tool, and evaluation usage. Do not reduce hidden internal calls to “one API call” |
-| SFT | Separate training, base/tuned inference, and continuous tuned-model hosting |
-| Logs / retention | Ingestion and retention costs. An ingestion cap is not a strict monetary cutoff |
-| Unaggregated / unknown | `UNKNOWN_NOT_ZERO` or awaiting observation—not zero |
+| Portal target | The correct project and **`contoso-eval-en`**; separately prepared Korean target **`contoso-eval-ko`** |
+| Agent versions | **Active v1 restored**, recorded baseline v1 and retained candidate v2; **`lab-agent-dea3cec5`**, `gpt-4.1-mini` / `2025-04-14`. Keep explicit versions and all evidence |
+| Model roles | Agent **`lab-agent-dea3cec5`**, Judge **`lab-judge-luna-dea3cec5`**, Optimizer **`lab-planner-dea3cec5`**, with recorded versions and support limits |
+| Dataset | Registered English **`contoso-eval-en-dev12` version `1`**, original file, n = 12 and SHA-256; Korean registration requires its own confirmation |
+| Evaluation contract | Same corrected definition; **Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1**, generic TaskAdherence Threshold 1 if shown; query-only input, no custom override |
+| Bounds and ownership | Authorized scope, one candidate, 60-minute optimization wait, cost/cleanup owner, and escalation contact |
+| SDK context | Verified venv/dependencies and `az login` account; operator project endpoint/subscription; baseline URL/Raw JSON IDs; helper and persistent receipt path |
+| Evidence | Completed baseline/SDK candidate, matched inputs, final metrics/row regressions and PairedTTest Inconclusive; HOLD adoption pending further review/new representative cases. Pilot excluded |
 
-No monetary cap does not justify redundant or duplicate requests. Expanding beyond agreed call/candidate/job/wait limits requires separate judgment. **Retention** is the current boundary; do not use deletion as automatic cost control.
+**Record generated mappings, do not override them.** The corrected submission confirmed **Relevance `response={{sample.output_text}}`** and **TaskAdherence `response={{sample.output_items}}`**. UI defaults also showed `query={{item.query}}` and TaskAdherence's `tool_definitions={{sample.tool_definitions}}`. Inspect **Raw JSON**; do not replace the submitted TaskAdherence binding with the earlier UI output-text value. These are sample bindings, not extra dataset columns.
 
-Check Prompt Optimizer, prompt-agent Agent Optimizer, SFT, Frontier, and trace ingestion separately. A directly matching official Frontier API/support route remains `NOT_VERIFIED`; that is not proof it does not exist. The prompt-agent portal wizard is the documented Agent Optimizer path; no hosted-agent conversion is required.
+**Version limit:** Catalog links showed `relevance` **v14** and `task_adherence` **v17**; actual service criteria had **`evaluator_version` empty/default**. Record names/configuration, Judge and dataset versions, and this limitation. Reusing one definition does not prove private service rubric versions are fully pinned.
 
-## Handoff checklist {#handoff}
+**Execution worked; adoption remains HOLD.** Preserve both runs, receipt, and the measured tradeoffs. Keep pinned baseline v1 for selection; lab v2 activation remains a separate all-channel operator concern. The Optimizer's +0.010 and native pass-count increase are not proven overall improvement, statistical significance, production approval, a repaired portal path, or new Korean results.
 
-- [ ] Actual identity, subscription, tenant, NCUS, and new-resource scope are verified.
-- [ ] The original intent and ownership manifest allow the same group/environment to be resumed.
-- [ ] Approval examples and real authorization records are distinguished and stored privately.
-- [ ] The recorded no-monetary-cap authorization is interpreted together with finite work limits; other participants use their own approval.
-- [ ] Model lifecycle, exact usageName, capacity units, and role-propagation limits are explained.
-- [ ] `.env` and run records are excluded from source/distribution ZIPs.
-- [ ] Deployment, actual inference, quality, and observability states are recorded separately.
-- [ ] The resource group is preserved; no deletion command is run.
-- [ ] Actual environment/approval paths and the monitoring ID are supplied, with a link to participant step 02.
-- [ ] Existing lab environments are not recreated/redeployed, and access to the core Agent Optimizer path is checked.
+**Executed final lab state:** `contoso-eval-en` active version was restored to **1** through **Details → Agent configuration → Active version → Edit → Version 1**. Candidate v2 and all evaluation/receipt evidence remain; do not delete them. **No production Publish was performed; no production channels/traffic are configured.** Foundry nevertheless automatically provides **RBAC-only Responses/preview endpoints without Publish**. Endpoint existence is not production publication.
