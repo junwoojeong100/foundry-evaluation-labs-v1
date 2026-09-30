@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Foundry 학습 루프 실습 · 통합 인쇄본</title>
-  <link rel="icon" type="image/svg+xml" href="web/assets/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="web/assets/foundry.svg">
   <link rel="stylesheet" href="web/styles.css">
 </head>
 <body class="print-book">
@@ -28,10 +28,9 @@
 <li><a href="#book-sft">부록 1 · SFT 심화 부록</a></li>
 <li><a href="#book-facilitator">부록 2 · 강사용 진행 가이드</a></li>
 <li><a href="#book-admin">부록 3 · 관리자 사전 준비</a></li>
-<li><a href="#book-verification">부록 4 · 검증 기록</a></li>
+<li><a href="#book-verification">부록 4 · 최신 검증·출처</a></li>
 <li><a href="#book-data-guide">부록 5 · 데이터 설명</a></li>
-<li><a href="#book-migration">부록 6 · v1 이관·아카이브 준비</a></li>
-<li><a href="#book-english">부록 7 · English quickstart</a></li>
+<li><a href="#book-english">부록 6 · English quickstart</a></li>
 </ol>
     </nav>
     <section id="book-index" class="book-section guide-content" lang="ko" aria-label="참가자 실습 가이드">
@@ -1233,7 +1232,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <p><a id="book-index--tune"></a>
 <a id="book-index--troubleshooting"></a>
 <a id="book-index--sources"></a></p>
-<p>참고가 필요할 때만: <a href="#book-admin">운영자 사전 준비</a> · <a href="#book-facilitator--resume">오류·재개 및 별도 진단</a> · <a href="#book-sft">SFT/Frontier 부록</a> · <a href="#book-data-guide">데이터 설명</a> · <a href="#book-verification">실제 검증 기록</a> · <a href="#book-migration">이관·출처</a>.</p>
+<p>참고가 필요할 때만: <a href="#book-admin">운영자 사전 준비</a> · <a href="#book-facilitator--resume">오류·재개 및 별도 진단</a> · <a href="#book-sft">SFT/Frontier 부록</a> · <a href="#book-data-guide">데이터 설명</a> · <a href="#book-verification">최신 검증·출처</a>.</p>
 <p>화면 상단의 <strong>어둡게/밝게</strong>는 선택을 기억합니다. <strong>현재 인쇄</strong>는 읽는 단계만, <strong>전체 PDF</strong>는 이 문서 전체를 인쇄 창으로 엽니다. PDF로 저장을 선택하면 되며, 인쇄 배경은 항상 밝게 유지합니다.</p>
 <p>문서 기준 <strong>2026-09-30</strong>, 가이드 <strong>v1</strong>. <code>python -m lab</code>는 이 저장소의 교육용 도구이며 Microsoft 공식 CLI가 아닙니다. 서비스 지원·리전·모델·비용은 바뀔 수 있으며, 기존 검증 기록은 참가자의 새 실행이나 운영 승인을 대신하지 않습니다.</p>
 </section>
@@ -1897,7 +1896,7 @@ python -m lab validate
 <p>반면 <strong>LIVE 실행 완료</strong> 체크는 실제 버전/응답/작업/평가 기록이 있을 때만 합니다. “수업을 진행했다”, “읽음 체크를 눌렀다”, “명령 문법 검사가 통과했다”로 완료 처리하지 않습니다.</p>
 <h2 id="book-facilitator--next-loop">다음 개선 주기</h2>
 <p>운영 데이터로 확장할 때는 데이터 승인·비식별화·권한·보존을 새로 검토합니다. 대표성 있는 새 질문, 도메인 전문가의 레이블, 여러 번의 사전 계획된 반복, drift 관찰, 변경 승인 절차가 필요합니다. 작은 합성 holdout이나 16개 교정 fixture를 운영 안전 인증으로 사용하지 않습니다.</p>
-<p>v1의 교수법·실행 패턴을 받아들인 결정과 제외 내용은 <a href="#book-migration">이관 문서</a>에 있습니다. 참가자는 v1의 실행 파일이나 다른 업무 시나리오를 사용할 필요가 없습니다.</p>
+<p>최신 확인 범위와 출처는 <a href="#book-verification">검증 안내</a>에 있습니다. 참가자는 이전 버전의 실행 파일이나 다른 업무 시나리오를 사용할 필요가 없습니다.</p>
 <h2 id="book-facilitator--resume">오류·재개 참고 — 새 경로를 선택하지 않기</h2>
 <p>완료한 단계는 기존 기록을 읽고 다음 단계로 이어갑니다. <strong>환경 manifest → run metadata → 원본 응답 → Judge 시도 → governance status</strong> 순서로 확인합니다. 아래는 장애 때만 쓰는 참고이며 참가자의 추가 단계가 아닙니다.</p>
 <table>
@@ -2532,410 +2531,68 @@ python -m lab validate
 <li>[ ] 기존 실습 환경에서는 새 RG 생성·재배포를 반복하지 않으며 기본 경로의 Agent Optimizer 접근을 확인했다.</li>
 </ul>
 </section>
-<section id="book-verification" class="book-section guide-content book-appendix" lang="ko" aria-label="부록 4 · 검증 기록">
-<p class="book-part-label">부록 4 · 검증 기록</p>
-<h1 id="book-verification--검증-기록과-한계">검증 기록과 한계</h1>
-<p><strong>2026-09-30 신규 Azure 환경에서 실제 실행했습니다. 최종 운영 판단은 HOLD입니다.</strong></p>
-<p>리소스·서비스 실행 성공과 품질 합격은 다릅니다. 실제 Agent Optimizer와 SFT는 종료했지만 중요 실패·Judge 교정 불일치·미승인 사람 검토가 남았습니다. 합격선을 낮추거나 실패 응답을 재추첨하지 않았습니다.</p>
-<p>정리한 근거는 <span class="book-file-link"><code>evidence/integration-20260930/</code><span class="book-file-label"> (파일: <code>evidence/integration-20260930</code>)</span></span>에, 가공 전 API 응답·승인·전체 ID·환경 파일은 비공개 <code>.lab/lab-20260930-live/</code>에 있습니다. DEMO와 이전 v1 기록을 신규 LIVE 결과로 사용하지 않았습니다.</p>
-<h2 id="book-verification--status">1. 실행과 품질 상태</h2>
+<section id="book-verification" class="book-section guide-content book-appendix" lang="ko" aria-label="부록 4 · 최신 검증·출처">
+<p class="book-part-label">부록 4 · 최신 검증·출처</p>
+<h1 id="book-verification--최신-검증-기록과-한계">최신 검증 기록과 한계</h1>
+<p><strong><span class="book-file-link">최신 결과 JSON<span class="book-file-label"> (파일: <code>evidence/latest.json</code>)</span></span></strong>에 현재 배포물의 검증 시각·대상·결과를 기록합니다. 공개 저장소에는 이 검증 파일 하나만 유지합니다. 이전 검증·이관·임시 증빙 파일은 Git 이력에 남아 있으며 현재 배포 묶음에는 포함하지 않습니다.</p>
+<h2 id="book-verification--local">확인 범위</h2>
 <table>
 <thead>
 <tr>
 <th>대상</th>
-<th>실제 결과</th>
-<th>판정 경계</th>
+<th>확인할 내용</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>새 RG·인프라</td>
-<td><code>rg-foundry-eval-v11-20260930-eca723</code>, North Central US. ARM <code>Succeeded</code>, bootstrap의 리소스·연결·역할 소유 기록 25개</td>
-<td>기존 환경 재사용 아님. 이후 SFT 모델 배포는 별도 소유 원장</td>
+<td>원본 데이터</td>
+<td>정책 8개·사례 100건과 train 56 / validation 12 / dev 12 / test 20 유지</td>
 </tr>
 <tr>
-<td>모델 smoke</td>
-<td>새 gpt-4.1-mini 배포에서 실제 response ID, 입력 21/출력 2 토큰, 약 3.03초</td>
-<td>연결 확인이지 품질 평가 아님</td>
+<td>가이드</td>
+<td>6단계, CLI 문법·명령 해설, 로컬 링크와 최신 HTML 일치</td>
 </tr>
 <tr>
-<td>기준선 Agent</td>
-<td>Foundry Agent Service 고정 버전에서 dev 3건 응답</td>
-<td>지식 없는 기준선. 인용/업무 실패 보존</td>
+<td>포털 사진</td>
+<td>실제 화면 14장, 출처·가림·치수·해시, 이미지 표시와 확대 링크</td>
 </tr>
 <tr>
-<td>Foundry IQ</td>
-<td>실제 embedding, 벡터 인덱스, vector/hybrid 질의, IQ 계획·출처, Agent의 MCP 호출 실행</td>
-<td>직접 검색 진단과 Agent에 실제 제공된 근거를 분리</td>
+<td>웹·인쇄</td>
+<td>데스크톱·모바일, 밝은/어두운 화면, 인쇄 목차와 링크</td>
 </tr>
 <tr>
-<td>IQ dev</td>
-<td>12건 캡처 완료. JSON 10/12, route 6/12, 인용 6/12, 중요 규칙 실패 3건</td>
-<td>로컬 규칙도 통과하지 못함</td>
+<td>PDF</td>
+<td>한국어 텍스트·필수 내용·빈 페이지·잘림·로컬 머신 링크·사진 포함</td>
 </tr>
 <tr>
-<td>업무 Judge</td>
-<td>실제 정책/관련성/검색 근거성 채점. IQ dev의 API·형식 오류/누락 8건을 분모에 유지</td>
-<td>성공한 행만 평균 내어 통과 처리하지 않음</td>
-</tr>
-<tr>
-<td>관리형 평가</td>
-<td>실제 cloud eval/run 완료, 3건 수집</td>
-<td>검색 없는 행의 서비스 groundedness 숫자는 검색 근거성으로 인정하지 않음</td>
-</tr>
-<tr>
-<td>Prompt Optimizer</td>
-<td>실제 서비스 제안과 변경 이유를 보존하고 새 Agent에서 3건 재평가</td>
-<td>3건 모두 JSON 계약 실패. 서비스 완료 ≠ 개선</td>
-</tr>
-<tr>
-<td>Agent Optimizer</td>
-<td>실제 <code>succeeded</code>, 후보 1개, native baseline/candidate 각 12건</td>
-<td>내장 순위는 개선됐으나 실습의 중요 규칙 실패는 남음</td>
-</tr>
-<tr>
-<td>SFT</td>
-<td>학습 전 기준선 → 파일 processed → 1 epoch 학습 succeeded → 실제 학습 모델 배포 Succeeded → paired 12×2 평가</td>
-<td>일반 SFT이며 Frontier가 아님. 중요 실패가 남아 운영 합격 아님</td>
-</tr>
-<tr>
-<td>대화형 진단</td>
-<td>실제로 확인 질문을 했으나 JSON 밖 문장이 있어 첫 턴 형식 실패</td>
-<td>scripted follow-up을 실행한 것으로 꾸미지 않고 중단</td>
-</tr>
-<tr>
-<td>freeze·fresh12</td>
-<td>후보/모델/검색/Judge/게이트/데이터를 동결한 <strong>뒤</strong> 12건 생성·등록</td>
-<td>교정 HOLD 때문에 최종 유료 추론은 제출 전 차단</td>
-</tr>
-<tr>
-<td>Control Plane</td>
-<td>실제 IQ Agent의 모델 span 24개, 도구 span 11개를 response ID로 연결</td>
-<td>cloud evaluation event와의 자동 연결은 미확인. 정책 적용을 주장하지 않음</td>
-</tr>
-<tr>
-<td>다음 데이터</td>
-<td>실제 dev 실패 12건을 response ID와 연결한 검토 대기열 생성</td>
-<td>정답은 비어 있고 사람 검토 PENDING, 자동 학습/승격 없음</td>
-</tr>
-<tr>
-<td>사람 승인·Frontier</td>
-<td>사람 운영 승인 없음. Frontier 지원·참여 경로는 NOT_VERIFIED</td>
-<td>과금 승인, 일반 SFT, AI 검토가 대신하지 못함</td>
+<td>패키지</td>
+<td>최신 파일과 검증 하나만 포함, 비공개 환경·인증·원본 실행 자료 제외</td>
 </tr>
 </tbody>
 </table>
-<p>원본은 Contoso 정책 8개와 사례 100건입니다. <strong>train 56 / validation 12 / dev 12 / test 20</strong>을 보존했습니다. 별도의 교정 16건과 대화 진단 1건은 원본 100건에 덮어쓰지 않았습니다.</p>
-<h2 id="book-verification--observed">2. 실제 작업 ID와 비교</h2>
-<h3 id="book-verification--관리형-cloud-평가">관리형 cloud 평가</h3>
+<p>검증 JSON의 <code>status: PASS</code>는 <strong>그 파일에 명시한 로컬 문서·패키지 검사가 통과했다는 뜻</strong>입니다. Azure 실행 성공, 에이전트 품질 합격이나 사람의 운영 승인을 뜻하지 않습니다. GitHub Pages는 생성된 정적 가이드를 제공하며 CLI나 모델을 실행하지 않습니다.</p>
+<h2 id="book-verification--status">LIVE 결과와 구분하기</h2>
+<p>마지막으로 보고된 <strong>2026-09-30 LIVE 품질 판정은 HOLD</strong>입니다. 교정 불일치·중요 실패가 남았고, 최종 fresh 시험은 차단되었으며 사람의 운영 승인은 없었습니다. 현재 <strong>검색 Judge 1.1.0</strong>을 포함한 평가 정의·게이트·실습 데이터는 그대로 유지합니다.</p>
+<p>이번 문서 정리에서는 유료 모델·평가·최적화·학습을 다시 실행하지 않았습니다. 이전 점수나 작업 ID를 새로운 실행 결과로 바꾸지 않으며, 최신 문서 검증으로 기존 HOLD를 해소한 것으로 보지 않습니다.</p>
+<p>실제 포털 사진은 기존 환경을 Headless Playwright로 촬영한 자료입니다. <span class="book-file-link">촬영 기록<span class="book-file-label"> (파일: <code>web/assets/portal/captures.json</code>)</span></span>의 출처와 상태를 확인합니다. 미제출 설정 화면, 기존 서비스 결과, 현재 참가자의 실행 결과는 서로 다릅니다.</p>
+<h2 id="book-verification--checks">보존 기준</h2>
 <ul>
-<li>Evaluation: <code>eval_42db44f4d5174b018cd4d00387638c9c</code></li>
-<li>Run: <code>evalrun_415db05c42e744948446769ba2150dd5</code></li>
-<li>서비스 <code>completed</code>, 3건 전부 수집. 관련성 평균 <strong>3.333/5</strong>.</li>
-<li>입력의 <code>retrieved_context</code>는 비어 있었습니다. 일부 서비스 grader 입력에서 답변이 context로 채워진 것도 관측했습니다. 로컬 수집기는 이를 실제 검색으로 인정하지 않아 groundedness를 <strong>scored 0 / missing 3 / mean null</strong>로 기록했습니다.</li>
+<li>현재 실행 코드·정책·데이터·평가기·14개 포털 사진과 최신 HTML/PDF를 유지합니다.</li>
+<li>비공개 <code>.lab/</code>의 원본 실행·승인·소유 기록은 저장소 정리 대상이 아닙니다.</li>
+<li>Azure 자원·권한은 변경하거나 삭제하지 않습니다. 호스팅·로그 비용도 자동으로 멈추지 않습니다.</li>
+<li>새 검증 결과를 게시할 때는 <code>evidence/latest.json</code>을 갱신하고 이전 날짜별 파일을 추가하지 않습니다.</li>
 </ul>
-<p><strong>서비스가 높은 groundedness를 반환해도 무엇을 근거로 채점했는지 확인해야 합니다.</strong> 정답 정책을 Agent 검색 결과인 것처럼 주입하지 않았습니다.</p>
-<h3 id="book-verification--judge-교정-실패를-보존한-변경">Judge 교정 — 실패를 보존한 변경</h3>
-<table>
-<thead>
-<tr>
-<th>교정</th>
-<th>실행</th>
-<th>정책/관련성 일치</th>
-<th>검색 근거성 일치</th>
-<th>결과</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>cal-01</code></td>
-<td>요청 메시지 type 누락으로 HTTP 400</td>
-<td>점수 없음</td>
-<td>점수 없음</td>
-<td>오류 보존</td>
-</tr>
-<tr>
-<td><code>cal-02-protocol</code></td>
-<td>프로토콜만 수정한 새 실행</td>
-<td>각각 16/16</td>
-<td>14/15</td>
-<td>HOLD</td>
-</tr>
-<tr>
-<td><code>cal-03-boundaries</code></td>
-<td>검색 Judge 1.1.0, 경계 모순을 더 엄격히 명시</td>
-<td>각각 16/16</td>
-<td>14/15</td>
-<td>HOLD</td>
-</tr>
-</tbody>
-</table>
-<p>1.0.0 Judge는 “엄격히 이전”에 정확히 같은 시각이 포함된다는 잘못된 답에 4점을 줬습니다. <strong>holdout 생성 전</strong> 1.1.0에서 이런 모순은 사소한 누락이 아니라고 명시했습니다. 합격선 4와 교정 요구 100%는 그대로이며 레이블·사례를 바꾸지 않았습니다. 새 교정에는 다른 불일치가 남아 <strong>HOLD를 유지</strong>했습니다. 같은 결과를 점수가 잘 나올 때까지 반복하지 않았습니다.</p>
-<p>교정 참조도 AI 보조 작성 합성 자료입니다. 일치율이 높아도 전문가의 독립적인 정답 검토를 대신하지 않습니다.</p>
-<h3 id="book-verification--두-optimizer는-별도-실행">두 Optimizer는 별도 실행</h3>
-<p>Prompt Optimizer는 일시적 제안 기능으로 원본·응답 JSON·변경 이유·후보 SHA-256을 보존했습니다. 이 응답에는 영구 작업 ID가 없어 만들어 넣지 않았습니다. 후보는 별도 Agent 버전으로 검사했고 3건 모두 형식 실패를 보였습니다.</p>
-<p>Agent Optimizer:</p>
-<ul>
-<li>Run: <code>opt_e2a5acd01eb34e4b9248ba6305241e11</code></li>
-<li>Best candidate: <code>cand_opt_e2a5acd01eb34e4b9248ba6305241e11_0001</code></li>
-<li>Native evaluation: <code>eval_18177e4e0b114845806ae3b1a90cb030</code></li>
-<li>Baseline run: <code>evalrun_0cb063a98c6546f0b39da75ebba5ca1d</code></li>
-<li>Candidate run: <code>evalrun_ae7f020943174782a22906ffcbda84e3</code></li>
-</ul>
-<p>동일 dev 12건, Relevance v14와 Task Adherence v17, 합격선 4, instruction-only, 후보 1개였습니다. 서비스 task-weighted 평균은 <strong>0.677083 → 0.708333</strong>, native 통과 행은 <strong>7/12 → 8/12</strong>, 서비스 오류 행은 양쪽 모두 0입니다.</p>
-<p>원본 native 응답을 다시 생성하지 않고 동일한 로컬 규칙으로 검사했습니다.</p>
-<table>
-<thead>
-<tr>
-<th>로컬 규칙</th>
-<th style="text-align: right;">Native baseline</th>
-<th style="text-align: right;">Native candidate</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>행 수</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr>
-<td>JSON 계약</td>
-<td style="text-align: right;">11/12</td>
-<td style="text-align: right;">11/12</td>
-</tr>
-<tr>
-<td>route</td>
-<td style="text-align: right;">7/12</td>
-<td style="text-align: right;">7/12</td>
-</tr>
-<tr>
-<td>필수 인용</td>
-<td style="text-align: right;">6/12</td>
-<td style="text-align: right;">6/12</td>
-</tr>
-<tr>
-<td>중요 규칙 실패</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-</tbody>
-</table>
-<p><strong>서비스 순위가 올라도 업무 게이트 개선은 확인되지 않았습니다.</strong> 0–1 순위, 1–5 Judge, 결정적 통과율을 섞지 않습니다. 실제 native 입력 템플릿과 각 행을 확인했으며 Agent의 user 입력은 <code>query</code>만이고 <code>ground_truth</code>는 평가용으로 분리되어 있었습니다.</p>
-<p>별도 클라이언트 재실행 <code>optimized-dev</code>는 7번째 요청에서 429를 반환해 중단했습니다. 6건의 성공과 오류 1건만으로 12건 평균을 만들지 않았고 원본 요청/응답과 미시도 상태를 보존했습니다. 위 표는 이 부분 실행이 아니라 <strong>서비스에서 완료한 native 12×2 응답</strong>입니다.</p>
-<p><img alt="새 환경 Agent Optimizer의 실제 완료 화면" src="evidence/integration-20260930/agent-optimizer-succeeded.png"></p>
-<h3 id="book-verification--일반-sft의-실제-종료와-paired-평가">일반 SFT의 실제 종료와 paired 평가</h3>
-<ul>
-<li>Job: <code>ftjob-5c768d4bc0e44b6a8e66cbe21aa10813</code></li>
-<li>기반: <code>gpt-4.1-mini-2025-04-14</code></li>
-<li>실제 모델: <code>gpt-4.1-mini-2025-04-14.ft-5c768d4bc0e44b6a8e66cbe21aa10813</code></li>
-<li>배포: <code>lab-sft-860db66e</code>, Standard, capacity 20</li>
-<li>56 train / 12 validation, 1 epoch, <strong>30,722 trained tokens</strong>.</li>
-</ul>
-<p>같은 system·query/context·temperature 0·seed 105·Standard capacity 20에서 dev 12건씩 비교했습니다. JSON은 양쪽 12/12, route는 <strong>10/12 → 11/12</strong>, 인용은 <strong>9/12 → 11/12</strong>, 중요 실패는 <strong>2 → 1</strong>, API 오류는 양쪽 0입니다. 총 관측 토큰은 <strong>7,385 → 7,226</strong>입니다.</p>
-<p>이는 <strong>정적 정책 문맥을 제공한 동일 모델 계열의 작은 합성 dev 비교</strong>입니다. 실제 IQ 검색 품질이나 미노출 실세계 개선율, Frontier 성과로 부르지 않습니다. 자세한 재개 명령은 <a href="#book-sft">SFT 부록</a>에 있습니다.</p>
-<h2 id="book-verification--not-run">3. 동결·보류와 다음 평가</h2>
-<p><code>selected-v2</code>를 <strong>2026-09-30 02:25:52.396539 UTC</strong>에 동결한 뒤 <code>fresh-01</code> 12건을 생성·등록했습니다. 원본 100건, 교정 16건, 별도 대화 1건을 포함한 기존 <strong>117건</strong>과 비교했고 1,470쌍 검사에서 ID·상황 그룹·동일/고유사 질문 겹침이 검출되지 않았습니다.</p>
-<p>이는 NFKC 정규화·숫자 masking·문자열/토큰 유사도 0.88 기준의 <strong>어휘 검사</strong>입니다. 템플릿에서 만든 합성 변형이며 독립 실세계 표본이나 의미상 무누출을 보증하지 않습니다.</p>
-<p>최종 명령의 gate를 실제 확인했습니다. <strong>교정 HOLD 때문에 model 요청 전에 종료 코드 1</strong>로 차단됐고, <code>optimized-fresh</code> run 및 최종 attempt가 생성되지 않았습니다. 점수는 미측정입니다. 원래 test20의 최소 행 수·합격선을 줄여 통과시키지 않았습니다.</p>
-<p>사람 검토, 교정 불일치 해결과 새 실험 설계가 필요합니다. 이 holdout을 보고 Judge를 유리하게 수정하거나 재채점하지 않습니다. 변경이 필요하면 실패·동결 기록을 보존하고 새 freeze와 새 holdout을 사용합니다.</p>
-<p>대화 진단은 실제 확인 질문 뒤에 JSON 밖 설명 문장이 붙어 형식 gate에서 중단됐습니다. <strong>사용자 후속 입력과 최종 답변까지 성공했다고 보고하지 않습니다.</strong> scripted 입력은 실제 사용자나 사람의 승인도 아닙니다.</p>
-<h2 id="book-verification--4-인증검색관측에서-확인한-함정">4. 인증·검색·관측에서 확인한 함정</h2>
-<table>
-<thead>
-<tr>
-<th>실제 관측</th>
-<th>반영한 조치</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>폐기 모델이 catalog/쿼터 조회에는 남음</td>
-<td>실제 Provider validation을 추가하고 생성 전 명시적으로 모델을 다시 선택</td>
-</tr>
-<tr>
-<td>프로젝트와 모델 생성이 충돌</td>
-<td>계정 하위 작업을 순서대로 생성. 동일 ID/설정의 의존성 수정만 이력으로 보존</td>
-</tr>
-<tr>
-<td>MI App Insights 연결에 라우팅 메타데이터 필요</td>
-<td>같은 새 관측 자원을 참조하도록 추가. key 인증이나 local auth를 켜지 않음</td>
-</tr>
-<tr>
-<td>Search 상태가 소문자 <code>succeeded</code></td>
-<td>실제 응답 표현을 처리하되 누락/오류 상태는 성공으로 간주하지 않음</td>
-</tr>
-<tr>
-<td>Azure MCP 관리 도구의 데이터 평면 테넌트 불일치</td>
-<td>해당 호출 거부를 보존. 검증한 CLI/SDK/브라우저를 사용. Agent 내부 Search MCP의 프로젝트 MI와는 다른 경로</td>
-</tr>
-<tr>
-<td>장시간 실행 뒤 CAE/MFA 갱신 요구</td>
-<td>정상 로그인/MFA 후 주체를 다시 확인. 명시한 Graph audience·구독으로 원래 provisioner ID가 일치하는지 검증. 정책 완화 없음</td>
-</tr>
-<tr>
-<td>긴 검색/SDK 봉투로 토큰 제한</td>
-<td>원본 429 보존, 명시적 pacing과 문답 전용 Judge projection. 이미 실패한 Judge를 다른 경로로 재채점하지 않음</td>
-</tr>
-<tr>
-<td>빈 관측 화면/누락된 evaluation event</td>
-<td>실제 response ID별 model/tool span만 확인. 연결되지 않은 항목은 PARTIAL/NOT_VERIFIED</td>
-</tr>
-</tbody>
-</table>
-<p>실제 embedding은 <code>text-embedding-3-small</code> v1, 1,536차원이고 인덱스는 HNSW/cosine입니다. vector와 hybrid는 실제 문서를 반환했으며 IQ 응답의 계획·출처·활동도 보존했습니다. 실제 Agent는 기존 Foundry Agent Service 버전과 <code>knowledge_base_retrieve</code> MCP 도구를 사용했습니다.</p>
-<p>Control Plane에서는 IQ dev의 model span 24개와 tool span 11개를 관측했습니다. 평가와의 자동 event 연결·공유 정책 적용은 완료로 표시하지 않습니다. 실제 dev 실패는 response ID가 포함된 <strong>검토 전용 대기열</strong>로 내보냈고, 정답/사람 검토/학습 승격은 자동 생성하지 않았습니다.</p>
-<h2 id="book-verification--5-비용과-보존">5. 비용과 보존</h2>
-<p>실제 Cost Management 조회는 성공했지만 아직 비용 행이 없었습니다. <strong>0원이라는 뜻이 아닙니다.</strong> 사용량은 SDK/서비스가 반환한 토큰·지연으로 기록하고 청구액은 미관측으로 둡니다.</p>
-<table>
-<thead>
-<tr>
-<th>보존 중 과금 항목</th>
-<th style="text-align: right;">조회한 참고 단가</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Search Basic 1 replica × 1 partition</td>
-<td style="text-align: right;">USD 0.101/시간</td>
-</tr>
-<tr>
-<td>SFT Standard 모델 호스팅</td>
-<td style="text-align: right;">USD 1.70/시간</td>
-</tr>
-<tr>
-<td>위 두 호스팅 항목 합계</td>
-<td style="text-align: right;">약 USD 1.801/시간, USD 43.224/24시간</td>
-</tr>
-</tbody>
-</table>
-<p>추론·IQ planner·평가·최적화·학습·로그 사용량은 별도입니다. 이 소매 참고 단가는 실제 청구서·세금 포함 확정액이 아니며 가격/계약은 변할 수 있습니다. Azure Budget은 지출 차단 장치가 아닙니다.</p>
-<p><strong>금액 상한 없음이 승인되었으며, 새 RG는 검토를 위해 보존합니다. 삭제는 승인되지 않았습니다.</strong> 기존 그룹·배포·다른 프로젝트 권한을 줄이거나 삭제하지 않았습니다.</p>
-<h2 id="book-verification--local">6. 로컬·출판 검증</h2>
-<p>초기 통합 출판에서는 전체 자동 검사, 원본 데이터 byte/hash·누출 검사, 실제 문서 CLI 문법, 링크·목차·코드 복사·모바일·인쇄 검사를 구분해 수행했습니다. Playwright <strong>headless</strong>로 웹 검증과 PDF 생성을 진행했습니다. 당시 Foundry 포털은 headless 세션에 인증이 없어 정상 로그인/MFA가 있는 브라우저를 사용했으며 자격 증명을 복사하지 않았습니다. 아래의 후속 가이드 화면 보강 촬영과는 구분되는 기록입니다.</p>
-<p>좌측 상단과 파비콘은 Microsoft 공식 Azure 아이콘 패키지의 Foundry SVG를 동일 파일로 사용합니다. 원본 모양/색상을 바꾸지 않았고 <span class="book-file-link">출처·사용 조건<span class="book-file-label"> (파일: <code>web/assets/NOTICE.txt</code>)</span></span>을 포함했습니다.</p>
+<h2 id="book-verification--sources">출처</h2>
+<p>Contoso Atlas Cloud와 정책·사례는 이 실습을 위한 합성 자료이며 실제 공급자의 약관이나 실제 고객 자료가 아닙니다.</p>
+<p>이전 실습 설계 참고 원본은 <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">foundry-evaluation-labs-v0.9의 고정 커밋</a>입니다. 해당 보관 저장소는 별도 접근 권한이 필요할 수 있습니다. 상세 이관 기록은 이 저장소의 Git 이력에 보존하며, 공개 열람 자체가 참고 원본의 추가 사용 허락을 부여하지는 않습니다.</p>
+<p>Microsoft 공식 Foundry 아이콘과 포털 사진의 출처·사용 범위는 <span class="book-file-link">NOTICE<span class="book-file-label"> (파일: <code>web/assets/NOTICE.txt</code>)</span></span>에 있습니다. 공식 아이콘의 원본 바이트와 사용 조건을 유지합니다.</p>
+<h2 id="book-verification--update">로컬 재검증</h2>
 <pre><code class="language-bash">python -m lab validate
-python -m unittest discover -s tests -q
 python scripts/build_guide.py
 python scripts/build_guide.py --check
-python scripts/verify_pdf.py Foundry-Learning-Loop-Lab-KO.pdf
-python scripts/package_lab.py
+python -m unittest discover -s tests -q
 </code></pre>
-<p><strong>명령 해설:</strong></p>
-<table>
-<thead>
-<tr>
-<th>명령</th>
-<th>검사/생성 범위</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>lab validate</code></td>
-<td>원본·분할·내보내기 byte/hash 일치의 로컬 검사. 모델 성능 검사 아님</td>
-</tr>
-<tr>
-<td><code>unittest discover -s tests -q</code></td>
-<td>로컬 자동 검사를 발견해 실행. <code>-q</code>는 간결한 출력이며 LIVE 서비스 실행 아님</td>
-</tr>
-<tr>
-<td><code>scripts/build_guide.py</code></td>
-<td>등록된 원문에서 HTML·통합 인쇄 HTML 생성</td>
-</tr>
-<tr>
-<td><code>scripts/build_guide.py --check</code></td>
-<td>생성 파일을 쓰지 않고 원문과의 일치 확인</td>
-</tr>
-<tr>
-<td><code>scripts/verify_pdf.py ...pdf</code></td>
-<td>이미 만들어진 PDF의 텍스트·빈 페이지·잘림·로컬 링크 검사. PDF 생성 명령 아님</td>
-</tr>
-<tr>
-<td><code>scripts/package_lab.py</code></td>
-<td>공개 허용 소스·정리된 증거·가이드·PDF를 로컬 ZIP으로 묶음. 업로드/배포 아님</td>
-</tr>
-</tbody>
-</table>
-<p>독립 ZIP을 새 폴더에 풀어 SDK·자격 증명·네트워크·subprocess 없이 DEMO를 실행했고 원본 100건 검사도 통과했습니다. v1 실행 파일/README가 필요하지 않습니다.</p>
-<h3 id="book-verification--portal-capture">후속 가이드 보강 · 실제 포털 화면</h3>
-<p><strong>2026-09-30, 정상 사용자 인증 후 Headless Playwright MCP에서 기존 전용 프로젝트를 직접 열어 14장을 추가 촬영했습니다.</strong> 일시적인 로그인 상태 전달 파일은 로컬 세션 폴더에서만 사용한 뒤 제거했고, 인증 정보·쿠키·서명 다운로드 URL·원시 브라우저 스냅샷은 배포 자산에 넣지 않았습니다. 이미 있는 자원·실행을 조회했으며 마법사에서 파일 업로드·Submit·Promote·Deploy·권한 변경은 수행하지 않았습니다.</p>
-<table>
-<thead>
-<tr>
-<th>화면 범위</th>
-<th>안내에서 확인할 것</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="#book-index--portal-project">01–02 프로젝트·모델</a></td>
-<td>프로젝트 선택, 배포 이름·모델 버전·유형, 배포 성공과 품질의 차이</td>
-</tr>
-<tr>
-<td><a href="#book-index--portal-agents">03–04 에이전트</a></td>
-<td>단계별 Agent 이름·버전과 모델·지시·도구 구성</td>
-</tr>
-<tr>
-<td><a href="#book-index--portal-knowledge">05–06 Foundry IQ</a></td>
-<td>실제 KB·source, Low/Extractive data, Agent Knowledge 카드</td>
-</tr>
-<tr>
-<td><a href="#book-index--portal-optimizer-target">07–08 미제출 Optimizer 설정</a></td>
-<td>Choose targets의 Instruction만, 후보 1개, 실제 Judge 배포, 준비한 dev 업로드 경로</td>
-</tr>
-<tr>
-<td><a href="#book-index--portal-optimizer-results">09–11 기존 Optimizer 결과</a></td>
-<td>서비스 순위·지시 diff·native 평가, 로컬 업무 Judge와의 차이</td>
-</tr>
-<tr>
-<td><a href="#book-index--portal-trace-search">12–13 기존 IQ trace</a></td>
-<td>iq-dev의 atlas-dev-001 response ID로 조회한 실제 MCP 입력/출력. 최종 fresh 결과 아님</td>
-</tr>
-<tr>
-<td><a href="#book-sft--portal-sft">14 기존 SFT job</a></td>
-<td>실제 완료 작업·모델·파일·epoch, 학습 지표와 업무 성능의 차이</td>
-</tr>
-</tbody>
-</table>
-<p>촬영 시 새 마법사는 <strong>Optimize → Agent → Choose targets</strong> 경로였고, <strong>Select dataset and criteria</strong>를 고르면 Dataset·Criteria 단계가 나타났습니다. 기존 공식 문서의 메뉴 표기와 실제 화면의 차이를 본문에 병기했습니다. 화면은 위조하거나 성공 상태로 바꾸지 않았고 개인정보·endpoint 가림과 부분 잘라내기만 적용했습니다.</p>
-<p>파일별 출처·상태·가림·치수·SHA-256은 <span class="book-file-link"><code>web/assets/portal/captures.json</code><span class="book-file-label"> (파일: <code>web/assets/portal/captures.json</code>)</span></span>, 이번 보강의 로컬 출판 점검은 <span class="book-file-link"><code>checks.json</code><span class="book-file-label"> (파일: <code>evidence/guide-enrichment-20260930/checks.json</code>)</span></span>과 <span class="book-file-link"><code>pdf-check.json</code><span class="book-file-label"> (파일: <code>evidence/guide-enrichment-20260930/pdf-check.json</code>)</span></span>에 분리합니다. 기존 <code>integration-20260930</code>의 LIVE 결과·HOLD·이전 출판 검증은 덮어쓰지 않습니다. 사진에서 trace나 학습 완료가 보여도 미실행 최종 시험과 사람 승인 부재를 해소하지 않습니다.</p>
-<h2 id="book-verification--checks">7. 재개할 때 지킬 기준</h2>
-<table>
-<thead>
-<tr>
-<th>상태</th>
-<th>재개</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>원격 ID가 있는 작업</td>
-<td>같은 ID의 status/collect. create/submit 반복 금지</td>
-</tr>
-<tr>
-<td>429·연결 단절 후 response ID 없음</td>
-<td>원본 보존, 결과 불명. 성공한 일부 행으로 통과 처리하지 않음</td>
-</tr>
-<tr>
-<td>교정 HOLD</td>
-<td>전문가 검토·새 실험 설계. 현재 final gate 우회 금지</td>
-</tr>
-<tr>
-<td>Frontier NOT_VERIFIED</td>
-<td>공식 지원 경로와 해당 계정 참여 확인 전 제출하지 않음</td>
-</tr>
-<tr>
-<td>관측 PARTIAL</td>
-<td>실제 response ID와 MI/ingestion/평가 연결을 확인. 빈 화면을 무오류로 해석하지 않음</td>
-</tr>
-<tr>
-<td>미승인 운영 전환</td>
-<td>실제 책임자의 별도 승인. AI가 작성한 검토는 AI로 유지</td>
-</tr>
-</tbody>
-</table>
-<h2 id="book-verification--update">기록 갱신 원칙</h2>
-<p>원본 API 응답, 실패, remote ID, 코드 커밋/해시, 데이터·프롬프트·모델·검색·평가기·게이트를 연결합니다. 출판물에는 안전하게 정리한 증거만 포함하며 키·토큰·MFA 정보·개인정보는 넣지 않습니다.</p>
-<p><strong>공개 게시 범위:</strong> 2026-09-30 소유자가 최신 가이드의 커밋·푸시 후 현재 v1 저장소의 Public 전환과 <a href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/">GitHub Pages 게시</a>를 별도로 요청했습니다. 이전 Private 유지 조건은 초기 이관 당시의 기록입니다. 공개 대상은 이 저장소의 정리된 소스·가이드·증거이며 비공개 환경·인증·원본 실행 기록은 제외합니다. 보관 원본 v0.9의 접근·아카이브 상태와 Azure 리소스·권한·품질 HOLD는 변경하지 않습니다.</p>
+<p><strong>명령 해설:</strong> 순서대로 원본 데이터 검사, HTML 생성, 쓰기 없는 최신 상태 확인, 로컬 자동 검사입니다. Azure를 호출하지 않습니다. PDF와 ZIP은 별도로 재생성·검사한 뒤 해당 결과만 최신 JSON에 기록합니다.</p>
 </section>
 <section id="book-data-guide" class="book-section guide-content book-appendix" lang="ko" aria-label="부록 5 · 데이터 설명">
 <p class="book-part-label">부록 5 · 데이터 설명</p>
@@ -3341,734 +2998,25 @@ python scripts/package_lab.py
 <p><strong>Frontier Tuning은 일반 SFT/RFT와 별개입니다.</strong> 이 합성 학습 파일은 Frontier API 업로드 계약이나 계정의 참여 자격을 증명하지 않습니다. 실행 시점의 공식 지원과 실제 접근을 확인하지 못했다면 <code>NOT_VERIFIED</code>로 남기며 일반 SFT 결과를 Frontier 성공으로 바꾸어 부르지 않습니다.</p>
 <p>정책 원문을 바꾸면 관련 사례의 원문 발췌도 검토해야 합니다. 생성기는 정답을 자동 재작성하지 않으며 원문과 달라진 발췌를 거부합니다. 개정된 문서·사례·매니페스트를 하나의 새 버전으로 동결하고, 이미 평가한 동결 세트를 조용히 덮어쓰지 마세요.</p>
 </section>
-<section id="book-migration" class="book-section guide-content book-appendix" lang="ko" aria-label="부록 6 · v1 이관·아카이브 준비">
-<p class="book-part-label">부록 6 · v1 이관·아카이브 준비</p>
-<h1 id="book-migration--참고-원본-v1-통합마이그레이션-결정">참고 원본 → v1 통합·마이그레이션 결정</h1>
-<p><strong>조사 기준: 2026-09-30 KST. 이 문서는 구현 완료나 LIVE 실행 보고서가 아니라, 고정한 두 소스의 비교와 통합 요구조건입니다.</strong></p>
-<p>참고 원본의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 끝까지 실행·판단·재개할 수 있게 만든 점입니다. 통합 대상의 장점은 Contoso 데이터 계약, 실제 Agent Service 버전, MCP 기반 IQ, 엄격한 근거 처리와 오프라인 웹·인쇄 제작 체계입니다. <strong>원본의 학습·실행 패턴을 Contoso에 맞게 새로 구현하고, 통합 대상의 기반을 대체하지 않습니다.</strong></p>
-<p><strong>이름 안내:</strong> 현재 유지보수 저장소와 실제 디렉터리는 <code>foundry-evaluation-labs-v1</code>이며, 가이드 표기는 <strong>v1</strong>입니다. 이 문서의 <strong>참고 원본</strong>은 <code>foundry-evaluation-labs-v0.9</code>에 보관된 과거 소스를 뜻합니다. 옛 로컬 경로는 가상환경과 동결 기록의 절대 경로를 유지하는 호환용 링크로 남기며, 실습 데이터·평가기준·Azure 리소스는 바꾸지 않습니다.</p>
-<p><strong>후속 공개 요청:</strong> 2026-09-30 소유자가 최신 변경의 커밋·푸시 후 현재 v1 저장소의 Public 전환과 <a href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/">GitHub Pages</a> 게시를 별도로 지시했습니다. 아래 Private 유지 조건은 초기 통합 작업의 범위였으며 이 후속 요청과 구분합니다. v0.9 보관 원본은 이 공개 요청의 대상이 아니며 해당 출처 링크는 별도 접근 권한이 필요할 수 있습니다.</p>
-<h2 id="book-migration--1-소스범위판정-용어">1. 소스·범위·판정 용어</h2>
-<table>
-<thead>
-<tr>
-<th>대상</th>
-<th>고정 소스</th>
-<th>이번 작업의 경계</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>현재 가이드 v1</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1"><code>junwoojeong100/foundry-evaluation-labs-v1</code></a>, 통합 시작 커밋 <code>8ea5d3aedb2aeef0727d16031033969f30c2d0b0</code></td>
-<td>초기 통합은 PRIVATE 유지. 이후 별도 소유자 요청으로 Public·Pages 게시 대상이 됨. 실습 내용·Azure 환경은 변경하지 않음</td>
-</tr>
-<tr>
-<td>읽기 전용 참고 원본</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2"><code>junwoojeong100/foundry-evaluation-labs-v0.9</code></a>, 커밋 <code>93bc07e31373c4cfc278a2dc3757785946404cf2</code></td>
-<td>현재 PRIVATE·Archived로 보관되어 있음. 이번 이름 변경에서 원본 파일·브랜치·가시성·보관 상태는 변경하지 않음</td>
-</tr>
-<tr>
-<td>최초 산출물</td>
-<td><code>guide/integration-migration.md</code></td>
-<td>구현 전에 비교·계약을 먼저 저장하고 형제 구현 담당자에게 전달</td>
-</tr>
-<tr>
-<td>후속 문서 범위</td>
-<td><code>README.md</code>, <code>README.en.md</code>, <code>guide/*.md</code>의 지정 원문</td>
-<td>가이드 우선 순서로 참가자·운영자·강사·SFT·검증·이관 문서를 통합. HTML/PDF/스크립트/코드는 각 소유 담당자가 처리</td>
-</tr>
-</tbody>
-</table>
-<p>시작 시 로컬/원격 HEAD 일치와 두 작업 트리의 청결은 통합 담당자의 사전 확인 기록입니다. 초기 비교 조사는 로컬 HEAD와 추적 파일을 읽는 방식이었습니다. 이후 이름 변경에서는 GitHub 저장소의 동일 ID·현재 이름·비공개/보관 상태와 원본 커밋의 존재를 별도로 확인했으며, Azure 리소스는 변경하지 않았습니다. 아래 <strong>기존</strong>은 통합 대상 시작 커밋의 동작이고 통합 경로는 현재 추가한 소스에 연결합니다. 설계 시의 <strong>제안</strong>과 현재 구현/로컬 검사/실제 실행 상태는 구별합니다. 이 표 자체는 LIVE 완료 증거가 아닙니다.</p>
-<ul>
-<li><strong>KEEP</strong>: 통합 대상에 이미 있는 기반·경계를 유지합니다.</li>
-<li><strong>REINFORCE</strong>: 참고 원본에서 확인한 패턴을 독자적으로 구현하거나 기존 동작을 보강합니다.</li>
-<li><strong>EXCLUDE</strong>: 도메인·제품·권한·증거 계약이 다른 내용은 가져오지 않습니다.</li>
-<li>표의 상대 링크는 <strong>실제로 존재하는 현재 가이드의 통합 지점</strong>입니다. 새 산출물 경로 예시는 별도로 <strong>제안</strong>이라고 표시하며, 존재하는 실행 명령처럼 안내하지 않습니다.</li>
-</ul>
-<h2 id="book-migration--2-기능-단위-결정-매트릭스">2. 기능 단위 결정 매트릭스</h2>
-<h3 id="book-migration--2-1-keep-유지할-통합-대상의-기반">2-1. KEEP — 유지할 통합 대상의 기반</h3>
-<table>
-<thead>
-<tr>
-<th>ID / 기능</th>
-<th>참고 원본에서 확인한 비교점</th>
-<th>현재 가이드의 기존 경로·통합 지점</th>
-<th>결정 이유와 유지 조건</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>K01 · Contoso 시나리오·출력 계약</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/README.ko.md">v1 README</a>는 다른 업무 도메인과 필드를 사용</td>
-<td><span class="book-file-link">정책<span class="book-file-label"> (파일: <code>data/knowledge/documents.json</code>)</span></span>, <a href="#book-data-guide">데이터 계약</a>, <span class="book-file-link">응답 스키마<span class="book-file-label"> (파일: <code>schemas/response.schema.json</code>)</span></span></td>
-<td><strong>KEEP.</strong> Contoso Atlas Cloud와 <code>answer</code>·<code>citations</code>·<code>route</code>·<code>needs_human</code> 유지. 업무 실행 도구가 없다는 경계도 유지</td>
-</tr>
-<tr>
-<td>K02 · 원본 100건·분할</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/intro-lab.md">입문</a>의 dev/holdout 분리 원리는 유용하지만 규모·구조는 다름</td>
-<td><span class="book-file-link">원본<span class="book-file-label"> (파일: <code>data/cases.jsonl</code>)</span></span>, <span class="book-file-link">분할 매니페스트<span class="book-file-label"> (파일: <code>data/manifest.json</code>)</span></span>, <span class="book-file-link">생성기<span class="book-file-label"> (파일: <code>scripts/build_datasets.py</code>)</span></span>, <span class="book-file-link">검사<span class="book-file-label"> (파일: <code>tests/test_datasets.py</code>)</span></span></td>
-<td><strong>KEEP.</strong> train 56 / validation 12 / dev 12 / test 20, 상황 그룹과 기존 레이블을 보존. 새 DEMO·교정·fresh holdout으로 원본을 교체하지 않음</td>
-</tr>
-<tr>
-<td>K03 · 실제 에이전트 버전</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/foundry_client.py">v1 모델 클라이언트</a>의 직접 모델 호출은 Agent Service 실행이 아님</td>
-<td><span class="book-file-link">에이전트<span class="book-file-label"> (파일: <code>lab/agents.py</code>)</span></span>, <span class="book-file-link">실행<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">검사<span class="book-file-label"> (파일: <code>tests/test_agent_run.py</code>)</span></span></td>
-<td><strong>KEEP.</strong> <code>agent_reference.name/version</code>, 프롬프트 스냅샷, 실행 전후 모델 구성 확인 유지. 직접 채팅으로 바꾸고 에이전트 실습이라 부르지 않음</td>
-</tr>
-<tr>
-<td>K04 · MCP IQ 연결</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_retrieval.py">v1 검색 모듈</a>은 직접 검색 증거를 제공</td>
-<td><span class="book-file-link">IQ<span class="book-file-label"> (파일: <code>lab/knowledge.py</code>)</span></span>, <span class="book-file-link">캡처<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">검사<span class="book-file-label"> (파일: <code>tests/test_knowledge.py</code>)</span></span></td>
-<td><strong>KEEP.</strong> Search → knowledge source/base → 프로젝트 MCP 연결 → 버전 에이전트의 도구 호출을 보존. 직접 검색 probe는 에이전트 관리 ID의 도구 실행 증거를 대신하지 않음</td>
-</tr>
-<tr>
-<td>K05 · 실패를 포함한 평가</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/evaluation.py">v1 평가</a>는 누락·중요 실패·개별 회귀를 차단</td>
-<td><span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span>, <span class="book-file-link">게이트<span class="book-file-label"> (파일: <code>config/gates.json</code>)</span></span>, <span class="book-file-link">관리형 평가<span class="book-file-label"> (파일: <code>lab/managed_eval.py</code>)</span></span>, <span class="book-file-link">검사<span class="book-file-label"> (파일: <code>tests/test_evidence.py</code>)</span></span></td>
-<td><strong>KEEP.</strong> 오류 행을 분모에서 제거하지 않고, 미완료·누락·잘못된 점수·critical 실패는 보류. 새 지표에도 같은 원칙 적용</td>
-</tr>
-<tr>
-<td>K06 · 공개 설정과 내부 서비스 버전 구분</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md">v1 참고</a>는 평가기·모델 계약과 작은 표본의 한계를 설명</td>
-<td><span class="book-file-link">관리형 평가<span class="book-file-label"> (파일: <code>lab/managed_eval.py</code>)</span></span>, <a href="#book-verification">검증 범위</a>, <span class="book-file-link">run 스키마<span class="book-file-label"> (파일: <code>schemas/run.schema.json</code>)</span></span></td>
-<td><strong>KEEP.</strong> catalog selector와 공개 설정 해시는 비공개 judge 프롬프트·서비스 내부 릴리스의 고정 증명이 아님. 해시는 전자서명이나 독립 감사가 아님</td>
-</tr>
-<tr>
-<td>K07 · 제품 경계·운영 루프</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/facilitator.md">v1 진행자 가이드</a>는 교육 완료와 출시 판단을 구별</td>
-<td><a href="#book-index">본문</a>, <a href="#book-facilitator">강사</a>, <span class="book-file-link">인수 파일<span class="book-file-label"> (파일: <code>lab/handoffs.py</code>)</span></span>, <a href="#book-sft">SFT 부록</a></td>
-<td><strong>KEEP.</strong> Prompt/Agent Optimizer, Frontier/SFT, 준비/실행/학습 완료/개선을 구분. 운영 실패를 다음 데이터로 돌리는 흐름 유지</td>
-</tr>
-<tr>
-<td>K08 · 안전한 로컬 출판·실행 범위</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md">v1 준비</a>의 복사·완료 확인·재개 안내가 보완점</td>
-<td><span class="book-file-link">웹 빌더<span class="book-file-label"> (파일: <code>scripts/build_guide.py</code>)</span></span>, <span class="book-file-link">인쇄 빌더<span class="book-file-label"> (파일: <code>scripts/build_print.py</code>)</span></span>, <span class="book-file-link">웹 동작<span class="book-file-label"> (파일: <code>web/app.js</code>)</span></span>, <span class="book-file-link">정리<span class="book-file-label"> (파일: <code>lab/cleanup.py</code>)</span></span></td>
-<td><strong>KEEP.</strong> 오프라인 읽기, 원문 그대로 코드 복사, 명령 자동 실행 없음, 휴대 가능한 PDF 링크, 소유 기록 기반 정리. 가이드를 읽거나 DEMO로 전환했다고 공유 자원을 변경하지 않음</td>
-</tr>
-</tbody>
-</table>
-<h3 id="book-migration--2-2-reinforce-참고-원본의-장점을-새로-구현할-부분">2-2. REINFORCE — 참고 원본의 장점을 새로 구현할 부분</h3>
-<table>
-<thead>
-<tr>
-<th>ID / 기능</th>
-<th>구체적인 원본 근거</th>
-<th>현재 가이드의 기존 경로·제안 통합 지점</th>
-<th>시작 커밋의 차이와 완료 조건</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>R01 · 설치 전 그럴듯한 오답</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/offline.md">DEMO 0장</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/intro-lab.md">입문 0장</a>의 먼저 선택하고 규정으로 확인하는 구성</td>
-<td><a href="#book-index">본문</a>, <span class="book-file-link">Contoso 정책<span class="book-file-label"> (파일: <code>data/knowledge/documents.json</code>)</span></span>, <a href="#book-facilitator">강사</a></td>
-<td><strong>REINFORCE.</strong> 설명만 읽는 도입을 짧은 Contoso 판단 활동으로 보강. 작성 예시를 실제 기준선 실패로 표시하지 않음. 예시는 3절 참고</td>
-</tr>
-<tr>
-<td>R02 · 진짜 오프라인 authored DEMO</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/offline.md">DEMO</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py"><code>demo_entries</code>와 지연 import</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/examples/manifest.json">fixture 매니페스트</a></td>
-<td><span class="book-file-link">통합 DEMO<span class="book-file-label"> (파일: <code>lab/demo.py</code>)</span></span>, <span class="book-file-link">CLI<span class="book-file-label"> (파일: <code>lab/cli.py</code>)</span></span>, <span class="book-file-link">파일 계약<span class="book-file-label"> (파일: <code>lab/files.py</code>)</span></span>, <span class="book-file-link">CLI 검사<span class="book-file-label"> (파일: <code>tests/test_cli.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 시작 커밋은 가이드만 오프라인이고 실행 DEMO가 없으며 CLI가 SDK를 최상위 import. 통합 경로는 <code>python3 -S -m lab demo</code>로 분리하며 계정·설정·SDK·네트워크 없는 검사를 요구</td>
-</tr>
-<tr>
-<td>R03 · 행동→명령→증거→다음 단계</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/intro-lab.md">입문 진행표</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md">재개 표</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/facilitator.md">진행자 체크포인트</a></td>
-<td><a href="#book-index">본문</a>, <a href="#book-facilitator">강사</a>, <span class="book-file-link">문서 명령 검사<span class="book-file-label"> (파일: <code>tests/test_documentation.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 각 단계에 열 파일·행 ID·예상 상태·중단 이유·다음 동작을 명시. 정상 대기, 실행 오류, 유효한 품질 보류를 구별하고 점수를 맞추려고 재실행시키지 않음</td>
-</tr>
-<tr>
-<td>R04 · 업무 전용 버전 평가기·교정</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_evaluation.py"><code>register</code>, <code>contract</code>, <code>calibration_cases</code></a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/policy-task-success.txt">업무 rubric</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">교정 설명</a></td>
-<td><span class="book-file-link">통합 교정/Judge<span class="book-file-label"> (파일: <code>lab/calibration.py</code>)</span></span>, <span class="book-file-link">16개 fixtures<span class="book-file-label"> (파일: <code>data/calibration/fixtures.jsonl</code>)</span></span>, <span class="book-file-link">업무 정의<span class="book-file-label"> (파일: <code>config/evaluators/policy-correctness.v1.json</code>)</span></span>, <span class="book-file-link">게이트<span class="book-file-label"> (파일: <code>config/gates.json</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 기존의 두 내장 지표·일반 rubric만으로 업무 의미를 검증했다고 할 수 없음. Contoso 전용 정의/버전/해시·모델·입력 매핑·척도와 <strong>10건 이상(현재 16건)</strong>의 교정 사례를 결속. fixtures 자체와 실제 Judge 교정 실행은 별도 상태</td>
-</tr>
-<tr>
-<td>R05 · 검색 근거성 ≠ 정책·업무 정확성</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md">v1 검색 문맥 평가</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_evaluation.py">업무 평가 입력</a></td>
-<td><span class="book-file-link">캡처<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">통합 평가 입력<span class="book-file-label"> (파일: <code>lab/calibration.py</code>)</span></span>, <span class="book-file-link">검색 근거성 정의<span class="book-file-label"> (파일: <code>config/evaluators/retrieval-groundedness.v1.json</code>)</span></span>, <span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 시작 커밋의 <code>groundedness</code>는 고정 정책 <code>context</code>에 매핑되고 <code>retrieved_context</code>는 보관만 함. 과거 점수를 새 의미로 재사용하지 말고, 관측 검색 문맥과 참조 정책/기대 행동을 별도 입력·지표·설명으로 제공</td>
-</tr>
-<tr>
-<td>R06 · AI 보조 검토와 사람 판단</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py"><code>review_command</code></a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/evaluation.py"><code>review_problems</code></a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md">검토 유형 설명</a></td>
-<td><span class="book-file-link">통합 governance<span class="book-file-label"> (파일: <code>lab/governance.py</code>)</span></span>, <span class="book-file-link">CLI<span class="book-file-label"> (파일: <code>lab/cli.py</code>)</span></span>, <span class="book-file-link">파일 계약<span class="book-file-label"> (파일: <code>lab/files.py</code>)</span></span>, <a href="#book-index">본문</a></td>
-<td><strong>REINFORCE.</strong> 기존 문서의 권고를 응답 해시·사례·판정·이유·시각·검토 주체에 묶인 추가 기록으로 보강. AI 기록만으로 사람 검토/운영 승인을 충족하지 않으며 외부 human 주장도 <code>external_unverified</code>로 보존</td>
-</tr>
-<tr>
-<td>R07 · 실행 가능한 freeze→fresh holdout</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py"><code>freeze_command</code>, <code>create_holdout_command</code>, <code>register_holdout_command</code></a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">6–7장</a></td>
-<td><span class="book-file-link">통합 governance<span class="book-file-label"> (파일: <code>lab/governance.py</code>)</span></span>, <span class="book-file-link">fresh12 계약<span class="book-file-label"> (파일: <code>config/evaluators/fresh-holdout-gates.v1.json</code>)</span></span>, <span class="book-file-link">실행<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span>, <a href="#book-index">본문</a></td>
-<td><strong>REINFORCE.</strong> 기존은 동결 체크리스트와 이미 작성된 test20. 변경을 거부하는 동결과 <strong>이후 생성·등록한 별도 holdout</strong>을 추가. 원본 100건/분할·test20 게이트는 보존하고 fresh12를 별도 버전 계약으로 결속</td>
-</tr>
-<tr>
-<td>R08 · 실제 embeddings/vector/hybrid/IQ 계획</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_retrieval.py"><code>embed</code>, <code>vector_index</code>, <code>retrieve</code></a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">벡터·계획 확인</a></td>
-<td><span class="book-file-link">통합 임베딩<span class="book-file-label"> (파일: <code>lab/embeddings.py</code>)</span></span>, <span class="book-file-link">IQ<span class="book-file-label"> (파일: <code>lab/knowledge.py</code>)</span></span>, <span class="book-file-link">설정<span class="book-file-label"> (파일: <code>lab/config.py</code>)</span></span>, <span class="book-file-link">검사<span class="book-file-label"> (파일: <code>tests/test_knowledge.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 시작 커밋은 텍스트/semantic 인덱스와 <code>embedding_model: null</code>. 실제 임베딩·벡터 필드·차원·vector-only/hybrid 요청과 반환 청크, IQ <code>modelQueryPlanning</code>/하위 질의 증거를 각각 확인해야 함</td>
-</tr>
-<tr>
-<td>R09 · 명시적 후속 발언과 최종 답</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py"><code>run_command</code>의 대화 프로토콜</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/dev-followups.json">개발용 후속 발언</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">대화 검사 안내</a></td>
-<td><span class="book-file-link">버전 에이전트 실행<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">응답 스키마<span class="book-file-label"> (파일: <code>schemas/response.schema.json</code>)</span></span>, <span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span>, <span class="book-file-link">실행 검사<span class="book-file-label"> (파일: <code>tests/test_agent_run.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 기존은 독립 단일 질문. <code>clarify</code> → <strong>사용자 입력 또는 출처가 명시된 scripted-user 발언</strong> → 최종 답을 캡처. 에이전트가 누락 정보를 스스로 만들어 넣지 않으며, 첫 응답의 위험을 최종 정답으로 지우지 않음</td>
-</tr>
-<tr>
-<td>R10 · 멱등 재개와 중복 호출 방지</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py">입문 <code>run</code>/<code>judge</code> 재사용</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py">단계별 pending 저장</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md">재개 한계</a></td>
-<td><span class="book-file-link">배치<span class="book-file-label"> (파일: <code>lab/batch.py</code>)</span></span>, <span class="book-file-link">관리형 평가<span class="book-file-label"> (파일: <code>lab/managed_eval.py</code>)</span></span>, <span class="book-file-link">파일 계약<span class="book-file-label"> (파일: <code>lab/files.py</code>)</span></span>, <span class="book-file-link">배치 검사<span class="book-file-label"> (파일: <code>tests/test_batch.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> 기존 배치는 디렉터리가 있으면 새 run-id를 요구함. 같은 계약의 완료 결과는 검증 후 재사용, 부분 결과는 저장된 행을 건너뛰고 이어감. 입력 변경·손상·원격 제출 여부 불명확 시 자동 재호출하지 않음</td>
-</tr>
-<tr>
-<td>R11 · 통제 비교와 원인 설명</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">동일 초기 문맥 replay와 planned-dev 구분</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/evaluation.py">개별 회귀 검사</a></td>
-<td><span class="book-file-link">비교<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span>, <a href="#book-index">본문 03–06단계</a>, <span class="book-file-link">인수 파일<span class="book-file-label"> (파일: <code>lab/handoffs.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> IQ 추가 효과와 지시 개선 효과를 분리하는 기존 설계를 유지하며 사례별 전후 근거를 쉽게 읽게 함. 대화 절차까지 바꾸면 “프롬프트 문구만의 효과”로 주장하지 않음. 평균 상승으로 critical 회귀를 상쇄하지 않음</td>
-</tr>
-<tr>
-<td>R12 · 비용·데이터·보존의 승인 상태</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/setup.md">준비/비용/DEMO 전환</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/cleanup.md">보존 우선 정리</a></td>
-<td><span class="book-file-link">통합 bootstrap<span class="book-file-label"> (파일: <code>lab/bootstrap.py</code>)</span></span>, <span class="book-file-link">승인 스키마<span class="book-file-label"> (파일: <code>infra/approval.schema.json</code>)</span></span>, <a href="#book-admin">환경 준비</a>, <span class="book-file-link">정리<span class="book-file-label"> (파일: <code>lab/cleanup.py</code>)</span></span></td>
-<td><strong>REINFORCE.</strong> <code>--confirm</code>은 동작 확인이지 전체 승인 대체물이 아님. 명시적 무상한 금액 정책과 유한한 호출/작업·대상·보존·처리 범위를 구분하고 승인 밖의 변경은 차단</td>
-</tr>
-</tbody>
-</table>
-<h3 id="book-migration--2-3-exclude-그대로-가져오지-않을-내용">2-3. EXCLUDE — 그대로 가져오지 않을 내용</h3>
-<table>
-<thead>
-<tr>
-<th>ID / 제외 대상</th>
-<th>참고 원본 소스</th>
-<th>현재 가이드에 적용할 경계</th>
-<th>이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>X01 · 출장 도메인 데이터·프롬프트·필드</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">v1 데이터/규정</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/policy-task-success.txt">업무 rubric</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/dev-followups.json">후속 발언</a></td>
-<td><a href="#book-data-guide">Contoso 데이터</a>, <span class="book-file-link">프롬프트<span class="book-file-label"> (파일: <code>prompts/baseline.txt</code>)</span></span>, <span class="book-file-link">응답 스키마<span class="book-file-label"> (파일: <code>schemas/response.schema.json</code>)</span></span> 유지</td>
-<td>도메인 규정·금액·정답·ID를 섞으면 하나의 Contoso 실험이 아니게 됨. 교정/DEMO/대화 모두 Contoso 근거로 새로 작성</td>
-</tr>
-<tr>
-<td>X02 · 과거 LIVE 답변·점수·영상</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/fixtures/recorded-v1.json">기록 fixture</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">실행 기록 설명</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/media/complete-rag/README.md">미디어 설명</a></td>
-<td><a href="#book-verification">검증 기록</a>, <span class="book-file-link">패키징<span class="book-file-label"> (파일: <code>scripts/package_lab.py</code>)</span></span></td>
-<td>이전 환경의 관측값이지 현재 가이드의 새 실행 증거가 아님. <code>recorded-live</code>를 <code>live</code>/<code>authored-demo</code>로 바꿔 가져오거나 성공 숫자를 전사하지 않음</td>
-</tr>
-<tr>
-<td>X03 · 원본 모델·리전·리소스 기본값</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md">설정/SDK 계약</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_retrieval.py">검색 설정</a></td>
-<td><span class="book-file-link">설정<span class="book-file-label"> (파일: <code>lab/config.py</code>)</span></span>, <span class="book-file-link">환경 템플릿<span class="book-file-label"> (파일: <code>.env.example</code>)</span></span>, <span class="book-file-link">사전 점검<span class="book-file-label"> (파일: <code>lab/preflight.py</code>)</span></span></td>
-<td>원본의 모델명·차원·planner·리전 고정값은 현재 NCUS 경로의 지원 증명이 아님. 통합 대상 시작 커밋의 기존 리소스 프로파일도 실행에 재사용하지 않음. 새 승인 범위의 비공개 환경만 사용</td>
-</tr>
-<tr>
-<td>X04 · 여러 독립 runner 통째로 이식</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/lab.py">입문 CLI</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py">완결형 CLI</a></td>
-<td><span class="book-file-link">기존 진입점<span class="book-file-label"> (파일: <code>lab/__main__.py</code>)</span></span>, <span class="book-file-link">CLI<span class="book-file-label"> (파일: <code>lab/cli.py</code>)</span></span>, <span class="book-file-link">SDK 계약<span class="book-file-label"> (파일: <code>pyproject.toml</code>)</span></span></td>
-<td>파일 복사는 중복 상태·의존성·서로 다른 데이터 계약을 낳음. 필요한 기능만 기존 <code>python -m lab</code> 구조에 통합하고 DEMO 의존성은 분리</td>
-</tr>
-<tr>
-<td>X05 · 다른 과제의 합격선·강제 실패</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced-rag/acceptance.json">원본 acceptance</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/advanced_lab.py"><code>freeze_command</code></a></td>
-<td><span class="book-file-link">기존 게이트<span class="book-file-label"> (파일: <code>config/gates.json</code>)</span></span>, <span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span></td>
-<td>8건·100% 또는 입문 80%를 근거 없이 이식하지 않음. 원본 완결형의 “기준선 실패가 있어야 freeze” 조건 때문에 현재 실습의 LIVE 실패를 조작하지 않음. 필수 지표를 빼거나 기준을 낮춰 통과시키지 않음</td>
-</tr>
-<tr>
-<td>X06 · 과도한 검증/권한 주장</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/complete-lab.md">초기 필드 검사 한계</a>, <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/docs/reference.md">legacy reviewer 처리</a></td>
-<td><span class="book-file-link">근거 엔진<span class="book-file-label"> (파일: <code>lab/evidence.py</code>)</span></span>, <span class="book-file-link">관리형 평가<span class="book-file-label"> (파일: <code>lab/managed_eval.py</code>)</span></span>, <a href="#book-verification">검증 기록</a></td>
-<td>초기 JSON 필드 통과 ≠ 초기 설명의 의미 안전성. 검토 유형 자기신고 ≠ 신원 인증. 새 기록에서 누락 reviewer를 사람으로 추정하지 않음. 로컬 mock 통과 ≠ 클라우드 가용성</td>
-</tr>
-<tr>
-<td>X07 · 무허가 본문·코드·그림 재배포</td>
-<td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">v1 고정 트리</a></td>
-<td>이 문서의 5절, <span class="book-file-link">배포 패키징<span class="book-file-label"> (파일: <code>scripts/package_lab.py</code>)</span></span></td>
-<td>명시적 라이선스를 찾지 못함. 공개 저장소라는 이유로 복사·수정·재배포 권리가 있다고 가정하지 않음. 출처 표시는 사용 허가를 대신하지 않음</td>
-</tr>
-</tbody>
-</table>
-<h2 id="book-migration--3-통합-구현의-증거-계약">3. 통합 구현의 증거 계약</h2>
-<p>아래는 통합에 적용하는 증거 계약입니다. 현재 참가자용 명령은 실제 CLI parser와 <a href="#book-index">본문</a>에 맞춰 확인했습니다. 새 CLI 이름·파일 형식을 추가할 때도 구현과 테스트를 함께 버전 관리하며, 명령의 존재를 실제 LIVE 성공으로 확대하지 않습니다.</p>
-<h3 id="book-migration--3-1-contoso-도입과-오프라인-demo">3-1. Contoso 도입과 오프라인 DEMO</h3>
-<p>설치 전 질문 예시는 <strong>9월 문의라고 과거 구매의 환불 기한도 바뀌는가</strong>로 구성할 수 있습니다. <code>ATLAS-REF-001</code>에는 9월 1일 이전 최초 월 구매의 7일 기한과 이후 구매의 14일 기한이 분리되어 있습니다.</p>
-<ul>
-<li><strong>작성 질문 예시:</strong> 8월 28일 10:00 KST에 최초 월 구독을 구매했고 유료 작업·크레딧 사용 없이 9월 6일 10:00에 환불을 문의한다.</li>
-<li><strong>의도적으로 틀린 작성 답변 예시:</strong> “9월 문의이므로 14일 규정으로 환불을 승인했습니다.”</li>
-<li><strong>학습자가 확인할 점:</strong> 구매 시점에 따른 기존 7일 기한이며, 신청 자격·승인·실제 처리는 다르다. 도우미가 승인했다는 근거도 없다. 규정 설명과 실행 권한을 각각 판단한다.</li>
-</ul>
-<p>이 예시는 원본 100건을 편집하거나 LIVE 실패를 만들기 위한 것이 아닙니다. DEMO의 답변·점수·이유는 모두 <strong>작성 예제</strong>로 표시하며 작성 주체도 정직하게 남깁니다. AI가 작성한 fixture를 사람이 검토한 실행 기록으로 표시하지 않습니다.</p>
-<p>DEMO는 로컬 데이터·해시 검증과 결과 읽기만 수행해야 합니다. Azure 인증, <code>.env</code> 로딩, SDK import, DNS/HTTP 연결, 원격 평가 제출이 없어야 합니다. 네트워크·자격 증명 호출을 실패시키는 검사와 외부 패키지 없는 Python 검사로 확인합니다. 예를 들어 <strong>제안 경로</strong> <code>artifacts/demo/&lt;run-id&gt;/</code>에 LIVE와 분리하고, authored 점수로 운영 준비나 실제 성능 향상을 선언하는 상태는 반환하지 않습니다.</p>
-<p><strong>통합 브랜치의 로컬 진입점:</strong> <span class="book-file-link">새 DEMO 모듈<span class="book-file-label"> (파일: <code>lab/demo.py</code>)</span></span>은 다음 명령으로 실행합니다. <code>-S</code>는 site-packages 자동 로딩 없이 실행하는 Python 옵션이며 Azure SDK나 dotenv 설치를 요구하지 않는 경로를 확인하는 데 사용합니다.</p>
-<pre><code class="language-bash">python3 -S -m lab demo
-</code></pre>
-<p>기본은 표준 출력이며, <code>--out FILE</code>을 명시하면 새 파일에 작성 결과를 저장합니다. 이미 있는 출력 파일은 덮어쓰지 않습니다. <code>AUTHORED_DEMO_NOT_LIVE</code>, <code>DEMO_COMPLETED</code>, <code>NOT_EVALUATED_LIVE</code>의 구분을 읽고 사람 검토·운영 승인이 생기지 않았음을 확인합니다. 이 진입점의 존재는 R02의 모든 수업·재개 요구조건이나 다른 클라우드 기능의 구현 완료를 뜻하지 않습니다.</p>
-<p><strong>환경별 산출물 경로:</strong> 통합된 <span class="book-file-link">파일 도구<span class="book-file-label"> (파일: <code>lab/files.py</code>)</span></span>는 <code>LAB_ARTIFACTS_DIR</code>가 있으면 그 경로, 없으면 저장소의 <code>artifacts/</code>를 사용합니다. 이 문서의 <code>artifacts/...</code>는 논리적 예시이며 실행 환경이 저장소 밖이면 실제 경로는 달라집니다. 런타임 경로를 기록하는 코드는 <code>.relative_to(ROOT)</code>를 강제하지 말고 <code>artifact_reference(path)</code>로 저장소 상대 경로 또는 외부 절대 경로를 안전하게 표현해야 합니다. 환경별 <code>.env</code>·승인 기록·실행 결과는 비공개로 유지하고 이전 환경 프로파일을 복사해 운영하지 않습니다.</p>
-<h3 id="book-migration--3-2-평가-축과-교정">3-2. 평가 축과 교정</h3>
-<table>
-<thead>
-<tr>
-<th>축</th>
-<th>허용 입력</th>
-<th>해석·누락 처리</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>규칙 검사</td>
-<td>응답 전체 JSON, 기대 route/인용/사람 필요 여부, 금지 주장</td>
-<td>결정적 필드 검사와 문자열 검사의 범위만 주장. 자연어 전체 의미 검사로 부르지 않음</td>
-</tr>
-<tr>
-<td>검색 근거성</td>
-<td>그 응답을 생성할 때 <strong>실제로 관측한</strong> 검색 문맥·질문·답변</td>
-<td>관련 문서 ID가 있다는 것만으로 통과하지 않음. 문맥/검색 실패가 있으면 측정 불가 또는 실패이며 만점으로 채우지 않음</td>
-</tr>
-<tr>
-<td>정책·업무 정확성</td>
-<td>고정 정책 참조, 기대 행동, 실제 응답/대화</td>
-<td>업무 전용 버전 rubric으로 시점·자격·권한·허위 완료·확인 질문 판단. 기대 행동은 평가자용이며 에이전트 입력에는 넣지 않음</td>
-</tr>
-<tr>
-<td>관련성</td>
-<td>질문 또는 명시적으로 완성된 대화와 응답</td>
-<td>불편한 점수를 숨기려고 기존 필수 Relevance를 제외하지 않음. 초기 확인 질문과 최종 업무 완료의 평가 단위를 명시</td>
-</tr>
-<tr>
-<td>사람 검토</td>
-<td>실제 응답과 근거, AI 점수와 분리한 판단·이유</td>
-<td>assistant 기록은 보조 기록. 사람이 실제로 검토하기 전에는 사람 승인 대기</td>
-</tr>
-</tbody>
-</table>
-<p>기존 <code>groundedness</code>의 정책 참조 의미를 유지할지 새 이름으로 분리할지는 스키마 버전 변경에서 결정해야 합니다. <strong>과거 점수를 새 의미의 지표로 재사용해서는 안 됩니다.</strong> <code>retrieved_context</code>를 고정 정책으로 바꾸거나 정답을 생성 입력에 넣어서 검색 실패를 숨기지도 않습니다.</p>
-<p>Contoso 교정 fixtures는 <strong>10건 이상</strong>, 정상과 오답을 모두 포함합니다. 예를 들어 올바른 일반 안내·기한 경계·확인 질문·사람 이관·거절과, 규정 시점 오류·가짜 인용·허위 환불 완료·필드/설명 모순·judge 지시 주입을 대조합니다. 동일 응답에 단순히 통과 라벨을 붙여 반복하는 것이 아니라 도메인 실패를 구별하게 합니다.</p>
-<p>교정 기록에는 fixture/정책/rubric 해시, 기대 판정, 실제 점수·이유, 불일치, 평가기 버전·모델 관측값을 묶습니다. 레이블은 judge에 주지 않으며, 불일치가 남거나 점수가 없으면 교정 완료가 아닙니다. 로컬 작성 점수는 실제 클라우드 교정 결과가 아니고, 업무 평가기의 교정 통과는 모든 내장 지표의 정확성이나 holdout 성능을 보증하지 않습니다.</p>
-<h3 id="book-migration--3-3-동결-후-새-평가와-멱등-재개">3-3. 동결 후 새 평가와 멱등 재개</h3>
-<ol>
-<li>dev에서 후보를 선택하고 원본 100건·기존 split 해시가 유지되는지 확인합니다.</li>
-<li>실행 가능한 freeze가 프롬프트, Agent Service 이름/버전, 생성 설정, 관측 모델 버전, 정책/인덱스/임베딩/planner 계약, evaluator/rubric/교정, gate, 대화 프로토콜을 결속합니다. 공개되지 않은 서비스 내부 버전은 미확인으로 남깁니다.</li>
-<li>동결 이후 별도 fresh holdout을 생성·등록하고 동결 해시·생성 근거·생성 시각·ID/질문/상황 그룹 중복 검사·평가용 후속 발언을 기록합니다. <strong>제안 경로</strong>는 <code>artifacts/governance/</code> 아래 별도 holdout 데이터와 등록 기록입니다. 기존 <code>data/cases.jsonl</code>이나 <code>data/splits/test.jsonl</code>을 덮어쓰지 않습니다.</li>
-<li>승인된 새 holdout은 <strong>12건의 별도 평가 계약</strong>으로 사전에 정의합니다. 기존 <code>minimum_test_rows: 20</code> 게이트를 몰래 낮추거나 12건으로 그 게이트를 통과했다고 표시하지 않습니다. 새 계약의 표본·coverage·critical·지표 요구조건도 동결하고 누락과 critical 실패는 허용하지 않습니다. 부족한 표본을 맞추려고 기존 test 일부를 새 질문으로 재명명하지 않으며 템플릿 변형을 광범위한 일반화 검증이라고 과장하지 않습니다.</li>
-<li>같은 동결 계약의 baseline/candidate를 실행·채점·검토하고 실패를 포함한 결과를 보존합니다. 동결 후 변경, 중복·누락·오류·불완전한 judge·critical 실패는 <strong>HOLD</strong>입니다. 최종 통과도 사람의 운영 승인이 아닙니다.</li>
-<li>완료된 결과를 재호출하지 않고 검증 후 읽으며, 부분 실행은 같은 계약의 저장 행과 단계부터 재개합니다. 원격 요청 성공 후 로컬 저장 전 장애가 있었다면 정확히 한 번 실행/과금됨을 보장하지 않습니다. 원격 ID가 불명확하면 복구·확인 전 자동 재제출을 막습니다.</li>
-</ol>
-<p>holdout을 읽고 후보/rubric/기준을 수정했다면 기존 holdout은 더 이상 미노출이 아닙니다. 이전 실패를 보존하고 새 실험·새 holdout으로 넘어갑니다. 보류를 없애기 위한 재추출·재채점 반복은 재개가 아닙니다.</p>
-<h3 id="book-migration--3-4-검색과-대화의-추가-증거">3-4. 검색과 대화의 추가 증거</h3>
-<p>임베딩은 실제 제공자 응답, 모델·버전/차원, 코퍼스 해시와 연결된 캐시를 요구합니다. 벡터가 유한한 숫자이며 차원이 맞는지 확인하고, vector-only 요청에는 텍스트 검색이 없었는지, hybrid에는 텍스트와 벡터가 함께 있었는지 따로 남깁니다. IQ 계획은 일반 <code>activity</code>가 비어 있지 않다는 사실만으로 인정하지 않고 실제 계획 유형·하위 질의·반환 청크를 확인합니다. <strong>이 문서 작성 중에는 어느 것도 실행하지 않았습니다.</strong></p>
-<p>통합 <code>iq vectors</code>의 직접 vector/hybrid 진단은 <strong>에이전트가 제공받은 context의 증거가 아닙니다.</strong> <code>iq probe</code>의 계획·출처 증거와 실제 Agent Service+MCP의 사례별 출력도 각각 구분하며, 진단 파일로 응답의 <code>retrieved_context</code>를 대체하지 않습니다.</p>
-<p>통합 <span class="book-file-link">설정<span class="book-file-label"> (파일: <code>lab/config.py</code>)</span></span>의 선택적 <code>embedding</code> / <code>EMBEDDING_DEPLOYMENT</code> 필드는 배포 이름을 전달하는 계약입니다. 필드가 생겼거나 값이 채워졌다는 것만으로 실제 임베딩·벡터 업로드·검색이 검증되지는 않습니다. 필수 배포가 없으면 실제 벡터 실행은 중단하고 텍스트 검색을 벡터 성공으로 바꾸어 표시하지 않습니다.</p>
-<p>대화는 초기 질문 → <code>clarify</code> 응답 → 실제 사용자 또는 명시된 scripted-user 후속 발언 → 최종 응답을 각각 저장합니다. 대화·검색·기대 행동의 해시와 출처를 연결하고, 에이전트가 사용자의 날짜·권한·사용 이력을 생성한 것을 사용자 응답으로 저장하지 않습니다. 초기 필드만 검사했다면 그 한계를 표시하며, 초기 설명의 위험까지 확인하기 전 전체 대화가 안전하다고 결론 내리지 않습니다.</p>
-<h2 id="book-migration--4-실행-승인과-현재-상태">4. 실행 승인과 현재 상태</h2>
-<p><strong>현재 상태: 신규 NCUS 인프라, 실제 모델/Agent/MCP/검색/평가, 두 Optimizer 및 SFT 학습·배포·paired 평가를 실행했습니다. 품질 판단은 HOLD입니다.</strong> 초기 <code>ServiceModelDeprecated</code>, 생성 충돌, 관측 연결 오류와 이후 복구를 각각 보존했습니다. 최종 결과는 <a href="#book-verification">검증 기록</a>과 <span class="book-file-link">신규 LIVE 증거<span class="book-file-label"> (파일: <code>evidence/integration-20260930/live-summary.json</code>)</span></span>에 있습니다.</p>
-<p>초기에는 승인 대기였고, 이어 RG 생성만 허용되었습니다. 이후 사용자가 통합 담당자의 구체적인 제한 계획을 참조하여 사용을 승인했으며, 후속 확인으로 <strong>금액 상한을 명시적으로 해제</strong>했습니다. 호출·후보·학습 epoch·대기 시간과 신규 리소스 범위의 제한은 유지합니다. <strong>이제 예산 승인을 기다리는 상태와 서비스 실행을 기다리는 상태를 혼동하지 않습니다.</strong> 다만 승인 자체는 모델 가용성·권한 적용·Preview 접근·학습 성공을 보장하지 않습니다.</p>
-<p><strong>클라우드 변경·유료 실행은 통합 담당자가 승인 범위에서 수행했습니다.</strong> 분담 에이전트는 정해진 파일 구현·검사와 읽기 전용 조사를 수행했습니다. 가이드 초안 검증 뒤 첫 생성 시도에서 하위 자원 0건·ARM 조회 404의 실패가 있었고, 응답 생성 전에 gpt-4.1-mini / 2025-04-14 / Standard를 명시 선택했습니다. 이후 같은 새 RG에서 실제 인프라와 실습을 완료했으며 실패 원본도 보존합니다. 삭제 승인은 없습니다.</p>
-<p>원문 승인 대화와 기계가 읽는 승인 기록은 비공개 운영 자료로 보관합니다. 웹·PDF·ZIP에 복사하지 않으며 여기에는 <strong>승인 범위 요약과 실행 상태</strong>만 남깁니다. 로컬 DEMO·mock 검사도 여전히 실제 LIVE 결과를 대신하지 않습니다.</p>
-<table>
-<thead>
-<tr>
-<th>승인 항목</th>
-<th>이번 통합에서의 상태</th>
-<th>실행 전에 필요한 결정</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>금액 상한</td>
-<td><strong>금액 상한 없음 — 명시 승인됨</strong></td>
-<td>이전 <code>50 USD</code> 제한으로 실행을 차단하지 않음. 아래 호출/작업·리소스 범위는 유지하고 실제 비용과 지속 자원 비용을 관측</td>
-</tr>
-<tr>
-<td>리소스·작업·RBAC 범위</td>
-<td><strong>해당 새 RG와 신규 리소스의 최소 RBAC만 승인</strong></td>
-<td>기존/공유 리소스·공유 정책·다른 리전을 변경하지 않음. 계획과 소유 기록에 묶인 대상만 사용</td>
-</tr>
-<tr>
-<td>데이터 처리</td>
-<td><strong>합성 데이터의 GlobalStandard 및 Global/Developer 처리 승인</strong></td>
-<td>계획에 명시한 합성 자료만 사용. 실제 고객 데이터로 확장하지 않으며 NCUS 리소스를 NCUS 전용 처리로 표시하지 않음</td>
-</tr>
-<tr>
-<td>보존·삭제</td>
-<td><strong>새 RG를 사용자 검토까지 보존; 삭제 미승인</strong></td>
-<td>운영 기록은 비공개로 보관. 보존은 과금 중단이 아니며 임의 삭제로 승인 범위를 넓히지 않음</td>
-</tr>
-<tr>
-<td>사람의 운영 승인</td>
-<td><strong>미승인</strong></td>
-<td>실제 검토자의 판단·근거와 조직 승인 절차. AI가 자신의 검토를 human으로 등록하지 않음</td>
-</tr>
-</tbody>
-</table>
-<p><code>--confirm</code>, Azure Budget 알림, 로컬 mock 테스트, 과거 작성자 결과 중 어느 것도 범위 확대의 승인을 대신하지 않습니다. 통합 담당자도 아래 한도 밖의 호출·작업을 실행하지 않습니다. Feature 접근이 없거나 작업이 미완료이면 해당 기능의 별도 차단/대기 상태를 기록하고, 다른 제품을 실행한 결과로 성공을 대체하지 않습니다. 기존 공유 자원과 v1 저장소는 그대로 둡니다.</p>
-<h3 id="book-migration--초기-읽기-전용-조사와-후속-실행의-구분">초기 읽기 전용 조사와 후속 실행의 구분</h3>
-<p>다음은 2026-09-30 초기 조사와 복구 판단의 기록입니다. 이후 실제 생성/모델/학습 결과와는 시점을 구별합니다.</p>
-<table>
-<thead>
-<tr>
-<th>항목</th>
-<th>전달받은 관측</th>
-<th>해석의 경계</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RG/첫 시도 관측</td>
-<td>첫 거절 당시 하위 인벤토리 <code>0</code>건, ARM 조회 <code>404</code></td>
-<td>당시 실패 기록. 이후 <code>Succeeded</code>한 같은 새 RG의 인프라와 섞거나 실패를 삭제하지 않음</td>
-</tr>
-<tr>
-<td>Search Basic · NCUS</td>
-<td><code>0.101 USD/시간</code>; 24시간 약 <code>2.424 USD</code>, 730시간 약 <code>73.73 USD</code></td>
-<td>시간 단가에 따른 계획용 계산. 전체 실습 비용이나 무료 할당이 아니며 모델·평가·기타 비용과 구분</td>
-</tr>
-<tr>
-<td>선택한 버전</td>
-<td>agent/SFT 기반: <strong><code>gpt-4.1-mini</code> / <code>2025-04-14</code> / Standard</strong>. Judge <code>gpt-5.4-mini</code> / <code>2026-03-17</code>, planner <code>gpt-5.5</code> / <code>2026-04-24</code>, embedding <code>text-embedding-3-small</code> / <code>1</code></td>
-<td>이 고정 설정으로 신규 배포와 LIVE 호출 확인. 처음 모델 선택을 바꾼 일은 튜닝 효과로 세지 않음</td>
-</tr>
-<tr>
-<td>거부된 이전 후보</td>
-<td>gpt-4o-mini / 2024-07-18은 catalog <code>Deprecating</code>·fineTune·쿼터가 있어도 Azure validate에서 <strong>2026-03-31 폐기</strong>의 <code>ServiceModelDeprecated</code>로 거부됨</td>
-<td>메타데이터·quota·로컬 검사와 제공자의 실제 생성 검증을 구분하는 첫 실패 교훈. 원본 실패를 삭제하거나 다른 성공으로 대체하지 않음</td>
-</tr>
-<tr>
-<td>새 후보의 상태/쿼터</td>
-<td>catalog <code>Legacy</code>, fineTune 지원 표식. 정확한 기반 usageName <strong><code>OpenAI.Standard.gpt4.1-mini</code></strong>에 여유 5000, 별도 fine-tuned 여유 500 관측</td>
-<td><code>gpt-4.1-mini</code> 모델 이름과 quota 식별자의 하이픈 차이를 임의로 합치지 않음. 여유는 무료 가격·생성·학습 지원 보장이 아님</td>
-</tr>
-<tr>
-<td>배포 capacity 단위</td>
-<td>관측한 capacity 메타데이터의 minimum/step은 <code>null</code></td>
-<td>ARM 정수 capacity 단위를 그대로 보존. 누락값을 근거 없이 보충하거나 모든 모델/SKU의 capacity를 일률적으로 TPM이라 표시하지 않음</td>
-</tr>
-<tr>
-<td>CLI / SDK / 브라우저 / Azure MCP</td>
-<td>CLI·SDK·브라우저의 실제 사용자/테넌트 확인. Azure MCP의 관리 조회와 별개로 Foundry 데이터 평면 호출에서 다른 테넌트 오류가 관측됨</td>
-<td>해당 MCP 호출로 변경하지 않음. 실제 Agent 내부 Search MCP의 프로젝트 MI는 별도이며 정상 호출을 검증</td>
-</tr>
-</tbody>
-</table>
-<h3 id="book-migration--제품별-현재-확인-범위">제품별 현재 확인 범위</h3>
-<p>공식 문서 지원과 실제 실행 근거를 함께 남기되, 서비스 완료와 품질 합격은 구분합니다.</p>
-<table>
-<thead>
-<tr>
-<th>기능</th>
-<th>확인 범위와 경로</th>
-<th>가이드에서 유지할 경계</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Prompt Optimizer</td>
-<td><a href="https://learn.microsoft.com/azure/foundry/observability/how-to/prompt-optimizer">공식 안내</a>의 포털 경로로 실제 후보/변경 이유를 생성</td>
-<td>후보 3건 재평가는 형식 실패. 영구 job ID가 없는 응답에 ID를 만들어 넣지 않음</td>
-</tr>
-<tr>
-<td>Agent Optimizer</td>
-<td><a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">공식 prompt-agent wizard</a>에서 실제 job succeeded, native baseline/candidate 각12건 수집</td>
-<td>순위0.677→0.708과 실습 로컬 규칙의 중요 실패4→4를 함께 보고. MCP/Agent Service를 유지</td>
-</tr>
-<tr>
-<td>Frontier</td>
-<td>통합 담당자의 Learn 키워드·웹 검색에서 직접 일치하는 공식 API/지원 결과를 찾지 못한 범위는 <strong><code>NOT_VERIFIED</code></strong></td>
-<td>검색에서 확인하지 못했다는 이유로 제품/API가 존재하지 않는다고 단정하지 않음. 실제 접근·지원 경로를 확인할 때까지 미확인으로 남기고 SFT로 성공을 대신하지 않음</td>
-</tr>
-</tbody>
-</table>
-<h3 id="book-migration--승인된-제한-계획과-실행-구분">승인된 제한 계획과 실행 구분</h3>
-<table>
-<thead>
-<tr>
-<th>범위</th>
-<th>승인된 상한·실행 구분</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>예산</td>
-<td><strong>금액 상한 없음.</strong> 비공개 범위 요약의 <code>budget_cap: null</code>과 bootstrap의 완전한 승인 파일은 구분. 후자는 <a href="#book-admin--approval">승인 계약</a>의 <code>budget_policy</code>·<code>budget_amount</code>·명시적 확인/근거 필드를 검증하며 승인 누락이나 무료를 뜻하지 않음</td>
-</tr>
-<tr>
-<td>모델/Judge/planner 요청</td>
-<td>합계 최대 <code>300</code>회; 재시도·교정·계획 호출도 무제한 반복하지 않음</td>
-</tr>
-<tr>
-<td>Prompt Optimizer</td>
-<td><code>1</code> job, 최대 <code>2</code> candidates; 서비스 접근/실행 결과는 별도 확인</td>
-</tr>
-<tr>
-<td>Agent Optimizer</td>
-<td><code>1</code> job, 최대 <code>2</code> candidates; Prompt Optimizer 성공으로 대신 완료 처리하지 않음</td>
-</tr>
-<tr>
-<td>SFT</td>
-<td><code>1</code> job, 기존 train <code>56</code> / validation <code>12</code>, <code>1</code> epoch; Frontier 성공으로 표시하지 않음</td>
-</tr>
-<tr>
-<td>fresh holdout</td>
-<td>동결 후 새로 생성한 <code>12</code>건; 기존 <code>minimum_test_rows: 20</code>과 별도 계약</td>
-</tr>
-<tr>
-<td>작업 대기</td>
-<td>job당 최대 <code>60</code>분; 시간 초과를 성공으로 처리하거나 무제한 재제출하지 않음</td>
-</tr>
-</tbody>
-</table>
-<p>12건 계획이 승인되어도 기존 20건 게이트를 자동 완화하지 않습니다. 새 fresh-holdout 계약의 목적·표본 한계·coverage·게이트를 결과를 보기 전에 별도로 고정하고 기존 test 20건과 구분합니다. 원래 게이트 그대로 12건만 제출하면 통과로 표시할 수 없습니다. 작업 상한에 도달하거나 승인 범위를 벗어나면 통합 담당자는 실행을 멈추고 상태를 기록합니다. 사용 승인과 실제 사람의 품질 검토·운영 출시는 여전히 다른 결정입니다.</p>
-<p>이번 fresh12는 동결 후 생성/등록과 누출 검사를 마쳤지만 <strong>교정 HOLD로 최종 추론 전 차단</strong>됐습니다. SFT는 실제 학습·배포·paired 평가까지 끝났고 중요 실패가 남았습니다. 이 보류 결과를 아카이브 준비를 위해 성공으로 바꾸지 않습니다.</p>
-<h2 id="book-migration--5-출처계보라이선스">5. 출처·계보·라이선스</h2>
-<h3 id="book-migration--확인한-사실">확인한 사실</h3>
-<ul>
-<li>v1 고정 트리의 README(영문/국문), DEMO/입문/완결형/공통 준비/참고/강사 문서와 관련 CLI·평가·검색 코드, authored fixture 매니페스트 및 과거 LIVE fixture 메타데이터를 직접 읽었습니다.</li>
-<li>v1의 <code>examples/manifest.json</code>은 <code>source: authored-demo</code>와 프롬프트/질문/문맥/fixture 해시를 갖습니다. 반면 <code>advanced-rag/fixtures/recorded-v1.json</code>은 <code>source: recorded-live</code>, 캡처 시각 <code>2026-09-27T21:53:22.399772+00:00</code>, 원본 근거 해시와 모델 스냅샷을 갖습니다. <strong>서로 다른 출처이며 이 기록의 실제 클라우드 실행을 이번 조사에서 재검증하지 않았습니다.</strong></li>
-<li>원본 문서의 2026-09-28 실행 기록은 특정 이전 환경의 관측 설명입니다. 통합 대상의 <a href="#book-verification">기존 검증 문서</a>는 2026-09-29의 로컬/모의 검사와 읽기 전용 메타데이터 관찰을 구분하고 유료 실습 미실행을 명시합니다. 둘을 하나의 실행 이력으로 합치지 않습니다.</li>
-<li><strong>두 시작 커밋 모두 추적 트리에서 LICENSE/LICENCE, COPYING, NOTICE, COPYRIGHT 파일을 찾지 못했습니다.</strong> 추적된 Markdown/Python/TOML/텍스트/JSON의 license·copyright·SPDX 표기도 확인되지 않았고 통합 대상 <code>pyproject.toml</code>에도 라이선스 선언이 없습니다. 이는 저장소 외부 권리 관계가 없다는 증명은 아닙니다.</li>
-</ul>
-<h3 id="book-migration--통합-원칙">통합 원칙</h3>
-<ol>
-<li>공개 열람 가능성과 수정·재배포 라이선스를 구별합니다. 같은 계정 소유의 저장소처럼 보여도 명시적 사용 허가를 추정하지 않습니다.</li>
-<li>이번 문서는 기능·설계 판단을 독자적으로 작성하고 커밋 고정 링크로 영향 관계를 남깁니다. <strong>v1 본문·코드·데이터·영상·그림을 복사하지 않습니다.</strong></li>
-<li>후속 단계에서 실제 내용을 가져와야 한다면 먼저 권리자의 허가/라이선스와 해당 파일의 권리 범위를 확인합니다. 허용될 때 원본 저장소·커밋·파일·변경 범위·필요한 고지와 라이선스 사본을 기록합니다. 저작자 표시만으로 허가 부족이 해결되지는 않습니다.</li>
-<li>외부 Microsoft 문서·저자 글은 개념/API 참고 출처입니다. 제품 그림·본문·영상 재배포 허가로 해석하지 않으며, 두 저장소에 이미 있는 1차 출처 표기를 제거하지 않습니다. 이 조사에서 외부 링크를 새로 조회하거나 최신 서비스 지원을 재검증하지 않았습니다.</li>
-<li>향후 ZIP/PDF 배포 시 자체 문서/코드의 배포 권한과 포함 의존성의 라이선스 의무도 따로 확인합니다. 이 비교는 법률 검토나 패키지 전체의 라이선스 인증이 아닙니다.</li>
-</ol>
-<h2 id="book-migration--6-후속-가이드-편집빌드-계약">6. 후속 가이드 편집·빌드 계약</h2>
-<h3 id="book-migration--원문과-산출물">원문과 산출물</h3>
-<p><span class="book-file-link">웹 빌더<span class="book-file-label"> (파일: <code>scripts/build_guide.py</code>)</span></span>의 <code>DOCUMENTS</code>가 다음 매핑의 단일 원본입니다. 시작 커밋은 여섯 문서였으며 통합 브랜치의 출판 등록에는 migration·영문 문서가 추가되었습니다. 등록 상태와 실제 산출물 재생성 완료는 구분합니다.</p>
-<table>
-<thead>
-<tr>
-<th>편집할 원문</th>
-<th>생성 파일</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>guide/handbook.md</code></td>
-<td><code>index.html</code></td>
-</tr>
-<tr>
-<td><code>guide/facilitator.md</code></td>
-<td><code>facilitator.html</code></td>
-</tr>
-<tr>
-<td><code>guide/admin-setup.md</code></td>
-<td><code>admin.html</code></td>
-</tr>
-<tr>
-<td><code>guide/sft-appendix.md</code></td>
-<td><code>sft.html</code></td>
-</tr>
-<tr>
-<td><code>guide/verification.md</code></td>
-<td><code>verification.html</code></td>
-</tr>
-<tr>
-<td><code>data/README.md</code></td>
-<td><code>data-guide.html</code></td>
-</tr>
-<tr>
-<td><code>guide/integration-migration.md</code></td>
-<td><code>migration.html</code></td>
-</tr>
-<tr>
-<td><code>README.en.md</code></td>
-<td><code>english.html</code></td>
-</tr>
-</tbody>
-</table>
-<p>기본 빌드는 위 여덟 페이지와 <code>print.html</code>을 함께 렌더링합니다. <span class="book-file-link">인쇄 빌더<span class="book-file-label"> (파일: <code>scripts/build_print.py</code>)</span></span>의 <code>BOOK_ORDER</code>는 본문 → SFT → 강사 → 관리자 → 검증 → 데이터 → migration → 영문 순서입니다. <strong>이 migration 문서는 통합 브랜치에서 매핑/인쇄 목차에 등록</strong>되었지만, 소스 등록만으로 새 HTML/PDF가 자동 생성되지는 않습니다. 모든 등록 원문이 준비된 뒤 출판 담당자가 전체 빌드를 수행합니다.</p>
-<ul>
-<li>생성 HTML을 직접 편집하지 않습니다. 원문 경로 기준 링크는 빌더가 루트 HTML로 재배치하고 등록된 문서 링크를 매핑합니다.</li>
-<li><code>{#start}</code> 같은 기존 안정 앵커와 고유한 문서 ID를 유지합니다. 브라우저의 진행 상태는 문서 ID별이며 새 페이지 추가 시 중복시키지 않습니다.</li>
-<li>참가자 안내는 기존 15개 장을 <strong>예시 이해 → 환경 연결 → 기준선 평가 → IQ → Agent Optimizer → 최종 판정·종료</strong>의 6단계로 묶었습니다. 리소스·모델·데이터·게이트와 기존 LIVE 증거는 변경하지 않습니다. Prompt Optimizer·별도 managed 평가는 강사 참고로, SFT·Frontier는 심화 부록으로 유지합니다. 확장된 단계에 이전 장의 읽음 표시가 잘못 적용되지 않도록 참가자 학습 기록만 별도 revision으로 저장하며 원래 브라우저 기록은 삭제하지 않습니다.</li>
-<li>Markdown은 신뢰된 로컬 저자 입력을 전제로 합니다. 모델/사용자 응답을 원시 HTML이나 실행 가능한 script로 삽입하지 않습니다. 코드 블록은 escape·복사 원문을 보존하고 템플릿 토큰처럼 다시 해석하지 않습니다.</li>
-<li><code>print.html</code>은 script·복사 버튼 없는 정적 통합 문서입니다. 문서 앵커는 <code>book-...</code>로 구분하고, 패키지 파일 링크는 읽을 수 있는 파일 경로로 바꿉니다. localhost/file URI를 PDF에 남기지 않습니다.</li>
-<li>시작 커밋의 <code>BUILD_DATE</code>는 <code>2026-09-29</code>였고 통합 브랜치는 <code>2026-09-30</code>을 사용합니다. 이 통합 제작일을 모든 공식 문서·서비스의 새 검증일로 해석하지 않습니다. 실제 확인 범위·관측 시각과 관련 검사를 함께 유지합니다.</li>
-</ul>
-<h3 id="book-migration--검증-순서">검증 순서</h3>
-<p>다음은 <strong>후속 문서 통합 담당자의 로컬 제작 순서</strong>입니다. 새 기능 설명은 실제 parser/상태/파일과 맞춘 뒤 실행 블록으로 공개합니다.</p>
-<pre><code class="language-bash">python scripts/build_guide.py
-python scripts/build_guide.py --check
-python -m unittest discover -s tests -p 'test_documentation.py' -v
-python -m unittest discover -s tests -p 'test_guide_build.py' -v
-python -m unittest discover -s tests -p 'test_print_build.py' -v
-</code></pre>
-<p><strong>명령 해설:</strong> 첫 줄은 HTML 생성, 두 번째는 쓰기 없는 최신 상태 검사입니다. 뒤의 세 <code>unittest</code>는 각각 문서 링크·CLI·사진 계약, 웹 빌더, 통합 인쇄 빌더를 선택해 검사합니다. <code>-s tests</code>는 탐색 폴더, <code>-p</code>는 파일 패턴, <code>-v</code>는 자세한 출력입니다. 기존 원본/실행 결과를 다시 만드는 명령이 아니며 Azure 비용도 발생시키지 않습니다.</p>
-<p>포털 사진은 <code>web/assets/portal/</code>에 원본 PNG와 <code>captures.json</code>의 출처·상태·가림·해시를 함께 둡니다. Markdown의 <code>figure.portal-shot</code>에서 상대 경로·설명·원본 크기 링크로 연결하고, 계정·생성자·endpoint는 촬영 시 가립니다. 사진은 참고 화면과 기존 결과이지 새 실험의 증거가 아니며, 인증 상태·서명 URL·HAR·원시 스냅샷을 포함하지 않습니다. 학습 목표 카드는 <code>lab-concept</code>를 사용하되 참가자 6단계와 기존 앵커를 유지합니다.</p>
-<p><span class="book-file-link">문서 검사<span class="book-file-label"> (파일: <code>tests/test_documentation.py</code>)</span></span>는 등록된 HTML의 로컬 링크·앵커와 <code>guide/*.md</code>의 <code>python -m lab</code>/<code>lab.sft</code> 명령 문법을 검사합니다. <span class="book-file-link">웹 검사<span class="book-file-label"> (파일: <code>tests/test_guide_build.py</code>)</span></span>는 결정적 렌더링·링크·코드 보존·문서별 상태를, <span class="book-file-link">인쇄 검사<span class="book-file-label"> (파일: <code>tests/test_print_build.py</code>)</span></span>는 목차·앵커·휴대 가능한 링크·정적 출력 계약을 검사합니다. <strong>이 검사들은 실제 Azure 실행을 하지 않습니다.</strong></p>
-<p>PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된 로컬 인쇄 절차로 별도 제작하고 <span class="book-file-link">PDF 검사<span class="book-file-label"> (파일: <code>scripts/verify_pdf.py</code>)</span></span>로 한국어 텍스트·필수 내용·빈 페이지·본문 넘침·로컬 머신 링크를 확인해야 합니다. 기존 PDF를 새 본문에 대한 검증 결과로 재사용하지 않습니다. 검사 도구의 의존성은 참가자 DEMO의 필수 조건이 아닙니다.</p>
-<p><span class="book-file-link">패키징<span class="book-file-label"> (파일: <code>scripts/package_lab.py</code>)</span></span>은 원문 디렉터리를 포함하므로 이 migration 문서도 소스 ZIP 대상입니다. 통합 브랜치에는 migration/영문 HTML과 <code>infra</code>·<code>evidence</code> 소스 범위도 등록되었습니다. <code>.env</code>·가상환경·<code>artifacts/</code> 제외 계약을 유지하고, 배포용 <code>evidence</code>에는 승인된 비밀 없는 자료만 포함해야 합니다. 원격 계정 정보·실제 대화·LIVE 결과·인증 정보를 이름만 바꿔 그곳에 넣지 않습니다. 새 최상위 HTML을 배포하려면 페이지 등록·인쇄 포함 여부·문서 검사 페이지 목록·패키지 파일 목록을 함께 검토합니다.</p>
-<h3 id="book-migration--후속-편집에-전달할-완료-조건">후속 편집에 전달할 완료 조건</h3>
-<ul>
-<li>도입의 Contoso 오답 활동과 credential/network-free DEMO가 실제 경로에 연결되어야 합니다.</li>
-<li>Judge 전 최초 판단, AI 보조 검토, 실제 사람 판단, 운영 승인의 차이가 단계와 산출물에 드러나야 합니다.</li>
-<li>업무 교정·실제 검색·대화·동결/새 holdout·재개는 각각 <strong>무엇이 구현/로컬 검증/승인 대기/LIVE 미실행인지</strong> 표시해야 합니다.</li>
-<li>기존 100건과 제품·증거·안전 경계를 보존해야 하며, 작성 예시·mock·과거 기록을 새 LIVE 성공으로 채우지 않아야 합니다.</li>
-</ul>
-<h2 id="book-migration--7-이관-완료아카이브-준비-체크리스트">7. 이관 완료·아카이브 준비 체크리스트</h2>
-<p><strong>이 절은 초기 아카이브 준비 기록이지 그 자체로 가시성 변경을 승인한 문서가 아닙니다.</strong> 현재 v1의 공개 게시는 위의 별도 소유자 요청에 따른 것이며, 보관 원본의 접근·보관 상태는 변경하지 않습니다.</p>
-<table>
-<thead>
-<tr>
-<th>검토</th>
-<th>완료로 볼 조건</th>
-<th>하지 않을 일</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>자기완결성</td>
-<td>이 패키지의 README/코드/데이터/문서만으로 DEMO·준비·주 경로를 이해하고 실행 가능</td>
-<td>v1 실행 파일·설정·README 설치를 필수 단계로 요구</td>
-</tr>
-<tr>
-<td>출처/권리</td>
-<td>고정 커밋·파일 영향 관계와 라이선스 미확인 상태 보존</td>
-<td>공개 저장소이므로 자유 복사 가능하다고 간주</td>
-</tr>
-<tr>
-<td>시나리오/데이터</td>
-<td>Contoso, 원본 100건·원래 분할·응답 스키마 보존</td>
-<td>다른 도메인의 사례·정답·과거 LIVE 점수를 섞음</td>
-</tr>
-<tr>
-<td>소스/출판 일치</td>
-<td>원문과 여덟 HTML/통합 인쇄본/PDF를 같은 변경에서 재생성·검사</td>
-<td>예전 PDF/브라우저 성공 기록으로 새 원문 검증을 대체</td>
-</tr>
-<tr>
-<td>비공개 경계</td>
-<td>실제 계정·환경·승인 원문/JSON·실행 근거를 출판 묶음에서 제외</td>
-<td>사용자 이메일/구독 ID/기존 리소스 기본값을 남김</td>
-</tr>
-<tr>
-<td>실행 계보</td>
-<td>authored/mock/metadata/LIVE/품질/사람 승인 상태를 별도 보존</td>
-<td>계획·파일 생성·RG 생성만으로 기능 전체 완료 선언</td>
-</tr>
-<tr>
-<td>저장소 상태</td>
-<td>권리·배포·보존 검토 후 별도 소유자 결정에 필요한 근거만 준비</td>
-<td>v1 수정/커밋/삭제, 가시성 전환 또는 archive 실행</td>
-</tr>
-<tr>
-<td>Azure 보존</td>
-<td>신규 RG/리소스·원장·다음 비용 확인 책임을 유지</td>
-<td>이관 또는 수업 종료를 이유로 삭제 실행</td>
-</tr>
-</tbody>
-</table>
-<p>미확인 라이선스, 기능 접근, 실제 실행 또는 사람 검토가 남아 있으면 그 상태를 남깁니다. 저장소를 보관할 준비가 되었다는 판단과 실제 보관/공개 변경은 별도의 권한 있는 결정입니다.</p>
-<h3 id="book-migration--남은-의존성과-승인">남은 의존성과 승인</h3>
-<table>
-<thead>
-<tr>
-<th>항목</th>
-<th>현재 경계</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>v1 실행 의존성</td>
-<td>없음. 독립 ZIP을 새 폴더에 풀어 Azure SDK·네트워크·하위 프로세스 없이 DEMO를 실행하고 원본 100건 검사를 통과함</td>
-</tr>
-<tr>
-<td>출처 참조</td>
-<td>이 문서의 v1 커밋/파일 링크만 남음. 링크를 읽지 않아도 설치·DEMO·LIVE 명령을 실행할 수 있음</td>
-</tr>
-<tr>
-<td>LIVE 외부 의존성</td>
-<td>Azure 로그인·서비스 지원·쿼터·역할·처리 위치/비용 승인. Python 의존성은 이 패키지의 잠금 파일 사용</td>
-</tr>
-<tr>
-<td>실제 실행 증거</td>
-<td>신규 환경의 성공·실패·접근 차단 기록을 <a href="#book-verification">검증 기록</a>과 함께 확인. 과거 v1 결과를 승계하지 않음</td>
-</tr>
-<tr>
-<td>아카이브·공유</td>
-<td>참고 원본은 현재 v0.9에서 PRIVATE·Archived 상태. 이번 이름 변경에서 원본의 보관/접근 상태나 두 저장소의 권한은 변경하지 않음</td>
-</tr>
-</tbody>
-</table>
-<h3 id="book-migration--transition-notice">전환 안내 문안 — 소유자 검토용 초안</h3>
-<p>다음 문안은 <strong>v1에 게시하거나 아카이브를 실행한 기록이 아닙니다.</strong> 전환일·접근 방법을 소유자가 확정한 뒤 별도로 사용합니다.</p>
-<blockquote>
-<p>Foundry 평가 실습의 대표 유지보수 저장소는 <strong>foundry-evaluation-labs-v1</strong>이며, 가이드 표기도 <strong>v1</strong>입니다. 전체 패키지에서 <code>index.html</code>을 열어 시작해 주세요.</p>
-<p>v1 가이드는 Contoso 고객지원 시나리오에서 오답 발견 → 무료 작성형 DEMO → 실습 환경 연결 → 실제 평가·검색·개선 → 동결·새 보류 평가 → 사람 검토·운영 관측을 하나의 경로로 안내합니다. 코드·데이터·설치·재개에 참고 원본의 실행 파일은 필요하지 않습니다.</p>
-<p>참고 원본의 과거 자료는 <strong>foundry-evaluation-labs-v0.9</strong>에서 보관되어 있습니다. 과거 점수·실행 화면은 현재 가이드의 신규 LIVE 결과가 아닙니다.</p>
-<p>가이드는 현재 v1 저장소와 GitHub Pages를 통해 공개하는 대상입니다. 과거 참고 원본은 별도 접근 권한이 필요할 수 있습니다. Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.</p>
-</blockquote>
-</section>
-<section id="book-english" class="book-section guide-content book-appendix" lang="en" aria-label="부록 7 · English quickstart">
-<p class="book-part-label">부록 7 · English quickstart</p>
+<section id="book-english" class="book-section guide-content book-appendix" lang="en" aria-label="부록 6 · English quickstart">
+<p class="book-part-label">부록 6 · English quickstart</p>
 <h1 id="book-english--foundry-learning-loop-lab-v1-english">Foundry Learning Loop Lab v1 · English</h1>
 <p><strong><a href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start">Read the lab online → GitHub Pages</a></strong></p>
-<p>Reading the guide needs no installation. For a downloaded package, open <a href="#book-index--start">index.html</a>. GitHub Pages serves static documentation only; it does not sign in to Azure, run CLI commands, or execute paid labs.</p>
-<p><strong>Follow six steps on one page, in order.</strong> You do not need to choose a document, evaluator path, or optimizer.</p>
+<p>An evidence-first workshop for evaluating and improving a Contoso support agent. Follow <strong>six steps in approximately 3–4 hours</strong>, with feature explanations, CLI details, and 14 actual portal screenshots. The scenario, prompts, and responses are <strong>Korean</strong>.</p>
 <blockquote>
-<p>Understand the example → connect the environment → evaluate the baseline → connect Foundry IQ → improve instructions with Agent Optimizer → decide and finish</p>
+<p>Understand the example → connect the environment → evaluate the baseline → Foundry IQ → Agent Optimizer → decide and finish</p>
 </blockquote>
-<p><strong>Plan for approximately 3–4 hours, including result discussions</strong>, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows <strong>understand the feature → command and explanation → sample output → discuss your results and decision → next step</strong>. Samples illustrate the format and are not evidence of a successful live run.</p>
-<p>Every lab now explains <strong>what the feature is, why it matters, and how to use it</strong>. Command explanations cover options, inputs, output files, cloud/cost boundaries, and safe continuation. New CLI users can start with the <a href="#book-index--cli-basics">command-reading primer</a>.</p>
-<p><strong>Fourteen actual Foundry Portal screenshots</strong> accompany the relevant steps and SFT appendix. They were captured through <strong>headless Playwright MCP</strong> after user authentication, covering the existing project, deployments, agents, IQ, optimizer, evaluations, MCP traces, and SFT job. Start at the <a href="#book-index--portal-project">project screen</a>; each caption explains navigation and interpretation and links to the full-size image. Personal/endpoint fields are redacted. Wizard screenshots are unsubmitted drafts, result screens are existing runs, and no new paid jobs were started for these captures.</p>
-<p>At each evaluation, share <strong>actual results → a representative case → the next decision</strong>. Calibration, baseline diagnosis, IQ, optimizer ranking, candidate re-evaluation, and the fresh holdout answer different questions. These checkpoints use existing reports; they add no paid evaluation calls or automatic external sharing.</p>
-<p>The local <code>explain</code> command connects <strong>criteria, measured scores, saved Judge reasons, HOLD causes, and improvement suggestions</strong>. For strictly paired runs it also computes the configured regression diagnostics. The guide includes score-level rubrics, a worked teaching example, and next-action rules; explanations never rewrite existing evaluation evidence or grant approval.</p>
-<p><strong>This is the same lab and environment.</strong> Keep the existing dedicated NCUS resources, Contoso data, models, and evaluation criteria. Do not redeploy or rerun completed experiments because the guide changed. The former 15 chapters are grouped into six steps; the underlying tools remain available.</p>
-<h2 id="book-english--before-starting">Before starting</h2>
-<p>Keep the complete package in one folder and open <code>index.html</code>. Use Python 3.11+ (3.12 recommended) and bash/zsh on macOS/Linux or Ubuntu in Windows WSL2. The policy, cases, prompts, and responses remain <strong>Korean</strong> so participants use the same experiment.</p>
-<p>The top-right <strong>어둡게/밝게</strong> control remembers light/dark mode in this browser. <strong>현재 인쇄</strong> prints the current step; <strong>전체 PDF</strong> opens the entire current document in the print dialog, where you can choose Save as PDF. Printing always uses a light background. The footer links to the combined PDF including appendices.</p>
-<p>Step 01 is an <strong>AI-authored offline DEMO</strong>. It needs no Azure login, <code>.env</code>, Azure CLI, SDK installation, network, or paid requests. Subsequent installation and commands are in the handbook, not a second quickstart.</p>
-<p>Before LIVE work, the operator verifies the participant's actual identity, permissions, dedicated environment, and current cost authorization, then supplies the private environment folder. Follow <a href="#book-admin">operator setup</a> <strong>only if no lab environment exists yet</strong>. Otherwise reconnect using the original ownership manifest; do not create another resource group.</p>
-<h2 id="book-english--the-only-participant-path">The only participant path</h2>
-<table>
-<thead>
-<tr>
-<th>Step</th>
-<th>Evidence to keep</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>01. Understand the example</td>
-<td>Your judgment about the false refund promise and missing information</td>
-</tr>
-<tr>
-<td>02. Connect the environment</td>
-<td>Ownership/preflight checks and the original dataset validation</td>
-</tr>
-<tr>
-<td>03. Evaluate the baseline</td>
-<td>Actual Agent responses and business Judge calibration</td>
-</tr>
-<tr>
-<td>04. Connect knowledge</td>
-<td>Actual IQ retrieval/MCP output and all 12 dev cases</td>
-</tr>
-<tr>
-<td>05. Improve instructions</td>
-<td>One Agent Optimizer candidate and paired dev evidence</td>
-</tr>
-<tr>
-<td>06. Decide and finish</td>
-<td>Frozen fresh12 results or reasons for not running them, HOLD decisions, and preservation responsibility</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Stop at step 06.</strong> Prompt Optimizer, separate managed evaluation, SFT, and Frontier remain reference/advanced material, not requirements for completing this path. On errors or failed calibration, stop paid progression and record the evidence and unexecuted steps. Learning completion, actual API success, quality acceptance, and human production approval are distinct.</p>
-<h2 id="book-english--boundaries">Boundaries</h2>
+<h2 id="book-english--getting-started">Getting started</h2>
 <ul>
-<li>Preserve eight synthetic policies and 100 cases: train 56 / validation 12 / dev 12 / test 20. Create the separate fresh12 only after freeze; never lower the original test20 gate.</li>
-<li>Use only the owned, dedicated <strong>North Central US</strong> environment. Do not switch to unrelated existing/shared resources, shared policies, or other regions.</li>
-<li>Each participant needs current authorization for cost, processing, and workload. The earlier run's explicit removal of a monetary ceiling is not transferable authorization. Finite call, job, candidate, and waiting bounds still apply.</li>
-<li><strong>Preserve resources and raw evidence. Deletion is not authorized.</strong> Search, logs, and model hosting can keep incurring costs after the terminal closes.</li>
-<li>Keep AI authorship/review separate from human review and approval. Never change failed evidence or thresholds to obtain a pass.</li>
-<li>Keep private environments, approval records, credentials, and raw run data out of source, ZIP, and PDF bundles. Publish only sanitized, allowlisted evidence.</li>
+<li><strong>Online:</strong> Open GitHub Pages above. Reading needs no installation or sign-in.</li>
+<li><strong>Offline:</strong> Download the complete repository and open <a href="#book-index--start">index.html</a>, or read the <span class="book-file-link">combined PDF<span class="book-file-label"> (파일: <code>Foundry-Learning-Loop-Lab-KO.pdf</code>)</span></span>.</li>
+<li><strong>CLI labs:</strong> Use Python 3.11+ (3.12 recommended) and bash/zsh or Windows WSL2. Follow <a href="#book-index--prepare">step 02</a> for installation and authentication.</li>
 </ul>
-<h2 id="book-english--reference-only-not-additional-participant-steps">Reference only — not additional participant steps</h2>
+<p>Run the first offline demo from the repository root:</p>
+<pre><code class="language-bash">python3 -S -m lab demo
+</code></pre>
+<p><code>-S</code> skips Python's <code>site</code> initialization; <code>demo</code> prints authored examples without SDKs, Azure sign-in, network access, or paid model calls.</p>
+<h2 id="book-english--documentation">Documentation</h2>
 <table>
 <thead>
 <tr>
@@ -4078,53 +3026,43 @@ python -m unittest discover -s tests -p 'test_print_build.py' -v
 </thead>
 <tbody>
 <tr>
-<td>Source handbook</td>
-<td><a href="#book-index">Markdown</a></td>
-</tr>
-<tr>
-<td>Identity, resources, cost, recovery</td>
+<td>Environment setup</td>
 <td><a href="#book-admin">Operator guide</a></td>
 </tr>
 <tr>
-<td>Facilitation, recovery, separate diagnostics</td>
+<td>Facilitation and recovery</td>
 <td><a href="#book-facilitator">Facilitator guide</a></td>
 </tr>
 <tr>
-<td>Optional SFT and Frontier</td>
-<td><a href="#book-sft">Advanced appendix</a></td>
+<td>Optional advanced lab</td>
+<td><a href="#book-sft">SFT appendix</a></td>
 </tr>
 <tr>
 <td>Data contracts</td>
 <td><a href="#book-data-guide">Data guide</a></td>
 </tr>
 <tr>
-<td>Existing LIVE evidence and gaps</td>
-<td><a href="#book-verification">Verification</a></td>
+<td>Latest verification and attribution</td>
+<td><a href="#book-verification">Guide</a> · <span class="book-file-link">Result JSON<span class="book-file-label"> (파일: <code>evidence/latest.json</code>)</span></span></td>
 </tr>
 <tr>
-<td>Migration decisions and provenance</td>
-<td><a href="#book-migration">Migration</a></td>
-</tr>
-<tr>
-<td>Korean entry point</td>
-<td><span class="book-file-link">한국어<span class="book-file-label"> (파일: <code>README.md</code>)</span></span></td>
-</tr>
-<tr>
-<td>Portable reading</td>
-<td><span class="book-file-link">Print HTML<span class="book-file-label"> (파일: <code>print.html</code>)</span></span> · <span class="book-file-link">PDF<span class="book-file-label"> (파일: <code>Foundry-Learning-Loop-Lab-KO.pdf</code>)</span></span></td>
+<td>한국어</td>
+<td><span class="book-file-link">README.md<span class="book-file-label"> (파일: <code>README.md</code>)</span></span></td>
 </tr>
 </tbody>
 </table>
-<p>Existing LIVE evidence includes actual Agent, IQ, optimizer, and SFT results alongside <strong>HOLD</strong>, calibration disagreements, execution errors, and missing human approval. This guide revision does not alter those results or claim a new successful run. Copying code does not execute it.</p>
-<h2 id="book-english--maintainer-checks">Maintainer checks</h2>
-<p>The directory and <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1">GitHub repository</a> are named <strong><code>foundry-evaluation-labs-v1</code></strong>, and the guide edition is <strong>v1</strong>. In the existing development environment, the previous path is a compatibility symlink for virtualenv and frozen-record absolute paths, not a second copy. New installations do not need this link.</p>
+<h2 id="book-english--boundaries">Boundaries</h2>
+<ul>
+<li>Eight policies and 100 cases are synthetic. The last LIVE quality verdict is <strong>HOLD</strong>; execution success is not production approval.</li>
+<li>Paid labs require an owned <strong>North Central US</strong> environment and your own access/cost authorization. New infrastructure and SFT are outside the core time estimate.</li>
+<li>Never publish <code>.env</code>, <code>.lab/</code>, credentials, or raw run data. Repository cleanup does not delete Azure resources or stop hosting costs.</li>
+</ul>
+<h2 id="book-english--updating-the-guide">Updating the guide</h2>
 <pre><code class="language-bash">python scripts/build_guide.py
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 </code></pre>
-<p><strong>Command details:</strong> The first command renders the registered HTML pages and combined print HTML from Markdown. <code>--check</code> verifies freshness without writing. The final command runs the local test suite with verbose output (<code>-v</code>); it does not execute Azure labs or regenerate the PDF. Screenshot updates must also update the route, redactions, dimensions, and hash in <code>web/assets/portal/captures.json</code>.</p>
-<p>The builder generates HTML and the print book; regenerate PDF and ZIP separately. <code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI. The guide edition is <strong>v1</strong> and the documentation date is <strong>2026-09-30</strong>.</p>
-<p><strong>Online publishing:</strong> GitHub Pages uses the <code>main</code> branch and <code>/ (root)</code>. The root <code>.nojekyll</code> file serves the generated HTML and relative assets without Jekyll processing. Rebuild HTML/PDF, commit, and push to update the site. Public repository access does not publish private <code>.lab/</code> environments, credentials, approvals, or raw execution records, and does not grant Azure access.</p>
+<p>These commands generate HTML, check freshness without writing, and run local tests. Regenerate PDF/ZIP separately. GitHub Pages serves the <code>main</code> branch root with <code>.nojekyll</code>. <code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI.</p>
 </section>
   </main>
 </body>

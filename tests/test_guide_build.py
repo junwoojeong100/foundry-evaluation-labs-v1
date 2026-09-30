@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import io
 import unittest
-import xml.etree.ElementTree as ET
 from contextlib import redirect_stderr, redirect_stdout
 from html.parser import HTMLParser
 from pathlib import Path
@@ -23,7 +22,7 @@ FIXTURE = """# 평가 안내 & 검증
 지식 기반과 평가 지표를 확인합니다.
 [관련 실습](labs/first-step.md)
 
-![학습 루프](web/assets/learning-loop.svg)
+![예시 그림](web/assets/example-diagram.svg)
 
 ### 명령 실행
 
@@ -105,7 +104,7 @@ class GuideBuildTests(unittest.TestCase):
     def test_relative_links_and_local_asset_paths_are_unchanged(self) -> None:
         for value in (
             'href="labs/first-step.md"',
-            'src="web/assets/learning-loop.svg"',
+            'src="web/assets/example-diagram.svg"',
             'href="web/styles.css"',
             'src="web/app.js"',
         ):
@@ -133,11 +132,11 @@ class GuideBuildTests(unittest.TestCase):
     def test_source_relative_document_links_are_rebased_for_root_html(self) -> None:
         source = (
             "# 링크 검사\n\n## 시작\n\n"
-            "![그림](../web/assets/learning-loop.svg)\n\n"
+            "![그림](../web/assets/example-diagram.svg)\n\n"
             "[강사](facilitator.md#준비) [외부](https://learn.microsoft.com/) [본문](#시작)"
         )
         rendered = build_guide.render_guide(source, self.template, relative_base="guide")
-        self.assertIn('src="web/assets/learning-loop.svg"', rendered)
+        self.assertIn('src="web/assets/example-diagram.svg"', rendered)
         self.assertIn('href="guide/facilitator.md#준비"', rendered)
         self.assertIn('href="https://learn.microsoft.com/"', rendered)
         self.assertIn('href="#시작"', rendered)
@@ -148,7 +147,7 @@ class GuideBuildTests(unittest.TestCase):
             "[강사](facilitator.md#준비) [관리자](admin-setup.md?mode=read#rbac)\n\n"
             "[SFT](sft-appendix.md) [검증](verification.md) [데이터](../data/README.md)\n\n"
             '<a href="../guide/handbook.md#start">참가자</a>\n\n'
-            '<img src="../web/assets/architecture.svg" alt="구조">\n'
+            '<img src="../web/assets/example-diagram.svg" alt="구조">\n'
         )
         rendered = build_guide.render_guide(
             source, self.template, relative_base="guide", link_map=build_guide.DOCUMENT_LINKS
@@ -158,10 +157,10 @@ class GuideBuildTests(unittest.TestCase):
             "verification.html", "data-guide.html", "index.html#start",
         ):
             self.assertIn(f'href="{href}"', rendered)
-        self.assertIn('src="web/assets/architecture.svg"', rendered)
+        self.assertIn('src="web/assets/example-diagram.svg"', rendered)
 
     def test_mapping_does_not_rewrite_code_that_looks_like_html_or_markdown(self) -> None:
-        code = '<a href="facilitator.md">예시</a>\n![그림](../web/assets/architecture.svg)\n{{CONTENT}} & < >\n'
+        code = '<a href="facilitator.md">예시</a>\n![그림](../web/assets/example-diagram.svg)\n{{CONTENT}} & < >\n'
         rendered = build_guide.render_guide(
             "# 코드\n\n## 원문\n\n```html\n" + code + "```\n",
             self.template, relative_base="guide", link_map=build_guide.DOCUMENT_LINKS,
@@ -400,24 +399,6 @@ class GuideBuildTests(unittest.TestCase):
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             self.assertEqual(build_guide.main(self._cli_args()), 2)
             output_open.assert_not_called()
-
-    def test_hand_authored_diagrams_are_valid_and_labeled(self) -> None:
-        namespace = {"svg": "http://www.w3.org/2000/svg"}
-        for name in ("learning-loop", "architecture", "decision-map"):
-            with self.subTest(diagram=name):
-                root = ET.fromstring((ROOT / "web" / "assets" / f"{name}.svg").read_text(encoding="utf-8"))
-                self.assertEqual(root.attrib["role"], "img")
-                title = root.find("svg:title", namespace)
-                description = root.find("svg:desc", namespace)
-                self.assertIsNotNone(title)
-                self.assertIsNotNone(description)
-                self.assertTrue(title.text)
-                self.assertTrue(description.text)
-                self.assertEqual(set(root.attrib["aria-labelledby"].split()), {title.attrib["id"], description.attrib["id"]})
-                self.assertIsNone(root.find(".//svg:image", namespace))
-                self.assertIsNone(root.find(".//svg:script", namespace))
-                self.assertGreater(len(root.findall(".//svg:text", namespace)), 10)
-
 
 if __name__ == "__main__":
     unittest.main()

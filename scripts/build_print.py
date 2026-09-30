@@ -17,7 +17,7 @@ if __package__:
 else:
     import build_guide as guide
 
-BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide", "migration", "english")
+BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide", "english")
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
 BOOK_TITLE = "Foundry 학습 루프 실습 · 통합 인쇄본"
 

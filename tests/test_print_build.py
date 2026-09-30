@@ -26,7 +26,7 @@ def source_fixtures() -> dict[str, str]:
             "[데이터](../data/README.md#start)\n\n"
             "[코드 파일](../scripts/demo.py) [평가 데이터](../data/splits/test.jsonl)\n\n"
             "[공식 문서](https://learn.microsoft.com/azure/foundry/)\n\n"
-            "![학습 루프](../web/assets/learning-loop.svg)\n\n"
+            "![예시 그림](../web/assets/example-diagram.svg)\n\n"
             '<p id="caption">설명</p>\n<div id="panel" aria-describedby="caption">안내</div>\n\n'
             "```html\n" + CODE + "```\n"
         )
@@ -114,7 +114,7 @@ class PrintBuildTests(unittest.TestCase):
         sources = dict(self.sources)
         sources["guide/handbook.md"] += (
             '\n<a href="sft-appendix.md#start">원시 HTML</a>\n'
-            '<img src="../web/assets/architecture.svg" alt="구조">\n\n'
+            '<img src="../web/assets/example-diagram.svg" alt="구조">\n\n'
             "[미리보기](http://localhost:8000/facilitator.html#start)\n\n"
             "[로컬 파일](http://127.0.0.1:8000/scripts/demo.py)\n"
         )
@@ -123,7 +123,7 @@ class PrintBuildTests(unittest.TestCase):
         page.feed(rendered)
         self.assertIn('href="#book-sft--start">원시 HTML</a>', rendered)
         self.assertIn('href="#book-facilitator--start">미리보기</a>', rendered)
-        self.assertIn('src="web/assets/architecture.svg"', rendered)
+        self.assertIn('src="web/assets/example-diagram.svg"', rendered)
         for tag, attrs in page.elements:
             if tag == "a":
                 self.assertNotIn(urlsplit(attrs.get("href", "")).hostname, build_print.LOCAL_HOSTS)
@@ -136,7 +136,7 @@ class PrintBuildTests(unittest.TestCase):
         forbidden = {"script", "button", "dialog", "input", "progress"}
         self.assertFalse(any(tag in forbidden for tag, _ in self.page.elements))
         self.assertIn('href="web/styles.css"', self.rendered)
-        self.assertIn('src="web/assets/learning-loop.svg"', self.rendered)
+        self.assertIn('src="web/assets/example-diagram.svg"', self.rendered)
         self.assertIn('<html lang="ko">', self.rendered)
         self.assertIn('class="skip-link" href="#book-main"', self.rendered)
 

@@ -12,12 +12,13 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_FILES = (
     "README.md", "README.en.md", "index.html", "facilitator.html", "admin.html", "sft.html",
-    "migration.html", "english.html",
+    "english.html",
     "verification.html", "data-guide.html", "print.html", "pyproject.toml", "requirements.lock",
     "requirements-verification.lock",
     ".env.example", ".gitignore", ".nojekyll", "Foundry-Learning-Loop-Lab-KO.pdf",
+    "evidence/latest.json",
 )
-SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "worksheets", "infra", "evidence")
+SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra")
 ARCHIVE_ROOT = "foundry-evaluation-labs-v1.1"
 FIXED_TIME = (2026, 9, 30, 12, 0, 0)
 
@@ -44,7 +45,7 @@ def build_archive(root: Path, destination: Path) -> dict:
     required = (
         "README.md", "index.html", "facilitator.html", "admin.html", "sft.html",
         "verification.html", "data-guide.html", "print.html",
-        ".env.example", "requirements.lock", "guide/handbook.md",
+        ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
     )
     missing = [name for name in required if root / name not in files]
     if missing:
@@ -53,7 +54,7 @@ def build_archive(root: Path, destination: Path) -> dict:
         "version": "1.1.0",
         "guide_checked_date": "2026-09-30",
         "excluded": [".env", ".venv", ".lab", "artifacts", "credentials", "raw live evaluation/training results"],
-        "included_evidence": "Only sanitized, allowlisted evidence/ summaries and documentation screenshots.",
+        "included_evidence": "Only evidence/latest.json and the current documentation screenshots.",
         "files": {
             path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in files

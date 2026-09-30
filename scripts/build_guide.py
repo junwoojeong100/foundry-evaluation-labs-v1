@@ -46,9 +46,8 @@ DOCUMENTS = (
     Document("guide/facilitator.md", "facilitator.html", "강사용 진행 가이드"),
     Document("guide/admin-setup.md", "admin.html", "관리자 사전 준비"),
     Document("guide/sft-appendix.md", "sft.html", "SFT 심화 부록"),
-    Document("guide/verification.md", "verification.html", "검증 기록"),
+    Document("guide/verification.md", "verification.html", "최신 검증·출처"),
     Document("data/README.md", "data-guide.html", "데이터 설명"),
-    Document("guide/integration-migration.md", "migration.html", "v1 이관·아카이브 준비"),
     Document("README.en.md", "english.html", "English quickstart"),
 )
 DOCUMENT_LINKS = {document.source: document.output for document in DOCUMENTS}

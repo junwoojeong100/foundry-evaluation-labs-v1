@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "Local checks of the current guide and distribution; Azure quality was not reevaluated.",
+  "new_azure_calls": false,
+  "last_known_live_result": {
+    "reported_date": "2026-09-30",
+    "quality_status": "HOLD",
+    "fresh_holdout_execution": "BLOCKED",
+    "human_operational_approval": "NOT_GRANTED",
+    "revalidated_in_this_revision": false
+  },
+  "tests": {
+    "status": "PASS",
+    "modules": [
+      "test_documentation",
+      "test_guide_build",
+      "test_print_build",
+      "test_branding",
+      "test_package",
+      "test_datasets",
+      "test_demo",
+      "test_live_summary"
+    ],
+    "count": 102,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "data_validation": "PASS",
+  "verified_at": "2026-09-30T08:58:55.409273+00:00",
+  "readme_lines": {
+    "README.md": 48,
+    "README.en.md": 48
+  },
+  "removed_obsolete_files": 21,
+  "runtime_data_prompts_gates_unchanged": true,
+  "html": {
+    "pages": [
+      "index.html",
+      "facilitator.html",
+      "admin.html",
+      "sft.html",
+      "verification.html",
+      "data-guide.html",
+      "english.html",
+      "print.html"
+    ],
+    "sha256": {
+      "index.html": "d2a05ffe68b5b4d44b04038ba714bf81fa7e78e5aa398c5e5e078109fd534d90",
+      "facilitator.html": "60ab76764bfcf6e2d927bcff722342fad3ea65d5fabda6d8671bb4fc55fe70a6",
+      "admin.html": "6cf2392f29c85017ad89ccde36c80f52005d5ee5054d322143c30c82fca0ddca",
+      "sft.html": "95a3a56129ec1f3b44fba4b2de941f88ae8c89399a26508bab98ee0f232e90ae",
+      "verification.html": "6dd178c25efd9dc48fe905c9e57c76a6c01a475d9c6daf66728918cf5c762b57",
+      "data-guide.html": "6b41879bfea28ab0831938878db0baeee01ef499e4192103a04bf4e8d69087c7",
+      "english.html": "5fc60eaf6e30bc87f26aca4de9ef6f7b073612ce6eed16660cf574e934e115d5",
+      "print.html": "950d7598899879911aee3f6a45cf217935708ea65644f31a88e84131942c046f"
+    }
+  },
+  "browser": {
+    "status": "PASS",
+    "engine": "playwright-headless",
+    "participant_steps": 6,
+    "participant_photos": 13,
+    "total_photos": 14,
+    "retired_navigation_links": 0,
+    "viewports": [
+      1440,
+      390
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "horizontal_overflow": false,
+    "mobile_navigation": true,
+    "verification_links": [
+      "evidence/latest.json"
+    ],
+    "page_errors": [],
+    "print_scripts": 0,
+    "print_local_links": 0
+  },
+  "pdf": {
+    "file": "Foundry-Learning-Loop-Lab-KO.pdf",
+    "sha256": "502b210061402c660a0af91aab835cbae00da6326bcc6a5bc6b4093229339916",
+    "pages": 82,
+    "bytes": 4376342,
+    "korean_characters": 43889,
+    "minimum_page_characters": 234,
+    "missing_required_text": [],
+    "almost_empty_pages": [],
+    "local_machine_links": [],
+    "out_of_page_text": [],
+    "status": "PASS",
+    "exact_portal_image_pixel_matches": {
+      "01-project-overview.png": [
+        5
+      ],
+      "02-model-deployments.png": [
+        8
+      ],
+      "03-agent-versions.png": [
+        12
+      ],
+      "04-baseline-playground.png": [
+        12
+      ],
+      "05-knowledge-base.png": [
+        18
+      ],
+      "06-iq-agent-knowledge.png": [
+        19
+      ],
+      "07-optimizer-target.png": [
+        23
+      ],
+      "08-optimizer-dataset.png": [
+        24
+      ],
+      "09-optimizer-results.png": [
+        25
+      ],
+      "10-optimizer-changes.png": [
+        26
+      ],
+      "11-evaluation-results.png": [
+        27
+      ],
+      "12-trace-lookup.png": [
+        33
+      ],
+      "13-trace-tool-call.png": [
+        34
+      ],
+      "14-sft-job.png": [
+        42
+      ]
+    }
+  },
+  "pages_configuration": {
+    "url": "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/",
+    "branch": "main",
+    "path": "/",
+    "nojekyll": true
+  },
+  "package": {
+    "status": "PASS",
+    "file": "dist/foundry-evaluation-labs-v1.1.zip",
+    "files": 137,
+    "verification_records": 1,
+    "local_links_resolve": 237,
+    "bytes_match_source": true,
+    "private_files_included": false
+  }
+}

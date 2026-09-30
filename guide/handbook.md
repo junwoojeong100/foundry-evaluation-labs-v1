@@ -873,7 +873,7 @@ python -m lab --config "$LAB_ENV_FILE" cleanup
 <a id="troubleshooting"></a>
 <a id="sources"></a>
 
-참고가 필요할 때만: [운영자 사전 준비](admin-setup.md) · [오류·재개 및 별도 진단](facilitator.md#resume) · [SFT/Frontier 부록](sft-appendix.md) · [데이터 설명](../data/README.md) · [실제 검증 기록](verification.md) · [이관·출처](integration-migration.md).
+참고가 필요할 때만: [운영자 사전 준비](admin-setup.md) · [오류·재개 및 별도 진단](facilitator.md#resume) · [SFT/Frontier 부록](sft-appendix.md) · [데이터 설명](../data/README.md) · [최신 검증·출처](verification.md).
 
 화면 상단의 **어둡게/밝게**는 선택을 기억합니다. **현재 인쇄**는 읽는 단계만, **전체 PDF**는 이 문서 전체를 인쇄 창으로 엽니다. PDF로 저장을 선택하면 되며, 인쇄 배경은 항상 밝게 유지합니다.
 

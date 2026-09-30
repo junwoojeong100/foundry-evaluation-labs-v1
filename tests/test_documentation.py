@@ -15,7 +15,7 @@ from lab.sft import parser as sft_parser
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "migration.html", "english.html", "print.html")
+PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "english.html", "print.html")
 
 
 class LinkParser(HTMLParser):
@@ -145,6 +145,19 @@ class PortalFigureParser(HTMLParser):
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_only_the_latest_verification_and_current_guides_are_retained(self):
+        evidence = ROOT / "evidence"
+        self.assertEqual(
+            {path.relative_to(evidence).as_posix() for path in evidence.rglob("*") if path.is_file()},
+            {"latest.json"},
+        )
+        latest = json.loads((evidence / "latest.json").read_text(encoding="utf-8"))
+        self.assertEqual(latest["schema_version"], 1)
+        for name in ("README.md", "README.en.md"):
+            self.assertIn("evidence/latest.json", (ROOT / name).read_text(encoding="utf-8"))
+        self.assertFalse((ROOT / "guide/integration-migration.md").exists())
+        self.assertFalse((ROOT / "migration.html").exists())
+
     def test_pages_entry_uses_the_public_static_project_site(self):
         url = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
         self.assertTrue((ROOT / ".nojekyll").is_file())
@@ -253,9 +266,9 @@ class DocumentationTests(unittest.TestCase):
         self.assertIn("검색 Judge 1.1.0", verification)
 
     def test_source_attribution_uses_the_archived_repository_not_the_reused_name(self):
-        source = (ROOT / "guide/integration-migration.md").read_text(encoding="utf-8")
-        references = re.findall(r"^\[v1-[\w-]+\]: (\S+)", source, flags=re.MULTILINE)
-        self.assertGreaterEqual(len(references), 10)
+        source = (ROOT / "guide/verification.md").read_text(encoding="utf-8")
+        references = re.findall(r"^\[source-workshop\]: (\S+)", source, flags=re.MULTILINE)
+        self.assertEqual(len(references), 1)
         for reference in references:
             self.assertTrue(reference.startswith("https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/"))
             self.assertIn("93bc07e31373c4cfc278a2dc3757785946404cf2", reference)

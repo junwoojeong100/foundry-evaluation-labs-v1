@@ -13,7 +13,8 @@ class PackageTests(unittest.TestCase):
             for name in (
                 "README.md", "index.html", "facilitator.html", "admin.html", "sft.html",
                 "verification.html", "data-guide.html", "print.html",
-                ".env.example", "requirements.lock", "guide/handbook.md",
+                ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
+                "evidence/old-run/report.json", "evidence/old-screenshot.png",
                 ".env", ".venv/private.txt", "artifacts/secret.json", "lab/code.py",
                 "lab/__pycache__/code.pyc", "lab/.secret", "guide/.hidden",
             ):
@@ -23,6 +24,9 @@ class PackageTests(unittest.TestCase):
             selected = {str(p.relative_to(root)) for p in package_files(root)}
             self.assertIn(".env.example", selected)
             self.assertIn("lab/code.py", selected)
+            self.assertIn("evidence/latest.json", selected)
+            self.assertNotIn("evidence/old-run/report.json", selected)
+            self.assertNotIn("evidence/old-screenshot.png", selected)
             self.assertNotIn(".env", selected)
             self.assertNotIn("artifacts/secret.json", selected)
             self.assertNotIn(".venv/private.txt", selected)

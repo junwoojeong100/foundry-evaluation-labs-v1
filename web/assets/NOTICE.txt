@@ -1,7 +1,7 @@
 Microsoft Foundry architecture/service icon
 ==========================================
 
-Files: foundry.svg, favicon.svg
+File: foundry.svg
 Publisher and rights holder: Microsoft Corporation.
 Verified: 2026-09-30.
 
@@ -17,7 +17,7 @@ Azure_Public_Service_Icons/Icons/ai + machine learning/035746832-icon-service-AI
 Archive SHA-256:
 921594ccd1bf3d9c0a1bd7b6d924e050551a59342f2b353bb74bdcf761c35141
 
-SVG SHA-256 (both local files, byte-for-byte copies of the archive entry):
+SVG SHA-256 (byte-for-byte copy of the archive entry):
 fab039a771f72780ae34e59065d61c66a02d3c347d50923ef2956f34912ea02c
 
 The source package also contains Microsoft_Terms_of_Use.pdf. Its SHA-256 is:
@@ -37,8 +37,8 @@ Microsoft's accompanying guidelines:
 - Don't distort or change icon shape in any way.
 - Don't use Microsoft product icons to represent your product or service.
 
-These local copies identify the Microsoft Foundry subject of this educational
-guide, including its header and document-tab icon. They do not identify a
+This local copy identifies the Microsoft Foundry subject of this educational
+guide, including its header and document-tab icon. It does not identify a
 separate product or service, imply Microsoft endorsement, or grant trademark
 rights. Redistribution is limited to the permitted documentation/training use;
 this notice does not relicense the Microsoft artwork under the project license.
@@ -48,10 +48,10 @@ that official architecture/service icon, not a claim that the artwork is a
 separate or newly introduced Microsoft Foundry marketing logo.
 
 The SVG geometry, colors, gradients, dimensions, and viewBox are unchanged.
-Only the local filenames differ. The header and favicon both reference
-foundry.svg; favicon.svg is an identical compatibility copy for existing links.
-Both files are self-contained and work offline without scripts or external
-resources. CSS scales the complete square viewBox without cropping or framing.
+Only the local filename differs. The header, web favicon and print favicon all
+reference foundry.svg. This file is self-contained and works offline without
+scripts or external resources. CSS scales the complete square viewBox without
+cropping or framing.
 
 Microsoft Foundry portal screenshots
 ===================================
