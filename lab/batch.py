@@ -14,6 +14,7 @@ import sys
 import time
 
 from lab.config import Config, LabError
+from lab.content import content_path, language_metadata, require_content_language, text
 from lab.files import ROOT, code_provenance, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.preflight import model_snapshot, save_json
 
@@ -267,10 +268,11 @@ def capture_case(client, agent: dict, case: dict, *, checkpoint=None, resume_rec
 
 
 def dataset_for_metadata(metadata: dict) -> Path:
+    require_content_language(metadata)
     if metadata.get("dialogue_diagnostic") is True:
         if metadata.get("source_split") != "dev" or metadata.get("freeze_id"):
             raise LabError("Scripted dialogue diagnostics are separate dev data, never final holdout.")
-        return ROOT / "data/dialogue/dev.jsonl"
+        return content_path(ROOT, "data/dialogue/dev.jsonl")
     if metadata.get("holdout_id"):
         from lab.governance import load_holdout
         if not metadata.get("freeze_id"):
@@ -282,7 +284,7 @@ def dataset_for_metadata(metadata: dict) -> Path:
     split = metadata.get("source_split")
     if not isinstance(split, str) or split not in {"dev", "test"}:
         raise LabError("Captured dataset source_split must be dev/test.")
-    return ROOT / "data/splits" / f"{split}.jsonl"
+    return content_path(ROOT, "data/splits") / f"{split}.jsonl"
 
 
 @_capture_lock
@@ -309,7 +311,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
             raise LabError("Frozen stage/mode differs; DEMO evidence cannot trigger a LIVE batch.")
         _, dataset_path = load_holdout(freeze_id, holdout_id)
     else:
-        dataset_path = ROOT / "data/dialogue/dev.jsonl" if dialogue else ROOT / "data/splits" / f"{split}.jsonl"
+        dataset_path = content_path(ROOT, "data/dialogue/dev.jsonl") if dialogue else content_path(ROOT, "data/splits") / f"{split}.jsonl"
     cases = read_jsonl(dataset_path)
     for case in cases:
         validate_case(case)
@@ -332,9 +334,10 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
     if resume and not run_dir.exists():
         raise LabError("--resume requires the original run/checkpoint, not a new run-id.")
     agent = load_agent(config, stage)
-    if stage != "baseline" and sha256_file(ROOT / "data/knowledge/documents.json") != agent["knowledge_sha256"]:
+    if stage != "baseline" and sha256_file(content_path(ROOT, "data/knowledge/documents.json")) != agent["knowledge_sha256"]:
         raise LabError("에이전트 생성 후 지식 원본이 바뀌었습니다. 새 지식·에이전트 버전을 기록하세요.")
     metadata = {
+        **language_metadata(),
         "run_id": run_id,
         "code": code_provenance(),
         "stage": stage,
@@ -378,6 +381,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
         if observed_model_drift(previous):
             raise LabError("Captured run has terminal observed model drift. Preserve its evidence; deployment restoration cannot resume or revalidate it.")
         contract_fields = (
+            "language",
             "run_id", "stage", "split", "source_split", "dataset_sha256", "row_ids", "project_endpoint",
             "agent_name", "agent_version", "workspace_id", "prompt_sha256", "knowledge_sha256",
             "model_deployment", "model_snapshot", "parameters", "freeze_id", "freeze_sha256", "holdout_id",
@@ -517,7 +521,7 @@ def export_evaluation(run_dir: Path, cases: list[dict], records: list[dict]) -> 
 
     exported = []
     format_invalid = 0
-    known_citations = {doc["id"] for doc in read_json(ROOT / "data/knowledge/documents.json")}
+    known_citations = {doc["id"] for doc in read_json(content_path(ROOT, "data/knowledge/documents.json"))}
     for case, record in zip(cases, records, strict=True):
         if case["id"] != record["id"]:
             raise LabError("질문과 응답의 ID가 서로 다릅니다. 평가 내보내기를 중단합니다.")
@@ -557,6 +561,7 @@ def score_run(run_id: str) -> dict:
 
     run_dir = safe_run_dir(run_id)
     metadata = read_json(run_dir / "metadata.json")
+    require_content_language(metadata)
     if observed_model_drift(metadata):
         raise LabError("Cannot score an invalidated capture with observed model drift, even after deployment restoration.")
     if metadata.get("status") not in {"completed", "completed_with_errors"}:
@@ -574,7 +579,7 @@ def score_run(run_id: str) -> dict:
         raise LabError("실행의 행 목록과 응답 기록이 다릅니다.")
     if metadata.get("outputs_sha256") and sha256_file(run_dir / "outputs.jsonl") != metadata["outputs_sha256"]:
         raise LabError("Captured output hash changed after execution.")
-    known_citations = {doc["id"] for doc in read_json(ROOT / "data/knowledge/documents.json")}
+    known_citations = {doc["id"] for doc in read_json(content_path(ROOT, "data/knowledge/documents.json"))}
     judge_path = run_dir / "judge-scores.json"
     judge_scores = read_json(judge_path) if judge_path.exists() else {}
     if not isinstance(judge_scores, dict) or not judge_scores.keys() <= set(metadata["row_ids"]):
@@ -596,11 +601,20 @@ def score_run(run_id: str) -> dict:
         observed = retrieval_observation(records)
         with (run_dir / "report.md").open("a", encoding="utf-8") as report:
             report.write(
-                "\n## IQ 도구 관찰 (품질 점수와 별개)\n\n"
-                f"- 호출: {observed['knowledge_tool_calls']}회; 오류: {observed['tool_error_calls']}회\n"
-                f"- 정상 도구 출력을 관찰한 질문: {observed['rows_with_tool_output']}/{len(records)}\n"
-                "- 호출 성공은 의미상의 검색 품질을 보증하지 않습니다. 거절·일반 확인 질문은 검색이 불필요할 수 있습니다.\n"
+                text(
+                    "\n## IQ 도구 관찰 (품질 점수와 별개)\n\n"
+                    f"- 호출: {observed['knowledge_tool_calls']}회; 오류: {observed['tool_error_calls']}회\n"
+                    f"- 정상 도구 출력을 관찰한 질문: {observed['rows_with_tool_output']}/{len(records)}\n"
+                    "- 호출 성공은 의미상의 검색 품질을 보증하지 않습니다. 거절·일반 확인 질문은 검색이 불필요할 수 있습니다.\n",
+                    "\n## IQ tool observations (not quality scores)\n\n"
+                    f"- Calls: {observed['knowledge_tool_calls']}; errors: {observed['tool_error_calls']}\n"
+                    f"- Cases with non-error tool output: {observed['rows_with_tool_output']}/{len(records)}\n"
+                    "- A successful call does not prove retrieval quality. Refusals and general clarification may not require retrieval.\n",
+                )
             )
             if metadata["stage"] != "baseline" and observed["rows_with_tool_output"] == 0:
-                report.write("- **주의: 실제 IQ 사용이 관찰되지 않았습니다. 이 실행으로 검색 개선 효과를 결론 내리지 마세요.**\n")
+                report.write(text(
+                    "- **주의: 실제 IQ 사용이 관찰되지 않았습니다. 이 실행으로 검색 개선 효과를 결론 내리지 마세요.**\n",
+                    "- **Warning: no actual IQ use was observed. Do not infer a retrieval improvement from this run.**\n",
+                ))
     return summary

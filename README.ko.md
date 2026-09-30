@@ -8,7 +8,7 @@ Contoso 고객지원 에이전트의 평가·지식 연결·지시 개선을 경
 
 **기본 언어는 영어이며, 모든 가이드·참고 문서·통합 인쇄본을 한국어와 영어로 제공합니다.** 상단의 **English / 한국어**로 같은 문서의 언어를 전환할 수 있고, 절 링크와 읽음 기록은 유지됩니다. 문서 열람에는 설치·로그인·JavaScript가 필요 없습니다.
 
-실습의 재현성을 위해 **정책·프롬프트·CLI 출력·에이전트 응답은 기존 한국어 원본**을 유지합니다. 영문 가이드는 원본 예시에 영어 해설을 붙이며 데이터·명령·기존 LIVE 결과를 바꾸지 않습니다.
+**한국어 원본과 실행 기록은 그대로 유지하며, 별도 영어 데이터·프롬프트·교정·holdout 경로를 제공합니다.** 한국어는 `LAB_LANGUAGE=ko`, 영어는 `LAB_LANGUAGE=en`으로 선택합니다. 각 언어의 환경·아티팩트 폴더를 분리하며, 다른 언어의 실행을 동일 문항 개선율로 비교하지 않습니다.
 
 ## 시작하기
 
@@ -19,7 +19,7 @@ Contoso 고객지원 에이전트의 평가·지식 연결·지시 개선을 경
 저장소 루트에서 실행하는 첫 DEMO입니다.
 
 ```bash
-python3 -S -m lab demo
+LAB_LANGUAGE=ko python3 -S -m lab demo
 ```
 
 `-S`는 Python의 `site` 초기화를 생략하며, `demo`는 작성된 예시만 출력합니다. SDK·Azure 로그인·네트워크·유료 모델 호출이 필요 없습니다.
@@ -55,7 +55,7 @@ python -m unittest discover -s tests -v
 
 저장소 루트에서 `requirements.lock`의 의존성을 설치한 뒤 실행합니다. 빌더는 **두 언어의 모든 HTML과 통합 인쇄본**을 함께 생성하며, `--check`는 쓰기 없이 최신 상태를 확인합니다.
 
-영문 원문은 `guide/en/`·`data/README.en.md`, 한국어 원문은 `guide/`·`data/README.md`, 공통 UI 번역은 `web/locales.json`입니다. HTML은 영어 `docs/*.html`, 한국어 `docs/ko/*.html`에 생성합니다. 언어별 대응 절 ID와 실행 예시는 기존 한국어 ID까지 동일하게 유지해 깊은 링크·읽음 기록을 보존합니다.
+영문 원문은 `guide/en/`·`data/README.en.md`, 한국어 원문은 `guide/`·`data/README.md`, 공통 UI 번역은 `web/locales.json`입니다. HTML은 영어 `docs/*.html`, 한국어 `docs/ko/*.html`에 생성합니다. 대응 절 ID는 기존 한국어 ID까지 동일하게 유지해 깊은 링크·읽음 기록을 보존합니다. 실행 예시는 각 언어의 데이터 선택과 일치시킵니다. 영어 런타임 원본은 `data/en/`·`prompts/en/`이며, 기존 LIVE 근거를 번역하거나 덮어쓰지 않습니다.
 
 PDF는 각 언어의 통합 인쇄본을 열어 배경 그래픽을 포함한 A4 PDF로 저장합니다. 파일명은 `docs/Foundry-Learning-Loop-Lab-EN.pdf`와 `docs/Foundry-Learning-Loop-Lab-KO.pdf`입니다. `requirements-verification.lock`의 검증 의존성을 설치한 뒤 `python scripts/verify_pdf.py docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko`로 확인합니다(영어는 파일명과 `--language en`으로 변경). 이후 `python scripts/package_lab.py`로 오프라인 ZIP을 갱신합니다.
 

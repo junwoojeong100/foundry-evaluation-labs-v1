@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="An English and Korean hands-on guide to evaluating, understanding, improving, and operating Microsoft Foundry agents.">
-  <title>Synthetic Korean customer-support data · Foundry Lab Guide</title>
+  <title>Synthetic English customer-support data · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html">
@@ -120,15 +120,15 @@
         <span class="document-date">As of <time datetime="2026-09-30">2026-09-30</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Synthetic Korean customer-support data">
-        <h1 id="한국어-합성-고객지원-데이터">Synthetic Korean customer-support data</h1>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Synthetic English customer-support data">
+        <h1 id="한국어-합성-고객지원-데이터">Synthetic English customer-support data</h1>
 <h2 id="용도와-한계">Purpose and limitations</h2>
 <p>Contoso Atlas Cloud is a <strong>wholly fictional cloud-support scenario</strong>. Its policies, prices, questions, workspace aliases, and reference answers are authored synthetic materials supplied by the integrated source package. Authored content does not imply completed human review. No actual customer conversations, personal data, accounts, or tokens were used, and the material does not reproduce Microsoft, Azure, or another real provider's terms.</p>
 <p>The data supports a small learning loop: evaluation → improved retrieval evidence → better prompts → behavior fine-tuning → operational feedback. It was not produced through model, cloud, or paid-service calls and <strong>does not contain predetermined performance results</strong>, such as accuracy or improvement rates. Row counts, hashes, and leakage checks measure data integrity, not model performance.</p>
 <p>This set is not representative of production language distributions, incident frequency, abuse types, privacy risks, costs, or retrieval quality. Good synthetic-data results do not replace human review and de-identified operational validation.</p>
-<p><strong>Guide language does not change the dataset.</strong> This English explanation describes the same Korean policies, questions, prompts, and response contract as the Korean guide. Original sample payloads are retained to keep the experiment reproducible.</p>
+<p><strong>Select the English corpus explicitly with <code>LAB_LANGUAGE=en</code>.</strong> English assets live in <code>data/en/</code> and <code>prompts/en/</code>; the original Korean assets remain unchanged. Policy facts, IDs, groups, split membership, and expected actions are preserved, while questions, answers, policy prose, and the response-language instruction are English. Stable machine tags remain unchanged, including any Korean identifiers; they are not sent to the generating agent. Different-language runs are separate experiments and must not be compared as a paired improvement.</p>
 <h2 id="정확한-구성">Exact composition</h2>
-<p>The source is <strong>100 rows</strong> in <code>data/cases.jsonl</code>, assigned to <strong>98 scenario groups</strong> with these fixed splits. No random splitting is used.</p>
+<p>The source is <strong>100 rows</strong> in <code>data/en/cases.jsonl</code>, assigned to <strong>98 scenario groups</strong> with these fixed splits. No random splitting is used.</p>
 <table>
 <thead>
 <tr>
@@ -212,12 +212,12 @@
 </tr>
 </tbody>
 </table>
-<p>Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, Korean ambiguity, Korean responses to English questions, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.</p>
+<p>Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, ambiguity, the selected response-language contract, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.</p>
 <h3 id="중요-사례와-문자-그대로의-금지-주장">Critical cases and literal forbidden claims</h3>
 <p>All <code>escalate</code>/<code>refuse</code> cases, prompt-injection cases, and cases about evidence of nonexecution have an explicit <code>critical</code> tag for evaluation gates. There are <strong>29 rows</strong>: train 13, validation 3, dev 4, test 9. <code>critical</code> is evaluator metadata, not model input. The manifest's <code>critical_counts</code> records counts by split.</p>
 <p>Each critical case has <code>forbidden_claims</code> strings describing fabricated completion, unauthorized disclosure, unsupported approval, or similar claims. Searching <code>answer</code> for these is a <strong>literal auxiliary check</strong>, not semantic judgment. It may miss paraphrases or misinterpret a quoted claim within a negation. Use groundedness evaluation and human review as well. The list does not enumerate every unsafe answer.</p>
 <h2 id="지식-문서-계약">Knowledge-document contract</h2>
-<p><code>data/knowledge/documents.json</code> is a top-level <strong>array</strong>. Every document has exactly four fields; keep these names when mapping to a search index.</p>
+<p><code>data/en/knowledge/documents.json</code> is a top-level <strong>array</strong>. Every document has exactly four fields; keep these names when mapping to a search index.</p>
 <table>
 <thead>
 <tr>
@@ -235,12 +235,12 @@
 <tr>
 <td><code>title</code></td>
 <td>String</td>
-<td>Korean title</td>
+<td>English title</td>
 </tr>
 <tr>
 <td><code>content</code></td>
 <td>String</td>
-<td>Original Korean policy paragraphs separated by blank lines</td>
+<td>English policy paragraphs separated by blank lines</td>
 </tr>
 <tr>
 <td><code>effective_date</code></td>
@@ -357,15 +357,15 @@
 </table>
 <p>Parsed model output and <code>ground_truth</code> must be <strong>objects with exactly four keys</strong>:</p>
 <pre><code class="language-json">{
-  &quot;answer&quot;: &quot;Standard 월 기본료는 부가세 포함 49,000원입니다. 사용량 추가 요금은 별도입니다.&quot;,
+  &quot;answer&quot;: &quot;The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.&quot;,
   &quot;citations&quot;: [&quot;ATLAS-SUB-001&quot;],
   &quot;route&quot;: &quot;answer&quot;,
   &quot;needs_human&quot;: false
 }
 </code></pre>
-<p>The example answer means: “The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.”</p>
+<p>Policy prices remain in KRW. Localization does not convert currencies or change the underlying policy.</p>
 <ul>
-<li><code>answer</code>: A nonempty Korean string. English questions also receive Korean answers.</li>
+<li><code>answer</code>: A nonempty English string in this corpus.</li>
 <li><code>citations</code>: Stable IDs supporting the answer. Duplicates and nonexistent IDs are not allowed.</li>
 <li><code>route</code>: <code>answer</code> for guidance; <code>clarify</code> for minimal missing information needed to decide; <code>escalate</code> for required human judgment on a legitimate request; <code>refuse</code> for prohibited access, bypasses, or fabricated-evidence requests.</li>
 <li><code>needs_human</code>: A boolean, not a string/number. It is <strong><code>true</code> only when <code>route == "escalate"</code></strong>.</li>
@@ -404,7 +404,7 @@
 </tr>
 </tbody>
 </table>
-<p>Version-pinned definitions are in <code>config/evaluators/</code>; separate calibration examples are in <code>data/calibration/</code>. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. <code>judge calibrate</code> records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.</p>
+<p>Version-pinned definitions are in <code>config/evaluators/</code>; separate calibration examples are in <code>data/en/calibration/</code>. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. <code>judge calibrate</code> records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.</p>
 <p>Vector/hybrid diagnostic responses are not automatically evidence received by the agent. Distinguish <code>iq vectors</code> index diagnostics, <code>iq probe</code> retrieval-planning diagnostics, and actual MCP tool outputs from <code>run --stage iq</code>.</p>
 <h3 id="동결-뒤-만드는-별도-fresh-holdout">A separate fresh holdout after freezing</h3>
 <p>Preserve the original 100 cases and 20 <code>test</code> rows. Twelve cases generated/registered after <code>freeze</code> use the separately versioned <code>config/evaluators/fresh-holdout-gates.v1.json</code> contract. They do not lower the original minimum-20-test-row gate. These are synthetic variations from fixed templates, not independent real-world samples.</p>
@@ -421,42 +421,42 @@
 </thead>
 <tbody>
 <tr>
-<td><code>data/splits/train.jsonl</code></td>
+<td><code>data/en/splits/train.jsonl</code></td>
 <td style="text-align: right;">56</td>
 <td><code>train</code> only</td>
 </tr>
 <tr>
-<td><code>data/splits/validation.jsonl</code></td>
+<td><code>data/en/splits/validation.jsonl</code></td>
 <td style="text-align: right;">12</td>
 <td><code>validation</code> only</td>
 </tr>
 <tr>
-<td><code>data/splits/dev.jsonl</code></td>
+<td><code>data/en/splits/dev.jsonl</code></td>
 <td style="text-align: right;">12</td>
 <td><code>dev</code> only</td>
 </tr>
 <tr>
-<td><code>data/splits/test.jsonl</code></td>
+<td><code>data/en/splits/test.jsonl</code></td>
 <td style="text-align: right;">20</td>
 <td><code>test</code> only</td>
 </tr>
 <tr>
-<td><code>data/tuning/sft-train.jsonl</code></td>
+<td><code>data/en/tuning/sft-train.jsonl</code></td>
 <td style="text-align: right;">56</td>
 <td><code>train</code> only</td>
 </tr>
 <tr>
-<td><code>data/tuning/sft-validation.jsonl</code></td>
+<td><code>data/en/tuning/sft-validation.jsonl</code></td>
 <td style="text-align: right;">12</td>
 <td><code>validation</code> only</td>
 </tr>
 <tr>
-<td><code>data/optimizer/dev.jsonl</code></td>
+<td><code>data/en/optimizer/dev.jsonl</code></td>
 <td style="text-align: right;">12</td>
 <td><code>dev</code> only</td>
 </tr>
 <tr>
-<td><code>data/manifest.json</code></td>
+<td><code>data/en/manifest.json</code></td>
 <td style="text-align: right;">N/A</td>
 <td>Counts, source/output SHA-256, and cross-split leakage checks</td>
 </tr>
@@ -464,7 +464,7 @@
 </table>
 <p>Each training row has only the top-level key <code>messages</code>. Messages are ordered <code>system</code> → <code>user</code> → <code>assistant</code>, each with only <code>role</code> and <code>content</code>. The system contains concise behavior instructions; the user contains only the question/evidence; the assistant contains the structured reference-answer string. Do not merge validation into training.</p>
 <h3 id="프롬프트-에이전트-agent-optimizer-포털-업로드-계약">Prompt-agent Agent Optimizer portal upload contract</h3>
-<p>The main path uses the current Foundry portal's <strong>prompt-agent Agent Optimizer wizard</strong>. Per the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">official prerequisites</a>, use the exact columns required by selected evaluators; the wizard does not support column mapping. <code>data/optimizer/dev.jsonl</code> retains its filename and exports 12 manually authored dev cases with only these three columns.</p>
+<p>The main path uses the current Foundry portal's <strong>prompt-agent Agent Optimizer wizard</strong>. Per the <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">official prerequisites</a>, use the exact columns required by selected evaluators; the wizard does not support column mapping. <code>data/en/optimizer/dev.jsonl</code> exports 12 manually authored dev cases with only these three columns.</p>
 <table>
 <thead>
 <tr>
@@ -498,19 +498,19 @@
 <p><code>test</code> appears in neither training/validation messages nor optimization exports. Because original <code>cases.jsonl</code> also contains frozen-evaluation cases, <strong>never upload the complete source to training or optimization services</strong>. A frozen file does not implement access control by itself. Operational discipline is still needed: do not read or tune to test questions before candidate selection ends.</p>
 <h2 id="프롬프트의-역할">Prompt roles</h2>
 <ul>
-<li><code>prompts/baseline.txt</code>: Intentionally sparse decision guidance, while still requiring the same JSON response contract.</li>
-<li><code>prompts/candidate.txt</code>: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It <strong>does not claim to be a Prompt/Agent Optimizer result or a completed human review</strong>.</li>
-<li><code>prompts/tuning-system.txt</code>: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.</li>
-<li><code>prompts/rubric.txt</code>: Korean criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.</li>
+<li><code>prompts/en/baseline.txt</code>: Intentionally sparse decision guidance, while still requiring the same JSON response contract.</li>
+<li><code>prompts/en/candidate.txt</code>: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It <strong>does not claim to be a Prompt/Agent Optimizer result or a completed human review</strong>.</li>
+<li><code>prompts/en/tuning-system.txt</code>: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.</li>
+<li><code>prompts/en/rubric.txt</code>: English criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.</li>
 </ul>
 <h2 id="오프라인-재생성과-검증">Regenerate and verify offline</h2>
 <p>From the project root, use <code>.venv/bin/python</code> created during common setup. The dataset tool itself requires only Python 3.10+ and the standard library, with no extra installation, sign-in, network, or model calls. <code>-B</code> prevents bytecode-cache creation.</p>
-<pre><code class="language-bash">.venv/bin/python -B scripts/build_datasets.py
-.venv/bin/python -B scripts/build_datasets.py --check
-.venv/bin/python -B -m unittest discover -s tests -p 'test_datasets.py' -v
+<pre><code class="language-bash">.venv/bin/python -B scripts/build_datasets.py --language en
+.venv/bin/python -B scripts/build_datasets.py --language en --check
+.venv/bin/python -B -m unittest discover -s tests -p 'test_content_language.py' -v
 </code></pre>
-<p><strong>Commands explained:</strong> The first <strong>generates/updates local data</strong>; the second <code>--check</code> <strong>compares without writing</strong>; the third runs <strong>automated tests</strong> matching only <code>test_datasets.py</code> under <code>tests/</code>. <code>-p</code> selects the test-file pattern; <code>-v</code> enables verbose output. Participants who only need to inspect integrity should use the main guide's <code>lab validate</code>, not start with regeneration.</p>
-<p>The first command validates source contracts, then creates eight outputs or updates only necessary files. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.</p>
+<p><strong>Commands explained:</strong> The first <strong>generates/updates local data</strong>; the second <code>--check</code> <strong>compares without writing</strong>; the third runs <strong>automated tests</strong> matching only <code>test_content_language.py</code> under <code>tests/</code>. <code>-p</code> selects the test-file pattern; <code>-v</code> enables verbose output. Participants who only need to inspect integrity should use the main guide's <code>lab validate</code>, not start with regeneration.</p>
+<p>The first command validates English source contracts, then creates eight English outputs or updates only necessary files. It does not rewrite any Korean data. Use <code>--language ko --check</code> to verify the original corpus separately. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.</p>
 <p>The manifest records SHA-256 for source cases, documents, four prompts, and seven exported JSONL files. It does not create a circular self-hash. It contains neither evaluation-model scores nor assertions of successful cloud execution.</p>
 <p>Tests check exact counts, schemas, unique IDs, group isolation, duplicate questions, original context, citation resolution, reference-answer booleans/routing, training-message roles, optimization splits, evaluator-label leakage, exposure of frozen questions/IDs, deterministic generation, CLI checking, and invalid-input rejection. They also verify that <code>--check</code> rejects damaged sources, missing/stale outputs/manifests, and never writes. Text similarity helps detect obvious copying; it cannot perfectly identify semantic paraphrases. Personal-data pattern checks do not guarantee de-identification of real data.</p>
 <h2 id="검색-최신성과-행동-미세조정을-구분하기">Distinguish retrieval freshness from behavior tuning</h2>

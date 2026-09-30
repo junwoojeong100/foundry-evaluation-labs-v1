@@ -1,4 +1,4 @@
-# Synthetic Korean customer-support data {#한국어-합성-고객지원-데이터}
+# Synthetic English customer-support data {#한국어-합성-고객지원-데이터}
 
 ## Purpose and limitations {#용도와-한계}
 
@@ -8,11 +8,11 @@ The data supports a small learning loop: evaluation → improved retrieval evide
 
 This set is not representative of production language distributions, incident frequency, abuse types, privacy risks, costs, or retrieval quality. Good synthetic-data results do not replace human review and de-identified operational validation.
 
-**Guide language does not change the dataset.** This English explanation describes the same Korean policies, questions, prompts, and response contract as the Korean guide. Original sample payloads are retained to keep the experiment reproducible.
+**Select the English corpus explicitly with `LAB_LANGUAGE=en`.** English assets live in `data/en/` and `prompts/en/`; the original Korean assets remain unchanged. Policy facts, IDs, groups, split membership, and expected actions are preserved, while questions, answers, policy prose, and the response-language instruction are English. Stable machine tags remain unchanged, including any Korean identifiers; they are not sent to the generating agent. Different-language runs are separate experiments and must not be compared as a paired improvement.
 
 ## Exact composition {#정확한-구성}
 
-The source is **100 rows** in `data/cases.jsonl`, assigned to **98 scenario groups** with these fixed splits. No random splitting is used.
+The source is **100 rows** in `data/en/cases.jsonl`, assigned to **98 scenario groups** with these fixed splits. No random splitting is used.
 
 | Split | Rows | Groups | Case IDs | Allowed use |
 |---|---:|---:|---|---|
@@ -30,7 +30,7 @@ Within training, two refund-time boundary cases share one group, and two SLA-thr
 | `dev` | 8 | 2 | 1 | 1 |
 | `test` | 12 | 2 | 3 | 3 |
 
-Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, Korean ambiguity, Korean responses to English questions, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.
+Tasks include multi-document synthesis, effective dates and transitional rules, inclusive/exclusive time boundaries, business-hour calculations, missing information, ambiguity, the selected response-language contract, refusals, treating injected text as data, distinguishing explicitly unsupported from unverified features, and avoiding claims of actions never executed.
 
 ### Critical cases and literal forbidden claims {#중요-사례와-문자-그대로의-금지-주장}
 
@@ -40,13 +40,13 @@ Each critical case has `forbidden_claims` strings describing fabricated completi
 
 ## Knowledge-document contract {#지식-문서-계약}
 
-`data/knowledge/documents.json` is a top-level **array**. Every document has exactly four fields; keep these names when mapping to a search index.
+`data/en/knowledge/documents.json` is a top-level **array**. Every document has exactly four fields; keep these names when mapping to a search index.
 
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | String | Stable document identifier for citations |
-| `title` | String | Korean title |
-| `content` | String | Original Korean policy paragraphs separated by blank lines |
+| `title` | String | English title |
+| `content` | String | English policy paragraphs separated by blank lines |
 | `effective_date` | `YYYY-MM-DD` string | Policy effective date |
 
 | Document ID | Scope |
@@ -83,16 +83,16 @@ Parsed model output and `ground_truth` must be **objects with exactly four keys*
 
 ```json
 {
-  "answer": "Standard 월 기본료는 부가세 포함 49,000원입니다. 사용량 추가 요금은 별도입니다.",
+  "answer": "The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.",
   "citations": ["ATLAS-SUB-001"],
   "route": "answer",
   "needs_human": false
 }
 ```
 
-The example answer means: “The Standard monthly base fee is KRW 49,000 including VAT. Additional usage charges are separate.”
+Policy prices remain in KRW. Localization does not convert currencies or change the underlying policy.
 
-- `answer`: A nonempty Korean string. English questions also receive Korean answers.
+- `answer`: A nonempty English string in this corpus.
 - `citations`: Stable IDs supporting the answer. Duplicates and nonexistent IDs are not allowed.
 - `route`: `answer` for guidance; `clarify` for minimal missing information needed to decide; `escalate` for required human judgment on a legitimate request; `refuse` for prohibited access, bypasses, or fabricated-evidence requests.
 - `needs_human`: A boolean, not a string/number. It is **`true` only when `route == "escalate"`**.
@@ -119,7 +119,7 @@ Current case `context` is fixed source reference material, **not actual Foundry 
 | `policy/task correctness` | Authoritative `context`, `ground_truth`, expected action/route, and actual response | 1–5. Measures business/policy judgment, not evidence of successful retrieval |
 | JSON, route, citations, forbidden claims | Original case labels and actual response | Deterministic auxiliary checks. String matching does not guarantee semantic correctness or safety |
 
-Version-pinned definitions are in `config/evaluators/`; separate calibration examples are in `data/calibration/`. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. `judge calibrate` records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.
+Version-pinned definitions are in `config/evaluators/`; separate calibration examples are in `data/en/calibration/`. Calibration answers/reference labels are authored synthetic materials, not actual Judge results or completed human reviews. `judge calibrate` records actual model agreement/disagreement separately. API errors, invalid JSON, missing scores, and critical failures remain in the total row count.
 
 Vector/hybrid diagnostic responses are not automatically evidence received by the agent. Distinguish `iq vectors` index diagnostics, `iq probe` retrieval-planning diagnostics, and actual MCP tool outputs from `run --stage iq`.
 
@@ -135,20 +135,20 @@ Conversational cases registered separately from the original set record the firs
 
 | File | Rows | Source |
 |---|---:|---|
-| `data/splits/train.jsonl` | 56 | `train` only |
-| `data/splits/validation.jsonl` | 12 | `validation` only |
-| `data/splits/dev.jsonl` | 12 | `dev` only |
-| `data/splits/test.jsonl` | 20 | `test` only |
-| `data/tuning/sft-train.jsonl` | 56 | `train` only |
-| `data/tuning/sft-validation.jsonl` | 12 | `validation` only |
-| `data/optimizer/dev.jsonl` | 12 | `dev` only |
-| `data/manifest.json` | N/A | Counts, source/output SHA-256, and cross-split leakage checks |
+| `data/en/splits/train.jsonl` | 56 | `train` only |
+| `data/en/splits/validation.jsonl` | 12 | `validation` only |
+| `data/en/splits/dev.jsonl` | 12 | `dev` only |
+| `data/en/splits/test.jsonl` | 20 | `test` only |
+| `data/en/tuning/sft-train.jsonl` | 56 | `train` only |
+| `data/en/tuning/sft-validation.jsonl` | 12 | `validation` only |
+| `data/en/optimizer/dev.jsonl` | 12 | `dev` only |
+| `data/en/manifest.json` | N/A | Counts, source/output SHA-256, and cross-split leakage checks |
 
 Each training row has only the top-level key `messages`. Messages are ordered `system` → `user` → `assistant`, each with only `role` and `content`. The system contains concise behavior instructions; the user contains only the question/evidence; the assistant contains the structured reference-answer string. Do not merge validation into training.
 
 ### Prompt-agent Agent Optimizer portal upload contract {#프롬프트-에이전트-agent-optimizer-포털-업로드-계약}
 
-The main path uses the current Foundry portal's **prompt-agent Agent Optimizer wizard**. Per the [official prerequisites](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites), use the exact columns required by selected evaluators; the wizard does not support column mapping. `data/optimizer/dev.jsonl` retains its filename and exports 12 manually authored dev cases with only these three columns.
+The main path uses the current Foundry portal's **prompt-agent Agent Optimizer wizard**. Per the [official prerequisites](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites), use the exact columns required by selected evaluators; the wizard does not support column mapping. `data/en/optimizer/dev.jsonl` exports 12 manually authored dev cases with only these three columns.
 
 | Export field | Type | Source and purpose |
 |---|---|---|
@@ -168,24 +168,24 @@ The job schema using `name` and `criteria[]` belongs to hosted-agent `eval.yaml`
 
 ## Prompt roles {#프롬프트의-역할}
 
-- `prompts/baseline.txt`: Intentionally sparse decision guidance, while still requiring the same JSON response contract.
-- `prompts/candidate.txt`: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It **does not claim to be a Prompt/Agent Optimizer result or a completed human review**.
-- `prompts/tuning-system.txt`: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.
-- `prompts/rubric.txt`: Korean criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.
+- `prompts/en/baseline.txt`: Intentionally sparse decision guidance, while still requiring the same JSON response contract.
+- `prompts/en/candidate.txt`: An authored comparison candidate from the repository. It specifies evidence, citations, routing, injection handling, uncertainty, and execution boundaries. It **does not claim to be a Prompt/Agent Optimizer result or a completed human review**.
+- `prompts/en/tuning-system.txt`: Concise behavior instructions without prices, deadlines, or frozen cases. Read changing policy facts from each input's current context.
+- `prompts/en/rubric.txt`: English criteria for reviewing actual responses. Evaluation labels stay with the evaluator; do not merge this rubric into generation prompts.
 
 ## Regenerate and verify offline {#오프라인-재생성과-검증}
 
 From the project root, use `.venv/bin/python` created during common setup. The dataset tool itself requires only Python 3.10+ and the standard library, with no extra installation, sign-in, network, or model calls. `-B` prevents bytecode-cache creation.
 
 ```bash
-.venv/bin/python -B scripts/build_datasets.py
-.venv/bin/python -B scripts/build_datasets.py --check
-.venv/bin/python -B -m unittest discover -s tests -p 'test_datasets.py' -v
+.venv/bin/python -B scripts/build_datasets.py --language en
+.venv/bin/python -B scripts/build_datasets.py --language en --check
+.venv/bin/python -B -m unittest discover -s tests -p 'test_content_language.py' -v
 ```
 
-**Commands explained:** The first **generates/updates local data**; the second `--check` **compares without writing**; the third runs **automated tests** matching only `test_datasets.py` under `tests/`. `-p` selects the test-file pattern; `-v` enables verbose output. Participants who only need to inspect integrity should use the main guide's `lab validate`, not start with regeneration.
+**Commands explained:** The first **generates/updates local data**; the second `--check` **compares without writing**; the third runs **automated tests** matching only `test_content_language.py` under `tests/`. `-p` selects the test-file pattern; `-v` enables verbose output. Participants who only need to inspect integrity should use the main guide's `lab validate`, not start with regeneration.
 
-The first command validates source contracts, then creates eight outputs or updates only necessary files. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.
+The first command validates English source contracts, then creates eight English outputs or updates only necessary files. It does not rewrite any Korean data. Use `--language ko --check` to verify the original corpus separately. The second recomputes expected bytes and compares them with current files without writing. Missing/stale outputs fail with exit code 1. Generation includes no timestamps, randomness, or environment-specific paths, so identical sources produce identical bytes and SHA-256 values.
 
 The manifest records SHA-256 for source cases, documents, four prompts, and seven exported JSONL files. It does not create a circular self-hash. It contains neither evaluation-model scores nor assertions of successful cloud execution.
 

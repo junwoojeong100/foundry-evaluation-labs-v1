@@ -7,13 +7,14 @@ import subprocess
 import sys
 
 from lab.config import LabError
+from lab.content import content_path, language_metadata, require_content_language, selected_language
 from lab.files import ARTIFACTS, ROOT, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.preflight import save_json
 
 
 def validate_generated_data() -> None:
     result = subprocess.run(
-        [sys.executable, str(ROOT / "scripts/build_datasets.py"), "--check"],
+        [sys.executable, str(ROOT / "scripts/build_datasets.py"), "--check", "--language", selected_language()],
         cwd=ROOT, check=False, capture_output=True, text=True,
     )
     if result.returncode:
@@ -26,15 +27,16 @@ def prepare_optimizer(run_id: str) -> Path:
     validate_generated_data()
     run_dir = safe_run_dir(run_id)
     metadata = read_json(run_dir / "metadata.json")
+    require_content_language(metadata)
     if metadata.get("split") != "dev" or metadata.get("status") != "completed":
         raise LabError("Optimizer에는 오류 없이 완료된 dev 전체 실행만 사용합니다. test/smoke/부분 실행 금지.")
     if metadata.get("stage") != "iq":
         raise LabError("이 경로는 IQ 연결 후의 dev 실행을 Optimizer의 기준선으로 사용합니다.")
     if metadata.get("retrieval", {}).get("rows_with_tool_output", 0) == 0:
         raise LabError("실제 IQ 도구 출력이 없는 기준선입니다. 도구 연결·권한·지시를 고치고 새 dev 실행을 사용하세요.")
-    source = ROOT / "data/splits/dev.jsonl"
+    source = content_path(ROOT, "data/splits/dev.jsonl")
     assert_dataset_use(source, "optimization")
-    assert_dataset_use(ROOT / "data/optimizer/dev.jsonl", "optimization")
+    assert_dataset_use(content_path(ROOT, "data/optimizer/dev.jsonl"), "optimization")
     if metadata["dataset_sha256"] != sha256_file(source):
         raise LabError("dev 데이터가 기준선 실행 이후 변경되었습니다.")
     prompt = ROOT / metadata["prompt_snapshot"]
@@ -45,7 +47,7 @@ def prepare_optimizer(run_id: str) -> Path:
         raise LabError("Optimizer 준비 기록이 이미 있습니다. 기존 실험을 보존하고 새 패키지에서 준비하세요.")
     target.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(prompt, target / "input-prompt.txt")
-    shutil.copyfile(ROOT / "data/optimizer/dev.jsonl", target / "dev-upload.jsonl")
+    shutil.copyfile(content_path(ROOT, "data/optimizer/dev.jsonl"), target / "dev-upload.jsonl")
     if (run_dir / "report.md").exists():
         shutil.copyfile(run_dir / "report.md", target / "baseline-report.md")
     save_json(target / "handoff.json", {
@@ -53,13 +55,14 @@ def prepare_optimizer(run_id: str) -> Path:
         "status": "PREPARED_NOT_SUBMITTED",
         "source_run_id": run_id,
         "source_split": "dev",
+        **language_metadata(),
         "dataset_sha256": sha256_file(source),
         "upload_sha256": sha256_file(target / "dev-upload.jsonl"),
         "input_prompt_sha256": metadata["prompt_sha256"],
         "agent_name": metadata["agent_name"],
         "agent_version": metadata["agent_version"],
         "test_data_included": False,
-        "next": "Continue at guide/handbook.md#optimize (step 05): use the Agent Optimizer portal wizard with one instruction-only candidate.",
+        "next": f"Continue at guide/{'en/' if selected_language() == 'en' else ''}handbook.md#optimize (step 05): use the Agent Optimizer portal wizard with one instruction-only candidate.",
         "not_created": ["optimizer job", "optimized prompt", "new deployed agent", "improved evaluation score"],
     })
     return target
@@ -76,6 +79,7 @@ def prepare_tuning(kind: str) -> Path:
         raise LabError(f"이미 존재하는 학습 준비 기록은 덮어쓰지 않습니다: {target}")
     target.mkdir(parents=True, exist_ok=True)
     manifest = {
+        **language_metadata(),
         "kind": f"{kind}-preparation",
         "status": "PREPARED_NOT_SUBMITTED",
         "region_requested": "northcentralus",
@@ -95,11 +99,11 @@ def prepare_tuning(kind: str) -> Path:
     }
     for split in ("train", "validation"):
         if kind == "frontier":
-            source = ROOT / "data/splits" / f"{split}.jsonl"
+            source = content_path(ROOT, "data/splits") / f"{split}.jsonl"
             destination = target / f"{split}.jsonl"
             note = "Neutral lab examples, NOT a claimed Frontier Tuning API upload schema."
         else:
-            source = ROOT / "data/tuning" / f"sft-{split}.jsonl"
+            source = content_path(ROOT, "data/tuning") / f"sft-{split}.jsonl"
             destination = target / f"sft-{split}.jsonl"
             note = "General supervised fine-tuning messages format; NOT Frontier Tuning."
         assert_dataset_use(source, "training")

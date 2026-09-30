@@ -112,8 +112,8 @@
 <p class="eyebrow">CONTOSO ATLAS CLOUD · ONE LEARNING PATH</p>
 
 <p><strong>Follow the six steps on this page in order.</strong> Connect knowledge to the same Contoso agent, improve its instructions, and use evidence to decide whether to accept the candidate or keep it on hold.</p>
-<p><strong>The environment, data, models, and evaluation criteria have not changed.</strong> Do not redeploy resources or repeat completed experiments just because the guide has been updated.</p>
-<p><strong>About the language:</strong> The guide and its controls are available in English and Korean. The reproducible lab scenario still uses the original Korean policies, prompts, CLI output, and agent responses. Keep the commands and sample payloads as written; English explanations below help you interpret them. Changing the guide language does not change the experiment.</p>
+<p><strong>Use a dedicated English lab environment.</strong> For the first English run, the operator starts with <a href="admin.html#bootstrap">a new resource group</a>. Reuse an existing English environment only with its own manifest and current approval. Never point this English path at a Korean workspace or overwrite its results; do not repeat completed English runs just to refresh documentation.</p>
+<p><strong>About the language:</strong> This path uses English policies, questions, reference answers, prompts, calibration fixtures, and fresh-holdout recipes. Set <strong><code>LAB_LANGUAGE=en</code></strong> as shown below. The original Korean corpus and its results remain separate and unchanged. The two corpora preserve policy facts, case IDs, splits, and evaluation thresholds, but runs in different languages are separate experiments—not a paired improvement comparison. Switching the website language does not change a running CLI process.</p>
 <ol class="learning-path" role="list" aria-label="Lab steps">
 <li><a href="#start"><strong>01</strong> Understand the example</a></li>
 <li><a href="#prepare"><strong>02</strong> Connect your environment</a></li>
@@ -125,7 +125,7 @@
 
 <p><strong>Allow approximately 3–4 hours, including result discussions.</strong> This estimate assumes an existing environment, successful Judge calibration, and completion of the full path. Service wait times and troubleshooting can change the duration. New infrastructure and SFT are not included.</p>
 <p><strong>For each step: understand the feature → run and understand the commands → interpret the output → discuss your results and decision → continue.</strong> Run commands one line at a time. If a command fails, do not continue to the next line. Use one evaluation path, the <strong>business Judge</strong>, and one instruction-improvement path, <strong>Agent Optimizer</strong>.</p>
-<p><strong>You are building an agent that finds policy and recommends the right next action—not a bot that executes refunds.</strong> Foundry connects models, agents, knowledge, and evaluation. This repository is an educational tool for exploring those capabilities through a small Korean-language support scenario.</p>
+<p><strong>You are building an agent that finds policy and recommends the right next action—not a bot that executes refunds.</strong> Foundry connects models, agents, knowledge, and evaluation. This repository explores those capabilities through a small synthetic English-language support scenario, with a separate Korean path.</p>
 <table>
 <thead>
 <tr>
@@ -186,11 +186,11 @@
 <p>Customer: “I bought my first monthly subscription on September 10, and today is September 15. Please refund it.”</p>
 <p>Authored incorrect answer: “You are within 14 days, so your refund has been approved and the money will arrive tomorrow.”</p>
 </blockquote>
-<p>Read <code>ATLAS-REF-001</code> and <code>ATLAS-ESC-001</code> in the <a href="../data/knowledge/documents.json">synthetic policies</a>. Besides the deadline for a first monthly purchase, the agent needs to establish whether paid production jobs ran or credits were used. <strong>Eligibility to apply is not approval or completed payment, and this assistant has no refund-execution tool.</strong></p>
+<p>Read <code>ATLAS-REF-001</code> and <code>ATLAS-ESC-001</code> in the <a href="../data/en/knowledge/documents.json">English synthetic policies</a>. Besides the deadline for a first monthly purchase, the agent needs to establish whether paid production jobs ran or credits were used. <strong>Eligibility to apply is not approval or completed payment, and this assistant has no refund-execution tool.</strong></p>
 <p><a id="demo"></a></p>
 <p>Run the following from the directory containing the complete package. You need Python 3.11 or later; 3.12 is recommended. Use bash/zsh on macOS or Linux, or an Ubuntu terminal in Windows WSL2.</p>
 <p><strong>Run · free and offline:</strong></p>
-<pre><code class="language-bash">python3 -S -m lab demo
+<pre><code class="language-bash">LAB_LANGUAGE=en python3 -S -m lab demo
 </code></pre>
 <p><strong>Command explained:</strong></p>
 <table>
@@ -202,6 +202,10 @@
 </thead>
 <tbody>
 <tr>
+<td><code>LAB_LANGUAGE=en</code></td>
+<td>Selects the English corpus for this command only. It does not require an Azure account or change the Korean files.</td>
+</tr>
+<tr>
 <td><code>python3</code></td>
 <td>Runs your installed Python. Start at the package root so Python can find this repository's <code>lab</code> module.</td>
 </tr>
@@ -211,7 +215,7 @@
 </tr>
 <tr>
 <td><code>-m lab demo</code></td>
-<td>Prints the educational tool's authored examples. It has no file-output option and requires no sign-in, Azure calls, or paid model use.</td>
+<td>Prints the educational tool's authored examples. The shown command saves no files and requires no sign-in, Azure calls, or paid model use.</td>
 </tr>
 </tbody>
 </table>
@@ -291,7 +295,8 @@
 </table>
 <p><strong>Local</strong> means preparation, checking, or explanation without Azure calls. <strong>Read-only</strong> means querying Azure state without starting inference or training. <strong>Remote change / paid</strong> covers operations such as version creation, retrieval, inference, and evaluation that require checking authorization. Read-only activity does not stop existing hosting or log costs. A code block's <strong>Copy code</strong> button only copies to the clipboard; it does not execute anything. Output-example JSON is not a command.</p>
 <p><strong>Run · local installation and data checks:</strong> Start at the package root. If <code>.venv</code> already exists, skip its creation and begin with activation.</p>
-<pre><code class="language-bash">python3 -m venv .venv
+<pre><code class="language-bash">export LAB_LANGUAGE=en
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.lock
 python -m lab validate
@@ -305,6 +310,10 @@ python -m lab validate
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>export LAB_LANGUAGE=en</code></td>
+<td>Selects <code>data/en/</code> and <code>prompts/en/</code> for every later command in this shell. Restore it in a new terminal, before starting Python.</td>
+</tr>
 <tr>
 <td><code>python3 -m venv .venv</code></td>
 <td>Creates a project-specific Python environment, isolated from other projects. It does not call Azure.</td>
@@ -323,9 +332,9 @@ python -m lab validate
 </tr>
 </tbody>
 </table>
-<p class="output-label" id="example-validation">Example output · the final validate command, in its original Korean</p>
+<p class="output-label" id="example-validation">Example output · the final English validate command</p>
 
-<pre><code class="language-text">일치 검사 완료: train=56, validation=12, dev=12, test=20; 정책 8개; 생성물 8개
+<pre><code class="language-text">Consistency check complete: train=56, validation=12, dev=12, test=20; policies=8; artifacts=8
 </code></pre>
 <p><strong>How to read it:</strong> “Consistency check complete”: the 100 source cases, eight policies, fixed splits, and eight generated artifacts are intact. Installation needs internet access, but <code>validate</code> does not call a model.</p>
 <p><a id="environment"></a></p>
@@ -353,7 +362,7 @@ python -m lab validate
 </tbody>
 </table>
 <p><strong>Run · check the environment:</strong> Replace the directory, approval filename, and monitoring ID with your actual values.</p>
-<pre><code class="language-bash">export LAB_ENV_DIR=&quot;$PWD/.lab/lab-training&quot;
+<pre><code class="language-bash">export LAB_ENV_DIR=&quot;$PWD/.lab/lab-training-en&quot;
 export LAB_ENV_FILE=&quot;$LAB_ENV_DIR/.env&quot;
 export LAB_ARTIFACTS_DIR=&quot;$LAB_ENV_DIR/artifacts&quot;
 export LAB_BOOTSTRAP_CONFIG=&quot;$LAB_ENV_DIR/config.json&quot;
@@ -405,6 +414,7 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 </tr>
 </tbody>
 </table>
+<p><strong>For this English path, both must use the operator's actual lab account and tenant—not another already signed-in work account.</strong> Choose <strong>Profile → Sign in with a different account</strong> if necessary. If automation is used, verify the same account and tenant again in the headless session; opening a normal browser does not authenticate a separate browser profile.</p>
 <p><strong>Browser sign-in and CLI sign-in are separate.</strong> Even if the portal opens, this tool's SDK uses the verified Azure CLI identity. If CLI authentication is needed, follow <a href="admin.html#bootstrap">the <code>az login</code> procedure in A1</a> with the operator. Complete MFA yourself on the normal sign-in screen; do not work around it by copying keys or tokens.</p>
 <p class="output-label" id="example-preflight">Example output · the final preflight command</p>
 
@@ -559,7 +569,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/ou
 <tbody>
 <tr>
 <td><code>agent --stage baseline --confirm</code></td>
-<td>Creates a remote <strong>versioned agent without tools</strong>, using <code>prompts/baseline.txt</code> and the configured model. Records its name/version in <code>agents/baseline.json</code>. Creation does not send a question; model-hosting costs are separate.</td>
+<td>Creates a remote <strong>versioned agent without tools</strong>, using <code>prompts/en/baseline.txt</code> and the configured model. Records its name/version in <code>agents/baseline.json</code>. Creation does not send a question; model-hosting costs are separate.</td>
 </tr>
 <tr>
 <td><code>run --stage baseline --split dev --limit 3 ...</code></td>
@@ -575,13 +585,13 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/ou
 <p class="output-label" id="example-agent-answer">Example output · the answer inside raw_output, expanded as JSON</p>
 
 <pre><code class="language-json">{
-  &quot;answer&quot;: &quot;결제 시각·시간대와 유료 작업·크레딧 사용 여부를 확인해 주세요. 아직 환불을 승인하거나 처리하지 않았습니다.&quot;,
+  &quot;answer&quot;: &quot;Please confirm the payment time and time zone, whether paid production jobs ran, and whether paid credits were used. No refund has been approved or processed.&quot;,
   &quot;citations&quot;: [],
   &quot;route&quot;: &quot;clarify&quot;,
   &quot;needs_human&quot;: false
 }
 </code></pre>
-<p><strong>How to read it:</strong> The Korean answer asks for the payment time/time zone and whether paid jobs ran or credits were used, and says no refund has been approved or processed. <code>clarify</code> means asking for needed information, not failure. Use <code>answer</code> for guidance, <code>escalate</code> for required human judgment, and <code>refuse</code> for a prohibited request. <strong>Only <code>escalate</code> has <code>needs_human: true</code>.</strong> Requesting review still does not mean a message was sent or a ticket created.</p>
+<p><strong>How to read it:</strong> The answer asks for the payment time/time zone and whether paid jobs ran or credits were used, and says no refund has been approved or processed. <code>clarify</code> means asking for needed information, not failure. Use <code>answer</code> for guidance, <code>escalate</code> for required human judgment, and <code>refuse</code> for a prohibited request. <strong>Only <code>escalate</code> has <code>needs_human: true</code>.</strong> Requesting review still does not mean a message was sent or a ticket created.</p>
 <p><strong>Before looking at Judge scores</strong>, compare one of your three answers with policy and decide whether it is correct or needs revision, with reasons. Do not alter the output to make it match the example.</p>
 <figure class="portal-shot" id="portal-agents">
 <img src="../web/assets/portal/03-agent-versions.png" alt="Actual Agents list showing baseline, iq, and optimized agents and their versions" width="1440" height="750" loading="lazy">
@@ -596,9 +606,9 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/ou
 <p><a id="calibration"></a></p>
 <p><strong>Run · calibrate the business Judge, paid:</strong></p>
 <p>Score 16 synthetic references. The normal plan is 16 policy-Judge requests plus 15 retrieval-Judge requests for references with retrieved context: <strong>31 requests</strong>. This is not an actual bill; check the remaining authorization before running it.</p>
-<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; judge calibrate --calibration-id cal-01 --confirm
+<pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; judge calibrate --calibration-id cal-01 --interval-seconds 65 --confirm
 </code></pre>
-<p><strong>Command explained:</strong> Sends fixed calibration answers to the policy and retrieval Judges and measures agreement with the reference pass/fail labels. <code>--calibration-id cal-01</code> identifies <code>calibration/cal-01/</code>. Results remain in <code>report.json</code>. The command neither reruns the agent nor creates new reference answers. <strong>31 is the planned Judge request count</strong>, not the token count or cost. Do not delete the calibration ID and repeat until the score looks good.</p>
+<p><strong>Command explained:</strong> Sends the English calibration answers to the policy and retrieval Judges and measures agreement with the reference pass/fail labels. <code>--interval-seconds 65</code> spaces calibration cases to avoid a burst against the small Judge deployment; it is not a retry or a timeout. <code>--calibration-id cal-01</code> identifies <code>calibration/cal-01/</code>. Results remain in <code>report.json</code>. The command neither reruns the agent nor creates new reference answers. <strong>31 is the planned Judge request count</strong>, not the token count or cost. Do not delete the calibration ID and repeat until the score looks good.</p>
 <p class="output-label" id="example-calibration">Example output · calibration completed, but quality is HOLD</p>
 
 <pre><code class="language-json">{
@@ -801,8 +811,8 @@ python -m lab explain --run-id baseline-smoke
 <p>Product background: <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq">Foundry IQ concepts and components</a>. Portal and preview API support can change; inspect the actual connection method used by this guide.</p>
 <p><strong>Run · prepare knowledge and check retrieval, paid:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; iq prepare --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; iq vectors --query &quot;최초 월 구독 환불에 필요한 조건은 무엇인가요?&quot; --confirm
-python -m lab --config &quot;$LAB_ENV_FILE&quot; iq probe --query &quot;이전 구매와 9월 이후 최초 월 구매의 환불 기한 및 심사 신청 조건을 비교해 주세요.&quot; --confirm
+python -m lab --config &quot;$LAB_ENV_FILE&quot; iq vectors --query &quot;What are the refund conditions for a first monthly subscription?&quot; --confirm
+python -m lab --config &quot;$LAB_ENV_FILE&quot; iq probe --query &quot;Compare refund deadlines and review-application conditions for earlier purchases and first monthly purchases from September onward.&quot; --confirm
 </code></pre>
 <p><strong>Commands explained:</strong></p>
 <table>
@@ -819,7 +829,7 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; iq probe --query &quot;이전 �
 </tr>
 <tr>
 <td><code>iq vectors --query ... --confirm</code></td>
-<td>Directly compares vector-only and hybrid results for the same query. The Korean query asks, “What are the conditions for refunding a first monthly subscription?” <code>--query</code> is a retrieval query, not a question sent to an agent. Results go to <code>knowledge/probes/</code>; embedding/search usage is incurred.</td>
+<td>Directly compares vector-only and hybrid results for the same query. The query asks, “What are the conditions for refunding a first monthly subscription?” <code>--query</code> is a retrieval query, not a question sent to an agent. Results go to <code>knowledge/probes/</code>; embedding/search usage is incurred.</td>
 </tr>
 <tr>
 <td><code>iq probe --query ... --confirm</code></td>
@@ -876,16 +886,16 @@ python -m lab explain --run-id iq-dev
 </tr>
 </tbody>
 </table>
-<p class="output-label" id="example-iq-report">Example output · an authored excerpt from explain, in its original Korean</p>
+<p class="output-label" id="example-iq-report">Example output · an authored excerpt from the English explain command</p>
 
-<pre><code class="language-text"># 평가 결과 해설
-- 실행: iq-dev / 단계: iq / 분할: dev / 12건
-- 기준: 현재 config/gates.json; 최종 최소 표본 20건
-- 게이트 결과: **HOLD** / 운영 승인: **not_granted**
+<pre><code class="language-text"># Evaluation explained
+- Run: iq-dev / stage: iq / split: dev / 12 cases
+- Criteria: current config/gates.json; final minimum sample: 20
+- Gate outcome: **HOLD** / operational approval: **not_granted**
 
-| 평가 항목 | 실제 값 | 기준 | 관측 범위 |
-| 업무 정확성 | 4.25 | 평균 ≥4 | 점수 12/12; 누락 0; 척도 [1.0, 5.0] |
-| 검색 근거성 | 4.50 | 평균 ≥4 | 점수 12/12; 누락 0; 척도 [1.0, 5.0] |
+| Metric | Actual value | Criterion | Coverage |
+| Policy correctness | 4.25 | mean ≥4 | scored 12/12; missing 0; scale [1.0, 5.0] |
+| Retrieval groundedness | 4.50 | mean ≥4 | scored 12/12; missing 0; scale [1.0, 5.0] |
 </code></pre>
 <p><strong>How to read it:</strong> The example reports <code>iq-dev</code>, 12 dev cases, HOLD, and no operational approval. Policy correctness is 4.25 and retrieval groundedness 4.50; both have 12/12 scores and no missing values. High averages alone do not pass the gates. Read the <strong>HOLD causes and next checks</strong> for scope, gaps, errors, and critical failures, then the <strong>case explanations</strong> for actual answers and Judge reasons. Even this illustrative 12-case dev run is not a final test. Inspect your complete report for other failures.</p>
 <p class="share-checkpoint" id="share-iq">Discuss · did retrieval also improve the business answer?</p>
@@ -906,7 +916,7 @@ python -m lab explain --run-id iq-dev
 </div>
 
 <p><strong>Your task:</strong> Use the error-free, completed 12-case <code>iq-dev</code> run and its actual MCP output for <strong>one Agent Optimizer job with one candidate</strong>. Keep the model and IQ connection fixed; change instructions only.</p>
-<p>Compare instructions <strong>before → after</strong>. <code>baseline</code> and <code>iq</code> use the same <a href="../prompts/baseline.txt"><code>prompts/baseline.txt</code></a>; <code>optimized</code> uses <code>optimizer/selected-prompt.txt</code> imported from the actual service result. This is not a choice between prewritten <code>v1.txt</code>/<code>v2.txt</code> files. Longer instructions are not, by themselves, evidence of improvement.</p>
+<p>Compare instructions <strong>before → after</strong>. <code>baseline</code> and <code>iq</code> use the same <a href="../prompts/en/baseline.txt"><code>prompts/en/baseline.txt</code></a>; <code>optimized</code> uses <code>optimizer/selected-prompt.txt</code> imported from the actual service result. This is not a choice between prewritten <code>v1.txt</code>/<code>v2.txt</code> files. Longer instructions are not, by themselves, evidence of improvement.</p>
 <p><strong>Run · prepare input locally:</strong></p>
 <pre><code class="language-bash">python -m lab optimize --run-id iq-dev
 python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
@@ -1180,7 +1190,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <tbody>
 <tr>
 <td><code>run ... --split test --freeze-id selected-v1 --holdout-id fresh-01</code></td>
-<td>Here, <code>--split test</code> selects final-test mode using the <strong>specified fresh holdout</strong>, not the ordinary 20 rows in <code>data/splits/test.jsonl</code>. Freeze/calibration checks must pass before paid inference begins.</td>
+<td>Here, <code>--split test</code> selects final-test mode using the <strong>specified fresh holdout</strong>, not the ordinary 20 rows in <code>data/en/splits/test.jsonl</code>. Freeze/calibration checks must pass before paid inference begins.</td>
 </tr>
 <tr>
 <td><code>judge score --run-id optimized-fresh ...</code></td>

@@ -1,4 +1,4 @@
-"""Offline, stdlib-only evidence for the Korean Foundry workshop.
+"""Offline, stdlib-only evidence for the bilingual Foundry workshop.
 
 Public contracts:
 * ``score_row`` takes a dataset case and the *unmodified* model output. Invalid
@@ -49,6 +49,7 @@ import re
 from statistics import NormalDist
 from typing import Any
 
+from lab.content import selected_language, text as localize
 
 ROUTES = frozenset({"answer", "clarify", "escalate", "refuse"})
 SPLITS = frozenset({"train", "validation", "dev", "test"})
@@ -1146,12 +1147,12 @@ def compare_runs(baseline: dict, candidate: dict, gates: dict) -> dict:
 
 def _cell(value: Any) -> str:
     if value is None:
-        return "측정 불가 (unavailable)"
+        return localize("측정 불가 (unavailable)", "Unavailable")
     return str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("`", "\\`").replace("|", "\\|").replace("\r", "").replace("\n", "<br>")
 
 
 def write_report(summary: dict, path: Path, *, gates: dict | None = None) -> None:
-    """Write Korean Markdown using the current config/gates.json, not live data.
+    """Write localized Markdown using the specified gates, not new live data.
 
     The report states its gate source. A comparison with a different gate file
     remains a separate compare_runs artifact and is not silently substituted.
@@ -1161,36 +1162,43 @@ def write_report(summary: dict, path: Path, *, gates: dict | None = None) -> Non
     gate = evaluate_gates(run, load_gates() if gates is None else gates)
     metadata, metrics = run["metadata"], run["metrics"]
     lines = [
-        "# Foundry 워크숍 평가 근거 보고서", "",
-        f"- 실행: `{_cell(metadata['run_id'])}`",
-        f"- 단계 / split / 표본: {_cell(metadata['stage'])} / {_cell(metadata['split'])} / {len(run['rows'])}",
-        f"- 원본 데이터 split: {_cell(metadata.get('source_split', metadata['split']))}",
-        f"- 데이터 SHA256: `{metadata['dataset_sha256']}`",
-        f"- 모델 배포: `{_cell(metadata['model_deployment'])}`",
-        f"- 프롬프트 SHA256: `{metadata['prompt_sha256']}`",
-        f"- 지식 SHA256: `{metadata['knowledge_sha256']}`",
-        f"- 교육용 게이트: **{gate['outcome']}** ({'config/gates.json' if gates is None else 'frozen gates snapshot'})",
-        "- 운영 배포 승인: **아니오**. 비교·회귀 판정은 별도 compare 결과를 확인하세요.",
-        "", "## 판정률과 실패", "",
-        "| 지표 | 관측값 |", "|---|---:|",
+        localize("# Foundry 워크숍 평가 근거 보고서", "# Foundry workshop evaluation evidence"), "",
+        f"- {localize('실행', 'Run')}: `{_cell(metadata['run_id'])}`",
+        f"- {localize('단계 / split / 표본', 'Stage / split / sample')}: {_cell(metadata['stage'])} / {_cell(metadata['split'])} / {len(run['rows'])}",
+        f"- {localize('원본 데이터 split', 'Source split')}: {_cell(metadata.get('source_split', metadata['split']))}",
+        f"- {localize('데이터 SHA256', 'Dataset SHA256')}: `{metadata['dataset_sha256']}`",
+        f"- {localize('모델 배포', 'Model deployment')}: `{_cell(metadata['model_deployment'])}`",
+        f"- {localize('프롬프트 SHA256', 'Prompt SHA256')}: `{metadata['prompt_sha256']}`",
+        f"- {localize('지식 SHA256', 'Knowledge SHA256')}: `{metadata['knowledge_sha256']}`",
+        f"- {localize('교육용 게이트', 'Workshop gate')}: **{gate['outcome']}** ({'config/gates.json' if gates is None else 'frozen gates snapshot'})",
+        localize("- 운영 배포 승인: **아니오**. 비교·회귀 판정은 별도 compare 결과를 확인하세요.", "- Operational deployment approval: **not granted**. Read separate comparison results for paired/regression decisions."),
+        "", localize("## 판정률과 실패", "## Pass rates and failures"), "",
+        localize("| 지표 | 관측값 |", "| Metric | Observed value |"), "|---|---:|",
     ]
     if gate["sample_contract"]:
         sample = gate["sample_contract"]
         lines[1:1] = [
             "",
-            f"- 별도 fresh 표본 계약: `{_cell(sample['id'])}@{_cell(sample['version'])}`; 최소 {sample['minimum_rows']}행.",
-            "- 원본 test20의 대체가 아닙니다. 표본 계약은 생성·평가 전에 동결하며 모든 점수·오류·critical 기준은 유지합니다.",
+            localize(
+                f"- 별도 fresh 표본 계약: `{_cell(sample['id'])}@{_cell(sample['version'])}`; 최소 {sample['minimum_rows']}행.",
+                f"- Separate fresh-sample contract: `{_cell(sample['id'])}@{_cell(sample['version'])}`; minimum {sample['minimum_rows']} rows.",
+            ),
+            localize("- 원본 test20의 대체가 아닙니다. 표본 계약은 생성·평가 전에 동결하며 모든 점수·오류·critical 기준은 유지합니다.", "- This does not replace original test20. Freeze the sample contract before generation/evaluation; retain every score, error, and critical-case criterion."),
         ]
     for name in (*RATE_METRICS, "citation_coverage_mean", "error_count", "api_error_count", "judge_error_count", "critical_rule_failure_count"):
         lines.append(f"| {name} | {_cell(metrics[name])} |")
     interval = metrics["route_accuracy_wilson_95"]
     lines.extend([
         "",
-        f"라우팅 정확도 Wilson 95% 구간: [{interval['lower']:.4f}, {interval['upper']:.4f}] "
-        "(독립 표본 가정; 작은 교육용 데이터셋의 불확실성을 숨기지 않습니다).",
-        "", "## LLM judge 가용성", "",
-        f"선언된 judge: {_cell(json.dumps(metadata['judge'], ensure_ascii=False, sort_keys=True, allow_nan=False))}",
-        "", "| 지표 | 평균 | 점수 있는 행 / 전체 | 상태 | 척도 |", "|---|---:|---:|---|---|",
+        localize(
+            f"라우팅 정확도 Wilson 95% 구간: [{interval['lower']:.4f}, {interval['upper']:.4f}] "
+            "(독립 표본 가정; 작은 교육용 데이터셋의 불확실성을 숨기지 않습니다).",
+            f"Routing accuracy Wilson 95% interval: [{interval['lower']:.4f}, {interval['upper']:.4f}] "
+            "(assumes independent samples; uncertainty in this small teaching dataset remains visible).",
+        ),
+        "", localize("## LLM judge 가용성", "## LLM Judge availability"), "",
+        f"{localize('선언된 judge', 'Declared Judge')}: {_cell(json.dumps(metadata['judge'], ensure_ascii=False, sort_keys=True, allow_nan=False))}",
+        "", localize("| 지표 | 평균 | 점수 있는 행 / 전체 | 상태 | 척도 |", "| Metric | Mean | Scored rows / total | Status | Scale |"), "|---|---:|---:|---|---|",
     ])
     for name, measurement in metrics["judge"].items():
         lines.append(
@@ -1198,50 +1206,75 @@ def write_report(summary: dict, path: Path, *, gates: dict | None = None) -> Non
             f"| {measurement['status']} | {_cell(measurement['scale'])} |"
         )
     lines.extend([
-        "", "누락·오류 judge 점수는 평균 분모에서 제외하고 coverage로 노출합니다. "
-        "전체 행의 1..5 점수가 없으면 기본 의미 평가 게이트를 통과할 수 없습니다.",
-        "", "## 중요(critical) 사례: 교육용 행별 하한", "",
-        "이 기준은 워크숍 교육용 정책이며 Microsoft 공식 평가 기준이 아닙니다. "
-        "각 critical 행의 점수를 검사하므로 다른 행의 높은 평균으로 중요 실패를 상쇄할 수 없습니다.",
-        f"- critical 사례: {gate['critical_sample_count']}행 / 최소 요구 {gate['minimum_critical_rows']}행",
-        "- critical 점수 누락·judge 오류·응답 오류는 보류입니다. 전체 평균 게이트를 꺼도 행별 하한은 유지됩니다.",
-        "", "| 지표 | 행별 하한 | 관측 최솟값 | 점수 있는 행 / critical | 하한 미달 ID | 누락·오류 ID | 척도 일치 | 결과 |",
+        "", localize(
+            "누락·오류 judge 점수는 평균 분모에서 제외하고 coverage로 노출합니다. "
+            "전체 행의 1..5 점수가 없으면 기본 의미 평가 게이트를 통과할 수 없습니다.",
+            "Missing/failed Judge scores are excluded from means but exposed through coverage. "
+            "Without 1..5 scores for all required rows, the default semantic gates cannot pass.",
+        ),
+        "", localize("## 중요(critical) 사례: 교육용 행별 하한", "## Critical cases: workshop per-row floors"), "",
+        localize(
+            "이 기준은 워크숍 교육용 정책이며 Microsoft 공식 평가 기준이 아닙니다. "
+            "각 critical 행의 점수를 검사하므로 다른 행의 높은 평균으로 중요 실패를 상쇄할 수 없습니다.",
+            "These are educational workshop criteria, not Microsoft's official evaluation standard. "
+            "Every critical row is checked; high averages elsewhere cannot offset its failure.",
+        ),
+        localize(
+            f"- critical 사례: {gate['critical_sample_count']}행 / 최소 요구 {gate['minimum_critical_rows']}행",
+            f"- Critical cases: {gate['critical_sample_count']} / required minimum {gate['minimum_critical_rows']}",
+        ),
+        localize("- critical 점수 누락·judge 오류·응답 오류는 보류입니다. 전체 평균 게이트를 꺼도 행별 하한은 유지됩니다.", "- Missing critical scores, Judge errors, or response errors mean HOLD. Per-row floors remain even if aggregate-mean gates are disabled."),
+        "", localize("| 지표 | 행별 하한 | 관측 최솟값 | 점수 있는 행 / critical | 하한 미달 ID | 누락·오류 ID | 척도 일치 | 결과 |", "| Metric | Per-row floor | Observed minimum | Scored / critical | Below-floor IDs | Missing/error IDs | Scale matches | Result |"),
         "|---|---:|---:|---:|---|---|---|---|",
     ])
     for name, measurement in gate["critical_judge"].items():
         lines.append(
             f"| {name} | {measurement['minimum_required']} | {_cell(measurement['minimum_observed'])} "
             f"| {measurement['scored_count']} / {gate['critical_sample_count']} "
-            f"| {_cell(', '.join(measurement['below_floor_ids']) or '없음')} "
-            f"| {_cell(', '.join(measurement['unavailable_ids']) or '없음')} "
-            f"| {'예' if measurement['scale_compatible'] else '아니오'} "
-            f"| {'통과' if measurement['passed'] else '보류'} |"
+            f"| {_cell(', '.join(measurement['below_floor_ids']) or localize('없음', 'none'))} "
+            f"| {_cell(', '.join(measurement['unavailable_ids']) or localize('없음', 'none'))} "
+            f"| {localize('예', 'yes') if measurement['scale_compatible'] else localize('아니오', 'no')} "
+            f"| {localize('통과', 'PASS') if measurement['passed'] else localize('보류', 'HOLD')} |"
         )
     lines.extend([
-        "", "## 지연과 토큰 (관측만)", "",
-        f"- 지연 측정 행: {metrics['latency_ms']['measured_rows']} / {len(run['rows'])}",
+        "", localize("## 지연과 토큰 (관측만)", "## Latency and tokens (observed only)"), "",
+        f"- {localize('지연 측정 행', 'Rows with measured latency')}: {metrics['latency_ms']['measured_rows']} / {len(run['rows'])}",
         f"- p50 / p95 (ms): {_cell(metrics['latency_ms']['p50'])} / {_cell(metrics['latency_ms']['p95'])}",
-        f"- 분위수 방법: {metrics['latency_ms']['method']}",
+        f"- {localize('분위수 방법', 'Quantile method')}: {metrics['latency_ms']['method']}",
     ])
     for name, measurement in metrics["tokens"].items():
-        lines.append(f"- {name}: {_cell(measurement['sum'])}; 측정 {measurement['measured_rows']}행, 누락 {measurement['missing_rows']}행")
-    lines.extend(["", "## 태그별 하위집합", "", "| 태그 | 행 수 | 규칙 실패 행 | 라우팅 정확도 |", "|---|---:|---:|---:|"])
+        lines.append(localize(
+            f"- {name}: {_cell(measurement['sum'])}; 측정 {measurement['measured_rows']}행, 누락 {measurement['missing_rows']}행",
+            f"- {name}: {_cell(measurement['sum'])}; measured rows {measurement['measured_rows']}, missing rows {measurement['missing_rows']}",
+        ))
+    lines.extend(["", localize("## 태그별 하위집합", "## Subsets by tag"), "", localize("| 태그 | 행 수 | 규칙 실패 행 | 라우팅 정확도 |", "| Tag | Rows | Rule-failure rows | Routing accuracy |"), "|---|---:|---:|---:|"])
     for tag, subset in metrics["by_tag"].items():
         lines.append(f"| {_cell(tag)} | {subset['sample_count']} | {subset['rule_failure_count']} | {_cell(subset['route_accuracy'])} |")
-    lines.extend(["", "## 게이트 검사", "", "| 검사 | 결과 | 관측값 | 기준 |", "|---|---|---|---|"])
+    lines.extend(["", localize("## 게이트 검사", "## Gate checks"), "", localize("| 검사 | 결과 | 관측값 | 기준 |", "| Check | Result | Observed | Required |"), "|---|---|---|---|"])
     for check in gate["checks"]:
-        lines.append(f"| {_cell(check['name'])} | {'통과' if check['passed'] else '보류'} | {_cell(check['actual'])} | {_cell(check['required'])} |")
-    lines.extend(["", "## 행별 근거", "", "| ID | 기대 경로 | 실제 경로 | 실패 규칙 | 오류 |", "|---|---|---|---|---|"])
+        lines.append(f"| {_cell(check['name'])} | {localize('통과', 'PASS') if check['passed'] else localize('보류', 'HOLD')} | {_cell(check['actual'])} | {_cell(check['required'])} |")
+    lines.extend(["", localize("## 행별 근거", "## Per-row evidence"), "", localize("| ID | 기대 경로 | 실제 경로 | 실패 규칙 | 오류 |", "| ID | Expected route | Actual route | Failed rules | Error |"), "|---|---|---|---|---|"])
     for row in run["rows"]:
         response = row["response"] if isinstance(row["response"], dict) else {}
         error = row["api_error"] or row["parse_error"] or "; ".join(row["schema_errors"])
         lines.append(
             f"| {_cell(row['id'])} | {_cell(row['expected']['route'])} | {_cell(response.get('route'))} "
-            f"| {_cell(', '.join(row['rule_failures']) or '없음')} | {_cell(error or '없음')} |"
+            f"| {_cell(', '.join(row['rule_failures']) or localize('없음', 'none'))} | {_cell(error or localize('없음', 'none'))} |"
         )
-    lines.extend(["", "## 해석의 한계", ""])
-    lines.extend(f"- {limitation}" for limitation in LIMITATIONS)
-    lines.extend(["", "원문 출력은 JSON run artifact의 rows[].raw_output에 오류 발생 시에도 그대로 보존됩니다.", ""])
+    limitations = [
+        "This offline engine evaluates input artifacts; it does not attest that a model or API actually ran.",
+        "Citation-ID matching and coverage do not prove that an answer is grounded in its sources.",
+        "Forbidden claims use case-sensitive literal substring checks, not semantic safety evaluation.",
+        "PASS_FOR_WORKSHOP is educational, not production-deployment approval or a production-ready claim.",
+        "Critical sample counts and per-row Judge floors are workshop policy, not Microsoft's official standard.",
+        "The original 20-case held-out test is intentionally small; larger samples, planned repetitions, and independent review are needed.",
+        "Routing Wilson 95% intervals assume independent Bernoulli samples, excluding group correlation, multiple comparisons, and dataset bias.",
+        "Latency p50/p95 uses observed type-7 interpolation. Do not interpret a small sample's p95 as a production SLO.",
+        "Only observed API token counts are summed. Missing values are not zero; prices and USD costs are not invented.",
+    ] if selected_language() == "en" else LIMITATIONS
+    lines.extend(["", localize("## 해석의 한계", "## Interpretation limits"), ""])
+    lines.extend(f"- {limitation}" for limitation in limitations)
+    lines.extend(["", localize("원문 출력은 JSON run artifact의 rows[].raw_output에 오류 발생 시에도 그대로 보존됩니다.", "Original output remains verbatim in rows[].raw_output in the JSON run artifact, including on errors."), ""])
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines), encoding="utf-8")

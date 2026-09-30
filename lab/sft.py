@@ -21,6 +21,7 @@ from openai import APIError, APIStatusError
 from lab.auth import credential_for, require_owned_scope
 from lab.batch import export_evaluation, score_run
 from lab.config import Config, LabError, load_config
+from lab.content import content_path, language_metadata, require_content_language
 from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.handoffs import validate_generated_data
 from lab.http import ARM_SCOPE, CloudRequestError, JsonHttp
@@ -55,6 +56,7 @@ def _confirm(confirmed: bool) -> None:
 def _scope(config: Config) -> dict:
     config.validate()
     return {
+        **language_metadata(),
         "tenant_id": config.tenant_id,
         "subscription_id": config.subscription_id,
         "account_id": config.account_id,
@@ -131,6 +133,7 @@ def _preparation() -> dict:
     directory = _directory()
     manifest_path = directory / "manifest.json"
     manifest = _object(read_json(manifest_path))
+    require_content_language(manifest)
     if (
         manifest.get("kind") != "sft-preparation"
         or manifest.get("status") != "PREPARED_NOT_SUBMITTED"
@@ -138,7 +141,7 @@ def _preparation() -> dict:
         or manifest.get("region_requested") != "northcentralus"
     ):
         raise LabError("원본 SFT 준비 매니페스트가 아니거나 동결 데이터/리전 계약이 다릅니다.")
-    system = (ROOT / "prompts/tuning-system.txt").read_text(encoding="utf-8").strip()
+    system = content_path(ROOT, "prompts/tuning-system.txt").read_text(encoding="utf-8").strip()
     files = {}
     for split, count in (("train", 56), ("validation", 12)):
         name = f"sft-{split}.jsonl"
@@ -153,10 +156,10 @@ def _preparation() -> dict:
             or info.get("rows") != count
             or info.get("bytes") != path.stat().st_size
             or info.get("sha256") != sha256_file(path)
-            or rows != read_jsonl(ROOT / "data/tuning" / name)
+            or rows != read_jsonl(content_path(ROOT, "data/tuning") / name)
         ):
             raise LabError(f"{name}: UTF-8 BOM, 행 수, 크기, 해시 또는 원본 분할이 다릅니다.")
-        source = read_jsonl(ROOT / "data/splits" / f"{split}.jsonl")
+        source = read_jsonl(content_path(ROOT, "data/splits") / f"{split}.jsonl")
         expected = [
             {"messages": model_messages(case, system) + [{"role": "assistant", "content": case["ground_truth"]}]}
             for case in source
@@ -168,9 +171,10 @@ def _preparation() -> dict:
             "id": None, "phase": "not_uploaded", "status": None,
         }
     return {
+        **language_metadata(),
         "manifest_sha256": sha256_file(manifest_path),
-        "prompt_sha256": sha256_file(ROOT / "prompts/tuning-system.txt"),
-        "knowledge_sha256": sha256_file(ROOT / "data/knowledge/documents.json"),
+        "prompt_sha256": sha256_file(content_path(ROOT, "prompts/tuning-system.txt")),
+        "knowledge_sha256": sha256_file(content_path(ROOT, "data/knowledge/documents.json")),
         "files": files,
     }
 
@@ -561,7 +565,7 @@ def capture_model(client, deployment: str, case: dict, system: str) -> dict:
 def _evaluation_cases(split: str) -> tuple[Path, list[dict]]:
     if split not in {"dev", "test"}:
         raise LabError("모델 평가 데이터는 dev 또는 test만 허용합니다.")
-    dataset = ROOT / "data/splits" / f"{split}.jsonl"
+    dataset = content_path(ROOT, "data/splits") / f"{split}.jsonl"
     cases = read_jsonl(dataset)
     ids = [case.get("id") for case in cases]
     if (
@@ -581,7 +585,7 @@ def _capture_runs(
     if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
         raise LabError("SFT interval-seconds는 0~120초여야 합니다.")
     dataset, cases = _evaluation_cases(split)
-    prompt = ROOT / "prompts/tuning-system.txt"
+    prompt = content_path(ROOT, "prompts/tuning-system.txt")
     system = prompt.read_text(encoding="utf-8").strip()
     metadata, records = {}, {arm: [] for arm in directories}
     for arm, directory in directories.items():
@@ -589,6 +593,7 @@ def _capture_runs(
         snapshot = directory / "prompt.txt"
         snapshot.write_bytes(prompt.read_bytes())
         metadata[arm] = {
+            **language_metadata(),
             "run_id": directory.name, "stage": "candidate" if arm == "base" else "tuned",
             "code": code_provenance(),
             "split": split, "source_split": split, "dataset_sha256": sha256_file(dataset),

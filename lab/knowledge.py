@@ -8,6 +8,7 @@ from azure.ai.projects.models import MCPTool
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
+from lab.content import content_path, language_metadata, require_content_language
 from lab.embeddings import DIMENSIONS, embed, validate_vectors
 from lab.files import ARTIFACTS, ROOT, read_json, record_created, sha256_file, workspace, write_once_json
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
@@ -126,13 +127,14 @@ def _ensure_created(config: Config, http: JsonHttp, kind: str, name: str, url: s
 def prepare_knowledge(config: Config) -> dict:
     state = workspace(config, create=True)
     names = resource_names(config, state)
-    documents_path = ROOT / "data/knowledge/documents.json"
+    documents_path = content_path(ROOT, "data/knowledge/documents.json")
     documents = read_json(documents_path)
     content_hash = sha256_file(documents_path)
     setup_path = ARTIFACTS / "knowledge/setup.json"
     previous = None
     if setup_path.exists():
         previous = read_json(setup_path)
+        require_content_language(previous)
         if previous.get("documents_sha256") != content_hash or previous.get("names") != names:
             raise LabError("기존 지식 준비와 원본/범위가 다릅니다. 다른 실험을 기존 인덱스에 덮어쓰지 않습니다.")
         if previous.get("status") in {"created_not_retrieval_tested", "retrieval_verified"}:
@@ -157,6 +159,7 @@ def prepare_knowledge(config: Config) -> dict:
         if previous and previous.get("payload_sha256") != payload_hash:
             raise LabError("미완료 검색 설정의 구성 계약이 바뀌었습니다. 같은 인덱스에 덮어쓰지 않습니다.")
         setup = {
+            **language_metadata(),
             "status": "preparing", "workspace_id": state["workspace_id"], "names": names,
             "project_id": config.project_id, "documents_sha256": content_hash,
             "planner": {"deployment": config.planner, "model": model},
@@ -238,6 +241,7 @@ def prepare_knowledge(config: Config) -> dict:
 def load_knowledge(config: Config) -> dict:
     state = workspace(config)
     setup = read_json(ARTIFACTS / "knowledge/setup.json")
+    require_content_language(setup)
     if (
         setup.get("workspace_id") != state["workspace_id"]
         or setup.get("project_id") != config.project_id

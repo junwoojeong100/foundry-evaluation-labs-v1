@@ -205,7 +205,7 @@
 <p><strong>Next:</strong> S1 only if prerequisites pass.</p>
 <h2 id="prepare">S1. Prepare training files locally</h2>
 <p><strong>Purpose:</strong> Prepare only train/validation data in a traceable format.</p>
-<p><strong>Your task:</strong> Reuse the main guide's <code>.venv</code>, <code>LAB_ENV_FILE</code>, and <code>LAB_ARTIFACTS_DIR</code>. If the preparation directory already exists, read its manifest instead of generating it again.</p>
+<p><strong>Your task:</strong> Reuse the main guide's <code>.venv</code>, <code>LAB_LANGUAGE=en</code>, <code>LAB_ENV_FILE</code>, and <code>LAB_ARTIFACTS_DIR</code>. If the preparation directory already exists, read its manifest instead of generating it again.</p>
 <p><strong>Run:</strong></p>
 <pre><code class="language-bash">python -m lab tune-prepare --kind sft
 python -m json.tool &quot;$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json&quot;
@@ -239,11 +239,11 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json&quot;
 <tbody>
 <tr>
 <td><code>sft-train.jsonl</code></td>
-<td>Only the original 56 training cases</td>
+<td>Only the 56 English training cases from <code>data/en/</code></td>
 </tr>
 <tr>
 <td><code>sft-validation.jsonl</code></td>
-<td>Only the original 12 validation cases</td>
+<td>Only the 12 English validation cases from <code>data/en/</code></td>
 </tr>
 <tr>
 <td><code>manifest.json</code></td>
@@ -255,7 +255,7 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json&quot;
 </tr>
 </tbody>
 </table>
-<p>The adapter currently prepares UTF-8 files with a BOM. Do not change encoding/message columns without checking generator and service contracts. SFT user messages contain query/context; assistant messages contain training answers. Never append evaluator-only labels to user input.</p>
+<p>The adapter currently prepares UTF-8 files with a BOM. Do not change encoding/message columns without checking generator and service contracts. SFT user messages contain English query/context; assistant messages contain English training answers from the same selected corpus. Never append evaluator-only labels to user input.</p>
 <p><strong>Completion signal:</strong> Counts are 56/12, hashes agree, and test/fresh-holdout data is absent. <strong>Prepared does not mean trained.</strong></p>
 <p><strong>Errors/recovery:</strong> Do not delete the existing preparation directory or mix validation/test data to make counts match.</p>
 <p><strong>Resume:</strong> Read the existing manifest/ledger. Do not manually turn <code>PREPARED_NOT_SUBMITTED</code> into a later successful job state.</p>

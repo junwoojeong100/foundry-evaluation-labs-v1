@@ -4,6 +4,7 @@ from copy import deepcopy
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -12,7 +13,7 @@ from unittest.mock import patch
 
 from lab.cli import main
 from lab.config import LabError
-from lab.evidence import load_gates, score_row, summarize
+from lab.evidence import load_gates, score_row, summarize, write_report
 from lab.explanation import explain_run
 from lab.files import ROOT, read_json, read_jsonl, sha256_file, write_jsonl
 from lab.preflight import save_json
@@ -30,7 +31,7 @@ class ExplanationTests(unittest.TestCase):
         self.cases = read_jsonl(self.dataset)
         self.known = {document["id"] for document in read_json(ROOT / "data/knowledge/documents.json")}
 
-    def make_run(self, identifier, *, count=3, stage="iq", score=4, no_retrieval=False, raw=None, frozen=False):
+    def make_run(self, identifier, *, count=3, stage="iq", score=4, no_retrieval=False, raw=None, frozen=False, language=None):
         directory = self.root / "runs" / identifier
         directory.mkdir(parents=True)
         cases = self.cases[:count]
@@ -50,6 +51,7 @@ class ExplanationTests(unittest.TestCase):
         write_jsonl(directory / "outputs.jsonl", captures)
         save_json(directory / "judge-scores.json", judges)
         metadata = {
+            **({"language": language} if language is not None else {}),
             "run_id": identifier, "stage": stage, "status": "completed",
             "split": "dev" if count == len(self.cases) else "smoke", "source_split": "dev",
             "row_ids": [case["id"] for case in cases],
@@ -94,6 +96,29 @@ class ExplanationTests(unittest.TestCase):
         self.assertIn(self.cases[0]["ground_truth"], text)
         self.assertIn("최신 정책의 적용 시점", text)
         self.assertIn("not_granted", text)
+
+    def test_english_explanation_localizes_labels_without_rewriting_actual_evidence(self):
+        self.dataset = ROOT / "data/en/splits/dev.jsonl"
+        self.cases = read_jsonl(self.dataset)
+        self.known = {document["id"] for document in read_json(ROOT / "data/en/knowledge/documents.json")}
+        with patch.dict(os.environ, {"LAB_LANGUAGE": "en"}):
+            directory = self.make_run("english", score=3, language="en")
+            before = self.snapshot()
+            result = explain_run("english")
+            self.assertEqual(before, self.snapshot())
+            self.assertIn("# Evaluation explained", result)
+            self.assertIn("Policy correctness", result)
+            self.assertIn("scored 3/3", result)
+            self.assertIn("HOLD causes", result)
+            self.assertNotIn("# 평가 결과 해설", result)
+            self.assertIn(self.cases[0]["ground_truth"], result)
+            self.assertIn("단위 테스트용 업무 판단 이유", result)
+            report = directory / "english-report.md"
+            write_report(read_json(directory / "summary.json"), report)
+            rendered = report.read_text()
+            self.assertIn("# Foundry workshop evaluation evidence", rendered)
+            self.assertIn("Interpretation limits", rendered)
+            self.assertNotIn("## 해석의 한계", rendered)
 
     def test_baseline_missing_grounding_is_not_zero_or_a_false_pass(self):
         self.make_run("baseline", stage="baseline", no_retrieval=True)

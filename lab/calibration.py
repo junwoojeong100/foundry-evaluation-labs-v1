@@ -22,6 +22,7 @@ import time
 from uuid import uuid4
 
 from lab.config import LabError
+from lab.content import content_path, language_metadata, require_content_language, selected_language
 from lab.evidence import observed_model_drift, strict_json_loads, validate_case
 from lab.files import ARTIFACTS, ROOT, code_provenance, safe_run_dir, sha256_file
 
@@ -189,6 +190,8 @@ def evaluator_contract() -> dict:
             or not isinstance(definition.get("output_schema"), dict)
         ):
             raise LabError(f"Invalid versioned evaluator definition: {kind}")
+        if selected_language() == "en":
+            definition["instructions"] += "\nWrite the reason fields in English. Keep the scoring rubric and thresholds unchanged."
     return {
         "contract_version": CONTRACT_VERSION,
         "definitions": definitions,
@@ -196,7 +199,8 @@ def evaluator_contract() -> dict:
             kind: sha256_file(ROOT / "config/evaluators" / filename)
             for kind, filename in DEFINITIONS.items()
         },
-        "policy_sha256": sha256_file(ROOT / "data/knowledge/documents.json"),
+        "policy_sha256": sha256_file(content_path(ROOT, "data/knowledge/documents.json")),
+        **language_metadata(),
         "scale": [1, 5],
         "groundedness_semantics": "actual_agent_retrieval_only/no_policy_fallback",
         "reference_labels_sent_to_judge": False,
@@ -205,11 +209,11 @@ def evaluator_contract() -> dict:
 
 
 def load_fixtures(path: Path | None = None) -> list[dict]:
-    path = ROOT / "data/calibration/fixtures.jsonl" if path is None else Path(path)
+    path = content_path(ROOT, "data/calibration/fixtures.jsonl") if path is None else Path(path)
     rows = read_jsonl(path)
     if len(rows) < 10:
         raise LabError("Calibration requires at least 10 authored positive/negative fixtures.")
-    documents = read_json(ROOT / "data/knowledge/documents.json")
+    documents = read_json(content_path(ROOT, "data/knowledge/documents.json"))
     policy = {doc["id"]: doc["content"] for doc in documents}
     ids, labels = set(), set()
     result = []
@@ -534,11 +538,13 @@ def _execute(config, cases: list[dict], records: list[dict], directory: Path, co
 
 
 def run_calibration(config, calibration_id: str, *, confirm: bool = False,
-                    fixtures_path: Path | None = None) -> dict:
+                    fixtures_path: Path | None = None, interval_seconds: float = 0) -> dict:
     if confirm is not True:
         raise LabError("Paid Judge calibration requires --confirm and separate budget/data approval.")
+    if type(interval_seconds) not in (int, float) or not 0 <= interval_seconds <= 120:
+        raise LabError("Calibration interval-seconds must be within 0..120.")
     safe_id(calibration_id, "calibration-id")
-    path = ROOT / "data/calibration/fixtures.jsonl" if fixtures_path is None else Path(fixtures_path)
+    path = content_path(ROOT, "data/calibration/fixtures.jsonl") if fixtures_path is None else Path(fixtures_path)
     fixtures, contract = load_fixtures(path), evaluator_contract()
     directory = ARTIFACTS / "calibration" / calibration_id
     try:
@@ -546,6 +552,7 @@ def run_calibration(config, calibration_id: str, *, confirm: bool = False,
     except FileExistsError as exc:
         raise LabError("Calibration ID already attempted. Preserve errors; do not rejudge this attempt.") from exc
     metadata = {
+        **language_metadata(),
         "calibration_id": calibration_id, "created_at": now(), "execution_mode": "LIVE",
         "code": code_provenance(),
         "fixtures_sha256": sha256_file(path), "fixtures_path": str(path.resolve()),
@@ -556,11 +563,13 @@ def run_calibration(config, calibration_id: str, *, confirm: bool = False,
         "row_ids": [fixture["id"] for fixture in fixtures],
         "human_review_state": "not_reviewed", "manual_operational_approval": "not_granted",
     }
+    if interval_seconds:
+        metadata["interval_seconds"] = interval_seconds
     save_json(directory / "metadata.json", metadata, exclusive=True)
     records, observations = _execute(
         config, [fixture["case"] for fixture in fixtures],
         [{"raw_output": fixture["raw_output"], "retrieved_context": fixture["retrieved_context"]} for fixture in fixtures],
-        directory, contract,
+        directory, contract, interval_seconds=interval_seconds,
     )
     report = {**summarize_calibration(fixtures, records), "metadata": metadata, **observations}
     if observations["execution_status"] != "completed":
@@ -579,6 +588,7 @@ def score_captured_run(config, run_id: str, *, confirm: bool = False, interval_s
 
     directory = safe_run_dir(run_id)
     metadata = read_json(directory / "metadata.json")
+    require_content_language(metadata)
     if observed_model_drift(metadata):
         raise LabError("Cannot judge a capture with terminal observed model drift.")
     if metadata.get("run_id") != run_id or metadata.get("status") not in {"completed", "completed_with_errors"}:
@@ -599,7 +609,7 @@ def score_captured_run(config, run_id: str, *, confirm: bool = False, interval_s
         raise LabError("All attempted capture IDs must match; failed rows cannot be dropped.")
     selected = [cases[row["id"]] for row in captures]
     from lab.evidence import score_row
-    documents = read_json(ROOT / "data/knowledge/documents.json")
+    documents = read_json(content_path(ROOT, "data/knowledge/documents.json"))
     known = {row["id"] for row in documents}
     for case, capture in zip(selected, captures, strict=True):
         if "error" not in capture or not isinstance(capture.get("raw_output"), str) or not isinstance(capture.get("retrieved_context"), str):
@@ -622,6 +632,7 @@ def score_captured_run(config, run_id: str, *, confirm: bool = False, interval_s
         raise LabError("Judge attempt already exists, including unknown outcomes; no resubmission.") from exc
     save_json(attempt / "contract.json", contract, exclusive=True)
     submission = {
+        **language_metadata(),
         "run_id": run_id, "created_at": now(), "evaluator_sha256": digest(contract),
         "code": code_provenance(),
         "dataset_sha256": metadata["dataset_sha256"],

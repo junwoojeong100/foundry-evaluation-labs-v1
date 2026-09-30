@@ -6,6 +6,8 @@
 
 **기존 환경·데이터·모델·평가 기준은 그대로입니다.** 안내 변경 때문에 재배포하거나 완료된 실험을 다시 실행하지 않습니다.
 
+**한국어 실습은 `LAB_LANGUAGE=ko`를 사용합니다.** 영어 실습은 별도 `data/en/`·`prompts/en/`과 전용 환경을 사용합니다. 웹사이트의 언어를 바꿔도 터미널 설정은 바뀌지 않으며, 서로 다른 언어의 실행 기록을 섞지 않습니다.
+
 <ol class="learning-path" role="list" aria-label="실습 순서">
 <li><a href="#start"><strong>01</strong> 예시 이해</a></li>
 <li><a href="#prepare"><strong>02</strong> 환경 연결</a></li>
@@ -63,7 +65,7 @@
 **실행 명령 · 무료·오프라인:**
 
 ```bash
-python3 -S -m lab demo
+LAB_LANGUAGE=ko python3 -S -m lab demo
 ```
 
 **명령 해설:**
@@ -72,7 +74,7 @@ python3 -S -m lab demo
 |---|---|
 | `python3` | 설치된 Python을 실행합니다. 패키지 루트에서 시작해야 이 저장소의 `lab` 모듈을 찾습니다. |
 | `-S` | Python의 `site` 초기화를 생략해 설치된 SDK 없이 DEMO를 읽습니다. 일반 LIVE 명령에 붙이는 옵션은 아닙니다. |
-| `-m lab demo` | 교육 도구의 작성 예시를 터미널에 출력합니다. 이 명령에는 파일 저장 옵션이 없으며 로그인·Azure 호출·모델 비용이 없습니다. |
+| `-m lab demo` | 교육 도구의 작성 예시를 터미널에 출력합니다. 이 예제 명령은 파일을 저장하지 않으며 로그인·Azure 호출·모델 비용이 없습니다. |
 
 <p class="output-label" id="example-demo">출력 예시 · DEMO 터미널 출력 일부</p>
 
@@ -134,6 +136,7 @@ python3 -S -m lab demo
 **실행 명령 · 로컬 설치와 데이터 검사:** 패키지 루트에서 실행합니다. `.venv`가 있으면 생성은 반복하지 않고 활성화부터 합니다.
 
 ```bash
+export LAB_LANGUAGE=ko
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.lock

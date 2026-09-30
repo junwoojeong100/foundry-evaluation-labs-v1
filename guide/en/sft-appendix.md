@@ -62,7 +62,7 @@ The previous gpt-4o-mini / 2024-07-18 was rejected during actual creation valida
 
 **Purpose:** Prepare only train/validation data in a traceable format.
 
-**Your task:** Reuse the main guide's `.venv`, `LAB_ENV_FILE`, and `LAB_ARTIFACTS_DIR`. If the preparation directory already exists, read its manifest instead of generating it again.
+**Your task:** Reuse the main guide's `.venv`, `LAB_LANGUAGE=en`, `LAB_ENV_FILE`, and `LAB_ARTIFACTS_DIR`. If the preparation directory already exists, read its manifest instead of generating it again.
 
 **Run:**
 
@@ -80,12 +80,12 @@ python -m json.tool "$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json"
 
 | File | Meaning |
 |---|---|
-| `sft-train.jsonl` | Only the original 56 training cases |
-| `sft-validation.jsonl` | Only the original 12 validation cases |
+| `sft-train.jsonl` | Only the 56 English training cases from `data/en/` |
+| `sft-validation.jsonl` | Only the 12 English validation cases from `data/en/` |
 | `manifest.json` | Row counts, bytes, hashes, and `PREPARED_NOT_SUBMITTED` |
 | `sft-state.json` | Actual preparation/file/job/model state, created or updated as service operations proceed |
 
-The adapter currently prepares UTF-8 files with a BOM. Do not change encoding/message columns without checking generator and service contracts. SFT user messages contain query/context; assistant messages contain training answers. Never append evaluator-only labels to user input.
+The adapter currently prepares UTF-8 files with a BOM. Do not change encoding/message columns without checking generator and service contracts. SFT user messages contain English query/context; assistant messages contain English training answers from the same selected corpus. Never append evaluator-only labels to user input.
 
 **Completion signal:** Counts are 56/12, hashes agree, and test/fresh-holdout data is absent. **Prepared does not mean trained.**
 

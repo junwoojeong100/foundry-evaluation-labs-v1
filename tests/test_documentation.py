@@ -578,7 +578,40 @@ class DocumentationTests(unittest.TestCase):
                     checked += 1
         self.assertGreaterEqual(checked, 40)
 
-    def test_complete_translations_preserve_all_sections_and_code_examples(self):
+    def test_bilingual_guides_preserve_sections_and_operation_contracts(self):
+        def operations(source):
+            result = []
+            valued = {
+                "--stage", "--split", "--limit", "--kind", "--run-id",
+                "--freeze-id", "--holdout-id", "--calibration-id", "--capacity",
+            }
+            flags = {"--confirm", "--resume", "--new-version"}
+            for block in re.findall(r"```bash\s*\n(.*?)```", source, re.DOTALL):
+                for line in block.replace("\\\n", " ").splitlines():
+                    words = shlex.split(line, comments=True)
+                    if "-m" not in words:
+                        continue
+                    module_index = words.index("-m") + 1
+                    if words[module_index] not in {"lab", "lab.sft", "lab.bootstrap"}:
+                        continue
+                    arguments = words[module_index + 1:]
+                    action = []
+                    options = []
+                    index = 0
+                    while index < len(arguments):
+                        word = arguments[index]
+                        if word in flags:
+                            options.append((word, True))
+                        elif word.startswith("--"):
+                            if word in valued:
+                                options.append((word, arguments[index + 1]))
+                            index += 1
+                        else:
+                            action.append(word)
+                        index += 1
+                    result.append((words[module_index], action, options))
+            return result
+
         english = {document.key: document for document in documents_for("en")}
         self.assertEqual(set(english), {document.key for document in documents_for("ko")})
         for korean in documents_for("ko"):
@@ -587,10 +620,9 @@ class DocumentationTests(unittest.TestCase):
                 en_source = (ROOT / counterpart.source).read_text(encoding="utf-8")
                 ko_source = (ROOT / korean.source).read_text(encoding="utf-8")
                 blocks = r"```(\w+)\s*\n(.*?)```"
-                self.assertEqual(
-                    re.findall(blocks, en_source, re.DOTALL),
-                    re.findall(blocks, ko_source, re.DOTALL),
-                )
+                self.assertEqual(operations(en_source), operations(ko_source))
+                for _, block in re.findall(blocks, en_source, re.DOTALL):
+                    self.assertNotRegex(block, r"[가-힣]")
                 en_page, ko_page = LearningPathParser(), LearningPathParser()
                 en_page.feed((SITE / counterpart.output).read_text(encoding="utf-8"))
                 ko_page.feed((SITE / korean.output).read_text(encoding="utf-8"))
@@ -599,6 +631,16 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(en_page.subchapters, ko_page.subchapters)
                 self.assertEqual(en_page.sharing_checkpoints, ko_page.sharing_checkpoints)
                 self.assertEqual(en_page.next_links, ko_page.next_links)
+
+    def test_english_commands_select_the_real_english_corpus(self):
+        source = (ROOT / "guide/en/handbook.md").read_text(encoding="utf-8")
+        self.assertIn("LAB_LANGUAGE=en python3 -S -m lab demo", source)
+        self.assertIn("export LAB_LANGUAGE=en", source)
+        self.assertLess(source.index("export LAB_LANGUAGE=en"), source.index("python -m lab validate"))
+        self.assertIn("data/en/knowledge/documents.json", source)
+        self.assertIn("prompts/en/baseline.txt", source)
+        self.assertIn("judge calibrate --calibration-id cal-01 --interval-seconds 65", source)
+        self.assertNotIn("scenario still uses the original Korean", source)
 
     def test_english_prose_and_image_descriptions_are_translated_not_just_the_shell(self):
         originals = {

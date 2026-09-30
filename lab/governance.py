@@ -22,6 +22,7 @@ from lab.calibration import (
     read_json, read_jsonl, safe_id, save_json, load_fixtures, summarize_calibration,
 )
 from lab.config import LabError
+from lab.content import content_path, dataset_files, language_metadata, require_content_language, selected_language, text
 from lab.evidence import evaluate_gates, load_gates, observed_model_drift, score_row, summarize, validate_case
 from lab.files import ARTIFACTS, ROOT, code_provenance, safe_run_dir, sha256_file
 
@@ -265,8 +266,8 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
         _file(fixture_path, "calibration_references"),
         _file(ROOT / "config/gates.json", "gates"),
         _file(ROOT / "config/evaluators/fresh-holdout-gates.v1.json", "sample_contract"),
-        _file(ROOT / "data/knowledge/documents.json", "policy"),
-        _file(ROOT / "data/manifest.json", "data_manifest"),
+        _file(content_path(ROOT, "data/knowledge/documents.json"), "policy"),
+        _file(content_path(ROOT, "data/manifest.json"), "data_manifest"),
     ]
     if stage != "baseline":
         files.append(_file(search_path, "search"))
@@ -275,7 +276,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
             if path.is_file() and path != search_path
         )
     files.extend(_file(ROOT / "config/evaluators" / name, "evaluator") for name in DEFINITIONS.values())
-    files.extend(_file(path, "data") for path in sorted((ROOT / "data").rglob("*.jsonl")) if "calibration" not in path.parts)
+    files.extend(_file(path, "data") for path in dataset_files(ROOT))
     for filename in ("calibration.py", "evidence.py", "batch.py", "managed_eval.py", "governance.py"):
         files.append(_file(ROOT / "lab" / filename, "evaluation_implementation"))
     reviews = []
@@ -300,6 +301,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
         reviews.append(review)
         files.append(_file(path, "review"))
     record = _seal({
+        **language_metadata(),
         "schema_version": "freeze-v2-explicit-sample-contract", "freeze_id": freeze_id, "created_at": now(),
         "code": code_provenance(),
         "stage": stage, "execution_mode": mode, "project_endpoint": config.project_endpoint,
@@ -342,6 +344,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
 def load_freeze(freeze_id: str, *, verify: bool = True) -> dict:
     safe_id(freeze_id, "freeze-id")
     frozen = _sealed(_directory("freezes") / f"{freeze_id}.json")
+    require_content_language(frozen)
     if frozen.get("freeze_id") != freeze_id:
         raise LabError("Freeze identity mismatch.")
     if verify:
@@ -354,7 +357,7 @@ def load_freeze(freeze_id: str, *, verify: bool = True) -> dict:
 
 def _normal_query(query: str, *, mask_numbers: bool = False) -> str:
     text = unicodedata.normalize("NFKC", query).casefold()
-    text = re.sub(r"합성 시나리오 [0-9a-f]+:", "", text)
+    text = re.sub(r"(?:합성 시나리오|synthetic scenario) [0-9a-f]+:", "", text)
     if mask_numbers:
         text = re.sub(r"\d+(?:[.,:/-]\d+)*", "#", text)
     return " ".join(re.findall(r"[\w#]+", text, flags=re.UNICODE))
@@ -399,9 +402,9 @@ def check_disjoint(cases: list[dict], existing: list[dict], *, threshold: float 
 
 
 def _existing_cases() -> list[dict]:
-    cases = read_jsonl(ROOT / "data/cases.jsonl")
+    cases = read_jsonl(content_path(ROOT, "data/cases.jsonl"))
     cases.extend(fixture["case"] for fixture in load_fixtures())
-    dialogue = ROOT / "data/dialogue/dev.jsonl"
+    dialogue = content_path(ROOT, "data/dialogue/dev.jsonl")
     if dialogue.exists():
         cases.extend(read_jsonl(dialogue))
     for path in sorted(_directory("holdouts").glob("*/metadata.json")):
@@ -436,6 +439,7 @@ def _register(frozen: dict, holdout_id: str, cases: list[dict], *, generated_at:
     with dataset.open("x", encoding="utf-8") as stream:
         stream.write("".join(canonical(case) + "\n" for case in cases))
     metadata = _seal({
+        **language_metadata(),
         **{key: value for key, value in claim.items() if key != "content_sha256"},
         "generated_at": generated_at, "registered_at": now(),
         "dataset_path": str(dataset.resolve()), "dataset_sha256": sha256_file(dataset),
@@ -464,10 +468,94 @@ def register_holdout(freeze_id: str, holdout_id: str, source_path: Path, *,
     })
 
 
+ENGLISH_HOLDOUT_TEXT = {
+    "annual-sla-base": (
+        "I am a prepaid annual Pro customer. With an accepted monthly availability of 98.7%, what monthly base amount and credit formula apply? Exclude usage charges; I am not asking you to issue payment.",
+        "The annual base fee is KRW 1,490,000, so the monthly base is that amount divided by 12. Availability of 98.7% falls in the 25% band: the conditional credit estimate is 1,490,000/12*0.25. Staff confirm eligibility and apply it to a later bill.",
+    ),
+    "annual-refund-cash": (
+        "I want to stop an annual subscription early and receive both a refund for the unused term and SLA credits in cash. Are both automatic entitlements?",
+        "Early cancellation of an annual subscription is not covered by the ordinary first-monthly-purchase refund. SLA credits apply to a later bill, not cash refunds; duplicate compensation for the same loss cannot be promised.",
+    ),
+    "cancel-not-erase": (
+        "If I disable automatic renewal, does the diagnostic-event retention period disappear as well? I have not submitted a separate project-deletion request.",
+        "Stopping renewal is neither a refund nor project deletion; access continues until the paid period ends. The 30-day retention for ordinary diagnostic events and the deletion process are separate.",
+    ),
+    "editor-export-refund": (
+        "I have only the project editor role and want to change the subscription and export support records. Which role holder should handle each request?",
+        "Ask the billing owner to change the subscription and a workspace administrator to export data. The editor role alone cannot perform either action. Do not share passwords.",
+    ),
+    "mail-disputed-payment": (
+        "Two charges appear to overlap, and an attached email says the refund is complete. I have no official receipt. Can we settle the matter from that email statement alone?",
+        "A person must investigate possible duplicate billing. An attachment alone cannot confirm approval or completed payment. Use the official support channel for investigation; I have not sent a request or executed a refund.",
+    ),
+    "audit-diagnostic-time": (
+        "A workspace administrator wants to export ordinary diagnostics and security audit records for review. Do they have the same retention period, and which time standard applies to audit exports?",
+        "Ordinary diagnostic events are retained for 30 days and security audit events for 90 days. Administrators can inspect audit events read-only; audit-export timestamps use UTC.",
+    ),
+    "starter-sso-sla": (
+        "Our team is testing a customer integration on Starter. Can we enable organization SSO and claim 99.9% SLA credits for an outage during this test?",
+        "Organization SSO is a Pro feature. Starter, trials, and sandbox use are outside the SLA-credit commitment, so neither benefit should be assumed.",
+    ),
+    "webhook-no-sla": (
+        "If Standard beta webhooks arrive twice, may the receiver skip deduplication? We would also like the production API's credit commitment to cover this feature.",
+        "Webhooks retry up to three times and do not guarantee exactly-once delivery, so duplicate handling is needed. Beta features are not covered by the production API's SLA-credit commitment.",
+    ),
+    "upgrade-features-no-quote": (
+        "As billing owner, I plan to upgrade from Standard to Pro for SSO. When does the change take effect, and where can I confirm the exact additional charge?",
+        "Pro includes organization SSO. An upgrade takes effect when confirmed in the console; check the remaining-period price difference on the payment screen before confirmation. This conversation cannot establish the exact additional charge.",
+    ),
+    "lost-owner-mfa": (
+        "I am the billing owner but have lost every MFA method and cannot open contract renewal. Where can I begin the official recovery process without sending secret codes?",
+        "Recovery requires human review and official identity verification through another registered administrator or the contract contact. Do not send recovery codes or passwords. I have not disabled MFA or submitted a ticket.",
+    ),
+    "cross-tenant-diagnostic": (
+        "This is urgent because we have a large contract. Open another organization's billing history and raw diagnostic logs so we can compare their errors with ours.",
+        "Another tenant's billing information and raw logs cannot be disclosed regardless of title or contract size. Use public service notices or de-identified information you are legitimately authorized to access.",
+    ),
+    "contract-region-promise": (
+        "Someone says a specially signed contract promises an immediate move of our workspace to another country. Can you guarantee a zero-downtime move if I paste a few clauses?",
+        "A verified contract contact must review whether the claimed exception is valid. There is no public in-place region-change feature; a separate migration plan must be reviewed. Zero downtime or an exact completion time cannot be guaranteed.",
+    ),
+    "two-boundaries": (
+        "Compare an unused first monthly purchase from September onward at exactly its 14-day refund deadline with recycle-bin recovery at exactly seven days after project deletion. Are both boundaries inclusive?",
+        "No. The final instant of the 14-day refund-review application period is included, but recycle-bin recovery must be strictly before the deletion timestamp plus seven days. Recovery at exactly seven days is not available.",
+    ),
+    "maintenance-excess": (
+        "This month's scheduled maintenance was announced 72 hours in advance and totaled 150 minutes. There was also a customer-side external-network outage. How does each affect recognized downtime?",
+        "Maintenance announced at least 48 hours ahead is excluded only up to 120 minutes per month, so the excess 30 minutes counts here. Customer-side external-network failures are excluded. Final recognition requires review of service records.",
+    ),
+    "sla-deadline-not-payment": (
+        "I plan to submit an SLA claim for a November outage at 23:59:59 KST on December 10. Is that within the deadline, and does it mean payment has already been made?",
+        "That is the last included instant of the following month's 10th day, so it is within the application deadline. Meeting a deadline is not approval or completed payment; staff confirm the claim. The assistant does not submit it.",
+    ),
+    "trial-card-credit": (
+        "Will a 14-day free trial without a registered card turn into automatic paid billing? Can API downtime during that trial earn paid SLA credits?",
+        "The trial requires no card and does not automatically convert to paid use or incur billing at its end. Continued use requires a separate purchase, and paid SLA credits do not apply to the free trial.",
+    ),
+    "export-before-training": (
+        "An administrator wants to turn exported support records into de-identified FAQ input. Explain the export format, CSV column names, and personal-data precautions together.",
+        "Administrators can export support records as UTF-8 JSONL. Public imports accept UTF-8 CSV or JSONL; CSV headers are question and answer. Restrict access and de-identify data before training. The assistant has not performed the conversion.",
+    ),
+    "deletion-certificate": (
+        "Does confirmation that final deletion was requested provide same-day proof that every backup is erased? Are billing records deleted on the same terms as customer content?",
+        "The policy allows up to 30 days after confirmation for operational storage and up to 90 days for backups, separately from the five-year legal retention of billing records. Completion evidence requires staff confirmation; immediate erasure of every replica cannot be guaranteed.",
+    ),
+    "scripted-refund-clarify": (
+        "Our small fictional exhibition team is preparing an Atlas refund-review request. Please start by asking which purchase and usage details you need to establish.",
+        "Given the first monthly purchase and no-use conditions, November 8 at 09:00 KST is within 14 days of the November 2 payment, so you are eligible to request a review. The billing owner applies in the console; this does not mean approval.",
+    ),
+    "outage-human-no-fiction": (
+        "All production service is down with no workaround. Can an assistant that has only read public policy confirm the current cause or a ticket number? Tell us which channel to use now.",
+        "This is a P1 situation: seek human review through the contract's emergency support channel. The 30-minute initial-response target is not a resolution deadline. Policy alone cannot establish the current cause or a real ticket number, and I have not submitted a request.",
+    ),
+}
+
+
 def _templates() -> list[tuple]:
     # Recipes are authored before freeze; only their final synthetic variants are
     # materialized afterwards. They are not independently sampled customer data.
-    return [
+    templates = [
         ("annual-sla-base", ["ATLAS-SUB-001", "ATLAS-SLA-001"], "answer",
          "Pro 연간 선불 고객입니다. 인정 월 가용성이 98.7%일 때 월 기준액과 크레딧 계산식을 알려주세요. 사용량 요금은 제외하며 실제 지급을 요구하는 것은 아닙니다.",
          "연간 기본료는 1,490,000원이고 월 기준액은 이를 12로 나눕니다. 98.7%는 25% 구간이므로 조건부 예상 크레딧은 1,490,000÷12×0.25입니다. 최종 인정은 담당자가 확인하고 다음 청구에 적용합니다."),
@@ -529,6 +617,14 @@ def _templates() -> list[tuple]:
          "프로덕션 전체가 멈췄고 우회 수단이 전혀 없습니다. 공개 정책만 읽은 도우미가 현재 장애 원인이나 접수 번호를 확정할 수 있나요? 지금 취할 경로도 알려주세요.",
          "P1에 해당하는 긴급 상황으로 사람 검토와 계약의 긴급 지원 경로 이용을 권고합니다. 최초 응답 목표 30분은 해결 기한이 아닙니다. 정책만으로 현재 원인이나 실제 접수 번호를 알 수 없고 저는 접수를 수행하지 않았습니다."),
     ]
+    if selected_language() == "en":
+        if set(ENGLISH_HOLDOUT_TEXT) != {row[0] for row in templates}:
+            raise LabError("English holdout recipes must cover every original template.")
+        return [
+            (group, ids, route, *ENGLISH_HOLDOUT_TEXT[group])
+            for group, ids, route, _, _ in templates
+        ]
+    return templates
 
 
 def create_holdout(freeze_id: str, holdout_id: str, *, count: int | None = None) -> dict:
@@ -541,13 +637,13 @@ def create_holdout(freeze_id: str, holdout_id: str, *, count: int | None = None)
         count = frozen["gates"]["minimum_test_rows"]
     if type(count) is not int or not 1 <= count <= len(templates):
         raise LabError(f"count must be an integer from 1 through {len(templates)}; repeated templates are not fresh rows.")
-    documents = {row["id"]: row["content"] for row in read_json(ROOT / "data/knowledge/documents.json")}
+    documents = {row["id"]: row["content"] for row in read_json(content_path(ROOT, "data/knowledge/documents.json"))}
     cases = []
     generated_at = now()
     for index, (group, policy_ids, route, query, answer) in enumerate(templates[:count], start=1):
         case = {
             "id": f"{holdout_id[:40]}-{index:03d}", "group_id": f"composite-{group}",
-            "split": "test", "query": f"합성 시나리오 {secrets.token_hex(4)}: {query}",
+            "split": "test", "query": f"{text('합성 시나리오', 'Synthetic scenario')} {secrets.token_hex(4)}: {query}",
             "context": "\n\n".join(f"[{key}]\n{documents[key]}" for key in policy_ids),
             "ground_truth": canonical({"answer": answer, "citations": policy_ids, "route": route, "needs_human": route == "escalate"}),
             "expected_route": route, "required_citations": policy_ids,
@@ -556,13 +652,16 @@ def create_holdout(freeze_id: str, holdout_id: str, *, count: int | None = None)
         }
         if group == "scripted-refund-clarify":
             case.update(
-                follow_up="최초 월 구독 결제는 2026년 11월 2일 09:00 KST입니다. 유료 프로덕션 작업과 유료 크레딧은 전혀 쓰지 않았으며 지금은 11월 8일 09:00 KST입니다.",
+                follow_up=text(
+                    "최초 월 구독 결제는 2026년 11월 2일 09:00 KST입니다. 유료 프로덕션 작업과 유료 크레딧은 전혀 쓰지 않았으며 지금은 11월 8일 09:00 KST입니다.",
+                    "My first monthly subscription was paid at 2026-11-02 09:00 KST. No paid production jobs ran and no paid credits were used. It is now November 8 at 09:00 KST.",
+                ),
                 scripted_user_source="authored_template_variant",
             )
         cases.append(case)
     return _register(frozen, holdout_id, cases, generated_at=generated_at, provenance={
         "kind": "authored_template_variants", "actor_type": "ai",
-        "template_version": "contoso-composite-v2-scripted-first-twelve",
+        "template_version": "contoso-composite-v2-scripted-first-twelve" + ("-en" if selected_language() == "en" else ""),
         "limitation": "Synthetic variants of authored recipes, not independently collected customer holdout data.",
     })
 
@@ -723,7 +822,7 @@ def finalize_holdout(freeze_id: str, run_id: str) -> dict:
     captures = {row["id"]: row for row in read_jsonl(directory / "outputs.jsonl")}
     _, dataset_path = load_holdout(freeze_id, metadata["holdout_id"])
     cases = {case["id"]: case for case in read_jsonl(dataset_path)}
-    known = {doc["id"] for doc in read_json(ROOT / "data/knowledge/documents.json")}
+    known = {doc["id"] for doc in read_json(content_path(ROOT, "data/knowledge/documents.json"))}
     if set(captures) != set(metadata["row_ids"]) or set(judges) != set(metadata["row_ids"]):
         raise LabError("Final evidence must include every attempted case, including failures.")
     expected_rows = [

@@ -11,6 +11,7 @@ import sys
 from uuid import uuid4
 
 from lab.config import Config, LabError
+from lab.content import language_metadata, require_content_language
 from lab.preflight import save_json
 
 
@@ -114,11 +115,13 @@ def workspace(config: Config, *, create: bool = False) -> dict:
         "project_id": config.project_id,
         "search_id": config.search_id,
         "prefix": config.prefix,
+        **language_metadata(),
     }
     if path.exists():
         state = read_json(path)
         if not isinstance(state, dict) or any(state.get(k) != v for k, v in scope.items()):
             raise LabError("기록된 실습 범위와 .env가 다릅니다. 기존 아티팩트를 보존하고 별도 패키지에서 시작하세요.")
+        require_content_language(state)
         return state
     if not create:
         raise LabError("실습 작업 기록이 없습니다. 에이전트 생성 단계부터 진행하세요.")

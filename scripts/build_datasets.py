@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 import unicodedata
@@ -48,6 +49,7 @@ SOURCE_PATHS = (
     "prompts/tuning-system.txt",
     "prompts/rubric.txt",
 )
+LANGUAGES = ("ko", "en")
 
 
 class DatasetError(ValueError):
@@ -107,7 +109,18 @@ def require_string_list(value: Any, label: str, *, nonempty: bool = True) -> Non
     require(len(value) == len(set(value)), f"{label}: 중복 항목이 있습니다")
 
 
-def load_documents(path: Path) -> dict[str, dict[str, str]]:
+def require_language_text(value: str, label: str, language: str) -> None:
+    require(language in LANGUAGES, f"Unsupported content language: {language}")
+    if language == "en":
+        require(
+            re.search(r"[A-Za-z]", value) is not None and re.search(r"[가-힣]", value) is None,
+            f"{label}: English content is required; do not mix the Korean corpus into this dataset",
+        )
+    else:
+        require(re.search(r"[가-힣]", value) is not None, f"{label}: 한국어가 필요합니다")
+
+
+def load_documents(path: Path, *, language: str = "ko") -> dict[str, dict[str, str]]:
     source = parse_json(path.read_text(encoding="utf-8"), str(path))
     require(isinstance(source, list), "정책 파일의 최상위 값은 배열이어야 합니다")
     require(len(source) >= 4, "서로 다른 정책 문서가 최소 4개 필요합니다")
@@ -131,10 +144,9 @@ def load_documents(path: Path) -> dict[str, dict[str, str]]:
             effective.isoformat() == document["effective_date"],
             f"{doc_id}: 발효일은 YYYY-MM-DD 형식이어야 합니다",
         )
-        require(
-            re.search(r"[가-힣]", document["content"]) is not None,
-            f"{doc_id}: 한국어 정책이 필요합니다",
-        )
+        require_language_text(document["content"], doc_id, language)
+        if language == "en":
+            require_language_text(document["title"], f"{doc_id} title", language)
         documents[doc_id] = document
     return documents
 
@@ -170,11 +182,11 @@ def context_document_ids(
     return doc_ids
 
 
-def validate_output(output: Any, allowed_citations: set[str]) -> None:
+def validate_output(output: Any, allowed_citations: set[str], *, language: str = "ko") -> None:
     require(isinstance(output, dict), "모범 응답은 JSON 객체여야 합니다")
     require(set(output) == OUTPUT_FIELDS, "모범 응답의 필드가 출력 계약과 다릅니다")
     require_text(output["answer"], "answer")
-    require(re.search(r"[가-힣]", output["answer"]) is not None, "답변은 한국어여야 합니다")
+    require_language_text(output["answer"], "answer", language)
     require_string_list(output["citations"], "citations", nonempty=False)
     require(
         set(output["citations"]) <= allowed_citations,
@@ -193,8 +205,9 @@ def normalize_query(query: str) -> str:
 
 
 def validate_dataset(
-    rows: list[dict[str, Any]], documents: dict[str, dict[str, str]]
+    rows: list[dict[str, Any]], documents: dict[str, dict[str, str]], *, language: str = "ko",
 ) -> dict[str, Any]:
+    require(language in LANGUAGES, f"Unsupported content language: {language}")
     require(isinstance(rows, list) and bool(rows), "사례 배열이 비어 있습니다")
     seen_ids: set[str] = set()
     seen_queries: set[str] = set()
@@ -210,6 +223,9 @@ def validate_dataset(
         )
         for field in ROW_FIELDS - {"required_citations", "tags"}:
             require_text(row[field], field)
+        if language == "en":
+            for field in ("query", "context"):
+                require_language_text(row[field], field, language)
         case_id = row["id"]
         split = row["split"]
         require(split in SPLITS, f"{case_id}: 잘못된 split")
@@ -240,7 +256,7 @@ def validate_dataset(
             f"{case_id}: 필수 인용 문서가 문맥에 없습니다",
         )
         output = parse_json(row["ground_truth"], f"{case_id} ground_truth")
-        validate_output(output, set(context_ids))
+        validate_output(output, set(context_ids), language=language)
         require(output["route"] == row["expected_route"], f"{case_id}: 분류가 정답과 다릅니다")
         require(
             set(output["citations"]) == set(row["required_citations"]),
@@ -335,12 +351,19 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def build_artifacts(root: Path = ROOT) -> dict[str, bytes]:
+def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, bytes]:
     """검증된 생성물의 상대 경로와 바이트를 반환하며 파일을 쓰지 않는다."""
-    documents = load_documents(root / "data/knowledge/documents.json")
-    rows = read_jsonl(root / "data/cases.jsonl")
-    audit = validate_dataset(rows, documents)
-    system_prompt = (root / "prompts/tuning-system.txt").read_text(encoding="utf-8").strip()
+    require(language in LANGUAGES, f"Unsupported content language: {language}")
+    data_prefix = "data/en" if language == "en" else "data"
+    prompt_prefix = "prompts/en" if language == "en" else "prompts"
+    source_paths = tuple(
+        path.replace("data/", data_prefix + "/", 1).replace("prompts/", prompt_prefix + "/", 1)
+        for path in SOURCE_PATHS
+    )
+    documents = load_documents(root / data_prefix / "knowledge/documents.json", language=language)
+    rows = read_jsonl(root / data_prefix / "cases.jsonl")
+    audit = validate_dataset(rows, documents, language=language)
+    system_prompt = (root / prompt_prefix / "tuning-system.txt").read_text(encoding="utf-8").strip()
     require_text(system_prompt, "학습 system 프롬프트")
     split_rows = {
         split: sorted((row for row in rows if row["split"] == split), key=lambda row: row["id"])
@@ -359,19 +382,23 @@ def build_artifacts(root: Path = ROOT) -> dict[str, bytes]:
         }
 
     for split in SPLITS:
-        add(f"data/splits/{split}.jsonl", split_rows[split], split, "로컬 평가 사례")
+        add(
+            f"{data_prefix}/splits/{split}.jsonl", split_rows[split], split,
+            "Local evaluation cases" if language == "en" else "로컬 평가 사례",
+        )
     for split in ("train", "validation"):
         add(
-            f"data/tuning/sft-{split}.jsonl",
+            f"{data_prefix}/tuning/sft-{split}.jsonl",
             [sft_record(row, system_prompt) for row in split_rows[split]],
             split,
-            "지도 미세조정용 messages",
+            "Supervised fine-tuning messages" if language == "en" else "지도 미세조정용 messages",
         )
     add(
-        "data/optimizer/dev.jsonl",
+        f"{data_prefix}/optimizer/dev.jsonl",
         [optimizer_record(row) for row in split_rows["dev"]],
         "dev",
-        "프롬프트 에이전트 Agent Optimizer 포털 평가 JSONL",
+        "Prompt-agent Agent Optimizer portal evaluation JSONL"
+        if language == "en" else "프롬프트 에이전트 Agent Optimizer 포털 평가 JSONL",
     )
 
     restricted = [path for path in artifacts if "/tuning/" in path or "/optimizer/" in path]
@@ -387,12 +414,12 @@ def build_artifacts(root: Path = ROOT) -> dict[str, bytes]:
 
     manifest = {
         "schema_version": 1,
-        "dataset": "contoso-atlas-cloud-ko-v1",
+        "dataset": f"contoso-atlas-cloud-{language}-v1",
         "synthetic": True,
         "master_rows": len(rows),
         "documents": len(documents),
         **audit,
-        "sources_sha256": {path: sha256((root / path).read_bytes()) for path in SOURCE_PATHS},
+        "sources_sha256": {path: sha256((root / path).read_bytes()) for path in source_paths},
         "exports": export_info,
         "holdout_checks": {
             "test_ids_in_tuning_or_optimizer": 0,
@@ -419,7 +446,15 @@ def build_artifacts(root: Path = ROOT) -> dict[str, bytes]:
             "paraphrase_review": "상황·판단 과제별 수동 분리; 식별자 검사만으로 의미 중복을 보증하지 않음",
         },
     }
-    artifacts["data/manifest.json"] = (
+    if language == "en":
+        manifest.update(language="en", localization_of="contoso-atlas-cloud-ko-v1")
+        manifest["provenance"].update(
+            authoring="AI-authored English localization of synthetic policies, questions and reference answers; not human-reviewed.",
+            candidate_prompt="Authored comparison candidate, not an official optimization result.",
+            performance_metrics="Not included; actual evaluation must be executed separately.",
+            paraphrase_review="Scenario groups are preserved; identifier and lexical checks do not prove semantic independence.",
+        )
+    artifacts[f"{data_prefix}/manifest.json"] = (
         json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n"
     ).encode("utf-8")
     return artifacts
@@ -428,9 +463,10 @@ def build_artifacts(root: Path = ROOT) -> dict[str, bytes]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="쓰지 않고 현재 생성물과 원본의 일치 여부 검사")
+    parser.add_argument("--language", choices=LANGUAGES, default=os.environ.get("LAB_LANGUAGE", "ko"))
     args = parser.parse_args(argv)
     try:
-        artifacts = build_artifacts()
+        artifacts = build_artifacts(language=args.language)
         mismatches = []
         for relative, data in artifacts.items():
             path = ROOT / relative
@@ -444,10 +480,15 @@ def main(argv: list[str] | None = None) -> int:
             print("생성물이 없거나 오래되었습니다:\n" + "\n".join(mismatches), file=sys.stderr)
             print("python3 -B scripts/build_datasets.py 로 다시 생성하세요.", file=sys.stderr)
             return 1
-        manifest = parse_json(artifacts["data/manifest.json"].decode("utf-8"))
+        manifest_path = "data/en/manifest.json" if args.language == "en" else "data/manifest.json"
+        manifest = parse_json(artifacts[manifest_path].decode("utf-8"))
         counts = ", ".join(f"{split}={manifest['counts'][split]}" for split in SPLITS)
-        action = "일치 검사" if args.check else "생성"
-        print(f"{action} 완료: {counts}; 정책 {manifest['documents']}개; 생성물 {len(artifacts)}개")
+        if args.language == "en":
+            action = "Consistency check" if args.check else "Generation"
+            print(f"{action} complete: {counts}; policies={manifest['documents']}; artifacts={len(artifacts)}")
+        else:
+            action = "일치 검사" if args.check else "생성"
+            print(f"{action} 완료: {counts}; 정책 {manifest['documents']}개; 생성물 {len(artifacts)}개")
         return 0
     except (DatasetError, OSError) as exc:
         print(f"데이터 오류: {exc}", file=sys.stderr)

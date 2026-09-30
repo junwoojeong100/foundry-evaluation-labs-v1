@@ -120,7 +120,7 @@
       <article id="guide-start" class="guide-content" lang="en" aria-label="Operator guide · a dedicated NCUS environment and safe resumption">
         <h1 id="운영자-안내-새-ncus-환경과-안전한-재개">Operator guide · a dedicated NCUS environment and safe resumption</h1>
 <p><a href="index.html#environment">Back to the participant path</a> · <a href="../infra/README.md">Infrastructure contract (Korean)</a> · <a href="verification.html">Verification status</a></p>
-<p><strong>This is a one-time preparation guide for operators, before the participant session.</strong> Reuse the dedicated North Central US (NCUS) environment already created for this lab after checking its original ownership manifest and current authorization. A six-step guide does not require redeployment. Run the new-environment procedure below <strong>only when no lab environment exists</strong>. Do not adopt unrelated existing/shared accounts or resources. Put identifying values only in private plan files.</p>
+<p><strong>Prepare a dedicated English environment once, before the participant session.</strong> The first English run starts with a new North Central US (NCUS) resource group and new supporting resources. Do not reuse the Korean environment or its artifacts as an English rehearsal. If an English environment already exists, check its own ownership manifest and current authorization rather than redeploying. Do not adopt unrelated existing/shared resources. Put identifying values only in private plan files.</p>
 <p><strong>What you will explore and why:</strong> Connect Azure identity, resource scope, declarative deployment, and ownership records. The ability to click Create is not the same as authorization to use that environment. Keeping these separate makes results and costs traceable. A1–A4 establish identity and the plan; only A5 applies approved infrastructure. A6 connects the result to the participant's runtime.</p>
 <table>
 <thead>
@@ -150,10 +150,11 @@
 </table>
 <p>See <a href="index.html#cli-basics">participant step 02</a> for CLI notation and virtual environments, and <a href="index.html#portal-models">the model-deployment screenshot</a> for portal locations. Screenshots are read-only references from the existing environment, not instructions to repeat setup.</p>
 <blockquote>
-<p><strong>Observed state and recovery sequence</strong></p>
+<p><strong>Historical Korean rehearsal, not evidence of this English run</strong></p>
 <p>Following draft validation, actual responses exposed a retired-model rejection, concurrent project/model creation conflict, and missing monitoring-connection metadata. These were resolved. ARM <code>Succeeded</code> and 25 ownership records were confirmed in the same new NCUS resource group. Before generating model responses, gpt-4.1-mini / 2025-04-14 / Standard was explicitly selected, without switching regions or reusing existing resources. The <a href="verification.html">verification record</a> distinguishes resource creation, data-plane execution, and quality outcomes.</p>
 </blockquote>
 <h2 id="scope">Approval, ownership, and readiness are different states</h2>
+<p>The table below describes the earlier rehearsal's scope, not transferable authorization. The English rehearsal has its own private, scope-bound approval and finite operating limits. Every participant needs authorization for their actual account, resources, processing locations, and costs.</p>
 <table>
 <thead>
 <tr>
@@ -245,11 +246,11 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <p><strong>Purpose:</strong> Fix resource names, models, capacity, processing scope, and ownership markers before remote changes.</p>
 <p><strong>Your task:</strong> Run this only for an environment being prepared for the first time. This standard-library path does not contact Azure.</p>
 <p><strong>Run:</strong></p>
-<pre><code class="language-bash">python3 -S -m lab.bootstrap plan --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --tenant &quot;$AZURE_TENANT_ID&quot; --expected-user &quot;$EXPECTED_AZURE_USER&quot; --environment lab-training --agent-sku Standard --root .lab --location northcentralus
+<pre><code class="language-bash">python3 -S -m lab.bootstrap plan --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --tenant &quot;$AZURE_TENANT_ID&quot; --expected-user &quot;$EXPECTED_AZURE_USER&quot; --environment lab-training-en --agent-sku Standard --root .lab --location northcentralus
 </code></pre>
 <p><strong>Command explained:</strong> <code>plan</code> <strong>creates local files</strong>. <code>--subscription</code>, <code>--tenant</code>, and <code>--expected-user</code> fix the identity to verify; <code>--environment</code> and <code>--root</code> locate the private plan; <code>--location</code> fixes the allowed region. <code>--agent-sku Standard</code> selects the base agent deployment type, not the Judge/planner/embedding SKUs. The <code>-S</code> path needs no SDK and performs no remote creation or billable model call.</p>
-<p>Use an environment name such as <code>lab-training</code> that <strong>starts with a lowercase letter</strong>. A name starting only with date digits fails current validation. Environment and resource-group names are different fields. Do not arbitrarily rename an existing resource group or plan to silence an error.</p>
-<p><strong>Completion signal:</strong> <code>plan_status: CREATED_LOCAL_ONLY</code>, <code>mutations_performed: false</code>. By default, <code>.lab/lab-training/</code> contains the following.</p>
+<p>Use an environment name such as <code>lab-training-en</code> that <strong>starts with a lowercase letter</strong>. A name starting only with date digits fails current validation. Environment and resource-group names are different fields. Do not arbitrarily rename an existing resource group or plan to silence an error.</p>
+<p><strong>Completion signal:</strong> <code>plan_status: CREATED_LOCAL_ONLY</code>, <code>mutations_performed: false</code>. By default, <code>.lab/lab-training-en/</code> contains the following.</p>
 <p>The documented candidate for a new agent/SFT base is <strong>gpt-4.1-mini / 2025-04-14 / Standard</strong>. Inspect the actual model/version in the output. Do not apply an older plan containing gpt-4o-mini; prepare a new plan instead. <code>--agent-sku</code> selects the SKU, not a workaround for changing model name/version.</p>
 <table>
 <thead>
@@ -292,6 +293,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <p>Planning does not create <code>.env</code>. It is generated only after full deployment and ownership verification. Do not copy the private directory into a customer ZIP.</p>
 <p><strong>Errors/recovery:</strong> If the directory already exists, find the original plan rather than overwriting it. Do not resolve resource collisions by deleting an existing group or copying tags.</p>
 <p><strong>Resume:</strong> Use the same <code>config.json</code> for all later commands. Changes to model defaults, names, capacity, or retention need a separately approved plan that preserves the original state.</p>
+<p><strong>Resource names:</strong> Let bootstrap generate its owned resource names. The current validator requires the <code>rg-foundry-eval-v11-&lt;date&gt;-&lt;suffix&gt;</code> resource-group pattern; an arbitrary <code>rg-foundry-eval-en-...</code> override is rejected before Azure is called. The English environment directory, corpus selection, and agent metadata distinguish the language; a resource name alone does not.</p>
 <p><strong>Next:</strong> A3.</p>
 <h4 id="sft-base">Optional: plan a base deployment compatible with later SFT</h4>
 <p>The new bootstrap agent candidate is <strong>gpt-4.1-mini / 2025-04-14 / Standard</strong>, and SFT uses the same base family/version. Explicit <code>--agent-sku Standard</code> fixes that SKU; the default requested ARM capacity is 20. Keep the approved role models for Judge, planner, and embeddings.</p>
@@ -307,7 +309,7 @@ python3 -S -m lab.bootstrap plan --subscription &quot;$AZURE_SUBSCRIPTION_ID&quo
 <p><strong>Your task:</strong> Set the first line to your actual directory. Use the original path if your plan is elsewhere.</p>
 <p><strong>SDK-free does not mean offline.</strong> <code>plan</code>, help, and local schema inspection do not call Azure. <code>preflight</code> and <code>status</code> are <strong>read-only Azure queries</strong> requiring CLI sign-in and network access. <code>-S</code> does not make every bootstrap command offline or eliminate existing resource costs.</p>
 <p><strong>Run:</strong></p>
-<pre><code class="language-bash">export LAB_ENV_DIR=&quot;$PWD/.lab/lab-training&quot;
+<pre><code class="language-bash">export LAB_ENV_DIR=&quot;$PWD/.lab/lab-training-en&quot;
 export LAB_BOOTSTRAP_CONFIG=&quot;$LAB_ENV_DIR/config.json&quot;
 export LAB_COST_APPROVAL_FILE=&quot;$LAB_ENV_DIR/approval.json&quot;
 python3 -S -m lab.bootstrap preflight --config &quot;$LAB_BOOTSTRAP_CONFIG&quot;
@@ -469,18 +471,19 @@ python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --
 <p><strong>Purpose:</strong> Use the exact newly created deployment, Search, and monitoring endpoints, and keep evidence separate by environment.</p>
 <p><strong>Your task:</strong> Read the private <code>.env</code> and compare deployment names/endpoints with the actual manifest. Do not substitute <code>.env.example</code> placeholders or old workshop values. Do not execute <code>.env</code> as shell code.</p>
 <p><strong>Run:</strong></p>
-<pre><code class="language-bash">export LAB_ENV_FILE=&quot;$LAB_ENV_DIR/.env&quot;
+<pre><code class="language-bash">export LAB_LANGUAGE=en
+export LAB_ENV_FILE=&quot;$LAB_ENV_DIR/.env&quot;
 export LAB_ARTIFACTS_DIR=&quot;$LAB_ENV_DIR/artifacts&quot;
 python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 python -m lab validate
 </code></pre>
-<p><strong>Commands explained:</strong> <code>LAB_ENV_FILE</code> points to the generated <code>.env</code>; <code>LAB_ARTIFACTS_DIR</code> selects the same environment's results directory. Runtime <code>preflight</code> queries the identity/deployments the SDK will use and records <code>preflight.json</code>; <code>lab validate</code> locally checks the 100 source cases and generated data. Neither evaluates quality nor tests the first model response.</p>
+<p><strong>Commands explained:</strong> <code>LAB_LANGUAGE=en</code> selects the independent English corpus and must be set before Python starts. <code>LAB_ENV_FILE</code> points to the generated <code>.env</code>; <code>LAB_ARTIFACTS_DIR</code> selects the same environment's results directory. Runtime <code>preflight</code> queries the identity/deployments the SDK will use and records <code>preflight.json</code>; <code>lab validate</code> locally checks the 100 source cases and generated data. Neither evaluates quality nor tests the first model response.</p>
 <p>Set <code>LAB_ARTIFACTS_DIR</code> in each Python process's environment <strong>before it starts</strong>. Restore exports in new terminals/processes. Do not change the path after importing modules and mix evidence across environments.</p>
 <p><strong>Completion signal:</strong> <code>preflight: PASS</code>, all 100 cases intact, and the correct actual environment. <code>.env</code> records <code>EMBEDDING_DEPLOYMENT</code>, <code>LAB_ARTIFACTS_DIR</code>, <code>LAB_BOOTSTRAP_CONFIG</code> and <code>BOOTSTRAP_CONFIG</code> pointing to the same plan, the initial <code>LAB_COST_APPROVAL_FILE</code>, and new monitoring resource IDs. No keys/passwords are required.</p>
 <p>After bootstrap, main-CLI <code>--confirm</code> operations and SFT deployment use <code>BOOTSTRAP_CONFIG</code> to verify completed bootstrap ownership and the actual new group/account. Ownership does not grant current task authorization; validate private approval and call/job limits separately. Do not bypass with old environment values or fabricated hashes/receipts.</p>
 <p><strong>Errors/recovery:</strong> If code forces out-of-repository artifact paths through <code>.relative_to(ROOT)</code>, use the <code>artifact_reference</code> contract instead. Do not hide the problem by copying private files into the repository.</p>
 <p><strong>Resume:</strong> Restore the same <code>.venv</code> and variables after reopening a terminal. Do not restart from package installation, redeployment, or resource-group creation.</p>
-<p><strong>Participant handoff:</strong> Supply the actual account/tenant/subscription, private <code>LAB_ENV_DIR</code> and current <code>LAB_COST_APPROVAL_FILE</code> paths, current authorization scope, new <code>APPLICATIONINSIGHTS_RESOURCE_ID</code>, and retention/cost-check responsibilities. Never publish <code>.env</code>, manifests, or approval files in public channels/packages. Give participants accessible actual paths, not example directory names.</p>
+<p><strong>Participant handoff:</strong> Supply the actual account/tenant/subscription and explicitly require <code>LAB_LANGUAGE=en</code>, private <code>LAB_ENV_DIR</code> and current <code>LAB_COST_APPROVAL_FILE</code> paths, current authorization scope, new <code>APPLICATIONINSIGHTS_RESOURCE_ID</code>, and retention/cost-check responsibilities. Never publish <code>.env</code>, manifests, or approval files in public channels/packages. Give participants accessible actual paths, not example directory names.</p>
 <p><strong>Next:</strong> Participants set these values once in <a href="index.html#prepare">step 02</a>, then continue through 03–06 in the same environment. The operator checks prompt-agent <strong>Agent Optimizer</strong> access, actual optimizer/judge deployments, and the one-candidate setting beforehand. Do not make Prompt Optimizer, separate managed evaluations, or SFT extra prerequisites. Do not precreate participant responses/evaluation results or count connectivity checks as quality evaluation.</p>
 <h2 id="rbac">Which identity needs which permissions?</h2>
 <p>This is a <strong>plan for new resources only</strong>. Check actual role definitions and API operations first. Reading the table is not evidence that roles were assigned.</p>

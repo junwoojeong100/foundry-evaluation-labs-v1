@@ -7,6 +7,7 @@ import subprocess
 import sys
 
 from lab.config import LabError, load_config
+from lab.content import content_path, selected_language, text
 from lab.files import ARTIFACTS, ROOT, read_json, safe_run_dir
 from lab.preflight import run_preflight, save_json
 
@@ -55,7 +56,10 @@ def parser() -> argparse.ArgumentParser:
     compare.add_argument("--out", type=Path, default=ARTIFACTS / "decision.json")
     iq = commands.add_parser("iq", help="Create or probe a real Search knowledge base")
     iq.add_argument("action", choices=("prepare", "probe", "vectors"))
-    iq.add_argument("--query", default="Contoso Atlas Cloud의 환불 조건을 알려주세요.")
+    iq.add_argument("--query", default=text(
+        "Contoso Atlas Cloud의 환불 조건을 알려주세요.",
+        "What are the refund conditions for Contoso Atlas Cloud?",
+    ))
     iq.add_argument("--confirm", action="store_true")
     evaluate = commands.add_parser("evaluate", help="Submit or inspect a managed Foundry evaluation")
     evaluate.add_argument("action", choices=("submit", "collect"))
@@ -66,6 +70,7 @@ def parser() -> argparse.ArgumentParser:
     calibrate = judge_actions.add_parser("calibrate")
     calibrate.add_argument("--calibration-id", required=True)
     calibrate.add_argument("--fixtures", type=Path)
+    calibrate.add_argument("--interval-seconds", type=float, default=0, help="Explicit 0–120s pacing between calibration cases; not a retry")
     calibrate.add_argument("--confirm", action="store_true")
     judge_score = judge_actions.add_parser("score")
     judge_score.add_argument("--run-id", required=True)
@@ -128,7 +133,10 @@ def parser() -> argparse.ArgumentParser:
 
 def require_confirmation(args: argparse.Namespace) -> None:
     if not args.confirm:
-        raise LabError("클라우드 데이터 전송·비용·변경 단계입니다. 대상을 확인한 후 --confirm을 추가하세요.")
+        raise LabError(text(
+            "클라우드 데이터 전송·비용·변경 단계입니다. 대상을 확인한 후 --confirm을 추가하세요.",
+            "This step can transfer data, incur costs, or change cloud resources. Verify the target and add --confirm.",
+        ))
 
 
 def execute(args: argparse.Namespace) -> int:
@@ -194,7 +202,7 @@ def execute(args: argparse.Namespace) -> int:
         return 0
     if args.command == "validate":
         return subprocess.run(
-            [sys.executable, str(ROOT / "scripts/build_datasets.py"), "--check"],
+            [sys.executable, str(ROOT / "scripts/build_datasets.py"), "--check", "--language", selected_language()],
             cwd=ROOT, check=False,
         ).returncode
     if args.command == "score":
@@ -270,7 +278,10 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
 
         require_confirmation(args)
         result = (
-            run_calibration(config, args.calibration_id, confirm=True, fixtures_path=args.fixtures)
+            run_calibration(
+                config, args.calibration_id, confirm=True, fixtures_path=args.fixtures,
+                interval_seconds=args.interval_seconds,
+            )
             if args.judge_action == "calibrate"
             else score_captured_run(config, args.run_id, confirm=True, interval_seconds=args.interval_seconds)
         )
@@ -292,8 +303,8 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
 
         require_confirmation(args)
         default_prompts = {
-            "baseline": ROOT / "prompts/baseline.txt",
-            "iq": ROOT / "prompts/baseline.txt",
+            "baseline": content_path(ROOT, "prompts/baseline.txt"),
+            "iq": content_path(ROOT, "prompts/baseline.txt"),
             "optimized": ARTIFACTS / "optimizer/selected-prompt.txt",
             "tuned": ARTIFACTS / "optimizer/selected-prompt.txt",
         }
@@ -343,8 +354,8 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = parser().parse_args(argv)
     try:
+        args = parser().parse_args(argv)
         return execute(args)
     except (LabError, ValueError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

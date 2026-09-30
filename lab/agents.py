@@ -11,6 +11,7 @@ from azure.core.exceptions import ResourceNotFoundError
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
+from lab.content import content_path, language_metadata, require_content_language
 from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, record_created, safe_run_dir, sha256_file, workspace, write_once_json
 from lab.preflight import model_snapshot, save_json
 
@@ -20,6 +21,7 @@ def smoke_model(config: Config, run_id: str) -> dict:
     path = directory / "model-smoke.json"
     if path.exists():
         previous = read_json(path)
+        require_content_language(previous)
         if previous.get("project_endpoint") != config.project_endpoint or previous.get("deployment") != config.model:
             raise LabError("기존 model smoke의 환경/배포가 다릅니다.")
         if previous.get("status") != "completed":
@@ -27,6 +29,7 @@ def smoke_model(config: Config, run_id: str) -> dict:
         return previous
     snapshot = model_snapshot(config, config.model)
     record = {
+        **language_metadata(),
         "kind": "LIVE_MODEL_SMOKE_NOT_QUALITY_EVALUATION", "status": "submitting",
         "started_at": datetime.now(timezone.utc).isoformat(),
         "code": code_provenance(),
@@ -103,6 +106,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
                     tools=tools,
                 ),
                 metadata={
+                    **language_metadata(),
                     "lab": "foundry-learning-loop-v1.1",
                     "workspace": state["workspace_id"],
                     "stage": stage,
@@ -110,6 +114,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
                 description=f"Contoso synthetic workshop candidate: {stage}",
             )
             record = {
+                **language_metadata(),
                 "id": agent.id,
                 "name": agent.name,
                 "version": agent.version,
@@ -119,8 +124,8 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
                 "model_snapshot": deployment,
                 "prompt_file": str(prompt.resolve().relative_to(ROOT)) if prompt.resolve().is_relative_to(ROOT) else str(prompt.resolve()),
                 "prompt_sha256": sha256_file(prompt),
-                "prompt_source": "repository-authored-example" if prompt.resolve() == (ROOT / "prompts/candidate.txt").resolve() else "operator-provided-local-file",
-                "knowledge_sha256": sha256_file(ROOT / "data/knowledge/documents.json") if tools else hashlib.sha256(b"").hexdigest(),
+                "prompt_source": "repository-authored-example" if prompt.resolve() == content_path(ROOT, "prompts/candidate.txt").resolve() else "operator-provided-local-file",
+                "knowledge_sha256": sha256_file(content_path(ROOT, "data/knowledge/documents.json")) if tools else hashlib.sha256(b"").hexdigest(),
                 "workspace_id": state["workspace_id"],
                 "code": code_provenance(),
             }
@@ -137,6 +142,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
 def load_agent(config: Config, stage: str) -> dict:
     state = workspace(config)
     record = read_json(ARTIFACTS / "agents" / f"{stage}.json")
+    require_content_language(record)
     if (
         record.get("workspace_id") != state["workspace_id"]
         or record.get("project_endpoint") != config.project_endpoint

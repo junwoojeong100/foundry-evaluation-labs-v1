@@ -1,0 +1,204 @@
+{
+  "counts": {
+    "dev": 12,
+    "test": 20,
+    "train": 56,
+    "validation": 12
+  },
+  "critical_counts": {
+    "dev": 4,
+    "test": 9,
+    "train": 13,
+    "validation": 3
+  },
+  "dataset": "contoso-atlas-cloud-en-v1",
+  "documents": 8,
+  "exports": {
+    "data/en/optimizer/dev.jsonl": {
+      "purpose": "Prompt-agent Agent Optimizer portal evaluation JSONL",
+      "rows": 12,
+      "sha256": "db26e45288afc98a6cc48f91e8862edbf8346e793007970f931d968fd4647a3f",
+      "source_splits": [
+        "dev"
+      ]
+    },
+    "data/en/splits/dev.jsonl": {
+      "purpose": "Local evaluation cases",
+      "rows": 12,
+      "sha256": "dc0142e2d662dfc5886ac062ca8c4778b01f21a19279f0d95b7c88ee9a26e976",
+      "source_splits": [
+        "dev"
+      ]
+    },
+    "data/en/splits/test.jsonl": {
+      "purpose": "Local evaluation cases",
+      "rows": 20,
+      "sha256": "14e9c9b7f0cb37f55008a1cd7b8430ec59a9c8ca35216a8f4c6b31ca2c1ac71d",
+      "source_splits": [
+        "test"
+      ]
+    },
+    "data/en/splits/train.jsonl": {
+      "purpose": "Local evaluation cases",
+      "rows": 56,
+      "sha256": "b59c45b241d8a4748f409563788e4c580a3113af76148c9779c34316f723a302",
+      "source_splits": [
+        "train"
+      ]
+    },
+    "data/en/splits/validation.jsonl": {
+      "purpose": "Local evaluation cases",
+      "rows": 12,
+      "sha256": "9448badff1956f21d56d367e54d3ef1d230d98afcf6c96824bb78623b3c7817f",
+      "source_splits": [
+        "validation"
+      ]
+    },
+    "data/en/tuning/sft-train.jsonl": {
+      "purpose": "Supervised fine-tuning messages",
+      "rows": 56,
+      "sha256": "142011b6965b8b868742e2b74837b7a1afb88c5e1529a6ef1ba41cb8c24f5881",
+      "source_splits": [
+        "train"
+      ]
+    },
+    "data/en/tuning/sft-validation.jsonl": {
+      "purpose": "Supervised fine-tuning messages",
+      "rows": 12,
+      "sha256": "031955ef27a15f0eeecd1bb782cf85071f605380d7082d4d4ed3a45ba0b6e1de",
+      "source_splits": [
+        "validation"
+      ]
+    }
+  },
+  "group_counts": {
+    "dev": 12,
+    "test": 20,
+    "train": 54,
+    "validation": 12
+  },
+  "holdout_checks": {
+    "optimizer_source_splits": [
+      "dev"
+    ],
+    "sft_source_splits": [
+      "train",
+      "validation"
+    ],
+    "test_ids_in_tuning_or_optimizer": 0,
+    "test_queries_in_tuning_or_optimizer": 0
+  },
+  "language": "en",
+  "localization_of": "contoso-atlas-cloud-ko-v1",
+  "master_rows": 100,
+  "provenance": {
+    "authoring": "AI-authored English localization of synthetic policies, questions and reference answers; not human-reviewed.",
+    "candidate_prompt": "Authored comparison candidate, not an official optimization result.",
+    "network_or_model_calls": false,
+    "optimizer_export": {
+      "agent_input_columns": [
+        "query"
+      ],
+      "authored_locally": true,
+      "column_mapping_supported": false,
+      "columns": [
+        "query",
+        "ground_truth",
+        "context"
+      ],
+      "evaluator_only_columns": [
+        "ground_truth",
+        "context"
+      ],
+      "lane": "prompt-agent-portal",
+      "query_includes_reference_context": false,
+      "schema_reference": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites",
+      "service": "Agent Optimizer"
+    },
+    "paraphrase_review": "Scenario groups are preserved; identifier and lexical checks do not prove semantic independence.",
+    "performance_metrics": "Not included; actual evaluation must be executed separately."
+  },
+  "route_counts": {
+    "dev": {
+      "answer": 8,
+      "clarify": 2,
+      "escalate": 1,
+      "refuse": 1
+    },
+    "test": {
+      "answer": 12,
+      "clarify": 2,
+      "escalate": 3,
+      "refuse": 3
+    },
+    "train": {
+      "answer": 42,
+      "clarify": 3,
+      "escalate": 8,
+      "refuse": 3
+    },
+    "validation": {
+      "answer": 8,
+      "clarify": 2,
+      "escalate": 1,
+      "refuse": 1
+    }
+  },
+  "schema_version": 1,
+  "sources_sha256": {
+    "data/en/cases.jsonl": "00157ddc995a48d991bf438623d8b3b6d8c777b85686634aa884febb1d52c577",
+    "data/en/knowledge/documents.json": "6e8c2eb31f7b54bb9d0bbc8262e2d6c73cda15b21375ef4160b869fde6bbeb3a",
+    "prompts/en/baseline.txt": "544680368f7f240698acfb780b7674f82e9b96e6fe8060830b3142710c2e5997",
+    "prompts/en/candidate.txt": "df4c9b97357860d9c3d96444034a0e08762be63e792cecb2f3b8e7b7763d5fb4",
+    "prompts/en/rubric.txt": "c68101ff0c234133de7c20edb4ae6963d76feabe792c27aead75aa5f16c2090a",
+    "prompts/en/tuning-system.txt": "40ae94b773ad10c3e0c8fb2799d8b2451c54ba9ad4e085d911d27b3876779abd"
+  },
+  "split_disjointness": {
+    "pairs": [
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "validation"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "dev"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "train",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "validation",
+        "normalized_query_overlap_count": 0,
+        "right": "dev"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "validation",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      },
+      {
+        "group_overlap": [],
+        "id_overlap": [],
+        "left": "dev",
+        "normalized_query_overlap_count": 0,
+        "right": "test"
+      }
+    ],
+    "passed": true
+  },
+  "synthetic": true
+}

@@ -43,6 +43,7 @@ from pathlib import Path
 import re
 
 from lab.config import Config, LabError
+from lab.content import content_path, require_content_language
 from lab.calibration import claim_judge_attempt, ensure_judge_unclaimed, validate_judge_claim
 from lab.evidence import observed_model_drift, score_row, strict_json_loads
 from lab.files import ROOT, safe_run_dir, sha256_file
@@ -145,6 +146,7 @@ def _index(rows: list[dict], field: str, label: str) -> dict[str, dict]:
 def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
     directory = safe_run_dir(run_id)
     metadata = _read(directory / "metadata.json")
+    require_content_language(metadata)
     if observed_model_drift(metadata):
         raise LabError("Cannot evaluate a capture with terminal observed model drift.")
     if metadata.get("run_id") != run_id:
@@ -174,7 +176,7 @@ def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
         from lab.batch import dataset_for_metadata
         dataset_path = dataset_for_metadata(metadata)
     else:
-        dataset_path = ROOT / "data/splits" / f"{split}.jsonl"
+        dataset_path = content_path(ROOT, "data/splits") / f"{split}.jsonl"
     cases = _index(_read(dataset_path, jsonl=True), "id", "dataset")
     if sha256_file(dataset_path) != metadata["dataset_sha256"]:
         raise LabError("캡처 후 데이터셋이 변경되었습니다. 원본 근거를 복구하거나 새 실행을 만드세요.")
@@ -201,7 +203,7 @@ def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
         raise LabError("성공적으로 캡처한 행이 없습니다. 유료 평가를 제출하지 않습니다.")
 
     citations = set(_index(
-        _read(ROOT / "data/knowledge/documents.json", array=True), "id", "knowledge",
+        _read(content_path(ROOT, "data/knowledge/documents.json"), array=True), "id", "knowledge",
     ))
     projected = {}
     for case_id, record in successful.items():

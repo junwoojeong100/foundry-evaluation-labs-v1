@@ -6,6 +6,7 @@ import hashlib
 from pathlib import Path
 
 from lab.config import Config, LabError
+from lab.content import content_path, language_metadata, require_content_language
 from lab.files import ARTIFACTS, ROOT, artifact_reference, read_json, read_jsonl, sha256_file, write_once_json
 
 
@@ -27,6 +28,7 @@ def collect_prompt(config: Config, request_path: Path, response_path: Path) -> d
         raise LabError("최적화 응답의 원본과 후보가 같습니다. 개선 후보라고 등록하지 않습니다.")
     directory = ARTIFACTS / "prompt-optimizer"
     record = {
+        **language_metadata(),
         "kind": "PROMPT_OPTIMIZER_PORTAL_RESPONSE_IMPORT",
         "status": "CANDIDATE_CAPTURED_NOT_EVALUATED",
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -46,6 +48,7 @@ def collect_prompt(config: Config, request_path: Path, response_path: Path) -> d
     manifest = directory / "result.json"
     if manifest.exists():
         previous = read_json(manifest)
+        require_content_language(previous)
         if previous.get("response_sha256") == record["response_sha256"] and previous.get("request_sha256") == record["request_sha256"]:
             if sha256_file(directory / "candidate.txt") != previous["candidate_sha256"]:
                 raise LabError("보존한 서비스 후보가 변경되었습니다.")
@@ -71,6 +74,7 @@ def collect_agent(config: Config, result_path: Path, candidate_path: Path) -> di
     prompt = candidate.get("system_prompt")
     directory = ARTIFACTS / "optimizer"
     handoff = read_json(directory / "handoff.json")
+    require_content_language(handoff)
     if (
         result.get("status") != "succeeded" or not result.get("id")
         or source.get("agent_name") != handoff.get("agent_name")
@@ -90,6 +94,7 @@ def collect_agent(config: Config, result_path: Path, candidate_path: Path) -> di
     if not best or best not in result.get("result", {}).get("candidate_ids", []):
         raise LabError("실제 반환된 후보 ID가 없습니다.")
     record = {
+        **language_metadata(),
         "kind": "AGENT_OPTIMIZER_PORTAL_CANDIDATE_IMPORT",
         "status": "CANDIDATE_CAPTURED_NOT_LAB_APPROVED",
         "job_id": result["id"], "candidate_id": best,
@@ -150,15 +155,18 @@ def native_answer(messages: list[dict]) -> str:
 def check_native_pair(baseline_items: Path, candidate_items: Path) -> dict:
     from lab.evidence import score_row, summarize
 
-    cases = read_jsonl(ROOT / "data/splits/dev.jsonl")
+    cases = read_jsonl(content_path(ROOT, "data/splits/dev.jsonl"))
     agent = read_json(ARTIFACTS / "agents/iq.json")
     selected = read_json(ARTIFACTS / "optimizer/selected-candidate.json")
+    require_content_language(agent)
+    require_content_language(selected)
     by_query = {case["query"]: case for case in cases}
-    known = {document["id"] for document in read_json(ROOT / "data/knowledge/documents.json")}
+    known = {document["id"] for document in read_json(content_path(ROOT, "data/knowledge/documents.json"))}
     result = {
+        **language_metadata(),
         "kind": "OFFLINE_CHECK_OF_ACTUAL_NATIVE_OPTIMIZER_RESPONSES",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "new_model_calls": 0, "dataset_sha256": sha256_file(ROOT / "data/splits/dev.jsonl"),
+        "new_model_calls": 0, "dataset_sha256": sha256_file(content_path(ROOT, "data/splits/dev.jsonl")),
         "human_operational_approval": "NOT_GRANTED", "arms": {},
     }
     for arm, path in (("baseline", baseline_items), ("candidate", candidate_items)):

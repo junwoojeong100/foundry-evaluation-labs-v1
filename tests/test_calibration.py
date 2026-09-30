@@ -99,6 +99,22 @@ class CalibrationTests(unittest.TestCase):
             for row in self.fixtures
         ))
 
+    def test_calibration_pacing_is_recorded_and_does_not_add_requests(self):
+        sleep = self.patch("lab.calibration.time.sleep")
+        report = calibration.run_calibration(self.config, "paced", confirm=True, interval_seconds=65)
+        self.assertEqual(report["metadata"]["interval_seconds"], 65)
+        self.assertEqual(sleep.call_count, len(self.fixtures) - 1)
+        sleep.assert_called_with(65)
+        self.assertEqual(len(self.requests), 31)
+        self.assertEqual(report["execution_status"], "completed")
+
+    def test_invalid_calibration_pacing_does_not_claim_an_attempt(self):
+        for value in (-1, 121, True, float("nan")):
+            with self.subTest(value=value), self.assertRaises(LabError):
+                calibration.run_calibration(self.config, "invalid-pacing", confirm=True, interval_seconds=value)
+        self.assertFalse((self.root / "calibration/invalid-pacing").exists())
+        self.assertEqual(self.requests, [])
+
     def test_independent_payloads_do_not_leak_reference_labels_or_policy_into_retrieval(self):
         fixture = self.fixtures[0]
         case = {**fixture["case"], "reference_labels": "DO_NOT_SEND", "label": "SECRET_LABEL"}
