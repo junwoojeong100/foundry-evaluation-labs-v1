@@ -1,0 +1,29 @@
+{
+  "kind": "PRE_FREEZE_EVALUATOR_REVISION",
+  "previous_calibration": "cal-02-protocol",
+  "previous_quality": "HOLD",
+  "policy_agreement": {"agreements": 16, "applicable": 16},
+  "relevance_agreement": {"agreements": 16, "applicable": 16},
+  "retrieval_agreement": {"agreements": 14, "applicable": 15},
+  "missing_scores": 0,
+  "disagreement_case": "cal-delete-boundary-bad",
+  "observed_error": "The retrieval Judge gave 4 despite a response explicitly including an equality boundary that the retrieved text strictly excludes. The separate policy Judge correctly gave 2.",
+  "revision": {
+    "evaluator": "contoso-atlas-retrieval-groundedness",
+    "from_version": "1.0.0",
+    "to_version": "1.1.0",
+    "change": "Clarify that reversing a stated inequality is a material contradiction, not a minor omission or hypothetical conditional support.",
+    "threshold_before": 4,
+    "threshold_after": 4,
+    "calibration_minimum_agreement_before": 1.0,
+    "calibration_minimum_agreement_after": 1.0,
+    "reference_labels_changed": false,
+    "original_100_cases_changed": false,
+    "fresh_holdout_created_or_observed_before_revision": false
+  },
+  "next_attempt": "cal-03-boundaries",
+  "next_attempt_result": "RECORDED_SEPARATELY_WHEN_EXECUTED",
+  "prior_results_preserved": true,
+  "human_review": "PENDING",
+  "interpretation": "A stricter pre-freeze rubric correction based on calibration failure, not a reroll of holdout scores or a lowered pass condition."
+}

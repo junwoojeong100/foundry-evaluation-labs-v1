@@ -17,7 +17,7 @@ if __package__:
 else:
     import build_guide as guide
 
-BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide")
+BOOK_ORDER = ("index", "sft", "facilitator", "admin", "verification", "data-guide", "migration", "english")
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
 BOOK_TITLE = "Foundry 학습 루프 실습 · 통합 인쇄본"
 
@@ -152,7 +152,7 @@ def render_book(sources: Mapping[str, str], template: str) -> str:
         label = document.label if index == 0 else f"부록 {index} · {document.label}"
         section_class = "book-section guide-content" + (" book-appendix" if index else "")
         sections.append(
-            f'<section id="{_anchor(document)}" class="{section_class}" aria-label="{html.escape(label)}">\n'
+            f'<section id="{_anchor(document)}" class="{section_class}" lang="{"en" if key == "english" else "ko"}" aria-label="{html.escape(label)}">\n'
             f'<p class="book-part-label">{html.escape(label)}</p>\n'
             + "".join(parser.parts)
             + "\n</section>"

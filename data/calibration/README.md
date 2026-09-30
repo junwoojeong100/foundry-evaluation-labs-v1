@@ -24,18 +24,19 @@ Definitions, versions, strict integer 1–5 schemas, and prompts live in
 `config/evaluators/`. `lab.calibration.run_calibration(config, calibration_id,
 confirm=True)` uses the configured, verified Azure CLI identity and Judge
 deployment. It is a **paid execution path**: caller confirmation does not replace
-budget, data-processing, or retention approval. This integration has not run it
-against Azure.
+budget, data-processing, or retention approval.
 
-**LIVE execution status: `PENDING_EXECUTION`.** A bounded isolated execution
-scope is approved; the integration parent alone performs cloud mutations and
-paid execution. The authoritative approval record remains private and governs
-spending, request/job limits, processing scope, retention and new-resource-only
-RBAC. Approval is not evidence of provisioning, feature access, successful
-calibration or passing quality. Existing shared resources and policies are
-outside scope. There is no deletion authorization: preserve the new resource
-group and its evidence for review. Local mocks are not LIVE evidence, and
-`--confirm` does not expand the approved scope.
+**Actual LIVE outcome: execution completed, calibration quality HOLD.**
+The initial protocol rejection and both scored calibration runs are preserved.
+With retrieval rubric 1.1.0, policy correctness and relevance each agreed on
+16/16 references, while retrieval groundedness agreed on 14/15 applicable
+references. The one missing-retrieval fixture is not applicable, not a fabricated
+perfect score. No reference was removed or relabeled and no threshold was
+lowered. See [the verified execution record](../../guide/verification.md).
+
+The authoritative approval record remains private. Existing/shared resources
+and policies are outside scope. There is no deletion authorization. Local mocks
+are not LIVE evidence and `--confirm` does not expand the approved scope.
 
 Results are written under `ARTIFACTS/calibration/<id>/`: immutable metadata,
 per-fixture raw response IDs/checkpoints, and `report.json`. All 16 references
@@ -56,14 +57,34 @@ Fresh final-test data is generated or registered **after** the freeze, exclusive
 under `ARTIFACTS/governance/holdouts/`. Built-in recipes are honestly identified as
 `authored_template_variants`, not independently sampled customer data. ID/group,
 exact-text and numeric-normalized near-duplicate checks include the original
-100 cases and prior holdouts. One freeze binds one holdout evaluation attempt.
+100 cases, all 16 calibration cases, the supplemental dialogue and prior
+holdouts. One freeze binds one holdout evaluation attempt.
 Known checkpoints may resume; unknown submissions, rejudging, gate relaxation,
 optimization and training use of final-test data are blocked.
 
-A 12-row fresh holdout does not satisfy the existing 20-row final-test minimum.
-An approved execution limit does not authorize lowering that quality gate.
-A smaller local generated set cannot be bound as a final evaluation; scope and
-minimum sample size must be reconciled before any final-test execution.
+The explicit
+[`contoso-atlas-fresh-holdout@1.0.0` sample contract](../../config/evaluators/fresh-holdout-gates.v1.json)
+declares a **separate 12-row post-freeze workshop final test**. The original
+[`config/gates.json`](../../config/gates.json) still requires 20 rows for its
+original test contract. Freeze records both the legacy gates and the derived
+fresh gates, plus the sample-contract file/hash, **before** holdout creation or
+results. All rate, semantic, relevance, error, critical-case and regression
+thresholds are inherited unchanged; only the declared sample-size contract
+differs. This is not a silent rewrite of the original gate.
+
+`create_holdout(..., count=None)` derives its count from the frozen contract;
+the guide explicitly supplies `--count 12`. The default twelve include one
+scripted clarification → explicit user follow-up → final response case:
+**12 final cases normally require 13 agent capture turns**, not 12 turns or
+12 total model/planner/Judge requests. Template variants remain synthetic
+workshop evidence, not independent customer samples.
+
+`sample_contract_sha256` binds registration, the one-shot attempt, run metadata,
+Judge submission and the final result. Undersized sets, wrong/missing hashes,
+tampering, repeated attempts and missing/error/critical failures remain blocked
+or `HOLD`. Existing freezes/results are never rewritten to opt into the new
+contract. Final reports expose the fresh contract, actual sample count and the
+unchanged legacy minimum of 20; neither contract grants operational approval.
 
 The original 100 cases and train/validation/dev/test splits are unchanged.
 `PASS_FOR_WORKSHOP`, execution completion, calibration agreement and manual

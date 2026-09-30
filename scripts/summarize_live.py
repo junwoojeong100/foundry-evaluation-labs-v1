@@ -150,6 +150,9 @@ def summarize(environment: Path) -> dict:
                 optimizer[name]["result"] = {key: value.get("result", {}).get(key) for key in (
                     "baseline", "best", "candidate_ids", "token_usage", "latency_usage",
                 )}
+    native = artifacts / "optimizer/native-rule-comparison.json"
+    if native.exists():
+        optimizer["native_rule_comparison"] = read(native)
     governance = []
     for path in sorted((artifacts / "governance/freezes").glob("*.json")):
         value = read(path)
@@ -157,6 +160,20 @@ def summarize(environment: Path) -> dict:
             "freeze_id", "created_at", "stage", "execution_mode", "content_sha256", "hashes",
             "sample_contract", "calibration_state", "manual_review_state", "manual_operational_approval",
         )})
+    holdouts = {}
+    for path in sorted((artifacts / "governance/holdouts").glob("*/metadata.json")):
+        value = read(path)
+        holdouts[path.parent.name] = {key: value.get(key) for key in (
+            "holdout_id", "freeze_id", "created_at", "generated_at", "sample_count",
+            "dataset_sha256", "provenance", "disjointness", "sample_contract_sha256", "purpose",
+        )}
+    reviews = []
+    for path in sorted((artifacts / "governance/reviews").glob("*.json")):
+        value = read(path)
+        reviews.append({key: value.get(key) for key in (
+            "review_id", "actor_type", "created_at", "manual_review_state", "manual_operational_approval",
+        )})
+    gate_observation = environment / "fresh-gate-stderr.local.txt"
     cost_file = environment / "cost-management-response.local.json"
     cost_query = None
     if cost_file.exists():
@@ -174,7 +191,15 @@ def summarize(environment: Path) -> dict:
         "bootstrap_phase": manifest["phase"], "resources": resources,
         "source_manifest_sha256": digest(environment / "manifest.json"),
         "runs": runs, "calibrations": calibrations, "knowledge": knowledge,
-        "optimizers": optimizer, "sft": training, "freezes": governance,
+        "optimizers": optimizer, "sft": training, "freezes": governance, "holdouts": holdouts, "reviews": reviews,
+        "fresh_gate": {
+            "enforcement_checked": gate_observation.exists(),
+            "status": "BLOCKED_CALIBRATION_HOLD" if governance and any(
+                item["calibration_state"]["quality_status"] == "HOLD" for item in governance
+            ) else "NOT_VERIFIED",
+            "run_created": (artifacts / "runs/optimized-fresh").exists(),
+            "attempt_created": (artifacts / "governance/attempts/selected-v2.json").exists(),
+        },
         "human_operational_approval": "NOT_GRANTED",
         "frontier": {"status": "NOT_VERIFIED", "ordinary_sft_is_not_frontier": True},
         "retention": "PRESERVE_FOR_REVIEW_NO_DELETION_AUTHORIZED",

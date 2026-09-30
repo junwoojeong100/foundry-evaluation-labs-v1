@@ -24,7 +24,7 @@ from markdown import Markdown
 from markdown.extensions.toc import slugify_unicode
 from markdown.treeprocessors import Treeprocessor
 
-BUILD_DATE = "2026-09-29"
+BUILD_DATE = "2026-09-30"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_PLACEHOLDERS = ("CONTENT", "TOC", "BUILD_DATE")
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
@@ -48,6 +48,8 @@ DOCUMENTS = (
     Document("guide/sft-appendix.md", "sft.html", "SFT 심화 부록"),
     Document("guide/verification.md", "verification.html", "검증 기록"),
     Document("data/README.md", "data-guide.html", "데이터 설명"),
+    Document("guide/integration-migration.md", "migration.html", "v1 이관·아카이브 준비"),
+    Document("README.en.md", "english.html", "English quickstart"),
 )
 DOCUMENT_LINKS = {document.source: document.output for document in DOCUMENTS}
 
@@ -219,6 +221,7 @@ def render_guide(
         "BUILD_DATE": BUILD_DATE,
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(document_id, quote=True),
+        "CONTENT_LANGUAGE": "en" if document_id == "english.html" else "ko",
         "DOCUMENT_LINKS": "\n".join(navigation),
         "HOME_HREF": "index.html" if auxiliary else "#guide-start",
         "RETURN_LINK": (

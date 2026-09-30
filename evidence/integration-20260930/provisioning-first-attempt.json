@@ -1,0 +1,42 @@
+{
+  "kind": "SANITIZED_OBSERVED_AZURE_FAILURE",
+  "code_commit": "f7b30f0",
+  "attempt_started_at": "2026-09-29T22:50:34.854045+00:00",
+  "resource_group": "rg-foundry-eval-v11-20260930-eca723",
+  "resource_region": "northcentralus",
+  "operation": "ARM deployment validation during first new-environment provisioning attempt",
+  "model": {
+    "name": "gpt-4o-mini",
+    "version": "2024-07-18",
+    "sku": "Standard"
+  },
+  "catalog_observation": {
+    "lifecycle": "Deprecating",
+    "fine_tune_capability": true,
+    "quota_available": true,
+    "is_proof_of_deployability": false
+  },
+  "service_error": {
+    "code": "ServiceModelDeprecated",
+    "message": "The model 'Format:OpenAI,Name:gpt-4o-mini,Version:2024-07-18' has been deprecated since 03/31/2026 00:00:00.",
+    "validation_tracking_id": "e5acaa72-486b-4ae5-b231-9e267b14a8b4"
+  },
+  "followup_reads": {
+    "azure_mcp_new_rg_resource_count": 0,
+    "arm_deployment_lookup": "DeploymentNotFound",
+    "existing_resources_changed": false
+  },
+  "recovery_decision": {
+    "strategy": "Preserve failure and original plan; validate an explicitly repinned model in the same new RG before any inference.",
+    "candidate_base": "gpt-4.1-mini",
+    "candidate_version": "2025-04-14",
+    "candidate_sku": "Standard",
+    "exact_quota_usage_name": "OpenAI.Standard.gpt4.1-mini",
+    "observed_available_capacity_units": 5000,
+    "candidate_deployability": "VALIDATION_PENDING_AT_THIS_OBSERVATION",
+    "different_region_or_existing_deployment_reused": false
+  },
+  "interpretation": "Catalog capabilities and unused quota do not prove that a new deployment is supported. No agent, evaluation, optimization or training success is claimed by this record.",
+  "raw_evidence": "Preserved in the private local environment and session tool records; credentials, subscription and principal identifiers are omitted here.",
+  "cost_status": "NOT_OBSERVED_NOT_ZERO"
+}

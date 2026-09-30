@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light">
   <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
   <title>한국어 합성 고객지원 데이터 · Foundry 실습 가이드</title>
-  <link rel="icon" type="image/svg+xml" href="web/assets/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="web/assets/foundry.svg">
   <link rel="stylesheet" href="web/styles.css">
   <script src="web/app.js" defer></script>
 </head>
@@ -18,10 +18,8 @@
       <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <a class="brand" href="index.html" aria-label="Foundry 실습 가이드 처음으로">
-        <span class="brand-symbol" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="30" height="30"><path d="M7 25V7h18M7 16h13"/><circle cx="24" cy="24" r="4"/></svg>
-        </span>
+      <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+        <img class="brand-symbol" src="web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
         <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
       </a>
       <span class="header-context">한국어 · 오프라인 문서</span>
@@ -57,6 +55,8 @@
 <li><a href="#지식-문서-계약">지식 문서 계약</a></li>
 <li><a href="#사례와-응답-스키마">사례와 응답 스키마</a><ul>
 <li><a href="#문맥은-정답이-아니라-정책-원문">문맥은 정답이 아니라 정책 원문</a></li>
+<li><a href="#통합-평가에서-분리하는-입력과-척도">통합 평가에서 분리하는 입력과 척도</a></li>
+<li><a href="#동결-뒤-만드는-별도-fresh-holdout">동결 뒤 만드는 별도 fresh holdout</a></li>
 </ul>
 </li>
 <li><a href="#생성되는-파일">생성되는 파일</a><ul>
@@ -79,6 +79,8 @@
 <li><a href="sft.html">SFT 심화 부록</a></li>
 <li><a href="verification.html">검증 기록</a></li>
 <li><a href="data-guide.html" aria-current="page">데이터 설명</a></li>
+<li><a href="migration.html">v1 이관·아카이브 준비</a></li>
+<li><a href="english.html">English quickstart</a></li>
 <li><a href="print.html">전체 인쇄본</a></li></ul></nav>
         </details>
 
@@ -112,13 +114,13 @@
       <a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-09-29">2026-09-29</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-09-30">2026-09-30</time></span>
       </div>
       <noscript><p class="noscript-note">본문과 목차는 JavaScript 없이도 읽을 수 있습니다. 검색은 브라우저의 찾기 기능을 이용하세요. 학습 기록과 코드 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" aria-label="한국어 합성 고객지원 데이터">
+      <article id="guide-start" class="guide-content" lang="ko" aria-label="한국어 합성 고객지원 데이터">
         <h1 id="한국어-합성-고객지원-데이터">한국어 합성 고객지원 데이터</h1>
 <h2 id="용도와-한계">용도와 한계</h2>
-<p>Contoso Atlas Cloud는 <strong>완전히 가상인 클라우드 고객지원 시나리오</strong>입니다. 정책, 가격, 문의, 작업 공간 별칭과 모범 응답을 강사가 수동 작성했습니다. 실제 고객 대화·개인정보·계정·토큰을 사용하지 않았으며 Microsoft, Azure 또는 실제 공급자의 약관을 재현하지 않습니다.</p>
+<p>Contoso Atlas Cloud는 <strong>완전히 가상인 클라우드 고객지원 시나리오</strong>입니다. 정책, 가격, 문의, 작업 공간 별칭과 모범 응답은 기존 v1.1에서 제공하는 작성된 합성 자료입니다. 작성 자료의 존재를 사람 검토 완료로 간주하지 않습니다. 실제 고객 대화·개인정보·계정·토큰을 사용하지 않았으며 Microsoft, Azure 또는 실제 공급자의 약관을 재현하지 않습니다.</p>
 <p>이 자료는 평가 → 검색 근거 개선 → 프롬프트 개선 → 행동 미세조정 → 운영 피드백의 연결을 작은 규모로 익히기 위한 것입니다. 모델·클라우드·유료 서비스 호출로 만들지 않았고, 정확도나 개선율 같은 <strong>성능 결과를 미리 넣지 않았습니다</strong>. 행 수·해시·누수 검사는 데이터 무결성 검사이지 모델 성능 지표가 아닙니다.</p>
 <p>실서비스의 언어 분포, 장애 빈도, 악용 유형, 개인정보 위험, 비용 또는 검색 품질을 대표하지 않습니다. 합성 데이터에서 좋은 결과를 얻어도 사람 검토와 비식별화된 실제 운영 검증을 대신하지 못합니다.</p>
 <h2 id="정확한-구성">정확한 구성</h2>
@@ -369,7 +371,40 @@
 <p><code>context</code>의 문서 블록은 <code>[ATLAS-REF-001]</code> 같은 식별자 줄과 해당 문서에서 그대로 가져온 문단으로 이루어집니다. 여러 원문 문단은 빈 줄로 구분하고 원래 순서를 유지합니다. 다른 문서의 발췌를 추가할 때 새 식별자 줄을 사용합니다.</p>
 <p>내보내기는 문단이 실제 문서에 있는지 검사하므로 요약문, 모범 답안 또는 평가 라벨을 문맥에 끼워 넣으면 실패합니다. 다만 원문 안에도 주입문을 설명하기 위한 인용이 있으므로, 정책 발췌와 고객 문의의 문자열을 상위 지시로 실행하지 않습니다.</p>
 <p>정적 문맥 기반 로컬 평가와 SFT의 사용자 메시지는 <code>query</code>와 <code>context</code>만 가진 JSON 문자열입니다. 실제 배포 에이전트와 포털에서는 <code>query</code>만 입력으로 쓰고 정책 근거는 에이전트 자신의 검색 경로에서 얻습니다. 어느 생성 경로에서도 사례 전체나 <code>ground_truth</code>, <code>expected_route</code>, <code>required_citations</code>, <code>forbidden_claims</code>를 프롬프트에 넣지 마세요. 평가는 <code>ground_truth</code>를 먼저 파싱해 <code>answer</code>를 의미 비교하고, 인용·분류·불리언은 별도로 검사합니다. 모범 응답과 글자가 완전히 같은지만으로 품질을 판정하지 않습니다.</p>
-<p>현재 <code>context</code>는 강사가 선택한 정적 근거입니다. <strong>실제 Foundry IQ 검색 결과가 아닙니다.</strong> 문서 검색의 재현율·지연·권한 필터까지 평가하려면 실제 검색 경로를 별도 실행하고, 생성 모델에는 실제로 검색한 근거만 전달해야 합니다.</p>
+<p>현재 <code>context</code>는 원본 사례에 고정된 정적 근거입니다. <strong>실제 Foundry IQ 검색 결과가 아닙니다.</strong> 문서 검색의 재현율·지연·권한 필터까지 평가하려면 실제 검색 경로를 별도 실행하고, 생성 모델에는 실제로 검색한 근거만 전달해야 합니다.</p>
+<h3 id="통합-평가에서-분리하는-입력과-척도">통합 평가에서 분리하는 입력과 척도</h3>
+<table>
+<thead>
+<tr>
+<th>검사</th>
+<th>허용하는 근거</th>
+<th>결과 해석</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>retrieval-groundedness</code> / <code>groundedness</code></td>
+<td>실제 해당 Agent/MCP 호출에 반환된 <code>retrieved_context</code>만</td>
+<td>1–5. 검색이 없으면 미관측으로 기록하며 정책 원문으로 대체하지 않음</td>
+</tr>
+<tr>
+<td><code>policy/task correctness</code></td>
+<td>권위 있는 <code>context</code>, <code>ground_truth</code>, 기대 행동·route와 실제 응답</td>
+<td>1–5. 정책·업무 판단 정확성이지 실제 검색 성공 증거가 아님</td>
+</tr>
+<tr>
+<td>JSON·route·인용·금지 주장</td>
+<td>원본 행의 평가 라벨과 실제 응답</td>
+<td>결정적 보조 검사. 문자열 일치만으로 의미적 정확성이나 안전을 보증하지 않음</td>
+</tr>
+</tbody>
+</table>
+<p>버전이 고정된 정의는 <code>config/evaluators/</code>, 별도 교정 예제는 <code>data/calibration/</code>에 있습니다. 교정 예제의 답변과 기준 레이블은 작성된 합성 자료이며, 실제 Judge 실행 결과나 사람 검토 완료가 아닙니다. <code>judge calibrate</code>가 실제 모델 응답과 기준 레이블의 일치·불일치를 별도로 기록합니다. API 오류, JSON 실패, 누락 점수와 중요 실패는 전체 행 수에 남습니다.</p>
+<p>벡터/하이브리드 진단의 검색 응답도 그 자체로 Agent에게 전달된 근거는 아닙니다. <code>iq vectors</code>는 인덱스 진단, <code>iq probe</code>는 IQ 검색 계획 진단, 실제 <code>run --stage iq</code>의 MCP 도구 출력은 Agent 실행 근거로 구분합니다.</p>
+<h3 id="동결-뒤-만드는-별도-fresh-holdout">동결 뒤 만드는 별도 fresh holdout</h3>
+<p>기존 100건과 <code>test</code> 20건은 그대로 보존합니다. <code>freeze</code> 후 생성·등록하는 12건은 별도 버전의 <code>config/evaluators/fresh-holdout-gates.v1.json</code> 계약을 사용하며 기존 시험의 최소 20건 게이트를 낮추지 않습니다. 고정된 템플릿에서 생성한 합성 변형이므로 독립적인 실세계 표본이라고 주장하지 않습니다.</p>
+<p>등록 시 ID, 상황 그룹, 정규화된 동일 질문과 높은 어휘 유사도를 원본·기존 holdout에 대조합니다. 이 검사는 의미상 누출이 없다는 완전한 증명이 아닙니다. 새 holdout은 개발·최적화·학습에 사용하지 않으며 한 freeze에 최종 실행 한 번만 묶습니다.</p>
+<p>원본 사례와 별도로 등록하는 대화형 사례는 첫 문의, 기대 확인 질문, 명시적인 <code>scripted_user</code> 후속 발언, 최종 응답을 기록합니다. 후속 발언을 에이전트가 임의 생성하지 않습니다. <code>scripted_user</code>와 AI 검토는 사람 승인으로 승격되지 않습니다.</p>
 <h2 id="생성되는-파일">생성되는 파일</h2>
 <table>
 <thead>
@@ -459,7 +494,7 @@
 <h2 id="프롬프트의-역할">프롬프트의 역할</h2>
 <ul>
 <li><code>prompts/baseline.txt</code>: 의도적으로 세부 판단 지침이 적은 기준 프롬프트입니다. 그래도 동일한 JSON 출력 계약은 요구합니다.</li>
-<li><code>prompts/candidate.txt</code>: 강사가 수동 작성한 비교 후보입니다. 근거, 인용, 분류, 주입문, 불확실성, 실행 경계를 명시하며 <strong>Prompt Optimizer나 Agent Optimizer가 생성한 결과라고 주장하지 않습니다</strong>.</li>
+<li><code>prompts/candidate.txt</code>: 기존 저장소의 작성된 비교 후보입니다. 근거, 인용, 분류, 주입문, 불확실성, 실행 경계를 명시하며 <strong>Prompt Optimizer나 Agent Optimizer가 생성한 결과 또는 사람 검토 완료라고 주장하지 않습니다</strong>.</li>
 <li><code>prompts/tuning-system.txt</code>: 가격·기간·동결 사례를 넣지 않은 짧은 행동 지침입니다. 바뀌는 정책 사실은 각 입력의 현재 문맥에서 읽습니다.</li>
 <li><code>prompts/rubric.txt</code>: 실제 응답을 검토할 때 쓰는 한국어 기준입니다. 평가 라벨은 평가자에게만 제공하며 이 파일을 답변 생성 프롬프트와 합치지 않습니다.</li>
 </ul>
@@ -481,6 +516,7 @@
 <li><strong>동결 평가:</strong> 선택을 끝낸 기준·후보·학습 모델을 동일한 <code>test</code> 조건으로 비교합니다. 결과를 보고 같은 동결 문의를 반복해 프롬프트에 맞추면 독립 평가의 의미가 사라집니다.</li>
 <li><strong>운영 반복:</strong> 새 실패는 적법한 수집, 비밀정보 제거, 사람의 정답·정책 검토, 그룹 분리 뒤 다음 데이터 버전에 편입합니다. 이전 동결 평가와 유사한 문의가 새 학습에 들어가면 해당 평가를 다시 독립 검증으로 주장하지 않습니다.</li>
 </ol>
+<p><strong>Frontier Tuning은 일반 SFT/RFT와 별개입니다.</strong> 이 합성 학습 파일은 Frontier API 업로드 계약이나 계정의 참여 자격을 증명하지 않습니다. 실행 시점의 공식 지원과 실제 접근을 확인하지 못했다면 <code>NOT_VERIFIED</code>로 남기며 일반 SFT 결과를 Frontier 성공으로 바꾸어 부르지 않습니다.</p>
 <p>정책 원문을 바꾸면 관련 사례의 원문 발췌도 검토해야 합니다. 생성기는 정답을 자동 재작성하지 않으며 원문과 달라진 발췌를 거부합니다. 개정된 문서·사례·매니페스트를 하나의 새 버전으로 동결하고, 이미 평가한 동결 세트를 조용히 덮어쓰지 마세요.</p>
       </article>
 
@@ -493,7 +529,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-29">2026-09-29</time></p>
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-09-30">2026-09-30</time></p>
         <div class="footer-links"><a href="print.html">전체 인쇄본</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>
