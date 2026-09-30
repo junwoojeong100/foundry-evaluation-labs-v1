@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "captured_date": "2026-09-30",
+  "portal_origin": "https://ai.azure.com",
+  "tool": "playwright-headless.browser_run_code_unsafe",
+  "headless_verified": true,
+  "authentication": "User completed interactive authentication; local temporary state transfer file removed.",
+  "scope": "Existing dedicated Contoso lab only. Route templates omit tenant, subscription and resource identifiers.",
+  "new_paid_runs_submitted": false,
+  "cloud_configuration_changed": false,
+  "edits": "Crop and opaque privacy masks only; no status, score or content replacement.",
+  "screenshots": [
+    {
+      "file": "01-project-overview.png",
+      "route": "/home",
+      "state": "existing-resource",
+      "redactions": ["profile", "welcome-name", "project-endpoint", "openai-endpoint"],
+      "width": 1440, "height": 1000,
+      "sha256": "7cbe03eca6382792c0394e4782efbb9f108ef3200997b74ac9e97c4e92b7d5c9"
+    },
+    {
+      "file": "02-model-deployments.png",
+      "route": "/build/models/deployments",
+      "state": "existing-resource",
+      "redactions": ["creator-column", "request-panel-excluded-by-crop"],
+      "width": 1270, "height": 750,
+      "sha256": "2a43a326f5848636baa56e7a214e7197015d421ee5c9b33d7f98243ae559c94a"
+    },
+    {
+      "file": "03-agent-versions.png",
+      "route": "/build/agents",
+      "state": "existing-resource",
+      "redactions": ["profile"],
+      "width": 1440, "height": 750,
+      "sha256": "b2dc1fe00e36d7490da05792faa6995296711d0d9879fb6001ecd4a642e739a8"
+    },
+    {
+      "file": "04-baseline-playground.png",
+      "route": "/build/agents/{baseline-agent}/build",
+      "state": "existing-resource-no-chat-sent",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "a31f5c03d44f7f103f36d2ce3683f3b210dd123d69ca0194ed8c0e9846a64453"
+    },
+    {
+      "file": "05-knowledge-base.png",
+      "route": "/build/knowledge/search/c/{connection}/bases/{knowledge-base}",
+      "state": "existing-resource",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1100,
+      "sha256": "4c49b2aa676e50d91c4886d632240aaedf8346c5903539bf8b0a37cc73ca2ac4"
+    },
+    {
+      "file": "06-iq-agent-knowledge.png",
+      "route": "/build/agents/{iq-agent}/build",
+      "state": "existing-resource-no-chat-sent",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "d1e4fb77cf7854932e309873bf5681d6db035bc7a87f353305dfdb5d321569ff"
+    },
+    {
+      "file": "07-optimizer-target.png",
+      "route": "/build/agents/{iq-agent}/optimization",
+      "state": "unsubmitted-draft-target",
+      "redactions": ["dialog-only-account-header-excluded"],
+      "width": 1210, "height": 968,
+      "sha256": "95b4664fd4934d40d48814a390893965007cc5716ee114c9456b07d8959ccceb"
+    },
+    {
+      "file": "08-optimizer-dataset.png",
+      "route": "/build/agents/{iq-agent}/optimization",
+      "state": "unsubmitted-draft-no-upload",
+      "redactions": ["dialog-only-account-header-excluded", "creator-column"],
+      "width": 1210, "height": 968,
+      "sha256": "fe5c848a2a08dee0172bed76e232c41bd5ab909d1e3d62a9f1f7bfa8efca09a5"
+    },
+    {
+      "file": "09-optimizer-results.png",
+      "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
+      "state": "existing-completed-run",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "e4b5ef7f250e3d1cdb36959664173bc8ab07471937f8881bfde74e3968d2fd2f"
+    },
+    {
+      "file": "10-optimizer-changes.png",
+      "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
+      "state": "existing-candidate-not-promoted",
+      "redactions": ["dialog-only-account-header-excluded"],
+      "width": 1038, "height": 622,
+      "sha256": "dd1a83aa499d4212ad6fa5362a7187740fb63c9c8e8a2e0b1315c1346424484b"
+    },
+    {
+      "file": "11-evaluation-results.png",
+      "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
+      "state": "existing-completed-run",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "000e7b63d446f9770c55f64e5eef6f0ea16b753e50b65f274f68c83e0e0ce0b3"
+    },
+    {
+      "file": "12-trace-lookup.png",
+      "route": "/build/agents/{iq-agent}/traces",
+      "state": "existing-iq-dev-response-filter",
+      "redactions": ["profile"],
+      "width": 1440, "height": 800,
+      "sha256": "6fdeb21b63418be704db25e95890d8216c24970185e1d7fb8f4a52b86ae35700"
+    },
+    {
+      "file": "13-trace-tool-call.png",
+      "route": "/build/agents/{iq-agent}/traces",
+      "state": "existing-iq-dev-mcp-span",
+      "redactions": ["dialog-only-account-header-excluded"],
+      "width": 1440, "height": 1000,
+      "sha256": "05fad7f92b63108cf788f449bb3b3f6ae4793b09c7ee70a676ccc6e9d31e6069"
+    },
+    {
+      "file": "14-sft-job.png",
+      "route": "/build/fine-tune/{existing-job}/details",
+      "state": "existing-completed-training",
+      "redactions": ["profile", "creator-field"],
+      "width": 1440, "height": 1000,
+      "sha256": "7b4b3f5ab55e2257ec3bcd914c5ea78ea0c9a7e8bffc626fc212a0c60d9e70fc"
+    }
+  ]
+}

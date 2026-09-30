@@ -51,13 +51,63 @@
 </ol>
 
 <p><strong>예상 시간: 약 3–4시간, 결과 공유 포함.</strong> 기존 환경이 준비되어 있고 교정을 통과해 끝까지 진행하는 경우의 계획값입니다. 서비스 대기·오류 대응에 따라 달라지며, 환경 신규 구축과 SFT는 포함하지 않습니다.</p>
-<p><strong>읽는 순서: 실행 명령 → 출력 예시 → 내 결과 공유·판단 → 다음 단계.</strong> 명령은 한 줄씩 실행합니다. 평가는 <strong>업무 Judge</strong>, 지시 개선은 <strong>Agent Optimizer</strong> 하나로 진행합니다.</p>
+<p><strong>읽는 순서: 기능 이해 → 실행 명령과 해설 → 출력 예시 → 내 결과 공유·판단 → 다음 단계.</strong> 명령은 한 줄씩 실행하고, 오류가 나면 다음 줄로 넘어가지 않습니다. 평가는 <strong>업무 Judge</strong>, 지시 개선은 <strong>Agent Optimizer</strong> 하나로 진행합니다.</p>
+<p><strong>이 실습에서 만드는 것은 “환불을 실행하는 봇”이 아니라 “정책을 찾아 올바른 다음 행동을 안내하는 에이전트”입니다.</strong> Foundry는 모델·에이전트·지식·평가를 연결하는 플랫폼이고, 이 저장소는 그 기능을 작은 한국어 고객지원 과제로 경험하게 하는 교육용 도구입니다.</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>경험할 기능</th>
+<th>답할 수 있게 될 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>응답 계약과 근거 중심 평가</td>
+<td>자연스러운 답과 올바른 업무 행동은 어떻게 다른가?</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Foundry 프로젝트·모델 배포·인증</td>
+<td>내 명령이 어느 환경의 어떤 모델을 사용하는가?</td>
+</tr>
+<tr>
+<td>03</td>
+<td>버전 에이전트·기준선·Judge 교정</td>
+<td>무엇을 개선해야 하며 채점자는 믿을 만한가?</td>
+</tr>
+<tr>
+<td>04</td>
+<td>Foundry IQ·벡터/하이브리드 검색·MCP</td>
+<td>에이전트가 어떤 정책을 실제로 보고 답했는가?</td>
+</tr>
+<tr>
+<td>05</td>
+<td>Agent Optimizer·동일 문항 회귀 비교</td>
+<td>지시가 어떻게 바뀌었고 무엇이 좋아지거나 나빠졌는가?</td>
+</tr>
+<tr>
+<td>06</td>
+<td>동결·새 시험·추적·피드백</td>
+<td>처음 보는 질문에서도 통하는가, 지금 채택해도 되는가?</td>
+</tr>
+</tbody>
+</table>
 <p><strong>평가는 점수를 만드는 일이 아니라 다음 행동을 결정할 근거를 얻는 일입니다.</strong> 03–06의 결과 공유 지점마다 2–3분씩, <strong>실제 결과 → 대표 사례 → 다음 결정</strong>을 설명합니다. 점수에는 표본 수·척도·누락을 함께 붙입니다. 기존 보고서를 읽는 활동이므로 유료 평가 횟수는 늘지 않습니다. 모델 smoke는 연결 확인이지 품질 평가가 아닙니다.</p>
 <p>공유 범위는 <strong>허용된 합성 사례와 집계 결과</strong>입니다. 화면에서도 계정·구독·환경·승인 정보를 가리고, 비공개 원본을 그대로 전달하지 않습니다. 자동 외부 전송·업로드는 없습니다.</p>
 <p class="output-notice" id="book-index--output-examples-note"><strong>출력 예시는 설명용으로 작성한 발췌입니다.</strong> 일부 필드만 보여 주며 점수·ID·답변이 내 실행과 같아야 한다는 뜻이 아닙니다. 예시를 입력 파일이나 실제 성공 증거로 저장하지 마세요.</p>
 
+<p class="output-notice" id="book-index--portal-screenshots-note"><strong>포털 사진은 작성 예시가 아닌 실제 화면입니다.</strong> 2026-09-30에 사용자 인증 후 Playwright MCP의 Headless 브라우저로 기존 전용 환경을 열어 촬영했습니다. 계정·생성자·endpoint는 가리거나 화면 범위에서 제외했습니다. 설정 마법사는 미제출 상태, 결과 화면은 기존 실행입니다. 사진의 이름·점수를 내 환경에 복사하지 않으며 촬영을 위해 새 평가·학습·배포를 실행하지 않았습니다. <span class="book-file-link">14장 촬영 기록<span class="book-file-label"> (파일: <code>web/assets/portal/captures.json</code>)</span></span>에는 출처 경로·가림 범위·파일 해시가 있습니다. 화면 아래의 <strong>원본 크기로 보기</strong>로 작은 글씨를 확대할 수 있습니다.</p>
+
 <p>유료 실행에는 현재 비용·데이터·작업 승인이 필요하며 <code>--confirm</code>만으로 승인되지 않습니다. 오류·교정 불합격이면 멈추고 <strong>HOLD와 미실행 항목</strong>을 남깁니다. 완료한 단계는 기존 결과만 읽고, 중단된 실행은 <a href="#book-facilitator--resume">같은 ID로 재개</a>합니다.</p>
 <h2 id="book-index--start">01. 예시 이해</h2>
+<div class="lab-concept" aria-label="01 학습 목표">
+<p><strong>경험할 기능:</strong> 에이전트의 응답 계약과 평가의 출발점입니다. 응답 계약은 답변 문장뿐 아니라 인용, 행동 분류, 사람 판단 필요 여부를 어떤 형식으로 반환할지 정한 약속입니다.</p>
+<p><strong>왜 중요한가:</strong> 유창한 문장도 존재하지 않는 환불 승인이나 송금 완료를 약속할 수 있습니다. “말을 잘하는가”보다 “이 권한과 정책으로 해도 되는 말인가”를 먼저 판단해야 합니다.</p>
+<p><strong>어떻게 경험하나:</strong> 아래 오답을 정책과 대조하고, 빠진 조건을 묻는 행동과 실제 업무 실행을 구별합니다. DEMO는 이 판단 연습을 위한 고정된 작성 예시이며 모델을 실행하지 않습니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 설치·로그인 전에 아래 답변에서 잘못된 약속을 찾습니다.</p>
 <blockquote>
 <p>고객: “9월 10일 최초 월 구독을 샀고 오늘은 9월 15일입니다. 환불해 주세요.”</p>
@@ -69,6 +119,29 @@
 <p><strong>실행 명령 · 무료·오프라인:</strong></p>
 <pre><code class="language-bash">python3 -S -m lab demo
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>부분</th>
+<th>의미와 확인할 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python3</code></td>
+<td>설치된 Python을 실행합니다. 패키지 루트에서 시작해야 이 저장소의 <code>lab</code> 모듈을 찾습니다.</td>
+</tr>
+<tr>
+<td><code>-S</code></td>
+<td>Python의 <code>site</code> 초기화를 생략해 설치된 SDK 없이 DEMO를 읽습니다. 일반 LIVE 명령에 붙이는 옵션은 아닙니다.</td>
+</tr>
+<tr>
+<td><code>-m lab demo</code></td>
+<td>교육 도구의 작성 예시를 터미널에 출력합니다. 이 명령에는 파일 저장 옵션이 없으며 로그인·Azure 호출·모델 비용이 없습니다.</td>
+</tr>
+</tbody>
+</table>
 <p class="output-label" id="book-index--example-demo">출력 예시 · DEMO 터미널 출력 일부</p>
 
 <pre><code class="language-json">{
@@ -88,14 +161,95 @@
 <p class="step-next no-print"><a href="#book-index--prepare" data-next-step>다음: 02. 환경 연결 →</a></p>
 
 <h2 id="book-index--prepare">02. 환경 연결</h2>
+<div class="lab-concept" aria-label="02 학습 목표">
+<p><strong>경험할 기능:</strong> Foundry 프로젝트, 모델 배포, Microsoft Entra 인증과 사전 점검입니다. 프로젝트는 에이전트·평가·연결을 관리하는 작업 공간이고, 배포는 특정 모델·버전·처리 유형을 API에서 사용할 수 있게 만든 대상입니다.</p>
+<p><strong>왜 중요한가:</strong> 같은 모델 이름이라도 배포 버전·리전·권한·과금 범위가 다를 수 있습니다. 잘못된 프로젝트의 결과를 섞으면 이후의 점수 비교도 의미가 없어집니다.</p>
+<p><strong>어떻게 경험하나:</strong> 운영자가 준비한 한 환경에 연결하고, 로컬 원본 검사와 Azure 읽기 전용 점검을 따로 수행합니다. 이 단계는 새 모델을 배포하거나 에이전트의 품질을 평가하지 않습니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 이미 준비된 <strong>실습 전용 North Central US 환경</strong>에 연결합니다. 기존 환경은 원래 manifest로 확인하며 새 RG를 만들지 않습니다.</p>
 <p>운영자는 참가자의 실제 로그인·권한·배포·현재 비용 승인을 확인하고 아래 값을 전달합니다. 아직 받지 못했다면 대기합니다. 환경이 <strong>없는 경우에만</strong> 운영자가 <a href="#book-admin--bootstrap">사전 준비</a>를 한 번 수행합니다.</p>
+<figure class="portal-shot" id="book-index--portal-project">
+<img src="web/assets/portal/01-project-overview.png" alt="실제 Foundry 프로젝트 홈. 프로젝트 선택기, New Foundry, Build, Operate와 endpoint 위치" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 01 · 프로젝트 홈.</strong> 상단 프로젝트 선택기와 New Foundry 상태를 먼저 확인합니다. Home의 View deployments는 모델 배포 목록, Build는 Agents·Knowledge·Evaluations로 이어집니다. 개인정보와 endpoint 값은 가렸습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/01-project-overview.png</code>)</span></span></figcaption>
+</figure>
+
+<p><strong>포털 길 찾기:</strong> <a href="https://ai.azure.com/">ai.azure.com</a>에 로그인 → 운영자가 알려 준 <strong>기존 프로젝트</strong> 선택 → <strong>New Foundry</strong> 경험인지 확인합니다. <strong>Build</strong>에서 실습 대상을 만들고 살펴보고, <strong>Operate</strong>는 운영 관측·관리 기능의 진입점입니다. 이번 trace 확인은 Agent 안의 <strong>Traces</strong> 탭을 사용합니다. 홈의 추천 모델 목록은 이 실습의 배포 모델 목록이 아닙니다. <strong>Create new / Deploy / Publish</strong>를 눌러 환경을 새로 만들지 않습니다.</p>
+<p class="explanation-heading" id="book-index--cli-basics">처음 CLI를 사용하는 분께</p>
+
+<p><strong>터미널은 <code>README.md</code>, <code>lab/</code>, <code>requirements.lock</code>이 보이는 패키지 루트에서 시작합니다.</strong> 아래 명령의 <code>$PWD</code>는 현재 폴더, <code>$LAB_ENV_FILE</code> 같은 표기는 앞서 <code>export</code>로 설정한 값입니다. 큰따옴표는 경로에 공백이 있어도 하나의 값으로 전달하기 위해 유지합니다. <code>YOUR_...</code>는 그대로 실행하는 값이 아닙니다.</p>
+<table>
+<thead>
+<tr>
+<th>표기</th>
+<th>읽는 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python -m lab</code></td>
+<td>현재 Python으로 이 저장소의 교육용 CLI를 실행합니다. Microsoft 공식 <code>az</code> CLI와 다릅니다.</td>
+</tr>
+<tr>
+<td><code>--config "$LAB_ENV_FILE"</code></td>
+<td>LIVE 대상 <code>.env</code>를 읽는 전역 옵션이므로 <code>lab</code> 뒤, <code>run</code> 같은 하위 명령 <strong>앞</strong>에 둡니다. bootstrap의 <code>--config</code>는 별도의 계획 <strong>JSON</strong>입니다.</td>
+</tr>
+<tr>
+<td><code>--stage</code> / <code>--split</code></td>
+<td>사용할 에이전트 단계와 질문 집합입니다. 모델 이름이나 Azure 리전을 선택하는 옵션이 아닙니다.</td>
+</tr>
+<tr>
+<td><code>--run-id</code></td>
+<td>실행 결과를 구별하는 폴더 이름입니다. 동일 실험의 기록을 덮어쓰려고 새 ID를 만들지 않습니다.</td>
+</tr>
+<tr>
+<td><code>--confirm</code></td>
+<td>데이터 전송·원격 변경·비용이 있을 수 있음을 명시합니다. 실제 비용 승인이나 권한을 생성하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>--interval-seconds 65</code></td>
+<td>사례 사이를 65초 간격으로 진행하는 명시적 pacing입니다. 실패 재시도, 65초 타임아웃, 비용 한도가 아닙니다.</td>
+</tr>
+<tr>
+<td><code>python -m json.tool ...</code></td>
+<td>JSON을 보기 좋게 펼치는 로컬 읽기입니다. <code>--json-lines</code>는 JSONL의 각 줄을 각각 읽습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>로컬</strong>은 Azure를 호출하지 않는 준비·검사·해설, <strong>조회</strong>는 Azure 상태를 읽되 추론·학습을 시작하지 않는 작업, <strong>원격 변경/유료</strong>는 버전 생성·검색·추론·평가처럼 승인 범위 확인이 필요한 작업입니다. 조회만 해도 기존 리소스의 호스팅·로그 비용이 멈추는 것은 아닙니다. 코드의 <strong>복사</strong> 버튼은 클립보드에 복사할 뿐 실행하지 않으며 출력 예시의 JSON은 명령이 아닙니다.</p>
 <p><strong>실행 명령 · 로컬 설치와 데이터 검사:</strong> 패키지 루트에서 실행합니다. <code>.venv</code>가 있으면 생성은 반복하지 않고 활성화부터 합니다.</p>
 <pre><code class="language-bash">python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.lock
 python -m lab validate
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python3 -m venv .venv</code></td>
+<td>프로젝트 전용 Python 환경을 만듭니다. 다른 프로젝트의 패키지와 섞이지 않도록 하며 Azure는 호출하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>source .venv/bin/activate</code></td>
+<td><strong>현재 셸</strong>에서 <code>python</code>·<code>pip</code>가 이 가상환경을 가리키게 합니다. 새 터미널에서는 다시 활성화합니다. <code>.env</code>를 실행하는 명령과는 다릅니다.</td>
+</tr>
+<tr>
+<td><code>python -m pip install -r requirements.lock</code></td>
+<td>고정 버전 SDK와 문서 의존성을 해당 Python에 설치합니다. 패키지 다운로드에는 인터넷이 필요하지만 모델을 호출하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>python -m lab validate</code></td>
+<td>원본·분할·스키마·생성물의 일치를 로컬 검사합니다. 파일을 다시 생성하거나 Azure에 데이터를 업로드하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
 <p class="output-label" id="book-index--example-validation">출력 예시 · 마지막 validate 명령</p>
 
 <pre><code class="language-text">일치 검사 완료: train=56, validation=12, dev=12, test=20; 정책 8개; 생성물 8개
@@ -135,6 +289,50 @@ export APPLICATIONINSIGHTS_RESOURCE_ID=&quot;YOUR_NEW_APPLICATIONINSIGHTS_RESOUR
 python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --approval &quot;$LAB_COST_APPROVAL_FILE&quot;
 python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>줄</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export LAB_ENV_DIR=...</code></td>
+<td>운영자가 전달한 <strong>기존 비공개 환경 폴더</strong>를 선택합니다. 폴더를 생성하거나 그 안의 파일을 내려받는 명령이 아닙니다.</td>
+</tr>
+<tr>
+<td><code>export LAB_ENV_FILE=...</code></td>
+<td>배포 이름·프로젝트 endpoint 등이 있는 <code>.env</code> 위치입니다. SDK는 이 파일을 데이터로 읽습니다.</td>
+</tr>
+<tr>
+<td><code>export LAB_ARTIFACTS_DIR=...</code></td>
+<td>이후 결과의 저장 기준 경로입니다. 아래 <code>runs/</code>, <code>agents/</code>, <code>knowledge/</code> 등은 모두 이 폴더 아래를 뜻합니다.</td>
+</tr>
+<tr>
+<td><code>export LAB_BOOTSTRAP_CONFIG=...</code></td>
+<td>원래 소유 manifest와 연결된 <code>config.json</code>을 선택합니다. 배포 계획과 실행 대상의 일치 확인에 사용합니다.</td>
+</tr>
+<tr>
+<td><code>export LAB_COST_APPROVAL_FILE=...</code></td>
+<td>현재 승인 기록의 경로입니다. 변수를 설정했다고 승인 파일이 생성되거나 승인되는 것은 아닙니다.</td>
+</tr>
+<tr>
+<td><code>export APPLICATIONINSIGHTS_RESOURCE_ID=...</code></td>
+<td>06에서 trace를 조회할 같은 실습 환경의 Application Insights 리소스 ID입니다. 연결 문자열이나 API 키가 아닙니다.</td>
+</tr>
+<tr>
+<td><code>lab.bootstrap status --config ... --approval ...</code></td>
+<td>Azure CLI로 기존 배포·소유·승인 상태를 조회합니다. SDK-free이지만 네트워크·CLI 로그인이 필요하며 배포하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>lab --config ... preflight</code></td>
+<td>실제 사용자·테넌트·리전·모델 배포를 조회하고 <code>preflight.json</code>을 저장합니다. 첫 모델 응답 확인은 다음 단계의 smoke에서 합니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>브라우저 로그인과 CLI 로그인은 별개입니다.</strong> 포털이 열려도 이 도구의 SDK는 검증된 Azure CLI 신원을 사용합니다. CLI 인증이 필요하면 운영자와 <a href="#book-admin--bootstrap">A1의 <code>az login</code> 절차</a>를 따릅니다. MFA는 본인이 정상 로그인 화면에서 완료하고 키·토큰을 복사해 해결하지 않습니다.</p>
 <p class="output-label" id="book-index--example-preflight">출력 예시 · 마지막 preflight 명령</p>
 
 <pre><code class="language-json">{
@@ -143,6 +341,12 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 }
 </code></pre>
 <p><strong>읽는 법:</strong> <code>PASS</code>는 관리 조회의 준비 확인이며 실제 모델 호출 성공은 아닙니다. <code>.env</code>는 데이터 파일이므로 <code>source</code>하지 않습니다. <code>LAB_ARTIFACTS_DIR</code>는 Python 실행 전에 설정하고 <code>.env</code>의 <code>BOOTSTRAP_CONFIG</code>도 같은 계획을 가리켜야 합니다.</p>
+<figure class="portal-shot" id="book-index--portal-models">
+<img src="web/assets/portal/02-model-deployments.png" alt="실제 Models Deployments 목록. agent, judge, planner, embedding 및 SFT 배포의 모델 버전과 상태" width="1270" height="750" loading="lazy">
+<figcaption><strong>화면 02 · Build → Models → Deployments.</strong> Name은 호출에 사용하는 배포 이름, Model·Version은 그 배포의 실제 모델입니다. agent·judge·planner·embedding 역할을 구별하고 Deployment type도 대조합니다. Succeeded는 배포 상태이지 답변 품질이 아닙니다. 오른쪽 요청 패널은 잘라내고 생성자는 가렸습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/02-model-deployments.png</code>)</span></span></figcaption>
+</figure>
+
+<p>사진의 SFT 배포는 기존 별도 실습에서 만든 것입니다. 참가자 기본 경로에서 SFT를 추가로 배포할 필요는 없습니다.</p>
 <p><strong>완료 확인:</strong> 실제 ARM 배포·소유 manifest·<code>.env</code>가 일치하고 preflight가 <code>PASS</code>입니다. 빈 RG의 <code>Succeeded</code>나 계획 파일만으로는 부족합니다. 무관한 기존/공유 자원·다른 리전으로 우회하지 않습니다.</p>
 <p><a id="book-index--first-infrastructure-failure"></a></p>
 <p>비용·호출·후보·대기 한도는 <strong>자신의 현재 승인</strong>을 따릅니다. 기존 실행의 금액 무상한 승인은 다른 참가자에게 적용되지 않습니다. GlobalStandard/Global/Developer 처리 위치와 리소스 리전도 다릅니다. 오류는 운영자가 같은 계획에서 해결하며, 새 터미널에서는 활성화와 위 설정만 복원합니다.</p>
@@ -151,10 +355,17 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 <h2 id="book-index--baseline">03. 기준선 평가</h2>
 <p><a id="book-index--understand"></a>
 <a id="book-index--data"></a></p>
+<div class="lab-concept" aria-label="03 학습 목표">
+<p><strong>경험할 기능:</strong> Foundry Agent Service의 버전 에이전트와 기준선 평가, LLM-as-a-Judge 교정입니다. 에이전트는 모델에 지시와 도구를 결합한 실행 단위이고, 기준선은 변경 전 성능을 남긴 비교 출발점입니다. Judge는 답변을 루브릭에 따라 채점하는 별도의 모델입니다.</p>
+<p><strong>왜 중요한가:</strong> 연결 성공만으로 좋은 에이전트라고 할 수 없고 채점 모델도 틀릴 수 있습니다. 정답 판정이 알려진 교정 사례로 Judge를 점검해야 그 점수를 개선 의사결정에 사용할 수 있습니다.</p>
+<p><strong>어떻게 경험하나:</strong> 모델 1회 smoke와 검색 없는 에이전트 3건을 구분하고, 사람이 먼저 한 답을 판단한 뒤 교정과 업무 채점을 읽습니다. 에이전트 지식이나 지시는 아직 바꾸지 않습니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 지식 도구가 없는 에이전트의 세 응답을 먼저 읽고, 업무 Judge가 믿을 만한지 교정합니다. 기대 답·route·필수 인용은 평가자용이며 생성 에이전트에 주지 않습니다. 원본 test 20건은 개발 중 열지 않습니다.</p>
 <p><strong>실행 명령 · 고정 평가 기준 읽기:</strong></p>
 <pre><code class="language-bash">python -m json.tool config/gates.json
 </code></pre>
+<p><strong>명령 해설:</strong> <code>json.tool</code>은 저장소의 게이트 JSON을 읽어 터미널에 표시합니다. <code>minimums</code>는 규칙 통과율, <code>judge</code>·<code>business_policy</code>는 의미 평가, 회귀 설정은 이전 실행과의 허용 하락폭입니다. 파일을 수정하거나 Judge를 호출하지 않습니다.</p>
 <p><strong>어떤 기준으로 결과를 읽을까요?</strong> 아래는 현재 교육용 최종 게이트의 요약이며 Microsoft 공식 합격선이나 운영 인증이 아닙니다.</p>
 <table>
 <thead>
@@ -248,6 +459,7 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 <p><strong>실행 명령 · 모델 연결 확인, 유료 1회:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; smoke --run-id model-smoke --confirm
 </code></pre>
+<p><strong>명령 해설:</strong> 설정된 모델 배포에 짧은 요청 <strong>1회</strong>를 보내 실제 인증·추론 경로를 확인합니다. <code>--run-id model-smoke</code>는 <code>runs/model-smoke/model-smoke.json</code>의 저장 이름이며 Agent를 만드는 옵션이 아닙니다. 이미 완료한 같은 ID의 receipt가 있으면 기존 기록을 읽고, 결과 불명 상태는 재전송하지 않습니다. 모델 사용량이 발생합니다.</p>
 <p class="output-label" id="book-index--example-model-smoke">출력 예시 · 모델 smoke 터미널 출력 일부</p>
 
 <pre><code class="language-json">{
@@ -263,6 +475,30 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage baseline --split dev --limit 3 --run-id baseline-smoke --confirm
 python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/outputs.jsonl&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent --stage baseline --confirm</code></td>
+<td><code>prompts/baseline.txt</code>와 설정된 모델로 <strong>도구 없는 버전 에이전트</strong>를 원격 생성합니다. 이름·버전은 <code>agents/baseline.json</code>에 기록합니다. 이 명령 자체는 질문을 보내지 않으며 배포된 모델의 비용 조건은 별도입니다.</td>
+</tr>
+<tr>
+<td><code>run --stage baseline --split dev --limit 3 ...</code></td>
+<td>기록된 기준선 버전에 dev의 앞 3건만 보냅니다. <code>--limit 3</code>은 학습 표본 수가 아니라 이번 capture 범위입니다. 실제 응답·오류는 <code>runs/baseline-smoke/outputs.jsonl</code>, 실행 설정은 <code>metadata.json</code>에 남으며 추론 비용이 발생합니다.</td>
+</tr>
+<tr>
+<td><code>json.tool --json-lines .../outputs.jsonl</code></td>
+<td>방금 저장된 각 사례를 로컬에서 펼칩니다. <code>raw_output</code>은 실제 답변 문자열, <code>response_id</code>는 원격 응답 식별자, <code>error</code>는 실패 근거입니다. 응답을 다시 생성하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>포털과 파일 연결:</strong> <code>agents/baseline.json</code>의 <code>name</code>·<code>version</code>을 포털 <strong>Build → Agents</strong>에서 대조합니다. 임의의 최신 버전이나 다른 참가자의 Agent를 선택하지 않습니다. Playground의 채팅 전송은 별도 유료 호출이므로 화면을 확인하기 위해 다시 질문할 필요는 없습니다.</p>
 <p class="output-label" id="book-index--example-agent-answer">출력 예시 · outputs.jsonl의 raw_output 안 답변을 JSON으로 펼친 모습</p>
 
 <pre><code class="language-json">{
@@ -274,11 +510,22 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/ou
 </code></pre>
 <p><strong>읽는 법:</strong> <code>clarify</code>는 필요한 정보를 묻는 행동이지 실패가 아닙니다. 안내는 <code>answer</code>, 사람 판단 요청은 <code>escalate</code>, 금지 요청 거절은 <code>refuse</code>이며 <strong><code>escalate</code>일 때만 <code>needs_human: true</code></strong>입니다. 요청도 실제 전송·티켓 생성 완료를 뜻하지 않습니다.</p>
 <p><strong>Judge 점수를 보기 전에</strong> 내 세 응답 중 하나를 정책과 대조해 맞음/수정 필요와 이유를 정합니다. 예시와 같은 답을 만들려고 출력을 바꾸지 않습니다.</p>
+<figure class="portal-shot" id="book-index--portal-agents">
+<img src="web/assets/portal/03-agent-versions.png" alt="실제 Agents 목록에서 baseline, iq, optimized 에이전트와 각 버전 확인" width="1440" height="750" loading="lazy">
+<figcaption><strong>화면 03 · Build → Agents.</strong> 기존 실습의 세 단계를 한 목록에서 본 화면입니다. 이름·Version·Type을 로컬 agents 기록과 맞춥니다. Running은 서비스 상태이며 품질 PASS나 사용자의 승인 상태가 아닙니다. 아직 만들지 않은 내 단계가 목록에 없는 것은 정상입니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/03-agent-versions.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-baseline">
+<img src="web/assets/portal/04-baseline-playground.png" alt="기준선 Agent Playground의 Model, Version, Instructions와 검색 도구가 없는 구성" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 04 · 기준선 → Playground.</strong> 위의 Model·Version, 왼쪽 Instructions·Tools·Knowledge를 확인합니다. 지시는 같아도 도구 연결 유무가 기준선과 IQ의 차이입니다. 채팅 영역은 새 메시지를 보내지 않아 비어 있으며 LIVE 응답은 CLI의 outputs.jsonl로 읽습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/04-baseline-playground.png</code>)</span></span></figcaption>
+</figure>
+
 <p><a id="book-index--calibration"></a></p>
 <p><strong>실행 명령 · 업무 Judge 교정, 유료:</strong></p>
 <p>16개 합성 참조를 채점합니다. 정상 계획은 정책 Judge 16회 + 검색 문맥이 있는 retrieval Judge 15회, <strong>31요청</strong>입니다. 실제 청구량은 아니므로 실행 전 남은 승인 범위를 확인합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; judge calibrate --calibration-id cal-01 --confirm
 </code></pre>
+<p><strong>명령 해설:</strong> 고정된 교정 참조의 답변을 정책 Judge와 검색 Judge에 보내고, 참조의 통과/실패와 실제 판정이 일치하는지 계산합니다. <code>--calibration-id cal-01</code>은 <code>calibration/cal-01/</code>의 식별자입니다. 결과는 <code>report.json</code>에 보존되며 에이전트를 다시 실행하거나 참조 정답을 새로 만들지 않습니다. <strong>31은 계획된 Judge 요청 수</strong>이고 내부 토큰·실제 비용과 같지 않습니다. 같은 교정 ID를 지우고 좋은 점수가 나올 때까지 반복하지 않습니다.</p>
 <p class="output-label" id="book-index--example-calibration">출력 예시 · 교정 실행은 완료됐지만 HOLD인 경우</p>
 
 <pre><code class="language-json">{
@@ -357,6 +604,30 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/baseline-smoke/ou
 python -m lab score --run-id baseline-smoke
 python -m lab explain --run-id baseline-smoke
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>judge score --run-id baseline-smoke ... --confirm</code></td>
+<td>기존 3건의 응답을 업무 Judge로 채점하는 <strong>유료</strong> 단계입니다. 정책 정확성·관련성과, 실제 검색이 있는 경우의 검색 근거성을 구분해 <code>judge-scores.json</code> 및 <code>business-judge/</code>에 저장합니다. 에이전트 응답은 다시 만들지 않습니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id baseline-smoke</code></td>
+<td>응답 JSON·route·인용 등의 규칙과 저장된 Judge 점수를 <strong>로컬 집계</strong>해 <code>summary.json</code>·<code>report.md</code>를 만듭니다. Judge를 추가 호출하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>explain --run-id baseline-smoke</code></td>
+<td>그 집계와 실제 Judge 이유를 <strong>읽기만</strong> 해서 해설합니다. 먼저 <code>score</code>가 있어야 하며 새 점수·승인 기록을 쓰지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>어디서 점수를 보나요?</strong> 이 경로의 업무 Judge 보고서는 로컬 파일입니다. Foundry의 <strong>Evaluations</strong> 목록에 자동 등록되는 managed 평가와는 다릅니다. 포털에 이 run이 없다는 이유로 평가를 다시 제출하지 않습니다. 별도 managed 평가 체험은 <a href="#book-facilitator--diagnostics">강사용 진단</a>에만 있습니다.</p>
 <p><strong>마지막 <code>explain</code>은 읽기 전용입니다.</strong> 기준·실제 값·전체 사례 점수표와, 중요·하락·문제 사례 우선 <strong>최대 3건의 상세 해설</strong>을 출력합니다. 질문·답변·정책/검색 문맥·점수·Judge 이유·개선 제안이 연결됩니다. 실제 이유는 <code>judge-scores.json</code>의 <strong><code>reasons.policy</code> / <code>reasons.retrieval</code></strong>에서 가져오며 새로 생성하지 않습니다. 긴 문맥은 표시만 발췌하고 원문은 보존합니다.</p>
 <p><code>score</code>는 저장된 응답의 로컬 점수를 만들고, <code>explain</code>은 그 결과를 읽습니다. <code>explain</code>을 다시 실행해도 모델을 호출하거나 기존 평가 파일을 바꾸지 않습니다. <strong>종료 코드 0은 설명 출력 성공이지 품질 통과가 아닙니다.</strong></p>
 <p class="share-checkpoint" id="book-index--share-baseline">결과 공유 · 무엇을 고쳐야 하는지 기준선에서 찾기</p>
@@ -416,13 +687,84 @@ python -m lab explain --run-id baseline-smoke
 <p class="step-next no-print"><a href="#book-index--iq" data-next-step>다음: 04. 지식 연결 →</a></p>
 
 <h2 id="book-index--iq">04. IQ 지식 연결</h2>
+<div class="lab-concept" aria-label="04 학습 목표">
+<p><strong>경험할 기능:</strong> Foundry IQ의 knowledge base와 Azure AI Search, 에이전트의 MCP 도구 호출입니다. RAG는 필요한 문서를 검색해 답변의 근거로 사용하는 방식이며, Foundry IQ는 지식 소스와 검색 계획을 재사용 가능한 knowledge base로 묶습니다.</p>
+<p><strong>왜 중요한가:</strong> 모델은 이 회사의 최신 환불 규정을 원래 알고 있지 않습니다. 정책을 지시에 계속 복사하거나 모델 가중치에 외우게 하는 대신, 실제 문서를 찾아 어떤 근거로 답했는지 남겨야 합니다. 검색 성공만으로 올바른 정책 해석까지 보장되지는 않습니다.</p>
+<p><strong>어떻게 경험하나:</strong> 지시와 모델은 고정한 채 정책 8개를 검색 가능하게 만들고 IQ를 도구로 연결합니다. 직접 검색 진단, 실제 Agent의 도구 사용, 답변 채점을 순서대로 분리해서 확인합니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 같은 지시문에 실제 지식 검색 도구만 더합니다. 신규 환경의 임베딩 배포와 합성 Contoso 정책 8개를 사용합니다.</p>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>이 실습에서의 의미와 관찰점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>임베딩·벡터 인덱스</td>
+<td>문서를 숫자 벡터로 표현해 의미가 가까운 내용을 찾습니다. 이 구현은 실제 1,536차원 벡터와 HNSW/cosine 인덱스를 사용합니다.</td>
+</tr>
+<tr>
+<td>vector-only / hybrid</td>
+<td>전자는 의미 유사도, 후자는 키워드와 벡터 검색을 함께 사용합니다. 상위 문서의 ID·본문·발효일을 비교하며 서로 다른 검색 점수의 크기를 품질 점수처럼 비교하지 않습니다.</td>
+</tr>
+<tr>
+<td>knowledge source / knowledge base</td>
+<td>source는 검색할 콘텐츠 연결, base는 어느 source를 어떻게 검색할지 정하는 상위 단위입니다. 여기서는 한 Search 인덱스를 한 source로 연결합니다.</td>
+</tr>
+<tr>
+<td>agentic retrieval·planner</td>
+<td>복합 질문을 검색 가능한 하위 질문으로 계획하고 출처·활동을 반환합니다. 이 구현은 <code>low</code> reasoning과 <code>extractiveData</code>로 원문 근거를 받아 에이전트가 답하게 합니다.</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>에이전트가 도구를 발견·호출하는 Model Context Protocol입니다. 여기서 <code>knowledge_base_retrieve</code>는 검색 도구이지 환불·티켓 실행 도구가 아닙니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>실제 흐름:</strong> 고객 질문 → 버전 에이전트 → IQ MCP 도구 → knowledge base → Search 정책 문서 → 도구 출력 → 최종 답변입니다. <code>retrieved_context</code>는 이 실행에서 돌아온 도구 출력이어야 합니다. 평가용 <code>context</code>나 모범 응답으로 대신 채우지 않습니다. 이 실습의 프로젝트 관리 ID 인증을 사용자별 문서 권한 필터 검증으로 확대 해석하지 않습니다.</p>
+<p>제품 배경: <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq">Foundry IQ 개념과 구성 요소</a>. 포털/preview API 지원 범위는 달라질 수 있으며 이 가이드의 실제 연결 방식을 우선 확인합니다.</p>
 <p><strong>실행 명령 · 지식 준비·검색 확인, 유료:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; iq prepare --confirm
 python -m lab --config &quot;$LAB_ENV_FILE&quot; iq vectors --query &quot;최초 월 구독 환불에 필요한 조건은 무엇인가요?&quot; --confirm
 python -m lab --config &quot;$LAB_ENV_FILE&quot; iq probe --query &quot;이전 구매와 9월 이후 최초 월 구매의 환불 기한 및 심사 신청 조건을 비교해 주세요.&quot; --confirm
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iq prepare --confirm</code></td>
+<td>정책 원문을 임베딩하고 Search 인덱스·knowledge source·knowledge base·프로젝트 MCP 연결을 준비합니다. <code>knowledge/setup.json</code>, <code>document-embeddings.json</code>, 설정/업로드 기록이 남습니다. 원격 변경·임베딩 사용량과 Search 호스팅 비용이 있습니다.</td>
+</tr>
+<tr>
+<td><code>iq vectors --query ... --confirm</code></td>
+<td>같은 질문의 vector-only와 hybrid 검색 결과를 직접 비교합니다. <code>--query</code>는 검색할 문장이고 Agent에게 하는 질문은 아닙니다. <code>knowledge/probes/</code>에 실제 검색 결과가 남으며 임베딩/검색 사용량이 있습니다.</td>
+</tr>
+<tr>
+<td><code>iq probe --query ... --confirm</code></td>
+<td>knowledge base에 복합 질문을 보내 planner의 <code>modelQueryPlanning</code>, 활동, 출처를 확인합니다. <code>knowledge/probes/</code>에 원본이 남고 첫 조회의 <code>knowledge/retrieve-response.json</code>도 보존합니다. 검색·planner 사용량이 발생합니다.</td>
+</tr>
+</tbody>
+</table>
 <p>순서대로 <strong>실제 1536차원 임베딩·인덱스/KB 준비 → vector-only와 hybrid 검색 → IQ의 <code>modelQueryPlanning</code>·검색 활동·출처</strong>를 확인합니다. 인덱스 존재나 설정값만으로 검색 성공을 주장하지 않습니다. 위 진단 결과를 에이전트의 <code>retrieved_context</code>에 복사하지 않습니다.</p>
+<figure class="portal-shot" id="book-index--portal-knowledge">
+<img src="web/assets/portal/05-knowledge-base.png" alt="실제 IQ knowledge base 구성. 검색 planner, Low reasoning, Extractive data, Azure AI Search Index 소스" width="1440" height="1100" loading="lazy">
+<figcaption><strong>화면 05 · Build → Knowledge → 해당 knowledge base.</strong> knowledge/setup.json의 이름을 찾아 planner 배포, Low, Extractive data, 연결된 source를 대조합니다. Active는 소스 상태이고 검색·정답 품질 점수가 아닙니다. 이 화면에서 Save나 Use in an agent로 CLI 구성을 다시 바꾸지 않습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/05-knowledge-base.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-iq-agent">
+<img src="web/assets/portal/06-iq-agent-knowledge.png" alt="IQ 에이전트 Playground의 Knowledge에 연결된 실제 knowledge base" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 06 · IQ Agent → Playground → Knowledge.</strong> 기존 MCP 연결을 포털은 Knowledge 카드로 보여 줍니다. Tools 목록이 비어 있다고 IQ 연결도 없다고 단정하지 않습니다. Instructions는 보기 편하게 접었을 뿐 변경하지 않았습니다. 연결이 보이는 것과 실제 호출은 다르므로 runs/iq-dev의 MCP 출력까지 확인합니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/06-iq-agent-knowledge.png</code>)</span></span></figcaption>
+</figure>
+
 <p><strong>실행 명령 · IQ Agent의 dev 12건 실행·동일 Judge 평가, 유료:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; agent --stage iq --confirm
 python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage iq --split dev --run-id iq-dev --interval-seconds 65 --confirm
@@ -430,6 +772,37 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id iq-dev --i
 python -m lab score --run-id iq-dev
 python -m lab explain --run-id iq-dev
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent --stage iq --confirm</code></td>
+<td>기준선과 같은 지시·모델에 IQ MCP만 연결한 버전을 만들고 <code>agents/iq.json</code>에 기록합니다. 생성 자체는 질문 실행이 아닙니다.</td>
+</tr>
+<tr>
+<td><code>run --stage iq --split dev --run-id iq-dev ...</code></td>
+<td><code>--limit</code>을 생략해 <strong>dev 전체 12건</strong>을 실행합니다. 모델·검색·planner 사용량이 있으며 <code>runs/iq-dev/</code>에 실제 MCP 호출/출력과 응답을 보존합니다.</td>
+</tr>
+<tr>
+<td><code>judge score --run-id iq-dev ...</code></td>
+<td>저장된 답을 같은 업무 Judge로 유료 채점합니다. 검색 근거성은 이 run의 실제 MCP 문맥만 사용합니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id iq-dev</code></td>
+<td>12건의 규칙 검사·저장 점수를 로컬 집계합니다. 오류/누락 행도 전체 분모에 남깁니다.</td>
+</tr>
+<tr>
+<td><code>explain --run-id iq-dev</code></td>
+<td>실제 값·HOLD 원인·사례별 이유를 읽습니다. 기준선보다 표본이 많으므로 이 명령의 전체 평균을 기준선 3건 평균과 바로 비교하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
 <p class="output-label" id="book-index--example-iq-report">출력 예시 · explain의 요약 일부 · 아래 수치는 설명용 작성 값</p>
 
 <pre><code class="language-text"># 평가 결과 해설
@@ -453,12 +826,37 @@ python -m lab explain --run-id iq-dev
 <p class="step-next no-print"><a href="#book-index--optimize" data-next-step>다음: 05. 지시 개선 →</a></p>
 
 <h2 id="book-index--optimize">05. Agent Optimizer 지시 개선</h2>
+<div class="lab-concept" aria-label="05 학습 목표">
+<p><strong>경험할 기능:</strong> 평가 데이터와 기준으로 지시 후보를 만들고 비교하는 Agent Optimizer입니다. “프롬프트를 더 길게 다시 써 주는 기능”에 그치지 않고, 선택한 에이전트 버전의 원본과 후보를 같은 과제로 평가합니다.</p>
+<p><strong>왜 중요한가:</strong> 올바른 문서를 검색해도 조건을 누락하거나 잘못된 행동을 선택할 수 있습니다. 이때는 지식 추가보다 지시 개선이 필요할 수 있지만, 평균 상승 뒤에 중요한 실패나 과적합이 숨을 수 있습니다.</p>
+<p><strong>어떻게 경험하나:</strong> dev 12건, 같은 모델·IQ 연결, 지시만 변경, 작업 1회·후보 1개로 범위를 고정합니다. 서비스의 추천 이유를 읽고 별도 업무 Judge와 동일 문항으로 재확인합니다. 모델 가중치를 학습하는 SFT나 단일 프롬프트 재작성 기능과 다릅니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 오류 없이 완료된 <code>iq-dev</code> 12건과 실제 MCP 출력을 기준으로 <strong>Agent Optimizer 한 작업·후보 한 개</strong>를 실행합니다. 모델과 IQ 연결은 유지하고 지시만 바꿉니다.</p>
 <p>지침은 <strong>원본 → 개선본</strong>으로 비교합니다. <code>baseline</code>과 <code>iq</code>는 같은 <span class="book-file-link"><code>prompts/baseline.txt</code><span class="book-file-label"> (파일: <code>prompts/baseline.txt</code>)</span></span>를 사용하고, <code>optimized</code>는 실제 서비스 결과에서 가져온 <code>optimizer/selected-prompt.txt</code>를 사용합니다. 고정된 <code>v1.txt</code>·<code>v2.txt</code>를 고르는 방식이 아니며, 지침이 길어졌다는 사실만으로 개선을 인정하지 않습니다.</p>
 <p><strong>실행 명령 · 로컬 입력 준비:</strong></p>
 <pre><code class="language-bash">python -m lab optimize --run-id iq-dev
 python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimize --run-id iq-dev</code></td>
+<td>완료된 IQ dev와 실제 도구 출력·원본 해시를 검사한 뒤 <code>optimizer/</code>에 원본 지시, <code>dev-upload.jsonl</code>, <code>handoff.json</code>을 <strong>로컬 준비</strong>합니다. 이름과 달리 서비스 작업을 제출하지 않으며 모델 비용도 없습니다. 이미 handoff가 있으면 새로 만들지 않습니다.</td>
+</tr>
+<tr>
+<td><code>json.tool .../handoff.json</code></td>
+<td>업로드할 데이터와 정확한 Agent 이름·버전·원본 해시를 읽습니다. 이 파일이 포털 선택값과 연결되는 인계표입니다.</td>
+</tr>
+</tbody>
+</table>
 <p class="output-label" id="book-index--example-optimizer-handoff">출력 예시 · handoff.json 일부</p>
 
 <pre><code class="language-json">{
@@ -470,7 +868,7 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
 }
 </code></pre>
 <p><strong>읽는 법:</strong> 입력 파일 준비만 끝났습니다. <strong>서비스 작업이나 새 Agent는 아직 없습니다.</strong> 같은 파일의 <code>agent_name</code>·<code>agent_version</code>을 다음 화면에서 사용합니다.</p>
-<p><strong>이 단계에서만 Foundry 포털을 사용합니다.</strong> 같은 계정·프로젝트에서 <strong>Agents → handoff에 기록된 IQ agent → Optimize → Create optimization run</strong>을 엽니다. <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">공식 prompt-agent 안내</a>와 함께 아래 값을 그대로 적용합니다.</p>
+<p><strong>이 단계의 작업 제출·후보 다운로드는 Foundry 포털에서 합니다.</strong> 다른 단계의 화면은 CLI 결과를 대조하는 읽기용입니다. 같은 계정·프로젝트에서 <strong>Build → Agents → handoff에 기록된 IQ agent → Optimize 탭 → Optimize 버튼 → Agent</strong>를 선택합니다. 촬영 시 실제 메뉴 이름이며, 다른 UI 버전에서는 <strong>Create optimization run</strong>으로 보일 수 있습니다. <strong>Cost</strong>는 이 실습의 선택이 아닙니다. <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">공식 prompt-agent 안내</a>와 함께 아래 값을 적용합니다.</p>
 <table>
 <thead>
 <tr>
@@ -481,19 +879,19 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
 <tbody>
 <tr>
 <td>Target</td>
-<td>handoff의 정확한 IQ agent 버전. 지시(<code>instruction</code>)만 최적화</td>
+<td>handoff의 정확한 IQ agent 버전. <strong>Choose targets → Instruction만 체크</strong>. Tool description·Model은 해제</td>
 </tr>
 <tr>
 <td>모델</td>
-<td>manifest의 실제 optimizer·judge 배포. <strong>Compare across models 끔</strong></td>
+<td>manifest의 실제 optimizer·judge 배포. <strong>Model 비교 해제</strong>. 이전 UI의 Compare across models도 끔</td>
 </tr>
 <tr>
-<td>Maximum candidates</td>
-<td><strong>1</strong>. 작업도 1회만 제출</td>
+<td>Max candidates</td>
+<td>기본값을 그대로 두지 말고 <strong>1</strong>. 작업도 1회만 제출</td>
 </tr>
 <tr>
-<td>Dataset</td>
-<td><strong>Upload</strong> → <code>$LAB_ARTIFACTS_DIR/optimizer/dev-upload.jsonl</code>의 실제 파일. 생성·다른 데이터셋 선택 안 함</td>
+<td>Data / Dataset</td>
+<td><strong>Select dataset and criteria → Upload dataset</strong> → <code>$LAB_ARTIFACTS_DIR/optimizer/dev-upload.jsonl</code>의 실제 파일. Generate data·다른 데이터셋 선택 안 함</td>
 </tr>
 <tr>
 <td>Criteria</td>
@@ -505,8 +903,37 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
 </tr>
 </tbody>
 </table>
+<p><strong>화면을 읽는 법:</strong> Relevance는 질문에 유용한 답인지, Task Adherence는 주어진 지시·제약을 따르는지 보는 내장 기준입니다. Contoso의 세부 정책 정확성 전체를 대신하지 않습니다. 이 마법사는 열 매핑을 지원하지 않으므로 준비한 JSONL의 정확한 열 이름을 유지합니다. 평가자가 사용하지 않는 <code>context</code>·<code>ground_truth</code>를 Agent의 질문에 합치지 않습니다.</p>
+<p><strong>Submit 직전:</strong> 비용 추정은 지출 차단기가 아닙니다. 원본과 후보의 Agent 실행, 검색, Judge, 개선 생성의 사용량이 포함될 수 있어 “작업 1개 = 모델 호출 1회”가 아닙니다. 이미 완료한 작업이 있으면 새 마법사를 제출하지 말고 그 run을 엽니다. Agent Optimizer는 preview이며 메뉴가 보이지 않으면 접근/지원 상태를 운영자와 확인합니다.</p>
+<figure class="portal-shot" id="book-index--portal-optimizer-target">
+<img src="web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer 미제출 Target 화면. Instruction만 선택하고 후보 1개, planner와 judge 배포 지정" width="1210" height="968" loading="lazy">
+<figcaption><strong>화면 07 · Target 설정, 미제출.</strong> Choose targets → Instruction만 선택한 뒤 Max candidates 1과 Evaluation model을 확인합니다. 촬영 시 초기값은 후보 2개·agent 평가 모델이었으므로 그대로 넘기지 않았습니다. Goal의 “token cost left free”는 비용 제한을 목표로 고정하지 않는다는 뜻이지 무료 호출이 아닙니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/07-optimizer-target.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-optimizer-data">
+<img src="web/assets/portal/08-optimizer-dataset.png" alt="Agent Optimizer 미제출 Dataset 화면의 Select dataset and criteria와 Upload dataset 버튼" width="1210" height="968" loading="lazy">
+<figcaption><strong>화면 08 · Data에서 Select dataset and criteria 선택 후.</strong> 이 선택을 하면 Dataset → Criteria → Review 순서가 나타납니다. 오른쪽 Upload dataset으로 준비한 dev 12건을 올립니다. 촬영에서는 업로드·제출하지 않았으며 목록의 다른 실행 데이터는 선택하지 않습니다. 생성자 정보는 가렸습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/08-optimizer-dataset.png</code>)</span></span></figcaption>
+</figure>
+
+<p><strong>헷갈리기 쉬운 화면:</strong> Generate data에서 Application Insights 접근 요청이나 Resolve가 보여도 본 실습을 위해 권한을 확대하지 않습니다. 여기서는 준비한 파일을 쓰므로 <strong>Select dataset and criteria</strong>를 선택합니다. 업로드한 파일의 행 수·열을 확인해야 Next로 진행할 수 있습니다. 이 문서의 사진을 따라 보기 위해 파일을 재업로드하거나 완료 작업을 재제출할 필요는 없습니다.</p>
 <p>작업당 최대 대기는 현재 승인 범위 안에서 <strong>60분 이내</strong>입니다. 시간 초과·지원/접근 차단이면 상태를 남기고 멈춥니다. Prompt Optimizer·수작업 지시·다른 모델로 대체해 완료 처리하지 않습니다.</p>
 <p><strong>작업이 <code>succeeded</code>이면:</strong> 기준선과 후보의 지시 diff, 사례별 점수와 회귀를 읽습니다. 서비스 순위는 본 실습의 업무 Judge나 운영 승인을 대신하지 않습니다. 후보에 dev에서 유도한 예시가 들어갈 수 있으므로 독립 시험이 필요합니다.</p>
+<figure class="portal-shot" id="book-index--portal-optimizer-results">
+<img src="web/assets/portal/09-optimizer-results.png" alt="실제 완료 Agent Optimizer 작업. 후보 하나의 점수 0.708과 기준선 0.677, 사용 토큰, 다운로드 및 변경 보기" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 09 · 기존 완료 run의 결과.</strong> 0.677 → 0.708은 서비스의 Task-weighted average(0–1)입니다. 아래 Avg tokens·Avg latency도 함께 읽습니다. View changes, Download JSON, Download config의 위치를 확인하되 Promote candidate는 누르지 않습니다. 기존 실습의 업무 판단은 HOLD입니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/09-optimizer-results.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-optimizer-diff">
+<img src="web/assets/portal/10-optimizer-changes.png" alt="실제 서비스가 반환한 baseline과 candidate system_prompt의 나란한 변경 비교" width="1038" height="622" loading="lazy">
+<figcaption><strong>화면 10 · View changes.</strong> 왼쪽 원본과 오른쪽 후보의 system_prompt를 비교합니다. 녹색으로 길게 추가된 지시가 곧 좋은 지시는 아닙니다. dev 유래 “내장 정책 사실”, route 정의와 권한 경계도 검토해야 합니다. export의 tools: []를 IQ 삭제 지시로 해석하지 않습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/10-optimizer-changes.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-evaluation">
+<img src="web/assets/portal/11-evaluation-results.png" alt="Optimizer 후보의 실제 managed 평가 화면. Relevance 12/12와 Task adherence 8/12, 개별 질문 결과" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 11 · Candidate results → Score details의 evalrun 링크.</strong> 기존 후보의 서비스 평가에서 Relevance는 12/12, Task adherence는 8/12입니다. Completed와 각 기준 통과율을 구별하고, 아래 Detailed metrics result를 가로로 이동해 이유·다른 지표도 읽습니다. 이는 로컬 Contoso 업무 Judge나 최종 fresh 시험의 점수가 아닙니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/11-evaluation-results.png</code>)</span></span></figcaption>
+</figure>
+
+<p><strong>결과 화면의 세 숫자를 혼동하지 않습니다.</strong> 화면 09의 0–1 종합 순위, 화면 11의 항목별 통과율, 아래 재평가의 1–5 업무 점수는 서로 다른 집계입니다. 이 사례에서는 추천 후보가 생겼어도 중요한 업무 실패가 남았습니다. 사진은 내 실행의 기대 점수나 채택 기준이 아닙니다.</p>
 <p class="share-checkpoint" id="book-index--share-optimizer">결과 공유 · Optimizer가 이 후보를 추천한 이유는?</p>
 
 <ul>
@@ -536,6 +963,7 @@ python -m json.tool &quot;$LAB_ARTIFACTS_DIR/optimizer/handoff.json&quot;
 <p><strong>실행 명령 · 서비스 후보 가져오기:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; optimizer-agent-result --result &quot;$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-final.json&quot; --candidate &quot;$LAB_ARTIFACTS_DIR/optimizer/agent-optimizer-candidate-config.json&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--result</code>는 완료 작업 JSON, <code>--candidate</code>는 그 작업의 실제 최우수 후보 config입니다. 원본 Agent·버전·지시 해시와 instruction-only 범위를 검사한 뒤 <code>selected-candidate.json</code>, <code>selected-prompt.txt</code>, <code>agent-changes.diff</code>를 로컬 저장합니다. 서비스 호출·포털 Promote·모델 변경·새 버전 생성은 하지 않습니다. 다음 명령이 가져온 지시를 사용하는 별도 버전을 만듭니다.</p>
 <p class="output-label" id="book-index--example-optimizer-candidate">출력 예시 · 후보 import 결과 일부</p>
 
 <pre><code class="language-json">{
@@ -555,6 +983,37 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; judge score --run-id optimized-
 python -m lab score --run-id optimized-dev
 python -m lab explain --run-id optimized-dev --baseline iq-dev
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agent --stage optimized --confirm</code></td>
+<td>방금 가져온 <code>selected-prompt.txt</code>와 기존 모델·IQ 도구로 <strong>별도 후보 버전</strong>을 원격 생성합니다. <code>agents/optimized.json</code>에 기록하며 원본 IQ 버전을 활성 승격하거나 덮어쓰지 않습니다.</td>
+</tr>
+<tr>
+<td><code>run --stage optimized --split dev --run-id optimized-dev ...</code></td>
+<td>동일 dev 12건으로 후보를 실행합니다. 결과는 <code>runs/optimized-dev/</code>에 남고 모델·검색 사용량이 발생합니다.</td>
+</tr>
+<tr>
+<td><code>judge score --run-id optimized-dev ...</code></td>
+<td>새 후보의 실제 답변을 같은 업무 Judge로 유료 평가합니다. 포털의 순위 점수를 업무 점수로 복사하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id optimized-dev</code></td>
+<td>후보 결과를 로컬 집계합니다. 원본 <code>iq-dev</code> 보고서는 유지합니다.</td>
+</tr>
+<tr>
+<td><code>explain --run-id optimized-dev --baseline iq-dev</code></td>
+<td><code>--baseline</code>은 비교할 <strong>저장된 실행 ID</strong>입니다. 동일 데이터·Judge의 전후 변화와 설정된 회귀를 로컬 계산하며 추가 모델 호출은 없습니다.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>마지막 명령은 저장된 동일 문항의 전후 비교입니다.</strong> 데이터·사례 ID·Judge/척도가 다르면 비교를 거부합니다. 기존 <code>compare_runs</code> 엔진으로 설정된 회귀 허용폭을 로컬 계산하며 새 모델 호출은 없습니다. dev의 종합 HOLD를 PASS로 바꾸지 않습니다.</p>
 <table>
 <thead>
@@ -594,12 +1053,41 @@ python -m lab explain --run-id optimized-dev --baseline iq-dev
 <p class="step-next no-print"><a href="#book-index--decision" data-next-step>다음: 06. 최종 판정·종료 →</a></p>
 
 <h2 id="book-index--decision">06. 최종 판정·종료</h2>
+<div class="lab-concept" aria-label="06 학습 목표">
+<p><strong>경험할 기능:</strong> 실험 동결, 새 holdout 평가, 실행 trace와 피드백 연결입니다. 동결은 후보와 평가 조건의 해시를 고정하는 로컬 계약이고, holdout은 후보 선택에 쓰지 않은 별도 시험 질문입니다. Trace는 실제 모델·도구 호출이 남긴 실행 경로입니다.</p>
+<p><strong>왜 중요한가:</strong> 개발 질문에만 잘 맞는 후보를 운영에 채택하지 않으려면 변경을 멈춘 뒤 새 질문으로 확인해야 합니다. 나중에 문제가 생겼을 때 어느 버전이 어떤 근거로 답했는지도 추적할 수 있어야 합니다.</p>
+<p><strong>어떻게 경험하나:</strong> 조건이 충족될 때만 동결 후 fresh12를 한 번 실행하고, 판정·미실행·사람 승인 부재를 분리해 기록합니다. 이 저장소의 governance 명령은 Foundry의 운영 정책을 설정하거나 실제 배포를 승인하는 기능이 아닙니다.</p>
+</div>
+
 <p><strong>할 일:</strong> 개선 후보를 동결한 뒤 새 질문으로 한 번 평가하고, 실제 상태와 다음 행동을 남깁니다. <strong>앞 단계가 차단되었거나 교정·후보 근거가 불충분하면 아래 유료 최종 시험은 실행하지 않고 <a href="#book-index--cleanup">종료 기록</a>만 작성합니다.</strong> 미실행을 성공으로 바꾸는 대체 경로가 아닙니다.</p>
 <p><strong>실행 명령 · 교정·후보 검토가 끝난 경우에만 동결·새 holdout 생성:</strong></p>
 <pre><code class="language-bash">python -m json.tool config/evaluators/fresh-holdout-gates.v1.json
 python -m lab --config &quot;$LAB_ENV_FILE&quot; freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01
 python -m lab holdout create --freeze-id selected-v1 --holdout-id fresh-01 --count 12
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>json.tool .../fresh-holdout-gates.v1.json</code></td>
+<td>원래 test20과 별도인 새 표본 계약을 로컬에서 읽습니다. 합격선을 수정하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>freeze --freeze-id selected-v1 --stage optimized --calibration-id cal-01</code></td>
+<td>선택 Agent·교정·정책·검색·평가기·게이트의 정확한 상태를 <code>governance/freezes/selected-v1.json</code>에 봉인합니다. <code>--config</code>는 환경 일치를 확인하는 용도이며 원격 조회·배포·학습은 없습니다. 동결 기록 자체가 품질 PASS는 아닙니다.</td>
+</tr>
+<tr>
+<td><code>holdout create --freeze-id ... --holdout-id fresh-01 --count 12</code></td>
+<td><strong>동결 이후</strong> 고정된 작성 템플릿에서 합성 질문 12건을 생성·중복 검사·등록합니다. <code>governance/holdouts/fresh-01/</code>에 저장하며 모델이나 데이터 생성 서비스를 호출하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>확인 후 계속:</strong> 동결에 agent 버전·prompt/model/search/evaluator/gates/data/교정 해시가 묶이고, <strong>동결 이후 생성·등록한 fresh12</strong>가 그 동결을 참조해야 합니다. 원본 test20을 대체하거나 <code>config/gates.json</code>의 <code>minimum_test_rows: 20</code>을 낮추지 않습니다. 작성 템플릿의 변형인 합성 질문을 독립 고객 표본으로 과장하지 않습니다.</p>
 <p><strong>실행 명령 · 동결한 후보의 최종 12건 실행·채점, 유료:</strong></p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage optimized --split test --run-id optimized-fresh --freeze-id selected-v1 --holdout-id fresh-01 --interval-seconds 65 --confirm
@@ -608,6 +1096,37 @@ python -m lab score --run-id optimized-fresh
 python -m lab explain --run-id optimized-fresh
 python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/outputs.jsonl&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run ... --split test --freeze-id selected-v1 --holdout-id fresh-01</code></td>
+<td>여기서 <code>--split test</code>는 최종 시험 모드이며 <strong>선택된 fresh holdout</strong>을 실행합니다. 원본 <code>data/splits/test.jsonl</code> 20건을 읽는 일반 시험과 구별합니다. 동결·교정 검사를 통과해야 유료 추론이 시작됩니다.</td>
+</tr>
+<tr>
+<td><code>judge score --run-id optimized-fresh ...</code></td>
+<td>동결에 묶인 Judge로 최종 실제 응답을 유료 채점합니다. 같은 시험을 더 유리한 평가기로 다시 채점하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id optimized-fresh</code></td>
+<td>저장된 결과를 로컬 집계해 최종 보고서를 만듭니다. 원본 응답과 Judge 점수는 바꾸지 않습니다.</td>
+</tr>
+<tr>
+<td><code>explain --run-id optimized-fresh</code></td>
+<td>동결된 표본/게이트 기준으로 실제 원인을 읽습니다. 다른 문항인 dev를 전후 비교용 <code>--baseline</code>으로 지정하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>json.tool --json-lines .../outputs.jsonl</code></td>
+<td>전체 최종 응답과 대화의 첫 턴·후속 발언을 직접 확인하는 로컬 읽기입니다.</td>
+</tr>
+</tbody>
+</table>
 <p>이 설명에는 <strong>동결된 fresh 표본 계약과 게이트</strong>가 적용됩니다. 현재 개발용 게이트로 바꾸거나 기존 test20의 기준을 낮추지 않습니다. 다른 질문인 dev 결과를 <code>--baseline</code>으로 붙이지 않습니다.</p>
 <p>최종 사례는 12건이며 명시적 후속 발언이 있는 대화 때문에 정상 capture는 <strong>13턴</strong>입니다. 마지막 답뿐 아니라 초기 <code>clarify</code>·scripted-user 출처·최종 답을 모두 읽습니다. <code>schema_and_clarify_only/not_semantic_safety</code>는 초기 형식 검사이지 초기 설명의 의미 안전성 보증이 아닙니다.</p>
 <p>동결 후 지시·모델·데이터·평가기를 바꾸거나 결과가 나쁘다고 holdout을 다시 뽑지 않습니다. 오류와 점수 누락도 분모에 남깁니다. 중단된 배치는 <a href="#book-facilitator--resume">강사용 재개 안내</a>로 같은 ID·입력을 확인하며, 불명확한 제출·완료된 Judge를 재호출하지 않습니다.</p>
@@ -615,6 +1134,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <p><strong>실행 명령 · 최종 판정, 로컬:</strong></p>
 <pre><code class="language-bash">python -m lab governance finalize --freeze-id selected-v1 --run-id optimized-fresh
 </code></pre>
+<p><strong>명령 해설:</strong> 동결과 최종 응답·Judge·summary 해시가 일치하는지 검증하고 <code>governance/results/selected-v1.json</code>에 <strong>한 번의 로컬 판정</strong>을 기록합니다. 모델 호출·자동 배포·사람 운영 승인은 없습니다. 최종 run이 차단되어 존재하지 않으면 실행하지 않습니다.</p>
 <p class="output-label" id="book-index--example-final-verdict">출력 예시 · 최종 실행 완료와 품질 HOLD가 함께 있는 경우</p>
 
 <pre><code class="language-json">{
@@ -627,7 +1147,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 }
 </code></pre>
 <p><strong>읽는 법:</strong> API 실행·채점 완료, 품질 판정, 운영 승인은 각각 다릅니다. 예시는 <strong>실행은 끝났지만 채택은 보류</strong>입니다. 최종 출력의 <code>gate.checks</code>에서 <code>passed: false</code>인 검사와, 앞서 읽은 <code>explain</code>의 원인·실제 문장·Judge 이유를 연결합니다. AI 검토를 사람 검토로 바꾸지 않습니다.</p>
-<p>이미 최종 판정이 있으면 <code>finalize</code>를 반복하지 않고 <code>python -m lab governance status --freeze-id selected-v1</code>로 읽습니다. 실제 사람 기록이 필요할 때만 <a href="#book-facilitator--review">검토 형식</a>을 사용하며, 승인 부재를 숨기지 않습니다.</p>
+<p>이미 최종 판정이 있으면 <code>finalize</code>를 반복하지 않고 <code>python -m lab governance status --freeze-id selected-v1</code>로 읽습니다. 이 <code>status</code>는 해당 동결의 기존 판정/시도 상태를 로컬 조회하는 명령이며 새 판정이나 Azure 작업을 만들지 않습니다. 실제 사람 기록이 필요할 때만 <a href="#book-facilitator--review">검토 형식</a>을 사용하며, 승인 부재를 숨기지 않습니다.</p>
 <p class="share-checkpoint" id="book-index--share-holdout">결과 공유 · 처음 보는 질문에도 통하고, 지금 채택해도 될까?</p>
 
 <ul>
@@ -639,6 +1159,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <p><strong>실행 명령 · 실제 최종 run 관측, 읽기 전용:</strong> 02에서 설정한 관측 ID를 그대로 사용합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; control-plane --run-id optimized-fresh --app-insights-id &quot;$APPLICATIONINSIGHTS_RESOURCE_ID&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--run-id</code>의 실제 response ID와 Agent 버전에 연결되는 model/tool/evaluation trace를 지정한 Application Insights에서 <strong>최근 1일 범위로 조회</strong>합니다. <code>runs/optimized-fresh/control-plane/</code>에 조회 시각별 관측을 저장합니다. 새 추론이나 관측 연결/정책을 만들지 않으며 로그 수집·보존 비용은 별도입니다. 최종 run이 미실행이면 이 명령도 건너뛰고 “최종 run 없음”을 기록합니다.</p>
 <p class="output-label" id="book-index--example-traces">출력 예시 · trace가 아직 관측되지 않은 경우</p>
 
 <pre><code class="language-json">{
@@ -649,9 +1170,22 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 }
 </code></pre>
 <p><strong>읽는 법:</strong> trace 0건은 <strong>관측 미확인</strong>이지 오류 0건·비용 0원이 아닙니다. 일부만 연결되면 <code>PARTIAL</code>, 필요한 연결이 확인되면 <code>VERIFIED_TRACE_MODEL_TOOL_EVAL_LINKS</code>입니다. trace를 만들려고 모델을 재호출하지 않으며 정책 적용·실제 청구도 별도로 확인합니다.</p>
+<p><strong>포털에서 같은 응답을 찾는 순서:</strong> Build → Agents → 해당 Agent → <strong>Traces</strong> → 실행 시각이 포함된 Date range 선택 → <code>outputs.jsonl</code>의 실제 <strong>response_id</strong> 검색 → Trace ID 열기 → <strong>Execute Tool / Chat</strong> span과 <strong>Input + Output</strong>을 읽습니다. 목록 전체는 여러 버전·Optimizer 내부 실행을 포함할 수 있으므로 이름만 같다는 이유로 연결하지 않습니다.</p>
+<figure class="portal-shot" id="book-index--portal-trace-search">
+<img src="web/assets/portal/12-trace-lookup.png" alt="기존 iq-dev 응답 ID로 필터링해 실제 trace 하나를 찾은 Foundry Traces 화면" width="1440" height="800" loading="lazy">
+<figcaption><strong>화면 12 · 실제 response ID로 trace 검색.</strong> 조회 방법을 보여 주기 위해 기존 iq-dev의 atlas-dev-001을 찾았습니다. 최종 fresh run의 화면이 아닙니다. 이 행의 Evaluation은 --이며 자동 평가 연결을 확인했다고 주장하지 않습니다. Estimated cost는 실제 청구액이 아닙니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/12-trace-lookup.png</code>)</span></span></figcaption>
+</figure>
+
+<figure class="portal-shot" id="book-index--portal-trace-detail">
+<img src="web/assets/portal/13-trace-tool-call.png" alt="같은 IQ trace의 실제 MCP knowledge_base_retrieve span, 검색 질문과 ATLAS-SUB-001 도구 출력" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 13 · Trace ID → Execute Tool → Input + Output.</strong> 같은 실제 응답의 MCP 검색 질문, 반환 문서 ATLAS-SUB-001, 도구·모델 span을 연결한 화면입니다. 이 trace에는 3 spans·1 chat call·1 tool call이 표시됩니다. 한 응답의 실행 경로이지 전체 run의 품질 통과나 누락 없는 관측을 뜻하지 않습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/13-trace-tool-call.png</code>)</span></span></figcaption>
+</figure>
+
+<p>도구 출력의 <code>\u...</code>는 JSON의 유니코드 이스케이프 표현입니다. 화면을 깔끔하게 만들려고 원본을 수정하지 않습니다. 검색 질문·문서 ID·해당 실행의 저장된 문맥을 함께 확인합니다. <strong>최종 시험이 차단되었으면 그 상태는 유지</strong>하며, 위 기존 IQ 화면을 최종 결과로 바꾸어 보고하지 않습니다.</p>
 <p><strong>실행 명령 · 다음 개선 질문 남기기, 로컬:</strong></p>
 <pre><code class="language-bash">python -m lab feedback --run-id iq-dev --feedback-id iq-dev-next-review
 </code></pre>
+<p><strong>명령 해설:</strong> 실제 <code>iq-dev</code>의 실패와 response ID를 <code>feedback/iq-dev-next-review.json</code>에 <strong>로컬 검토 대기열</strong>로 내보냅니다. <code>--feedback-id</code>는 새 검토 기록 이름입니다. 정답을 작성하거나 학습 파일·Agent·외부 서비스에 자동 반영하지 않습니다. 해당 dev 결과가 없으면 실행하지 않습니다.</p>
 <p>실제 dev 실패·응답 ID에 연결된 사람 검토 대기열이며 <code>ground_truth</code>는 비어 있고 검토는 <code>PENDING</code>입니다. 자동 학습·배포가 아닙니다. 최종 test/fresh holdout을 개발·최적화 데이터로 옮기지 않습니다.</p>
 <p><a id="book-index--cleanup"></a></p>
 <p><strong>결과를 남기고 종료 — 정상 완료와 HOLD 모두 여기서 마칩니다.</strong></p>
@@ -688,6 +1222,7 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <p><strong>실행 명령 · 삭제하지 않는 로컬 정리 계획:</strong> 02의 환경 연결이 완료된 경우에만 읽습니다. 환경 준비 전 중단했다면 실행하지 않고 준비 미완료를 기록합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; cleanup
 </code></pre>
+<p><strong>명령 해설:</strong> 로컬 소유 원장을 읽어 정리 대상과 자동 삭제하지 않는 자원을 <strong>계획으로 출력</strong>합니다. 현재 명령에는 삭제 옵션이 없고 Azure 삭제 요청도 없습니다. 이름이 cleanup이라고 리소스·비용이 정리됐다고 해석하지 않습니다.</p>
 <p><strong>삭제 승인은 없습니다.</strong> <code>--confirm-prefix</code>를 추가하거나 포털에서 자원을 지우지 않습니다. 비공개 원본·실험 계약·새 RG를 보존합니다. 터미널을 닫아도 Search·로그·모델 호스팅 비용은 계속될 수 있습니다.</p>
 <p><strong>완료 확인:</strong> 다음 문장을 근거와 함께 완성하면 참가자 경로는 끝입니다. 읽음 체크만으로 LIVE 완료를 주장하지 않습니다.</p>
 <blockquote>
@@ -713,12 +1248,41 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <li><strong>Frontier</strong>의 직접 일치하는 공식 API/지원 경로는 현재 조사에서 <strong><code>NOT_VERIFIED</code></strong>입니다. 찾지 못했다고 제품/API가 존재하지 않는다고 단정하지 않습니다.</li>
 <li>일반 SFT 작업을 Frontier 성공으로 바꿔 부르지 않습니다. 이번 신규 환경에서는 <strong>SFT 학습 succeeded → 실제 모델 배포 Succeeded → 동일 기반 모델 paired dev 평가</strong>까지 수행했습니다. 품질·사람의 운영 승인은 별개입니다.</li>
 </ul>
+<p><strong>경험할 기능:</strong> SFT(Supervised Fine-Tuning)는 입력과 원하는 응답 예시로 <strong>모델 가중치</strong>를 추가 학습하는 기능입니다. 이 실습은 JSON 형식·확인 질문·행동 분류 같은 안정된 행동을 학습 대상으로 삼고, 바뀌는 정책의 사실은 별도로 관리합니다.</p>
+<table>
+<thead>
+<tr>
+<th>방법</th>
+<th>무엇을 바꾸나</th>
+<th>언제 고려하나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Foundry IQ / RAG</td>
+<td>답할 때 검색해 제공하는 근거</td>
+<td>정책 최신성·관련 문서·출처가 문제일 때</td>
+</tr>
+<tr>
+<td>Agent Optimizer</td>
+<td>에이전트 지시 등 선택한 구성</td>
+<td>같은 근거가 있어도 조건·행동 규칙을 잘 따르지 않을 때</td>
+</tr>
+<tr>
+<td>SFT</td>
+<td>기반 모델에서 출발한 학습 가중치</td>
+<td>검토된 예시가 있고, 검색·지시 개선 이후에도 안정적인 행동 문제가 반복될 때</td>
+</tr>
+</tbody>
+</table>
+<p><strong>왜 따로 배우나요?</strong> SFT에는 학습뿐 아니라 파일 처리·배포·비교·지속 호스팅의 수명주기가 있습니다. <strong>학습 파일 → 원격 job → fine_tuned_model → 모델 deployment → 실제 응답 평가</strong>를 각각 확인해야 합니다. 본문 Agent+IQ와 달리 여기서는 정적 정책 문맥을 넣은 모델 호출을 비교합니다. 더 큰 기능이므로 더 좋은 결과가 보장되는 것은 아닙니다.</p>
 <h2 id="book-sft--gate">S0. 학습을 시작할 수 있는지 먼저 판단</h2>
 <p><strong>목적:</strong> “학습 가능” 카탈로그 표시와 실제 지역/모델/유형/권한 지원을 구별합니다.</p>
 <p><strong>할 일:</strong> 같은 Contoso 데이터에서 검색·지시를 고친 뒤에도 반복되는 안정적 행동 문제가 있는지 확인합니다. 바뀌는 정책을 가중치에 암기시키는 것이 목적이 아닙니다.</p>
 <p><strong>복사 명령 — 현재 어댑터 확인만:</strong></p>
 <pre><code class="language-bash">python -m lab.sft --help
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--help</code>는 현재 설치된 저장소 어댑터의 하위 명령·옵션만 로컬 출력합니다. 사용 가능한 Azure 모델이나 내 계정의 학습 권한을 조회하지 않습니다. <code>lab.sft</code>는 이 저장소의 교육용 CLI이며 Microsoft 공식 명령 이름이 아닙니다.</p>
 <table>
 <thead>
 <tr>
@@ -771,6 +1335,25 @@ python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/o
 <pre><code class="language-bash">python -m lab tune-prepare --kind sft
 python -m json.tool &quot;$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>하는 일·확인할 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tune-prepare --kind sft</code></td>
+<td>원본 생성물을 검사하고 train/validation을 <code>tuning/sft/</code>에 로컬 준비합니다. <code>--kind</code>는 준비 형식 선택이며 학습 유형을 원격 제출하는 옵션이 아닙니다.</td>
+</tr>
+<tr>
+<td><code>json.tool .../manifest.json</code></td>
+<td>파일별 행 수·바이트·SHA-256을 읽습니다. 데이터가 바뀌면 비교 조건도 바뀌므로 업로드 전 이 기록을 확인합니다. 모델 호출이나 업로드는 없습니다.</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -812,6 +1395,33 @@ python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; baseline --base-deployment 
 python -m lab score --run-id sft-pre-dev
 cat &quot;$LAB_ARTIFACTS_DIR/runs/sft-pre-dev/report.md&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>하는 일·비용 경계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export SFT_BASE_DEPLOYMENT=...</code></td>
+<td>검증한 <strong>튜닝 전 모델 배포 이름</strong>을 저장합니다. 모델 계열명이나 학습 job ID를 입력하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>baseline --base-deployment ... --run-id sft-pre-dev --interval-seconds 15 --confirm</code></td>
+<td>기반 배포에 dev 12건을 유료 실행하고 <code>runs/sft-pre-dev/</code>에 응답과 설정을 남깁니다. 사례 사이 15초 대기이며 학습을 제출하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id sft-pre-dev</code></td>
+<td>저장 응답을 로컬 규칙으로 집계합니다. 별도 Judge를 실행하지 않았으므로 없는 의미 점수를 만들어 넣지 않습니다.</td>
+</tr>
+<tr>
+<td><code>cat .../report.md</code></td>
+<td>집계 보고서를 터미널에 읽어 표시합니다. 모델 호출이나 보고서 수정은 없습니다.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>완료 신호:</strong> 학습 전 동일 기반 모델·생성 설정·프롬프트·dev 전체 응답과 원장 연결이 있습니다. 높은 점수는 학습 제출 조건이 아니며 어떤 안정적 행동을 고칠지 설명해야 합니다.</p>
 <p><strong>오류/복구:</strong> 401/403/SKU/모델 불일치면 제출하지 않습니다. 원래 실패 행을 없애거나 다른 계열 모델의 점수를 기준선으로 가져오지 않습니다.</p>
 <p><strong>재개:</strong> 기존 기준선과 원장을 보존합니다. 모델 구성이 바뀌면 같은 실험으로 이어갈 수 없으며 별도 계획이 필요합니다.</p>
@@ -823,11 +1433,13 @@ cat &quot;$LAB_ARTIFACTS_DIR/runs/sft-pre-dev/report.md&quot;
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; upload --confirm
 python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 </code></pre>
+<p><strong>명령 해설:</strong> <code>upload --confirm</code>은 준비 파일 두 개를 <strong>해당 Foundry 환경으로 전송</strong>하고 원격 파일 ID를 <code>tuning/sft/sft-state.json</code>에 기록합니다. 아직 학습은 시작하지 않습니다. 이어지는 <code>status</code>는 기록된 파일의 처리 상태를 원격 조회해 원장을 갱신합니다. 로컬 파일 존재와 서비스의 <code>processed</code>는 서로 다른 상태입니다.</p>
 <p><strong>첫 완료 신호:</strong> 실제 파일 ID 두 개가 원장에 저장되고 둘 다 <code>processed</code>입니다. 업로드 요청을 보냈다는 사실만으로 준비 완료가 아닙니다.</p>
 <p>이후에만 한 번 제출합니다.</p>
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; submit --confirm
 python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 </code></pre>
+<p><strong>명령 해설:</strong> <code>submit --confirm</code>은 처리된 파일 ID·기반 모델·승인 조건을 사용해 <strong>유료 SFT job 1개</strong>를 요청합니다. 기본 epoch 1은 학습 데이터를 한 번 순회한다는 뜻입니다. 뒤의 <code>status</code>는 그 job의 현재 상태를 조회할 뿐 새 job을 만들지 않습니다. 작업 ID가 기록되면 상태가 대기 중이어도 다시 submit하지 않습니다.</p>
 <p>현재 기본 제출은 <code>supervised</code>, 1 epoch, seed 105와 어댑터가 검증하는 학습 유형입니다. 학습 모델 ID/작업 ID를 예상해서 채우지 않습니다.</p>
 <p><strong>완료 신호:</strong> 원장의 실제 job ID와 서비스 상태가 일치합니다. 제출 완료는 학습 완료가 아닙니다.</p>
 <p><strong>오류/복구:</strong> <code>SUBMITTING</code>/<code>SUBMISSION_UNKNOWN</code>은 작업이 없다는 뜻이 아닙니다. 포털/원격 목록에서 요청 시각·기반 모델·파일 ID를 대조하기 전 재제출하지 않습니다. 원장을 지워 두 번째 job을 만들지 않습니다.</p>
@@ -838,11 +1450,19 @@ python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 <p><strong>복사 명령 — 한 번씩 조회:</strong></p>
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 </code></pre>
+<p><strong>명령 해설:</strong> 원장에 있는 실제 파일·job·모델·배포의 현재 상태를 조회하고 관측 기록을 남깁니다. 로컬 <code>score</code>와 달리 Azure 연결은 필요하지만 새 학습·추론은 시작하지 않습니다. 실패 이유, 실제 모델 ID, 완료 시각을 각각 확인합니다.</p>
 <p><strong>할 일:</strong> 최대 60분의 합의된 대기 범위 안에서 상태를 확인합니다. <code>succeeded</code>와 실제 <code>fine_tuned_model</code>이 모두 있어야 합니다. 학습/검증 loss는 과적합 진단 자료이며 고객지원 정확도나 안전 점수가 아닙니다.</p>
 <p>명시적인 상한으로 같은 작업만 기다릴 수도 있습니다. 시간 초과로 원격 작업을 다시 제출하거나 자동 취소하지 않습니다.</p>
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; wait --timeout-seconds 3000 --interval-seconds 60
 </code></pre>
+<p><strong>명령 해설:</strong> 같은 job을 <strong>최대 3,000초(50분)</strong> 동안 60초 간격으로 상태 조회합니다. 여기서 <code>--interval-seconds</code>는 추론 사례 간 대기가 아니라 <strong>상태 조회 간격</strong>입니다. 이 명령의 대기 상한이 서버 학습을 취소하거나 비용을 차단하지는 않습니다.</p>
 <p>이번 작업은 56 train/12 validation, 1 epoch에서 <strong>30,722 trained tokens</strong>를 반환했고 실제 학습 모델 ID가 생겼습니다. 상태 조회마다 <code>job-observations/</code>에 원본 응답을 보존했습니다. 서비스의 <code>trainingType: standard</code>는 동일한 Standard 유형의 표기 차이이며 Global/Developer로 자동 전환한 것이 아닙니다.</p>
+<figure class="portal-shot" id="book-sft--portal-sft">
+<img src="web/assets/portal/14-sft-job.png" alt="실제 완료된 SFT 작업의 모델 ID, Supervised, Standard, 학습 및 검증 파일과 epoch 1" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 14 · Build → Fine-tune → 해당 job → Details.</strong> 2026-09-30 Headless Playwright로 기존 작업을 조회한 화면입니다. 로컬 sft-state의 job ID를 맞추고 Completed·Supervised·Standard·파일·epoch를 읽습니다. 생성자·프로필은 가렸고 새 학습·배포는 하지 않았습니다. <span class="book-file-link">원본 크기로 보기<span class="book-file-label"> (파일: <code>web/assets/portal/14-sft-job.png</code>)</span></span></figcaption>
+</figure>
+
+<p><strong>학습 지표는 이렇게 읽습니다.</strong> Loss는 학습 예시의 다음 토큰 예측 오차이고 낮아지는 추세를 봅니다. Train mean token accuracy 0.79는 <strong>고객지원 업무 정확도 79%가 아닙니다.</strong> 학습 데이터에만 잘 맞았을 수 있으므로 dev 비교가 필요합니다. 화면의 <code>Training tokens billed</code> 30,000과 원본 API의 <code>trained_tokens</code> 30,722는 다른 출처·필드의 값으로 보존하며 임의로 맞추거나 실제 청구 금액으로 환산하지 않습니다. Monitor·Checkpoints는 학습 진단, Deployments는 호출 가능한 배포 확인에 사용합니다.</p>
 <p><strong>완료 신호:</strong> 실제 job·모델 ID, 결과 파일/관측 토큰, 지원되는 배포 계약을 확보했습니다.</p>
 <p><strong>오류/복구:</strong> 실패/취소/대기 상태를 성공으로 바꾸지 않습니다. 60분을 넘겼다고 자동 재제출하지 않습니다. 대기를 끝내도 서버 작업이 자동 취소되지는 않습니다.</p>
 <p><strong>재개:</strong> 원래 job ID로 상태를 읽습니다. 취소는 별도로 승인된 경우에만 해당 job에 수행하며 자원 삭제와도 다릅니다.</p>
@@ -856,11 +1476,13 @@ python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; deploy --deployment &quot;$SFT_TUNED_DEPLOYMENT&quot; --capacity 20 --confirm
 python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 </code></pre>
+<p><strong>명령 해설:</strong> <code>export</code>는 새 학습 모델의 <strong>배포 이름</strong>을 정합니다. <code>deploy</code>는 성공한 자기 job의 실제 모델을 그 이름으로 원격 배포하고 소유 원장에 남깁니다. <code>--capacity 20</code>은 검증할 ARM 용량 단위이며 모든 모델에 같은 TPM 환산을 적용하지 않습니다. <strong>지속 호스팅 과금</strong>이 시작될 수 있습니다. <code>status</code>로 실제 준비 상태를 확인하며, 이름만 정했다고 배포된 것으로 보지 않습니다.</p>
 <p>배포가 실제 준비된 후 dev를 비교합니다.</p>
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; run-pair --base-deployment &quot;$SFT_BASE_DEPLOYMENT&quot; --tuned-deployment &quot;$SFT_TUNED_DEPLOYMENT&quot; --split dev --run-prefix sft-dev --interval-seconds 10 --confirm
 python -m lab score --run-id sft-dev-base
 python -m lab score --run-id sft-dev-tuned
 </code></pre>
+<p><strong>명령 해설:</strong> <code>run-pair</code>의 <code>--base-deployment</code>·<code>--tuned-deployment</code>는 같은 계열의 두 실제 배포입니다. <code>--split dev</code>의 12건을 각각 실행하므로 정상 계획은 <strong>12×2 모델 응답</strong>이고, <code>--run-prefix sft-dev</code>에서 <code>sft-dev-base</code>·<code>sft-dev-tuned</code> 두 기록이 만들어집니다. 10초는 사례 간 대기입니다. 뒤의 두 <code>score</code>는 각 run의 저장 응답만 로컬 집계하며 추가 모델/Judge 호출은 없습니다.</p>
 <p>두 arm에는 같은 system·query/context·생성 설정을 사용합니다. <strong>정적 참조 정책을 제공한 모델 비교</strong>이며 실제 IQ 검색·MCP·버전 에이전트 실행 비교가 아닙니다.</p>
 <h3 id="book-sft--이번-실제-paired-결과">이번 실제 paired 결과</h3>
 <table>
@@ -926,10 +1548,34 @@ python -m lab --config &quot;$LAB_ENV_FILE&quot; evaluate collect --run-id sft-d
 python -m lab score --run-id sft-dev-base
 python -m lab score --run-id sft-dev-tuned
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령 쌍</th>
+<th>하는 일·확인할 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>두 <code>evaluate submit --run-id ... --confirm</code></td>
+<td>base와 tuned의 <strong>이미 저장된 답변</strong>을 각각 managed 평가에 유료 제출합니다. 에이전트/모델 답변을 다시 생성하지 않으며 각 run의 <code>managed-eval.json</code>에 eval/run ID를 남깁니다.</td>
+</tr>
+<tr>
+<td>두 <code>evaluate collect --run-id ...</code></td>
+<td>기록된 원격 평가를 조회·수집합니다. 처리 중이면 같은 ID로 collect만 이어가며 미완료를 점수 0 또는 PASS로 바꾸지 않습니다.</td>
+</tr>
+<tr>
+<td>두 <code>score --run-id ...</code></td>
+<td>수집한 Judge와 원래 응답을 각각 로컬 재집계합니다. 수집 전후의 범위를 확인하고 두 arm의 누락도 함께 봅니다.</td>
+</tr>
+</tbody>
+</table>
 <p>내장 지표는 그 저장된 입력/정의에 대한 진단이며 새로운 업무 전용 교정이나 운영 승인을 대신하지 않습니다. static context를 실제 검색 근거라고 표시하지 않습니다. 같은 run에 다른 Judge를 이어 붙여 재채점하지 않습니다.</p>
 <p>원본 test20을 아직 보지 않았고 별도 SFT 실험의 후보·기준이 동결되었으며 남은 작업 범위가 충분한 경우에만 다음 paired 모델 시험을 검토할 수 있습니다.</p>
 <pre><code class="language-bash">python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; run-pair --base-deployment &quot;$SFT_BASE_DEPLOYMENT&quot; --tuned-deployment &quot;$SFT_TUNED_DEPLOYMENT&quot; --split test --run-prefix sft-test --confirm
 </code></pre>
+<p><strong>명령 해설:</strong> 같은 두 모델을 <strong>원본 test 20건씩, 총 40응답</strong>으로 비교하는 별도 유료 시험입니다. <code>--run-prefix sft-test</code>는 dev 결과와 섞이지 않는 두 저장 ID를 만듭니다. 본문 fresh12를 사용하지 않으며, 동결·미노출·승인 조건을 사람이 먼저 확인해야 합니다.</p>
 <p>이것은 본문의 fresh12 에이전트 시도와 <strong>별도 계약</strong>입니다. 실행·Judge·로컬 score가 두 arm 모두 완전하기 전 <code>compare</code>로 통과를 주장하지 않습니다. 작은 test20은 광범위한 일반화나 튜닝 효과의 보장이 아닙니다.</p>
 <p><strong>완료 신호:</strong> SFT 작업 성공/배포/모델 비교/품질/사람 판단을 따로 기록했습니다. 못 한 단계는 미실행입니다. 사람의 별도 운영 승인 없이는 전환을 보류합니다.</p>
 <p><strong>오류/복구:</strong> 누락·실행 오류·critical 실패·Judge 불일치는 HOLD입니다. test를 보고 다시 맞추었다면 그 질문은 더 이상 미노출이 아닙니다.</p>
@@ -941,6 +1587,7 @@ python -m lab score --run-id sft-dev-tuned
 <p><strong>복사 명령 — 중립 로컬 자료만:</strong></p>
 <pre><code class="language-bash">python -m lab tune-prepare --kind frontier
 </code></pre>
+<p><strong>명령 해설:</strong> <code>tuning/frontier/</code>에 train/validation 원본과 중립적인 실험 설명·manifest만 로컬 준비합니다. 확인되지 않은 Frontier 업로드 스키마로 변환하거나 원격 학습을 제출하지 않습니다. <strong>일반 SFT와 이름만 바꾼 동등 기능이 아니므로</strong>, 실제 지원 경로 확인 전에는 여기서 멈춥니다.</p>
 <p><strong>완료 신호:</strong> train 56/validation 12와 실험 목표·평가 계획을 준비한 <code>PREPARED_NOT_SUBMITTED</code>. 서비스 전용 업로드 스키마나 실제 Frontier 학습 작업을 구현했다는 뜻이 아닙니다.</p>
 <p><strong>오류/복구:</strong> 현재 직접 일치하는 공식 API/지원 경로를 확인하지 못했다면 <code>NOT_VERIFIED</code>입니다. 존재하지 않는다거나 특정 테넌트가 영구적으로 거절되었다고 단정하지 않습니다.</p>
 <p><strong>재개:</strong> 공식 현재 계약과 실제 참여/데이터 사용 조건이 확인된 때에만 그 경로를 따릅니다. 별도 harness/endpoint가 필요하다면 기존 <code>agent --stage tuned</code> 하나로 자동 통합된다고 하지 않습니다.</p>
@@ -965,6 +1612,7 @@ python -m lab score --run-id sft-dev-tuned
 <pre><code class="language-bash">python3 -S -m lab demo
 python -m lab validate
 </code></pre>
+<p><strong>명령 해설:</strong> <code>python3 -S -m lab demo</code>는 SDK 초기화 없이 고정된 AI 작성 예시를 표시하고, <code>python -m lab validate</code>는 원본 100건·분할·생성물을 쓰기 없이 검사합니다. 둘 다 Azure 호출·로그인·유료 평가가 없으므로 환경 준비 실패와 학습 이해도를 분리하는 데 사용합니다.</p>
 <p><strong>완료 신호:</strong> authored DEMO가 SDK/자격 증명 없이 동작하고 원본 100건·분할이 유지됩니다. LIVE rehearsal은 별도 실제 비용·호출 범위가 필요하며 위 명령으로 대신되지 않습니다.</p>
 <p><strong>오류/복구:</strong> DEMO 문제를 해결하려고 참가자를 Azure 로그인으로 보내지 않습니다. 로컬 예시와 cloud 실행 오류를 분리합니다.</p>
 <p><strong>재개:</strong> 기존 사용자 작업·결과를 지우지 않습니다. 이미 완료한 DEMO는 읽기만 하고 같은 실제 실험을 원하는 점수가 나올 때까지 반복하지 않습니다.</p>
@@ -1033,7 +1681,9 @@ python -m lab validate
 </tr>
 </tbody>
 </table>
-<p>각 단계는 “실행 명령 → 출력 예시 → 내 결과 공유·판단 → 다음”으로 진행합니다. 본문 예시는 설명용 발췌이며, 참가자의 점수·ID·답변이 예시와 같아야 하는 것은 아닙니다. 예시를 실제 산출물로 저장하거나 예시에 맞추려고 재실행하지 않습니다. 세부 검사를 새 학습 장으로 늘리지 말고 실제 근거 하나를 읽게 합니다. 차단되면 본문 06의 종료 기록에 이유와 미실행 항목을 남깁니다.</p>
+<p>각 단계는 “기능 이해 → 실행 명령과 해설 → 출력 예시 → 내 결과 공유·판단 → 다음”으로 진행합니다. 본문 예시는 설명용 발췌이며, 참가자의 점수·ID·답변이 예시와 같아야 하는 것은 아닙니다. 예시를 실제 산출물로 저장하거나 예시에 맞추려고 재실행하지 않습니다. 세부 검사를 새 학습 장으로 늘리지 말고 실제 근거 하나를 읽게 합니다. 차단되면 본문 06의 종료 기록에 이유와 미실행 항목을 남깁니다.</p>
+<p><strong>기능 설명은 1분, 실제 근거 읽기는 2–3분으로 분리합니다.</strong> 각 단계의 학습 목표 카드로 “무엇·왜·어떻게”를 설명한 뒤 명령 한 줄이 <strong>로컬 파일 작업인지, Azure 조회인지, 유료/변경 작업인지</strong> 참가자가 먼저 말하게 합니다. 명령 블록 전체를 성공 여부 확인 없이 한꺼번에 실행하지 않습니다.</p>
+<p><strong>스크린샷 활용:</strong> <a href="#book-index--portal-project">프로젝트·배포</a>, <a href="#book-index--portal-knowledge">IQ 연결</a>, <a href="#book-index--portal-optimizer-target">Optimizer 설정</a>, <a href="#book-index--portal-optimizer-results">점수·변경</a>, <a href="#book-index--portal-trace-detail">실제 MCP trace</a>, <a href="#book-sft--portal-sft">SFT</a>는 Headless Playwright로 촬영한 기존 환경입니다. UI 위치를 설명할 때만 사용하며 현재 참가자의 실행 증거가 아닙니다. 모든 그림 아래의 원본 크기 링크로 확대할 수 있습니다.</p>
 <p>기존 환경에서 교정을 통과해 끝까지 진행하는 계획은 <strong>결과 공유를 포함해 약 3–4시간</strong>입니다. 아래 공유 지점에 총 약 15–20분을 배정합니다. 모델 호출 간 대기와 Optimizer 처리 시간 때문에 달라질 수 있으며, 신규 인프라 구축·SFT 시간은 별도입니다.</p>
 <h3 id="book-facilitator--evaluation-sharing">평가마다 결과를 공유하는 진행표</h3>
 <p><strong>점수를 읽고 바로 다음 명령으로 넘어가지 않습니다.</strong> 다음 여섯 지점은 평가를 추가 실행하는 단계가 아니라, 이미 나온 결과로 서로 다른 질문에 답하는 시간입니다.</p>
@@ -1099,6 +1749,7 @@ python -m lab validate
 <p>다른 사례를 같은 ID로 확인할 때는 아래 <code>ACTUAL_CASE_ID</code>를 실제 표의 ID로 바꿉니다. 새 평가가 아니라 저장 결과를 읽는 명령입니다.</p>
 <pre><code class="language-bash">python -m lab explain --run-id iq-dev --case-id ACTUAL_CASE_ID
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--run-id</code>는 읽을 기존 실행, <code>--case-id</code>는 상세히 볼 실제 사례입니다. 사례 하나를 선택해도 전체 점수의 분모·게이트는 유지합니다. 원본·Judge·summary가 일치하는지 검증한 뒤 읽기만 하며 새 평가를 호출하지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -1144,13 +1795,16 @@ python -m lab validate
 <p><strong>복사 명령 — 같은 원본을 읽는 단계:</strong></p>
 <pre><code class="language-bash">python -m json.tool --json-lines &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/outputs.jsonl&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> JSONL 각 줄을 로컬에서 펼쳐 최종 답뿐 아니라 초기 확인 질문·scripted-user 발언·오류를 읽습니다. <code>optimized-fresh</code>가 실제로 생성되지 않았다면 이 명령은 건너뛰며 예시 파일로 채우지 않습니다.</p>
 <p><strong>완료 신호:</strong> 사례 ID·정책 근거·실제 문장·불일치 이유가 구체적입니다. 외부 검토 JSON의 “human” 주장도 도구에서는 <code>external_unverified</code>이며 신원 인증이나 운영 승인이 아닙니다.</p>
 <p><strong>별도 기록이 실제로 있을 때만 사용합니다.</strong> AI가 실제 보조 검토했다면 notes를 실제 사례·정책·문장 근거로 바꾼 뒤 기록합니다. 예문을 그대로 저장해 검토했다고 주장하지 않습니다.</p>
 <pre><code class="language-bash">python -m lab review ai --review-id fresh-ai-01 --subject &quot;$LAB_ARTIFACTS_DIR/runs/optimized-fresh/summary.json&quot; --actor &quot;Copilot&quot; --notes &quot;실제 검토한 사례 ID, 정책, 문제 문장을 근거로 기록&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--review-id</code>는 로컬 검토 ID, <code>--subject</code>는 검토한 파일, <code>--actor</code>는 AI 작성자, <code>--notes</code>는 실제 근거입니다. 이 명령 자체가 AI에게 새 검토를 요청하지는 않으며 이미 수행한 검토를 해시와 함께 <code>governance/reviews/</code>에 기록합니다. 모델 비용이나 사람 승인 생성은 없습니다.</p>
 <p>사람이 직접 작성·제공한 기록이 있을 때만 가져옵니다. 없으면 명령을 실행하지 않고 사람 검토 부재를 유지합니다.</p>
 <pre><code class="language-bash">python -m lab review import --path &quot;$LAB_ENV_DIR/manual-review.json&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--path</code>의 외부 제공 검토 기록과 대상 해시를 검사해 로컬로 가져옵니다. 파일이 <code>human</code>이라고 주장해도 실제 신원 인증·운영 권한을 증명하지 않으므로 <code>external_unverified</code> 경계를 유지합니다. 기록이 없으면 만들어 대신 제출하지 않습니다.</p>
 <p>실제 검토자를 위한 <strong>미작성 형식 예시</strong>입니다. 빈 값은 유효한 검토가 아니며 AI가 <code>actor_type: human</code>으로 대신 채우지 않습니다.</p>
 <pre><code class="language-json">{
   &quot;review_id&quot;: &quot;human-review-01&quot;,
@@ -1307,21 +1961,53 @@ python -m lab validate
 <p>중단된 <strong>기준선 3건 배치</strong>의 예입니다. 원래 stage/split/run-id/limit을 그대로 유지합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage baseline --split dev --limit 3 --run-id baseline-smoke --resume --confirm
 </code></pre>
+<p><strong>명령 해설:</strong> 원래 stage·split·limit·run ID를 유지하고 <code>--resume</code>으로 저장된 진행을 확인합니다. 완료된 행을 다시 생성하는 “재실험”이 아니며, 원격 제출이 불명확하면 먼저 원격 상태를 확인합니다. 실제로 남은 모델 요청을 보낼 수 있으므로 원래 유효한 승인이 필요합니다.</p>
 <p>중단된 <strong>동결 fresh12 배치</strong>도 원래 동결·holdout·run을 유지합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage optimized --split test --run-id optimized-fresh --freeze-id selected-v1 --holdout-id fresh-01 --interval-seconds 65 --resume --confirm
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--freeze-id</code>·<code>--holdout-id</code>까지 원래 계약과 일치하는 최종 배치만 재개합니다. 65초는 남은 사례의 pacing이며 동결 변경·새 holdout 생성·Judge 재채점 권한이 아닙니다. 완료 응답·실패·불명 상태를 삭제하지 않습니다.</p>
 <p>완료된 행은 다시 생성하지 않습니다. 모델 smoke는 같은 ID의 완료 receipt를 읽지만, 결과 불명확 receipt는 재전송을 거부합니다. Judge/교정은 한 번의 시도 계약입니다. 재개는 원하는 답이나 점수를 다시 뽑는 것이 아닙니다.</p>
 <h2 id="book-facilitator--diagnostics">별도 진단 참고 — 기본 실습 완료 조건 아님</h2>
 <p><strong>본문은 업무 Judge + Agent Optimizer 한 경로로 끝납니다.</strong> 아래 기능은 삭제되지 않았지만 별도 교육 목적과 남은 비용/작업 승인이 있을 때만 사용합니다. 기본 경로의 오류나 교정 HOLD를 해소한 것으로 간주하지 않습니다. 기존 검증 기록의 별도 승인 실행도 본문 전체의 품질 통과를 뜻하지 않습니다.</p>
 <h3 id="book-facilitator--관리형-foundry-평가와-대조">관리형 Foundry 평가와 대조</h3>
+<p><strong>무엇·왜:</strong> managed 평가는 Foundry 서비스가 채점 작업·상태·보고서를 관리하는 기능입니다. 로컬 보고서와 달리 eval/run ID로 포털의 결과를 공유·추적할 수 있지만, 내장 지표가 특정 회사의 모든 업무 규칙을 대신하지는 않습니다. 이미 저장한 답변을 평가하는 경로와 Agent를 다시 실행하는 경로도 구분해야 합니다.</p>
 <p>내장 managed Evals와 Contoso 업무 Judge의 차이를 직접 볼 때만 <strong>별도 3건 run</strong>을 사용합니다. 이미 Judge를 적용한 <code>iq-dev</code>나 최종 run을 다시 제출하지 않습니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; run --stage iq --split dev --limit 3 --run-id iq-managed-diagnostic --confirm
 python -m lab --config &quot;$LAB_ENV_FILE&quot; evaluate submit --run-id iq-managed-diagnostic --confirm
 python -m lab --config &quot;$LAB_ENV_FILE&quot; evaluate collect --run-id iq-managed-diagnostic
 python -m lab score --run-id iq-managed-diagnostic
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>수행 내용·남는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run ... --limit 3 --run-id iq-managed-diagnostic --confirm</code></td>
+<td>별도 IQ dev 3건의 응답을 유료 캡처합니다. 기본 <code>iq-dev</code>와 파일·Judge 시도를 공유하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>evaluate submit --run-id ... --confirm</code></td>
+<td>저장 응답의 managed Judge 평가를 유료 제출합니다. Agent를 재호출하지 않고 <code>managed-eval.json</code>·<code>judge-contract.json</code>에 제출·평가 조건을 남깁니다.</td>
+</tr>
+<tr>
+<td><code>evaluate collect --run-id ...</code></td>
+<td>동일 eval/run ID의 상태와 실제 결과를 조회·수집합니다. 처리 중이면 점수를 만들어 채우지 않고 이 명령으로 상태만 이어서 확인합니다.</td>
+</tr>
+<tr>
+<td><code>score --run-id ...</code></td>
+<td>수집된 점수와 기존 응답을 로컬 집계합니다. 별도의 유료 평가가 아닙니다.</td>
+</tr>
+</tbody>
+</table>
 <p>실제 eval/run ID·보고서 URL을 같은 프로젝트의 Evaluations에서 대조합니다. 처리 중이면 <code>collect</code>만 재실행하며 <code>submit</code>을 반복하지 않습니다. 내장 지표는 해당 입력/정의에 대한 진단이고 업무 교정·최종 게이트를 대신하지 않습니다.</p>
+<p>포털의 상태·전체 지표·개별 행 위치는 <a href="#book-index--portal-evaluation">실제 평가 화면</a>을 참고합니다. 그 사진은 <strong>Optimizer의 native 후보 평가</strong>이며 위 별도 3건 run의 결과가 아닙니다. 표본 수·평가기·run ID가 다른 결과를 같은 점수처럼 합치지 않습니다.</p>
 <h3 id="book-facilitator--prompt-optimizer와-대조">Prompt Optimizer와 대조</h3>
+<p><strong>무엇·왜:</strong> Prompt Optimizer는 지시문과 개선 요청을 받아 재작성 제안을 얻는 기능입니다. 짧은 편집 피드백을 얻을 때 유용하지만 그 제안이 에이전트·도구·업무 데이터로 검증됐다는 뜻은 아닙니다. 본문의 Agent Optimizer는 같은 dev로 원본과 후보를 실행·평가하는 별도 경로입니다. 접근 가능한 편집기의 Improve instructions와 Agent의 Optimize 탭을 혼동하지 않습니다.</p>
 <p><a href="https://learn.microsoft.com/azure/foundry/observability/how-to/prompt-optimizer">공식 Prompt Optimizer 안내</a>의 prompt editor에 보존된 <code>optimizer/input-prompt.txt</code>와 아래 요청을 제공합니다. 이는 본문의 <strong>Agent Optimizer와 다른 일시적 제안 기능</strong>입니다. 모델 비교나 별도 Agent 재호스팅이 필요하지 않습니다.</p>
 <pre><code class="language-text">Contoso 고객지원의 기존 JSON 출력 계약을 유지한다.
 정책 질문은 실제 지식 도구의 근거를 사용하고 안정된 ATLAS 문서 ID를 인용한다.
@@ -1332,6 +2018,7 @@ python -m lab score --run-id iq-managed-diagnostic
 <p>반환된 지시·변경 이유와 실제 포털 <strong>요청/응답 본문만</strong> 별도 비공개 파일에 보존합니다. 토큰·인증 헤더·쿠키가 포함된 HAR 전체를 저장/배포하지 않습니다. 원본 캡처가 있을 때만 아래로 연결합니다.</p>
 <pre><code class="language-bash">python -m lab --config &quot;$LAB_ENV_FILE&quot; optimizer-result --request &quot;$LAB_ARTIFACTS_DIR/prompt-optimizer/service-request.txt&quot; --response &quot;$LAB_ARTIFACTS_DIR/prompt-optimizer/service-response.txt&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> <code>--request</code>·<code>--response</code>는 실제 포털 서비스 호출에서 보존한 <strong>본문 파일</strong>입니다. 가져오기 명령은 이것을 로컬 검사·기록하며 최적화를 새로 실행하지 않습니다. 포털에서 제안을 얻는 원격 단계의 데이터 전송·사용량은 별도 승인 범위입니다. 인증 헤더·HAR·쿠키를 입력 파일로 쓰지 않습니다.</p>
 <p>이 명령은 캡처를 읽어 후보와 diff를 남길 뿐 서비스 API를 호출하거나 작업 ID를 만들지 않습니다. 본문의 <code>optimizer/selected-prompt.txt</code>·선택 Agent·동결 결과를 덮어쓰지 않습니다. 수작업 후보도 서비스 결과로 표시하지 않습니다.</p>
 <p>기존 LIVE에서는 실제 Prompt Optimizer 후보가 생성되었지만 3건 smoke 모두 JSON 계약에 실패했습니다. 이 실패를 보존하고 “개선 완료”로 승격하지 않았습니다. 별도 재평가를 설계할 때도 원래 기본 실험과 산출물을 섞지 않습니다.</p>
 <p>SFT·Frontier는 <a href="#book-sft">별도 부록</a>에 있습니다. 어느 진단도 본문 06 이후 반드시 해야 하는 다음 단계는 아닙니다.</p>
@@ -1341,6 +2028,34 @@ python -m lab score --run-id iq-managed-diagnostic
 <h1 id="book-admin--운영자-안내-새-ncus-환경과-안전한-재개">운영자 안내 · 새 NCUS 환경과 안전한 재개</h1>
 <p><a href="#book-index--environment">참가자 경로로 돌아가기</a> · <span class="book-file-link">인프라 계약<span class="book-file-label"> (파일: <code>infra/README.md</code>)</span></span> · <a href="#book-verification">검증 상태</a></p>
 <p><strong>참가자 수업 전에 운영자가 한 번만 준비하는 문서입니다.</strong> 이번 실습용으로 이미 만든 전용 NCUS 환경은 원래 소유 manifest와 현재 승인을 확인해 그대로 사용합니다. 안내가 6단계로 바뀌었다고 다시 배포하지 않습니다. 아래 신규 생성 절차는 <strong>실습 환경이 아직 없는 경우에만</strong> 수행하며, 무관한 기존/공유 계정·리소스를 가져오지 않습니다. 개인 식별값은 비공개 계획 파일에만 입력합니다.</p>
+<p><strong>경험할 기능과 목적:</strong> Azure의 신원·리소스 범위·선언적 배포·소유 원장을 연결하는 준비 과정입니다. “생성 버튼을 누를 수 있음”과 “해당 사용자에게 승인된 환경임”을 분리해야 실습 결과와 비용을 추적할 수 있습니다. A1–A4에서는 신원과 계획을 확인하고, A5에서만 승인된 인프라를 실제 적용하며, A6에서 참가자의 실행 환경과 연결합니다.</p>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>의미·이번 실습에서의 역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant / Subscription / Resource group</td>
+<td>신원을 관리하는 디렉터리 / 과금·관리 범위 / 실습 자원을 묶는 그룹입니다. 서로 같은 식별자가 아닙니다.</td>
+</tr>
+<tr>
+<td>Foundry resource / Project / Deployment</td>
+<td>모델 등 공통 기능을 제공하는 자원 / Agent·평가·연결 작업 공간 / 호출할 모델·버전·SKU 대상입니다.</td>
+</tr>
+<tr>
+<td>ARM template / manifest</td>
+<td>만들 인프라의 선언 / 실제 소유·실행 상태의 기록입니다. 계획 파일만 있다고 Azure 자원이 생긴 것은 아닙니다.</td>
+</tr>
+<tr>
+<td>Managed identity / RBAC</td>
+<td>Azure 서비스가 사용할 신원 / 그 신원에 허용한 작업입니다. 사용자·프로젝트 MI·Search MI의 권한은 각각 확인합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>기본 CLI 표기와 가상환경 사용법은 <a href="#book-index--cli-basics">참가자 02</a>, 포털에서 배포 이름·버전을 찾는 위치는 <a href="#book-index--portal-models">실제 모델 화면</a>을 참고합니다. 사진은 같은 기존 환경의 읽기용 자료이며 이 준비를 다시 실행하라는 의미가 아닙니다.</p>
 <blockquote>
 <p><strong>현재 관측과 복구 순서</strong></p>
 <p>초안 검증 후 발생한 폐기 모델 거절, 프로젝트/모델 동시 생성 충돌, 관측 연결 메타데이터 누락을 실제 응답으로 확인하고 복구했습니다. 같은 신규 NCUS RG에서 ARM <code>Succeeded</code>와 25개 소유 기록을 확인했습니다. 모델은 응답 생성 전에 gpt-4.1-mini / 2025-04-14 / Standard로 명시 선택했으며 다른 리전이나 기존 자원을 재사용하지 않았습니다. <a href="#book-verification">검증 기록</a>에서 생성·데이터 평면·품질 결과를 구분합니다.</p>
@@ -1394,6 +2109,41 @@ az login --tenant &quot;$AZURE_TENANT_ID&quot;
 az account set --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&quot; -o json
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>하는 일·주의점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export AZURE_SUBSCRIPTION_ID=...</code></td>
+<td>승인된 구독 ID를 현재 셸 변수로 정합니다. 구독을 선택하거나 만들지는 않습니다.</td>
+</tr>
+<tr>
+<td><code>export AZURE_TENANT_ID=...</code></td>
+<td>로그인할 디렉터리 ID입니다. 다른 디렉터리의 같은 이름 계정을 쓰지 않도록 합니다.</td>
+</tr>
+<tr>
+<td><code>export EXPECTED_AZURE_USER=...</code></td>
+<td>기대하는 실제 로그인 사용자입니다. 예시 이메일을 교체하며 암호·토큰을 넣는 자리가 아닙니다.</td>
+</tr>
+<tr>
+<td><code>az login --tenant ...</code></td>
+<td>해당 테넌트의 정상 로그인/MFA를 수행합니다. 브라우저 포털 로그인과 별도의 CLI 인증입니다.</td>
+</tr>
+<tr>
+<td><code>az account set --subscription ...</code></td>
+<td>이후 CLI의 활성 구독을 지정합니다. 권한을 부여하거나 리소스를 배포하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>az account show --query ... -o json</code></td>
+<td>실제 CLI 사용자·테넌트·구독만 JSON으로 추려 조회합니다. 출력에 개인 식별값이 있으므로 가이드·수업 화면에 그대로 게시하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>완료 신호:</strong> 실제 로그인 사용자·테넌트·구독이 승인 범위와 일치합니다. 브라우저에서도 같은 계정을 확인합니다. bootstrap은 실제 사용자 object ID를 별도 확인합니다.</p>
 <p><strong>오류/복구:</strong> 잘못된 계정·서비스 principal·권한 부족을 다른 캐시 자격 증명으로 우회하지 않습니다. 토큰·키·암호를 문서에 복사하지 않습니다.</p>
 <p><strong>재개:</strong> 로그인 만료 때만 다시 인증합니다. 이번 실제 점검에서는 Azure MCP의 구독 조회가 맞았지만 <strong>Foundry MCP의 데이터 평면 토큰은 다른 테넌트</strong>여서 요청이 거부되었습니다. 이 경로로 변경하지 않았고 올바른 사용자·테넌트를 검증한 CLI/SDK 및 브라우저를 사용했습니다. MCP의 구독 목록만으로 principal·데이터 평면 인증이 같다고 단정하지 않습니다.</p>
@@ -1404,6 +2154,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <p><strong>복사 명령:</strong></p>
 <pre><code class="language-bash">python3 -S -m lab.bootstrap plan --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --tenant &quot;$AZURE_TENANT_ID&quot; --expected-user &quot;$EXPECTED_AZURE_USER&quot; --environment lab-training --agent-sku Standard --root .lab --location northcentralus
 </code></pre>
+<p><strong>명령 해설:</strong> <code>plan</code>은 <strong>로컬 파일 생성</strong>입니다. <code>--subscription</code>·<code>--tenant</code>·<code>--expected-user</code>는 검증할 신원을, <code>--environment</code>·<code>--root</code>는 비공개 계획의 위치를, <code>--location</code>은 허용 리전을 고정합니다. <code>--agent-sku Standard</code>는 기반 Agent 배포 유형이며 Judge·planner·embedding까지 Standard로 바꾸지 않습니다. <code>-S</code> 경로에는 SDK가 필요 없고 원격 생성·과금 호출을 하지 않습니다.</p>
 <p><code>--environment</code>는 <code>lab-training</code>처럼 <strong>소문자 영문자로 시작</strong>하는 유효한 이름을 사용합니다. 날짜 숫자만으로 시작하는 환경명은 현재 검증에 맞지 않습니다. 환경명과 RG 이름은 다른 필드입니다. 오류를 없애려고 이미 만들어진 RG나 기존 계획을 임의로 이름 변경하지 않습니다.</p>
 <p><strong>완료 신호:</strong> <code>plan_status: CREATED_LOCAL_ONLY</code>, <code>mutations_performed: false</code>. 기본 <code>.lab/lab-training/</code> 아래에 다음이 생깁니다.</p>
 <p>현재 새 agent/SFT 기반 권장값은 <strong>gpt-4.1-mini / 2025-04-14 / Standard</strong>입니다. 출력의 실제 모델/버전을 확인합니다. 이전 gpt-4o-mini가 들어 있는 계획은 적용하지 말고 새 계획을 준비합니다. <code>--agent-sku</code>는 SKU 선택이지 모델 이름/버전을 바꾸는 우회 옵션이 아닙니다.</p>
@@ -1455,6 +2206,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <pre><code class="language-bash">export NEW_RESOURCE_GROUP=&quot;YOUR_EXISTING_EMPTY_NEW_LAB_RESOURCE_GROUP&quot;
 python3 -S -m lab.bootstrap plan --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --tenant &quot;$AZURE_TENANT_ID&quot; --expected-user &quot;$EXPECTED_AZURE_USER&quot; --environment lab-training-sft --root .lab --resource-group &quot;$NEW_RESOURCE_GROUP&quot; --agent-sku Standard
 </code></pre>
+<p><strong>명령 해설:</strong> <code>export NEW_RESOURCE_GROUP</code>은 <strong>원래 의도로 생성한 아직 빈 실습 RG의 이름</strong>만 지정합니다. 뒤의 <code>plan</code>은 <code>--resource-group</code>으로 그 대상을 명시한 <strong>별도 로컬 계획</strong>을 만듭니다. RG 이름을 알고 있다는 사실만으로 소유를 인정하거나 그 그룹에 배포하지 않으며, 원래 receipt 결속과 새 승인 검사가 뒤따릅니다.</p>
 <p>이후 A3의 환경 디렉터리를 실제 새 <code>lab-training-sft</code> 경로로 선택하고 새 scope에 맞는 완전한 승인 파일을 준비합니다. A5에서 원래 intent/creation receipt로 읽기 전용 결속을 확인한 뒤 <strong>선택한 새 계획만</strong> 적용합니다. 실패한 gpt-4o-mini 계획이나 이전 GlobalStandard 계획을 자동 전환하거나 함께 apply하지 않습니다. 해당 로컬 디렉터리가 이미 있으면 다른 새 이름을 사용하며 덮어쓰지 않습니다. RG에 이미 자원이 생겼다면 이 빈-RG 절차를 억지로 적용하지 않습니다.</p>
 <p>새 Standard 기반 quota의 정확한 이름은 <strong><code>OpenAI.Standard.gpt4.1-mini</code></strong>, 별도 tuned quota는 <strong><code>OpenAI.Standard.gpt4.1-mini-finetune</code></strong>입니다. 모델 이름 <code>gpt-4.1-mini</code>와 달리 usageName의 <code>gpt</code> 뒤에는 하이픈이 없습니다. GlobalStandard quota나 이전 모델 이름을 가공해 추정하지 않습니다. 운영자가 읽은 여유는 기반 5000, 별도 fine-tuned 500이지만 관측 시점의 ARM/quota 단위이며 무료 사용량이나 성공 보장이 아닙니다. 실제 tuned Standard 배포는 성공한 SFT 작업 이후의 별도 단계입니다.</p>
 <h3 id="book-admin--a3-읽기-전용-사전-점검">A3. 읽기 전용 사전 점검</h3>
@@ -1468,6 +2220,29 @@ export LAB_COST_APPROVAL_FILE=&quot;$LAB_ENV_DIR/approval.json&quot;
 python3 -S -m lab.bootstrap preflight --config &quot;$LAB_BOOTSTRAP_CONFIG&quot;
 python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>줄</th>
+<th>하는 일·남는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>세 <code>export</code></td>
+<td>같은 환경 폴더·계획 JSON·승인 경로를 이후 명령에 전달합니다. 아직 없는 승인 파일을 만들거나 승인 상태를 바꾸지 않습니다.</td>
+</tr>
+<tr>
+<td><code>preflight --config ...</code></td>
+<td>신원·리전·모델/SKU·쿼터·권한 및 가능한 제공자 검증을 <strong>Azure 읽기 전용</strong>으로 점검합니다. 준비/차단 사유를 비공개 evidence에 남깁니다.</td>
+</tr>
+<tr>
+<td><code>status --config ...</code></td>
+<td>기존 계획에 연결된 실제 자원·배포·소유를 조회합니다. preflight 전체나 모델 추론을 대신하지 않습니다. 이 두 명령의 <code>--config</code>는 <code>.env</code>가 아니라 계획 JSON입니다.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>완료 신호:</strong> 읽기 전용 보고서에 신원·NCUS·정확한 모델/버전/SKU·쿼터 family·regional capacity가 명시됩니다. 승인 파일을 아직 전달하지 않았다면 최상위 승인 차단 상태와 <code>readiness_status</code>를 따로 읽습니다. <code>READY</code>나 <code>OBSERVED</code>는 추론 검증이 아닙니다.</p>
 <table>
 <thead>
@@ -1543,9 +2318,11 @@ python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot;
 <pre><code class="language-bash">python3 -S -m json.tool infra/plan.schema.json
 python3 -S -m json.tool infra/approval.schema.json
 </code></pre>
+<p><strong>명령 해설:</strong> 첫 줄은 계획 JSON의 필드 계약, 두 번째는 승인 기록의 필드 계약을 로컬에서 펼칩니다. 공개 <strong>스키마</strong>를 읽을 뿐 실제 승인 값을 채우거나 서명하지 않습니다. 파일 해시는 내용 일치 확인 수단이며 사람의 동의를 증명하는 서명 자체는 아닙니다.</p>
 <p><strong>복사 명령 — 작성된 승인 기록 검증만:</strong></p>
 <pre><code class="language-bash">python3 -S -m lab.bootstrap preflight --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --approval &quot;$LAB_COST_APPROVAL_FILE&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> A3 점검에 <code>--approval</code>을 추가해 현재 승인 파일이 <strong>이 계획의 범위·해시·기간·한도</strong>와 맞는지도 검증합니다. Azure 상태 조회와 로컬 승인 검사이며 아직 apply나 유료 모델 호출은 없습니다. 승인 파일이 없거나 유효하지 않으면 다음 단계로 넘어가지 않습니다.</p>
 <p>확인할 내용은 계획/템플릿 해시·모델·범위, 승인자와 기간, 실제 보존 설정, Global 처리, 호출·후보·epoch·작업/대기 제한, 자원 생성과 RBAC의 각각의 승인입니다. 모델 수명주기 조건과 지속 호스팅·미확정 비용도 별도로 확인합니다. 제공자가 폐기 사유로 거부한 모델은 단순한 수용 체크로 다시 허용되지 않습니다.</p>
 <p><strong>범위 요약과 완전한 승인 파일을 구분합니다.</strong> 원래 비공개 범위 요약의 <code>budget_cap: null</code>을 bootstrap에 그대로 넘기는 것이 아닙니다. <code>approval_template(config)</code> 또는 해당 계획의 예시를 기준으로, 승인된 운영자가 실제 동의를 완전한 schema에 기록합니다.</p>
 <p>이번 무상한 승인의 bootstrap 필드는 <code>budget_policy: NO_MONETARY_CAP_EXPLICITLY_APPROVED</code>, <code>budget_amount: null</code>, <code>acknowledge_no_monetary_cap: true</code>와 <strong>비어 있지 않은 비공개 <code>request_evidence</code></strong>입니다. 이와 별개로 실제 승인자/시각/기간·USD 통화·정확한 scope/모델·생성/RBAC/Global 처리·보존·유한한 작업 제한도 모두 검증해야 합니다. 이 필드 설명은 승인 파일 자체도, 다른 사용자의 지출 승인도 아닙니다.</p>
@@ -1563,11 +2340,31 @@ python3 -S -m json.tool infra/approval.schema.json
 export RG_CREATED_FILE=&quot;YOUR_PRIVATE_CREATION_RECEIPT_JSON&quot;
 python3 -S -m lab.bootstrap bind-group --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --intent &quot;$RG_INTENT_FILE&quot; --created &quot;$RG_CREATED_FILE&quot;
 </code></pre>
+<p><strong>명령 해설:</strong> 두 <code>export</code>는 기존 비공개 <strong>생성 전 의도</strong>와 <strong>생성 receipt</strong> 파일 경로입니다. <code>bind-group</code>은 <code>--intent</code>·<code>--created</code>의 실제 기록을 현재 계획과 Azure의 빈 RG에 대조하고 로컬 소유 원장에 결속합니다. 이름·태그를 사후 수정해 소유권을 만드는 명령이 아니며 Azure 생성/권한 변경을 하지 않습니다.</p>
 <p>이 경로도 실제 새 RG의 scope·원래 태그·생성 근거가 일치해야 합니다. 일반 참가자는 이름만 같은 그룹을 채택하지 않습니다. <code>prepare-group</code>는 외부 RG 생성 <strong>전</strong>, <code>confirm-group</code>는 그 원래 의도의 읽기 전용 확인입니다. <code>bind-group</code>도 태그/권한을 나중에 맞추거나 기존 리소스를 변경하는 동작이 아닙니다.</p>
 <p><strong>복사 명령 — 승인·소유 확인 후 운영자만:</strong></p>
 <pre><code class="language-bash">python3 -S -m lab.bootstrap apply --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --approval &quot;$LAB_COST_APPROVAL_FILE&quot;
 python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --approval &quot;$LAB_COST_APPROVAL_FILE&quot;
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>하는 일·비용 경계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apply --config ... --approval ...</code></td>
+<td>계획·승인·신원·소유·제공자 검증 뒤 <strong>실제 ARM 리소스와 승인된 RBAC</strong>를 적용합니다. 지속 과금 자원이 생길 수 있으며 배포 ID·부분 성공·오류를 보존합니다. 참가자의 일반 연결 명령이 아닙니다.</td>
+</tr>
+<tr>
+<td><code>status --config ... --approval ...</code></td>
+<td>방금 실행한 <strong>같은 계획</strong>의 원격 상태와 소유를 조회합니다. apply를 한 번 더 제출하거나 모델 응답을 생성하지 않습니다. 완료되었다면 이후에는 status와 참가자 preflight로 연결합니다.</td>
+</tr>
+</tbody>
+</table>
 <p>bootstrap은 의도 ID를 저장한 뒤 대상 소유를 확인하고 RG 범위의 Incremental 배포를 사용합니다. 기존 RG/리소스·다른 환경을 이름만 보고 채택하지 않습니다. 알려지지 않은 대상·모델 변경·권한 범위 변경은 중단 사유입니다.</p>
 <p><strong>완료 신호:</strong> 실제 ARM 배포가 완료되고 manifest/inventory가 일치하며 <code>.env</code>가 생성됩니다. 이 bootstrap의 <code>APPLIED</code>는 <code>data_plane_verified: false</code> / <code>live_status: NOT_VERIFIED</code>와 함께 보고됩니다. 인프라 확인은 모델 추론·MCP·교정·trace 수집 성공이 아닙니다.</p>
 <p><strong>오류/복구:</strong> 타임아웃을 리소스 부재로 해석하지 않습니다. 저장된 배포 ID·원장·원격 상태를 확인합니다. 자동 rollback/delete/권한 복구로 공유 환경을 변경하지 않습니다.</p>
@@ -1575,6 +2372,7 @@ python3 -S -m lab.bootstrap status --config &quot;$LAB_BOOTSTRAP_CONFIG&quot; --
 <p>bootstrap apply에는 <code>--confirm</code>, <code>--resume</code>, <code>--force</code>, <code>--adopt</code>, <code>--delete</code>를 붙이지 않습니다. 별도 배치 명령의 <code>run --resume</code>와 구분합니다. 이미 소유가 확인된 RG에서만 <code>apply --what-if</code>로 읽기 전용 비교를 할 수 있으며, 결과는 <code>WHAT_IF_ONLY</code>입니다. what-if를 위해 RG를 생성하거나 비용 승인·실제 배포 성공으로 해석하지 않습니다.</p>
 <p><strong>다음:</strong> A6.</p>
 <h3 id="book-admin--a6-런타임-환경-확인-후-참가자에게-전달">A6. 런타임 환경 확인 후 참가자에게 전달</h3>
+<p><strong>이 단계부터는 SDK가 필요합니다.</strong> A1–A5의 SDK-free bootstrap과 달리, runtime preflight는 <a href="#book-index--prepare">본문 02의 로컬 설치</a>를 마친 <code>.venv</code>에서 실행합니다. 기존 가상환경이 있으면 활성화하며 재설치·재배포부터 반복하지 않습니다.</p>
 <p><strong>목적:</strong> 생성된 정확한 신규 배포·검색·관측 endpoint를 사용하고 환경별 근거를 분리합니다.</p>
 <p><strong>할 일:</strong> private <code>.env</code>의 배포 이름·endpoint가 실제 manifest와 맞는지 읽습니다. <code>.env.example</code>의 자리표시자나 이전 실습 값으로 바꾸지 않습니다. <code>.env</code>를 셸로 실행하지 않습니다.</p>
 <p><strong>복사 명령:</strong></p>
@@ -1583,6 +2381,7 @@ export LAB_ARTIFACTS_DIR=&quot;$LAB_ENV_DIR/artifacts&quot;
 python -m lab --config &quot;$LAB_ENV_FILE&quot; preflight
 python -m lab validate
 </code></pre>
+<p><strong>명령 해설:</strong> <code>LAB_ENV_FILE</code>은 생성된 <code>.env</code>, <code>LAB_ARTIFACTS_DIR</code>는 같은 환경의 결과 저장 폴더를 지정합니다. <code>lab --config ... preflight</code>는 SDK가 사용할 신원·실제 배포를 조회해 <code>preflight.json</code>에 남기고, <code>lab validate</code>는 원본 100건과 생성물만 로컬 검사합니다. 어느 쪽도 품질 평가나 첫 모델 응답 확인은 아닙니다.</p>
 <p><code>LAB_ARTIFACTS_DIR</code>는 각 Python 프로세스의 <strong>시작 전 환경</strong>에 있어야 합니다. 새 터미널·작업 프로세스에서는 export를 다시 적용합니다. Python 안에서 모듈을 import한 뒤 뒤늦게 경로를 바꾸어 다른 환경의 근거를 섞지 않습니다.</p>
 <p><strong>완료 신호:</strong> <code>preflight: PASS</code>, 데이터 100건 유지, 올바른 실제 환경. <code>.env</code>에는 <code>EMBEDDING_DEPLOYMENT</code>, <code>LAB_ARTIFACTS_DIR</code>, 같은 계획을 가리키는 <code>LAB_BOOTSTRAP_CONFIG</code>와 <code>BOOTSTRAP_CONFIG</code>, 최초 <code>LAB_COST_APPROVAL_FILE</code>, 신규 관측 리소스 ID도 기록됩니다. 키/암호를 요구하지 않습니다.</p>
 <p>bootstrap 이후 main CLI의 <code>--confirm</code> 호출과 SFT 배포는 <code>BOOTSTRAP_CONFIG</code>를 사용해 완료된 bootstrap 소유 근거와 실제 새 RG/계정을 확인합니다. 이 소유 확인은 현재 작업 승인을 부여하지 않으므로 별도 private approval·호출/작업 제한을 함께 검증합니다. 예전 환경 값이나 위조한 hash/receipt로 통과시키지 않습니다.</p>
@@ -2012,7 +2811,7 @@ python -m lab validate
 <p>추론·IQ planner·평가·최적화·학습·로그 사용량은 별도입니다. 이 소매 참고 단가는 실제 청구서·세금 포함 확정액이 아니며 가격/계약은 변할 수 있습니다. Azure Budget은 지출 차단 장치가 아닙니다.</p>
 <p><strong>금액 상한 없음이 승인되었으며, 새 RG는 검토를 위해 보존합니다. 삭제는 승인되지 않았습니다.</strong> 기존 그룹·배포·다른 프로젝트 권한을 줄이거나 삭제하지 않았습니다.</p>
 <h2 id="book-verification--local">6. 로컬·출판 검증</h2>
-<p>전체 자동 검사, 원본 데이터 byte/hash·누출 검사, 실제 문서 CLI 문법, 링크·목차·코드 복사·모바일·인쇄 검사를 구분해 수행했습니다. Playwright <strong>headless</strong>로 웹 검증과 PDF 생성을 진행했습니다. Foundry 포털은 headless 세션에 인증이 없어 정상 로그인/MFA가 있는 브라우저를 사용했으며 자격 증명을 복사하지 않았습니다.</p>
+<p>초기 통합 출판에서는 전체 자동 검사, 원본 데이터 byte/hash·누출 검사, 실제 문서 CLI 문법, 링크·목차·코드 복사·모바일·인쇄 검사를 구분해 수행했습니다. Playwright <strong>headless</strong>로 웹 검증과 PDF 생성을 진행했습니다. 당시 Foundry 포털은 headless 세션에 인증이 없어 정상 로그인/MFA가 있는 브라우저를 사용했으며 자격 증명을 복사하지 않았습니다. 아래의 후속 가이드 화면 보강 촬영과는 구분되는 기록입니다.</p>
 <p>좌측 상단과 파비콘은 Microsoft 공식 Azure 아이콘 패키지의 Foundry SVG를 동일 파일로 사용합니다. 원본 모양/색상을 바꾸지 않았고 <span class="book-file-link">출처·사용 조건<span class="book-file-label"> (파일: <code>web/assets/NOTICE.txt</code>)</span></span>을 포함했습니다.</p>
 <pre><code class="language-bash">python -m lab validate
 python -m unittest discover -s tests -q
@@ -2021,7 +2820,84 @@ python scripts/build_guide.py --check
 python scripts/verify_pdf.py Foundry-Learning-Loop-Lab-KO.pdf
 python scripts/package_lab.py
 </code></pre>
+<p><strong>명령 해설:</strong></p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>검사/생성 범위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lab validate</code></td>
+<td>원본·분할·내보내기 byte/hash 일치의 로컬 검사. 모델 성능 검사 아님</td>
+</tr>
+<tr>
+<td><code>unittest discover -s tests -q</code></td>
+<td>로컬 자동 검사를 발견해 실행. <code>-q</code>는 간결한 출력이며 LIVE 서비스 실행 아님</td>
+</tr>
+<tr>
+<td><code>scripts/build_guide.py</code></td>
+<td>등록된 원문에서 HTML·통합 인쇄 HTML 생성</td>
+</tr>
+<tr>
+<td><code>scripts/build_guide.py --check</code></td>
+<td>생성 파일을 쓰지 않고 원문과의 일치 확인</td>
+</tr>
+<tr>
+<td><code>scripts/verify_pdf.py ...pdf</code></td>
+<td>이미 만들어진 PDF의 텍스트·빈 페이지·잘림·로컬 링크 검사. PDF 생성 명령 아님</td>
+</tr>
+<tr>
+<td><code>scripts/package_lab.py</code></td>
+<td>공개 허용 소스·정리된 증거·가이드·PDF를 로컬 ZIP으로 묶음. 업로드/배포 아님</td>
+</tr>
+</tbody>
+</table>
 <p>독립 ZIP을 새 폴더에 풀어 SDK·자격 증명·네트워크·subprocess 없이 DEMO를 실행했고 원본 100건 검사도 통과했습니다. v1 실행 파일/README가 필요하지 않습니다.</p>
+<h3 id="book-verification--portal-capture">후속 가이드 보강 · 실제 포털 화면</h3>
+<p><strong>2026-09-30, 정상 사용자 인증 후 Headless Playwright MCP에서 기존 전용 프로젝트를 직접 열어 14장을 추가 촬영했습니다.</strong> 일시적인 로그인 상태 전달 파일은 로컬 세션 폴더에서만 사용한 뒤 제거했고, 인증 정보·쿠키·서명 다운로드 URL·원시 브라우저 스냅샷은 배포 자산에 넣지 않았습니다. 이미 있는 자원·실행을 조회했으며 마법사에서 파일 업로드·Submit·Promote·Deploy·권한 변경은 수행하지 않았습니다.</p>
+<table>
+<thead>
+<tr>
+<th>화면 범위</th>
+<th>안내에서 확인할 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#book-index--portal-project">01–02 프로젝트·모델</a></td>
+<td>프로젝트 선택, 배포 이름·모델 버전·유형, 배포 성공과 품질의 차이</td>
+</tr>
+<tr>
+<td><a href="#book-index--portal-agents">03–04 에이전트</a></td>
+<td>단계별 Agent 이름·버전과 모델·지시·도구 구성</td>
+</tr>
+<tr>
+<td><a href="#book-index--portal-knowledge">05–06 Foundry IQ</a></td>
+<td>실제 KB·source, Low/Extractive data, Agent Knowledge 카드</td>
+</tr>
+<tr>
+<td><a href="#book-index--portal-optimizer-target">07–08 미제출 Optimizer 설정</a></td>
+<td>Choose targets의 Instruction만, 후보 1개, 실제 Judge 배포, 준비한 dev 업로드 경로</td>
+</tr>
+<tr>
+<td><a href="#book-index--portal-optimizer-results">09–11 기존 Optimizer 결과</a></td>
+<td>서비스 순위·지시 diff·native 평가, 로컬 업무 Judge와의 차이</td>
+</tr>
+<tr>
+<td><a href="#book-index--portal-trace-search">12–13 기존 IQ trace</a></td>
+<td>iq-dev의 atlas-dev-001 response ID로 조회한 실제 MCP 입력/출력. 최종 fresh 결과 아님</td>
+</tr>
+<tr>
+<td><a href="#book-sft--portal-sft">14 기존 SFT job</a></td>
+<td>실제 완료 작업·모델·파일·epoch, 학습 지표와 업무 성능의 차이</td>
+</tr>
+</tbody>
+</table>
+<p>촬영 시 새 마법사는 <strong>Optimize → Agent → Choose targets</strong> 경로였고, <strong>Select dataset and criteria</strong>를 고르면 Dataset·Criteria 단계가 나타났습니다. 기존 공식 문서의 메뉴 표기와 실제 화면의 차이를 본문에 병기했습니다. 화면은 위조하거나 성공 상태로 바꾸지 않았고 개인정보·endpoint 가림과 부분 잘라내기만 적용했습니다.</p>
+<p>파일별 출처·상태·가림·치수·SHA-256은 <span class="book-file-link"><code>web/assets/portal/captures.json</code><span class="book-file-label"> (파일: <code>web/assets/portal/captures.json</code>)</span></span>, 이번 보강의 로컬 출판 점검은 <span class="book-file-link"><code>checks.json</code><span class="book-file-label"> (파일: <code>evidence/guide-enrichment-20260930/checks.json</code>)</span></span>과 <span class="book-file-link"><code>pdf-check.json</code><span class="book-file-label"> (파일: <code>evidence/guide-enrichment-20260930/pdf-check.json</code>)</span></span>에 분리합니다. 기존 <code>integration-20260930</code>의 LIVE 결과·HOLD·이전 출판 검증은 덮어쓰지 않습니다. 사진에서 trace나 학습 완료가 보여도 미실행 최종 시험과 사람 승인 부재를 해소하지 않습니다.</p>
 <h2 id="book-verification--checks">7. 재개할 때 지킬 기준</h2>
 <table>
 <thead>
@@ -2448,6 +3324,7 @@ python scripts/package_lab.py
 .venv/bin/python -B scripts/build_datasets.py --check
 .venv/bin/python -B -m unittest discover -s tests -p 'test_datasets.py' -v
 </code></pre>
+<p><strong>명령 해설:</strong> 첫 줄은 로컬 데이터 <strong>생성/갱신</strong>, 두 번째 <code>--check</code>는 <strong>쓰기 없는 일치 검사</strong>, 세 번째는 <code>tests/</code>에서 <code>test_datasets.py</code>만 선택해 실행하는 <strong>자동 검사</strong>입니다. <code>-p</code>는 테스트 파일 패턴, <code>-v</code>는 자세한 출력입니다. 원본을 읽기만 하려는 참가자는 본문의 <code>lab validate</code>를 사용하며 생성 명령부터 반복하지 않습니다.</p>
 <p>첫 명령은 원본 계약을 검증한 뒤 생성물 8개를 만들거나 필요한 파일만 갱신합니다. 두 번째는 쓰기 없이 원본으로 다시 계산한 바이트와 현재 파일의 일치를 검사합니다. 빠졌거나 오래된 생성물은 종료 코드 1로 실패합니다. 생성 과정에는 시각·무작위 값·환경별 경로를 넣지 않아 같은 원본에서 같은 바이트와 SHA-256이 나옵니다.</p>
 <p>매니페스트는 원본 사례, 문서와 네 프롬프트의 SHA-256 및 내보낸 JSONL 일곱 개의 SHA-256을 담습니다. 자기 자신을 해시하는 순환 구조는 만들지 않습니다. 평가 모델의 점수나 클라우드 실행 성공을 뜻하는 값은 없습니다.</p>
 <p>테스트는 정확한 행 수, 스키마, 고유 식별자, 그룹 격리, 중복 문의, 원문 문맥, 인용 해소, 모범 응답 불리언·분류, 학습 메시지 역할, 최적화 분할, 평가 라벨 누수, 동결 문의·식별자 유출, 결정적 생성, CLI 검사 및 잘못된 입력의 거부를 검사합니다. <code>--check</code>는 손상된 원본, 누락되거나 오래된 각 생성물과 매니페스트를 거부하고 파일을 쓰지 않는지도 검사합니다. 문장 유사도 검사는 노골적인 복제를 찾는 보조 장치일 뿐 의미상 재서술을 완벽하게 판별하지 않습니다. 개인정보 패턴 검사도 실제 데이터의 비식별화를 보증하지 않습니다.</p>
@@ -3018,6 +3895,8 @@ python -m unittest discover -s tests -p 'test_documentation.py' -v
 python -m unittest discover -s tests -p 'test_guide_build.py' -v
 python -m unittest discover -s tests -p 'test_print_build.py' -v
 </code></pre>
+<p><strong>명령 해설:</strong> 첫 줄은 HTML 생성, 두 번째는 쓰기 없는 최신 상태 검사입니다. 뒤의 세 <code>unittest</code>는 각각 문서 링크·CLI·사진 계약, 웹 빌더, 통합 인쇄 빌더를 선택해 검사합니다. <code>-s tests</code>는 탐색 폴더, <code>-p</code>는 파일 패턴, <code>-v</code>는 자세한 출력입니다. 기존 원본/실행 결과를 다시 만드는 명령이 아니며 Azure 비용도 발생시키지 않습니다.</p>
+<p>포털 사진은 <code>web/assets/portal/</code>에 원본 PNG와 <code>captures.json</code>의 출처·상태·가림·해시를 함께 둡니다. Markdown의 <code>figure.portal-shot</code>에서 상대 경로·설명·원본 크기 링크로 연결하고, 계정·생성자·endpoint는 촬영 시 가립니다. 사진은 참고 화면과 기존 결과이지 새 실험의 증거가 아니며, 인증 상태·서명 URL·HAR·원시 스냅샷을 포함하지 않습니다. 학습 목표 카드는 <code>lab-concept</code>를 사용하되 참가자 6단계와 기존 앵커를 유지합니다.</p>
 <p><span class="book-file-link">문서 검사<span class="book-file-label"> (파일: <code>tests/test_documentation.py</code>)</span></span>는 등록된 HTML의 로컬 링크·앵커와 <code>guide/*.md</code>의 <code>python -m lab</code>/<code>lab.sft</code> 명령 문법을 검사합니다. <span class="book-file-link">웹 검사<span class="book-file-label"> (파일: <code>tests/test_guide_build.py</code>)</span></span>는 결정적 렌더링·링크·코드 보존·문서별 상태를, <span class="book-file-link">인쇄 검사<span class="book-file-label"> (파일: <code>tests/test_print_build.py</code>)</span></span>는 목차·앵커·휴대 가능한 링크·정적 출력 계약을 검사합니다. <strong>이 검사들은 실제 Azure 실행을 하지 않습니다.</strong></p>
 <p>PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된 로컬 인쇄 절차로 별도 제작하고 <span class="book-file-link">PDF 검사<span class="book-file-label"> (파일: <code>scripts/verify_pdf.py</code>)</span></span>로 한국어 텍스트·필수 내용·빈 페이지·본문 넘침·로컬 머신 링크를 확인해야 합니다. 기존 PDF를 새 본문에 대한 검증 결과로 재사용하지 않습니다. 검사 도구의 의존성은 참가자 DEMO의 필수 조건이 아닙니다.</p>
 <p><span class="book-file-link">패키징<span class="book-file-label"> (파일: <code>scripts/package_lab.py</code>)</span></span>은 원문 디렉터리를 포함하므로 이 migration 문서도 소스 ZIP 대상입니다. 통합 브랜치에는 migration/영문 HTML과 <code>infra</code>·<code>evidence</code> 소스 범위도 등록되었습니다. <code>.env</code>·가상환경·<code>artifacts/</code> 제외 계약을 유지하고, 배포용 <code>evidence</code>에는 승인된 비밀 없는 자료만 포함해야 합니다. 원격 계정 정보·실제 대화·LIVE 결과·인증 정보를 이름만 바꿔 그곳에 넣지 않습니다. 새 최상위 HTML을 배포하려면 페이지 등록·인쇄 포함 여부·문서 검사 페이지 목록·패키지 파일 목록을 함께 검토합니다.</p>
@@ -3130,7 +4009,9 @@ python -m unittest discover -s tests -p 'test_print_build.py' -v
 <blockquote>
 <p>Understand the example → connect the environment → evaluate the baseline → connect Foundry IQ → improve instructions with Agent Optimizer → decide and finish</p>
 </blockquote>
-<p><strong>Plan for approximately 3–4 hours, including result discussions</strong>, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows <strong>command → sample output → discuss your results and decision → next step</strong>. Samples illustrate the format and are not evidence of a successful live run.</p>
+<p><strong>Plan for approximately 3–4 hours, including result discussions</strong>, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows <strong>understand the feature → command and explanation → sample output → discuss your results and decision → next step</strong>. Samples illustrate the format and are not evidence of a successful live run.</p>
+<p>Every lab now explains <strong>what the feature is, why it matters, and how to use it</strong>. Command explanations cover options, inputs, output files, cloud/cost boundaries, and safe continuation. New CLI users can start with the <a href="#book-index--cli-basics">command-reading primer</a>.</p>
+<p><strong>Fourteen actual Foundry Portal screenshots</strong> accompany the relevant steps and SFT appendix. They were captured through <strong>headless Playwright MCP</strong> after user authentication, covering the existing project, deployments, agents, IQ, optimizer, evaluations, MCP traces, and SFT job. Start at the <a href="#book-index--portal-project">project screen</a>; each caption explains navigation and interpretation and links to the full-size image. Personal/endpoint fields are redacted. Wizard screenshots are unsubmitted drafts, result screens are existing runs, and no new paid jobs were started for these captures.</p>
 <p>At each evaluation, share <strong>actual results → a representative case → the next decision</strong>. Calibration, baseline diagnosis, IQ, optimizer ranking, candidate re-evaluation, and the fresh holdout answer different questions. These checkpoints use existing reports; they add no paid evaluation calls or automatic external sharing.</p>
 <p>The local <code>explain</code> command connects <strong>criteria, measured scores, saved Judge reasons, HOLD causes, and improvement suggestions</strong>. For strictly paired runs it also computes the configured regression diagnostics. The guide includes score-level rubrics, a worked teaching example, and next-action rules; explanations never rewrite existing evaluation evidence or grant approval.</p>
 <p><strong>This is the same lab and environment.</strong> Keep the existing dedicated NCUS resources, Contoso data, models, and evaluation criteria. Do not redeploy or rerun completed experiments because the guide changed. The former 15 chapters are grouped into six steps; the underlying tools remain available.</p>
@@ -3238,6 +4119,7 @@ python -m unittest discover -s tests -p 'test_print_build.py' -v
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 </code></pre>
+<p><strong>Command details:</strong> The first command renders the registered HTML pages and combined print HTML from Markdown. <code>--check</code> verifies freshness without writing. The final command runs the local test suite with verbose output (<code>-v</code>); it does not execute Azure labs or regenerate the PDF. Screenshot updates must also update the route, redactions, dimensions, and hash in <code>web/assets/portal/captures.json</code>.</p>
 <p>The builder generates HTML and the print book; regenerate PDF and ZIP separately. <code>python -m lab</code> is this repository's educational tool, not an official Microsoft CLI. The guide edition is <strong>v1</strong> and the documentation date is <strong>2026-09-30</strong>.</p>
 </section>
   </main>

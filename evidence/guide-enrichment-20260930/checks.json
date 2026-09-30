@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "Guide enrichment and existing-portal screenshots only; no new Azure experiments.",
+  "cloud_configuration_changed": false,
+  "new_paid_runs_submitted": false,
+  "html_build_check": "PASS",
+  "original_data_validation": "PASS",
+  "command_explanations": {
+    "guide/handbook.md": {
+      "bash_blocks": 19,
+      "shell_lines": 50,
+      "missing_explanations": 0
+    },
+    "guide/admin-setup.md": {
+      "bash_blocks": 9,
+      "shell_lines": 26,
+      "missing_explanations": 0
+    },
+    "guide/facilitator.md": {
+      "bash_blocks": 9,
+      "shell_lines": 13,
+      "missing_explanations": 0
+    },
+    "guide/sft-appendix.md": {
+      "bash_blocks": 12,
+      "shell_lines": 27,
+      "missing_explanations": 0
+    }
+  },
+  "browser": {
+    "tool": "playwright-headless",
+    "status": "PASS",
+    "steps": [
+      "start",
+      "prepare",
+      "baseline",
+      "iq",
+      "optimize",
+      "decision"
+    ],
+    "learning_concepts": 6,
+    "participant_portal_images": 13,
+    "sft_portal_images": 1,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "themes": [
+          "light",
+          "dark"
+        ],
+        "horizontal_overflow": false,
+        "oversized_images": 0
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "themes": [
+          "light",
+          "dark"
+        ],
+        "horizontal_overflow": false,
+        "oversized_images": 0
+      }
+    ],
+    "theme_persistence": true,
+    "mobile_navigation": true,
+    "full_size_image_link": {
+      "loaded": true,
+      "width": 1210,
+      "height": 968
+    },
+    "portable_print": {
+      "figures": 14,
+      "loaded_images": 14,
+      "scripts": 0,
+      "machine_links": 0
+    },
+    "page_errors": [],
+    "preview_private_env_http_status": 404
+  },
+  "unit_tests": {
+    "status": "PASS",
+    "modules": [
+      "test_documentation",
+      "test_guide_build",
+      "test_print_build",
+      "test_branding",
+      "test_package"
+    ],
+    "tests_run": 69,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "pdf": {
+    "status": "PASS",
+    "file": "Foundry-Learning-Loop-Lab-KO.pdf",
+    "sha256": "39a165ad03026290d64705f6610528cc5fe3a499e7d86aa926f011a73e3c54c3",
+    "pages": 111,
+    "exact_pixel_match_pages": {
+      "01-project-overview.png": [
+        5
+      ],
+      "02-model-deployments.png": [
+        8
+      ],
+      "03-agent-versions.png": [
+        12
+      ],
+      "04-baseline-playground.png": [
+        12
+      ],
+      "05-knowledge-base.png": [
+        18
+      ],
+      "06-iq-agent-knowledge.png": [
+        19
+      ],
+      "07-optimizer-target.png": [
+        23
+      ],
+      "08-optimizer-dataset.png": [
+        24
+      ],
+      "09-optimizer-results.png": [
+        25
+      ],
+      "10-optimizer-changes.png": [
+        26
+      ],
+      "11-evaluation-results.png": [
+        27
+      ],
+      "12-trace-lookup.png": [
+        33
+      ],
+      "13-trace-tool-call.png": [
+        34
+      ],
+      "14-sft-job.png": [
+        42
+      ]
+    },
+    "manually_inspected_pages": [
+      1,
+      16,
+      23,
+      34,
+      42
+    ]
+  },
+  "package": {
+    "status": "PASS",
+    "file": "dist/foundry-evaluation-labs-v1.1.zip",
+    "files": 156,
+    "portal_screenshots": 14,
+    "all_source_bytes_match": true,
+    "pdf_bytes_match": true,
+    "private_environments_or_browser_state_included": false
+  },
+  "preserved_contracts": {
+    "original_data_files_byte_identical_to_head": 12,
+    "runtime_evaluator_prompt_schema_changes": false
+  },
+  "completed_at": "2026-09-30T08:15:07.267850+00:00"
+}

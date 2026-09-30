@@ -4,6 +4,17 @@
 
 **참가자 수업 전에 운영자가 한 번만 준비하는 문서입니다.** 이번 실습용으로 이미 만든 전용 NCUS 환경은 원래 소유 manifest와 현재 승인을 확인해 그대로 사용합니다. 안내가 6단계로 바뀌었다고 다시 배포하지 않습니다. 아래 신규 생성 절차는 **실습 환경이 아직 없는 경우에만** 수행하며, 무관한 기존/공유 계정·리소스를 가져오지 않습니다. 개인 식별값은 비공개 계획 파일에만 입력합니다.
 
+**경험할 기능과 목적:** Azure의 신원·리소스 범위·선언적 배포·소유 원장을 연결하는 준비 과정입니다. “생성 버튼을 누를 수 있음”과 “해당 사용자에게 승인된 환경임”을 분리해야 실습 결과와 비용을 추적할 수 있습니다. A1–A4에서는 신원과 계획을 확인하고, A5에서만 승인된 인프라를 실제 적용하며, A6에서 참가자의 실행 환경과 연결합니다.
+
+| 용어 | 의미·이번 실습에서의 역할 |
+|---|---|
+| Tenant / Subscription / Resource group | 신원을 관리하는 디렉터리 / 과금·관리 범위 / 실습 자원을 묶는 그룹입니다. 서로 같은 식별자가 아닙니다. |
+| Foundry resource / Project / Deployment | 모델 등 공통 기능을 제공하는 자원 / Agent·평가·연결 작업 공간 / 호출할 모델·버전·SKU 대상입니다. |
+| ARM template / manifest | 만들 인프라의 선언 / 실제 소유·실행 상태의 기록입니다. 계획 파일만 있다고 Azure 자원이 생긴 것은 아닙니다. |
+| Managed identity / RBAC | Azure 서비스가 사용할 신원 / 그 신원에 허용한 작업입니다. 사용자·프로젝트 MI·Search MI의 권한은 각각 확인합니다. |
+
+기본 CLI 표기와 가상환경 사용법은 [참가자 02](handbook.md#cli-basics), 포털에서 배포 이름·버전을 찾는 위치는 [실제 모델 화면](handbook.md#portal-models)을 참고합니다. 사진은 같은 기존 환경의 읽기용 자료이며 이 준비를 다시 실행하라는 의미가 아닙니다.
+
 > **현재 관측과 복구 순서**
 >
 > 초안 검증 후 발생한 폐기 모델 거절, 프로젝트/모델 동시 생성 충돌, 관측 연결 메타데이터 누락을 실제 응답으로 확인하고 복구했습니다. 같은 신규 NCUS RG에서 ARM `Succeeded`와 25개 소유 기록을 확인했습니다. 모델은 응답 생성 전에 gpt-4.1-mini / 2025-04-14 / Standard로 명시 선택했으며 다른 리전이나 기존 자원을 재사용하지 않았습니다. [검증 기록](verification.md)에서 생성·데이터 평면·품질 결과를 구분합니다.
@@ -42,6 +53,17 @@ az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az account show --query "{user:user.name,tenant:tenantId,subscription:id}" -o json
 ```
 
+**명령 해설:**
+
+| 명령 | 하는 일·주의점 |
+|---|---|
+| `export AZURE_SUBSCRIPTION_ID=...` | 승인된 구독 ID를 현재 셸 변수로 정합니다. 구독을 선택하거나 만들지는 않습니다. |
+| `export AZURE_TENANT_ID=...` | 로그인할 디렉터리 ID입니다. 다른 디렉터리의 같은 이름 계정을 쓰지 않도록 합니다. |
+| `export EXPECTED_AZURE_USER=...` | 기대하는 실제 로그인 사용자입니다. 예시 이메일을 교체하며 암호·토큰을 넣는 자리가 아닙니다. |
+| `az login --tenant ...` | 해당 테넌트의 정상 로그인/MFA를 수행합니다. 브라우저 포털 로그인과 별도의 CLI 인증입니다. |
+| `az account set --subscription ...` | 이후 CLI의 활성 구독을 지정합니다. 권한을 부여하거나 리소스를 배포하지 않습니다. |
+| `az account show --query ... -o json` | 실제 CLI 사용자·테넌트·구독만 JSON으로 추려 조회합니다. 출력에 개인 식별값이 있으므로 가이드·수업 화면에 그대로 게시하지 않습니다. |
+
 **완료 신호:** 실제 로그인 사용자·테넌트·구독이 승인 범위와 일치합니다. 브라우저에서도 같은 계정을 확인합니다. bootstrap은 실제 사용자 object ID를 별도 확인합니다.
 
 **오류/복구:** 잘못된 계정·서비스 principal·권한 부족을 다른 캐시 자격 증명으로 우회하지 않습니다. 토큰·키·암호를 문서에 복사하지 않습니다.
@@ -61,6 +83,8 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id}" -o js
 ```bash
 python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training --agent-sku Standard --root .lab --location northcentralus
 ```
+
+**명령 해설:** `plan`은 **로컬 파일 생성**입니다. `--subscription`·`--tenant`·`--expected-user`는 검증할 신원을, `--environment`·`--root`는 비공개 계획의 위치를, `--location`은 허용 리전을 고정합니다. `--agent-sku Standard`는 기반 Agent 배포 유형이며 Judge·planner·embedding까지 Standard로 바꾸지 않습니다. `-S` 경로에는 SDK가 필요 없고 원격 생성·과금 호출을 하지 않습니다.
 
 `--environment`는 `lab-training`처럼 **소문자 영문자로 시작**하는 유효한 이름을 사용합니다. 날짜 숫자만으로 시작하는 환경명은 현재 검증에 맞지 않습니다. 환경명과 RG 이름은 다른 필드입니다. 오류를 없애려고 이미 만들어진 RG나 기존 계획을 임의로 이름 변경하지 않습니다.
 
@@ -97,6 +121,8 @@ export NEW_RESOURCE_GROUP="YOUR_EXISTING_EMPTY_NEW_LAB_RESOURCE_GROUP"
 python3 -S -m lab.bootstrap plan --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID" --expected-user "$EXPECTED_AZURE_USER" --environment lab-training-sft --root .lab --resource-group "$NEW_RESOURCE_GROUP" --agent-sku Standard
 ```
 
+**명령 해설:** `export NEW_RESOURCE_GROUP`은 **원래 의도로 생성한 아직 빈 실습 RG의 이름**만 지정합니다. 뒤의 `plan`은 `--resource-group`으로 그 대상을 명시한 **별도 로컬 계획**을 만듭니다. RG 이름을 알고 있다는 사실만으로 소유를 인정하거나 그 그룹에 배포하지 않으며, 원래 receipt 결속과 새 승인 검사가 뒤따릅니다.
+
 이후 A3의 환경 디렉터리를 실제 새 `lab-training-sft` 경로로 선택하고 새 scope에 맞는 완전한 승인 파일을 준비합니다. A5에서 원래 intent/creation receipt로 읽기 전용 결속을 확인한 뒤 **선택한 새 계획만** 적용합니다. 실패한 gpt-4o-mini 계획이나 이전 GlobalStandard 계획을 자동 전환하거나 함께 apply하지 않습니다. 해당 로컬 디렉터리가 이미 있으면 다른 새 이름을 사용하며 덮어쓰지 않습니다. RG에 이미 자원이 생겼다면 이 빈-RG 절차를 억지로 적용하지 않습니다.
 
 새 Standard 기반 quota의 정확한 이름은 **`OpenAI.Standard.gpt4.1-mini`**, 별도 tuned quota는 **`OpenAI.Standard.gpt4.1-mini-finetune`**입니다. 모델 이름 `gpt-4.1-mini`와 달리 usageName의 `gpt` 뒤에는 하이픈이 없습니다. GlobalStandard quota나 이전 모델 이름을 가공해 추정하지 않습니다. 운영자가 읽은 여유는 기반 5000, 별도 fine-tuned 500이지만 관측 시점의 ARM/quota 단위이며 무료 사용량이나 성공 보장이 아닙니다. 실제 tuned Standard 배포는 성공한 SFT 작업 이후의 별도 단계입니다.
@@ -118,6 +144,14 @@ export LAB_COST_APPROVAL_FILE="$LAB_ENV_DIR/approval.json"
 python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG"
 python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG"
 ```
+
+**명령 해설:**
+
+| 줄 | 하는 일·남는 것 |
+|---|---|
+| 세 `export` | 같은 환경 폴더·계획 JSON·승인 경로를 이후 명령에 전달합니다. 아직 없는 승인 파일을 만들거나 승인 상태를 바꾸지 않습니다. |
+| `preflight --config ...` | 신원·리전·모델/SKU·쿼터·권한 및 가능한 제공자 검증을 **Azure 읽기 전용**으로 점검합니다. 준비/차단 사유를 비공개 evidence에 남깁니다. |
+| `status --config ...` | 기존 계획에 연결된 실제 자원·배포·소유를 조회합니다. preflight 전체나 모델 추론을 대신하지 않습니다. 이 두 명령의 `--config`는 `.env`가 아니라 계획 JSON입니다. |
 
 **완료 신호:** 읽기 전용 보고서에 신원·NCUS·정확한 모델/버전/SKU·쿼터 family·regional capacity가 명시됩니다. 승인 파일을 아직 전달하지 않았다면 최상위 승인 차단 상태와 `readiness_status`를 따로 읽습니다. `READY`나 `OBSERVED`는 추론 검증이 아닙니다.
 
@@ -160,11 +194,15 @@ python3 -S -m json.tool infra/plan.schema.json
 python3 -S -m json.tool infra/approval.schema.json
 ```
 
+**명령 해설:** 첫 줄은 계획 JSON의 필드 계약, 두 번째는 승인 기록의 필드 계약을 로컬에서 펼칩니다. 공개 **스키마**를 읽을 뿐 실제 승인 값을 채우거나 서명하지 않습니다. 파일 해시는 내용 일치 확인 수단이며 사람의 동의를 증명하는 서명 자체는 아닙니다.
+
 **복사 명령 — 작성된 승인 기록 검증만:**
 
 ```bash
 python3 -S -m lab.bootstrap preflight --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
 ```
+
+**명령 해설:** A3 점검에 `--approval`을 추가해 현재 승인 파일이 **이 계획의 범위·해시·기간·한도**와 맞는지도 검증합니다. Azure 상태 조회와 로컬 승인 검사이며 아직 apply나 유료 모델 호출은 없습니다. 승인 파일이 없거나 유효하지 않으면 다음 단계로 넘어가지 않습니다.
 
 확인할 내용은 계획/템플릿 해시·모델·범위, 승인자와 기간, 실제 보존 설정, Global 처리, 호출·후보·epoch·작업/대기 제한, 자원 생성과 RBAC의 각각의 승인입니다. 모델 수명주기 조건과 지속 호스팅·미확정 비용도 별도로 확인합니다. 제공자가 폐기 사유로 거부한 모델은 단순한 수용 체크로 다시 허용되지 않습니다.
 
@@ -198,6 +236,8 @@ export RG_CREATED_FILE="YOUR_PRIVATE_CREATION_RECEIPT_JSON"
 python3 -S -m lab.bootstrap bind-group --config "$LAB_BOOTSTRAP_CONFIG" --intent "$RG_INTENT_FILE" --created "$RG_CREATED_FILE"
 ```
 
+**명령 해설:** 두 `export`는 기존 비공개 **생성 전 의도**와 **생성 receipt** 파일 경로입니다. `bind-group`은 `--intent`·`--created`의 실제 기록을 현재 계획과 Azure의 빈 RG에 대조하고 로컬 소유 원장에 결속합니다. 이름·태그를 사후 수정해 소유권을 만드는 명령이 아니며 Azure 생성/권한 변경을 하지 않습니다.
+
 이 경로도 실제 새 RG의 scope·원래 태그·생성 근거가 일치해야 합니다. 일반 참가자는 이름만 같은 그룹을 채택하지 않습니다. `prepare-group`는 외부 RG 생성 **전**, `confirm-group`는 그 원래 의도의 읽기 전용 확인입니다. `bind-group`도 태그/권한을 나중에 맞추거나 기존 리소스를 변경하는 동작이 아닙니다.
 
 **복사 명령 — 승인·소유 확인 후 운영자만:**
@@ -206,6 +246,13 @@ python3 -S -m lab.bootstrap bind-group --config "$LAB_BOOTSTRAP_CONFIG" --intent
 python3 -S -m lab.bootstrap apply --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
 python3 -S -m lab.bootstrap status --config "$LAB_BOOTSTRAP_CONFIG" --approval "$LAB_COST_APPROVAL_FILE"
 ```
+
+**명령 해설:**
+
+| 명령 | 하는 일·비용 경계 |
+|---|---|
+| `apply --config ... --approval ...` | 계획·승인·신원·소유·제공자 검증 뒤 **실제 ARM 리소스와 승인된 RBAC**를 적용합니다. 지속 과금 자원이 생길 수 있으며 배포 ID·부분 성공·오류를 보존합니다. 참가자의 일반 연결 명령이 아닙니다. |
+| `status --config ... --approval ...` | 방금 실행한 **같은 계획**의 원격 상태와 소유를 조회합니다. apply를 한 번 더 제출하거나 모델 응답을 생성하지 않습니다. 완료되었다면 이후에는 status와 참가자 preflight로 연결합니다. |
 
 bootstrap은 의도 ID를 저장한 뒤 대상 소유를 확인하고 RG 범위의 Incremental 배포를 사용합니다. 기존 RG/리소스·다른 환경을 이름만 보고 채택하지 않습니다. 알려지지 않은 대상·모델 변경·권한 범위 변경은 중단 사유입니다.
 
@@ -221,6 +268,8 @@ bootstrap apply에는 `--confirm`, `--resume`, `--force`, `--adopt`, `--delete`�
 
 ### A6. 런타임 환경 확인 후 참가자에게 전달
 
+**이 단계부터는 SDK가 필요합니다.** A1–A5의 SDK-free bootstrap과 달리, runtime preflight는 [본문 02의 로컬 설치](handbook.md#prepare)를 마친 `.venv`에서 실행합니다. 기존 가상환경이 있으면 활성화하며 재설치·재배포부터 반복하지 않습니다.
+
 **목적:** 생성된 정확한 신규 배포·검색·관측 endpoint를 사용하고 환경별 근거를 분리합니다.
 
 **할 일:** private `.env`의 배포 이름·endpoint가 실제 manifest와 맞는지 읽습니다. `.env.example`의 자리표시자나 이전 실습 값으로 바꾸지 않습니다. `.env`를 셸로 실행하지 않습니다.
@@ -233,6 +282,8 @@ export LAB_ARTIFACTS_DIR="$LAB_ENV_DIR/artifacts"
 python -m lab --config "$LAB_ENV_FILE" preflight
 python -m lab validate
 ```
+
+**명령 해설:** `LAB_ENV_FILE`은 생성된 `.env`, `LAB_ARTIFACTS_DIR`는 같은 환경의 결과 저장 폴더를 지정합니다. `lab --config ... preflight`는 SDK가 사용할 신원·실제 배포를 조회해 `preflight.json`에 남기고, `lab validate`는 원본 100건과 생성물만 로컬 검사합니다. 어느 쪽도 품질 평가나 첫 모델 응답 확인은 아닙니다.
 
 `LAB_ARTIFACTS_DIR`는 각 Python 프로세스의 **시작 전 환경**에 있어야 합니다. 새 터미널·작업 프로세스에서는 export를 다시 적용합니다. Python 안에서 모듈을 import한 뒤 뒤늦게 경로를 바꾸어 다른 환경의 근거를 섞지 않습니다.
 

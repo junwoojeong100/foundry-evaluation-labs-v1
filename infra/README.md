@@ -5,7 +5,13 @@ resources or changing existing permissions. It uses only Python's standard
 library and an already authenticated Azure CLI. No SDK installation, model call,
 provider registration, resource deletion, or subscription switch is performed.
 
-**Coordinated LIVE workflow: `PENDING_EXECUTION` (2026-09-30).**
+**Initial implementation handoff: `PENDING_EXECUTION` (2026-09-30).**
+
+This is a technical bootstrap contract, not an additional participant lab.
+The later completed provisioning and remaining quality HOLD are recorded in
+[verification](../guide/verification.md). For step-by-step operator instructions,
+use [A1–A6](../guide/admin-setup.md); do not reapply an existing environment
+because this earlier handoff status says pending.
 
 The coordinator reports explicit approval **by reference**, followed by explicit
 removal of the monetary ceiling. **No monetary cap applies to this approved
@@ -39,6 +45,13 @@ python -m lab.bootstrap plan \
 python -m lab.bootstrap preflight --config .lab/lab-training/config.json
 python -m lab.bootstrap status --config .lab/lab-training/config.json
 ```
+
+**Command details:** `plan` writes a local, unapproved environment using the
+explicit identity and `--environment` folder name; it makes no Azure calls.
+`preflight` reads Azure identity, model/capacity and readiness information.
+`status` reads the recorded deployment and ownership state, not model quality.
+Their `--config` argument is the plan JSON, not the runtime `.env`. The preceding
+shell variables must come from the operator's actual authorized scope.
 
 The new group is `rg-foundry-eval-v11-<UTC date>-<random suffix>`, always in
 `northcentralus`. A private, ignored directory contains `config.json`, the exact
@@ -254,6 +267,12 @@ python -m lab.bootstrap apply \
   --approval .lab/lab-training/approval.json
 ```
 
+**Command details:** `--config` selects the exact infrastructure plan;
+`--approval` supplies the current scope-bound authorization. `apply` can create
+billable resources and the approved role assignments. It is not a dry run and
+does not execute an Agent evaluation. Inspect the original manifest and status
+before deciding whether a deployment needs continuation.
+
 Apply rechecks identity, quota, approval, and ownership. Pending target IDs are
 flushed before each remote mutation. Group creation uses a last-moment collision
 check and conditional PUT, followed by a tag/region check. ARM runs only at that
@@ -301,6 +320,12 @@ python3 -S -m lab.bootstrap repair-dependencies \
   --approval .lab/lab-20260930-live/approval.execution.local.json \
   --max-provisioning-retries 2
 ```
+
+**Command details:** This incident-specific recovery revises only the verified
+dependency graph locally and performs read-only Provider validation.
+`--max-provisioning-retries 2` bounds the permitted total provisioning retries;
+it does not execute two deployments or authorize extra model/evaluation calls.
+Use only the original matching failure receipts, never as a routine setup step.
 
 By default this reads the original
 `evidence/first-apply-failed-deployment.local.json` and
@@ -351,6 +376,13 @@ python3 -S -m lab.bootstrap repair-trace-routing \
   --config .lab/lab-20260930-live/config.json \
   --approval <current-private-approval.json>
 ```
+
+**Command details:** Replace the angle-bracket placeholder with the actual
+current private approval path before using the command; it is not literal shell
+syntax to execute. This separate repair validates the original missing-routing
+failure and prepares a narrowly scoped local revision. It neither creates an
+unrelated telemetry resource nor enables API-key authentication, and it does
+not itself retry the deployment.
 
 Defaults are `evidence/retry1-failed-deployment.local.json` and
 `evidence/retry1-operations.local.json`; explicit `--failed-deployment` /

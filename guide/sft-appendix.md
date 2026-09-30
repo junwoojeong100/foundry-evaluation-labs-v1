@@ -10,6 +10,16 @@
 - **Frontier**의 직접 일치하는 공식 API/지원 경로는 현재 조사에서 **`NOT_VERIFIED`**입니다. 찾지 못했다고 제품/API가 존재하지 않는다고 단정하지 않습니다.
 - 일반 SFT 작업을 Frontier 성공으로 바꿔 부르지 않습니다. 이번 신규 환경에서는 **SFT 학습 succeeded → 실제 모델 배포 Succeeded → 동일 기반 모델 paired dev 평가**까지 수행했습니다. 품질·사람의 운영 승인은 별개입니다.
 
+**경험할 기능:** SFT(Supervised Fine-Tuning)는 입력과 원하는 응답 예시로 **모델 가중치**를 추가 학습하는 기능입니다. 이 실습은 JSON 형식·확인 질문·행동 분류 같은 안정된 행동을 학습 대상으로 삼고, 바뀌는 정책의 사실은 별도로 관리합니다.
+
+| 방법 | 무엇을 바꾸나 | 언제 고려하나 |
+|---|---|---|
+| Foundry IQ / RAG | 답할 때 검색해 제공하는 근거 | 정책 최신성·관련 문서·출처가 문제일 때 |
+| Agent Optimizer | 에이전트 지시 등 선택한 구성 | 같은 근거가 있어도 조건·행동 규칙을 잘 따르지 않을 때 |
+| SFT | 기반 모델에서 출발한 학습 가중치 | 검토된 예시가 있고, 검색·지시 개선 이후에도 안정적인 행동 문제가 반복될 때 |
+
+**왜 따로 배우나요?** SFT에는 학습뿐 아니라 파일 처리·배포·비교·지속 호스팅의 수명주기가 있습니다. **학습 파일 → 원격 job → fine_tuned_model → 모델 deployment → 실제 응답 평가**를 각각 확인해야 합니다. 본문 Agent+IQ와 달리 여기서는 정적 정책 문맥을 넣은 모델 호출을 비교합니다. 더 큰 기능이므로 더 좋은 결과가 보장되는 것은 아닙니다.
+
 ## S0. 학습을 시작할 수 있는지 먼저 판단 {#gate}
 
 **목적:** “학습 가능” 카탈로그 표시와 실제 지역/모델/유형/권한 지원을 구별합니다.
@@ -21,6 +31,8 @@
 ```bash
 python -m lab.sft --help
 ```
+
+**명령 해설:** `--help`는 현재 설치된 저장소 어댑터의 하위 명령·옵션만 로컬 출력합니다. 사용 가능한 Azure 모델이나 내 계정의 학습 권한을 조회하지 않습니다. `lab.sft`는 이 저장소의 교육용 CLI이며 Microsoft 공식 명령 이름이 아닙니다.
 
 | 확인 | 이 부록의 현재 조건 |
 |---|---|
@@ -59,6 +71,13 @@ python -m lab tune-prepare --kind sft
 python -m json.tool "$LAB_ARTIFACTS_DIR/tuning/sft/manifest.json"
 ```
 
+**명령 해설:**
+
+| 명령 | 하는 일·확인할 결과 |
+|---|---|
+| `tune-prepare --kind sft` | 원본 생성물을 검사하고 train/validation을 `tuning/sft/`에 로컬 준비합니다. `--kind`는 준비 형식 선택이며 학습 유형을 원격 제출하는 옵션이 아닙니다. |
+| `json.tool .../manifest.json` | 파일별 행 수·바이트·SHA-256을 읽습니다. 데이터가 바뀌면 비교 조건도 바뀌므로 업로드 전 이 기록을 확인합니다. 모델 호출이나 업로드는 없습니다. |
+
 | 파일 | 의미 |
 |---|---|
 | `sft-train.jsonl` | 기존 train 56건만 |
@@ -93,6 +112,15 @@ python -m lab score --run-id sft-pre-dev
 cat "$LAB_ARTIFACTS_DIR/runs/sft-pre-dev/report.md"
 ```
 
+**명령 해설:**
+
+| 명령 | 하는 일·비용 경계 |
+|---|---|
+| `export SFT_BASE_DEPLOYMENT=...` | 검증한 **튜닝 전 모델 배포 이름**을 저장합니다. 모델 계열명이나 학습 job ID를 입력하지 않습니다. |
+| `baseline --base-deployment ... --run-id sft-pre-dev --interval-seconds 15 --confirm` | 기반 배포에 dev 12건을 유료 실행하고 `runs/sft-pre-dev/`에 응답과 설정을 남깁니다. 사례 사이 15초 대기이며 학습을 제출하지 않습니다. |
+| `score --run-id sft-pre-dev` | 저장 응답을 로컬 규칙으로 집계합니다. 별도 Judge를 실행하지 않았으므로 없는 의미 점수를 만들어 넣지 않습니다. |
+| `cat .../report.md` | 집계 보고서를 터미널에 읽어 표시합니다. 모델 호출이나 보고서 수정은 없습니다. |
+
 **완료 신호:** 학습 전 동일 기반 모델·생성 설정·프롬프트·dev 전체 응답과 원장 연결이 있습니다. 높은 점수는 학습 제출 조건이 아니며 어떤 안정적 행동을 고칠지 설명해야 합니다.
 
 **오류/복구:** 401/403/SKU/모델 불일치면 제출하지 않습니다. 원래 실패 행을 없애거나 다른 계열 모델의 점수를 기준선으로 가져오지 않습니다.
@@ -114,6 +142,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" upload --confirm
 python -m lab.sft --config "$LAB_ENV_FILE" status
 ```
 
+**명령 해설:** `upload --confirm`은 준비 파일 두 개를 **해당 Foundry 환경으로 전송**하고 원격 파일 ID를 `tuning/sft/sft-state.json`에 기록합니다. 아직 학습은 시작하지 않습니다. 이어지는 `status`는 기록된 파일의 처리 상태를 원격 조회해 원장을 갱신합니다. 로컬 파일 존재와 서비스의 `processed`는 서로 다른 상태입니다.
+
 **첫 완료 신호:** 실제 파일 ID 두 개가 원장에 저장되고 둘 다 `processed`입니다. 업로드 요청을 보냈다는 사실만으로 준비 완료가 아닙니다.
 
 이후에만 한 번 제출합니다.
@@ -122,6 +152,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" status
 python -m lab.sft --config "$LAB_ENV_FILE" submit --confirm
 python -m lab.sft --config "$LAB_ENV_FILE" status
 ```
+
+**명령 해설:** `submit --confirm`은 처리된 파일 ID·기반 모델·승인 조건을 사용해 **유료 SFT job 1개**를 요청합니다. 기본 epoch 1은 학습 데이터를 한 번 순회한다는 뜻입니다. 뒤의 `status`는 그 job의 현재 상태를 조회할 뿐 새 job을 만들지 않습니다. 작업 ID가 기록되면 상태가 대기 중이어도 다시 submit하지 않습니다.
 
 현재 기본 제출은 `supervised`, 1 epoch, seed 105와 어댑터가 검증하는 학습 유형입니다. 학습 모델 ID/작업 ID를 예상해서 채우지 않습니다.
 
@@ -143,6 +175,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" status
 python -m lab.sft --config "$LAB_ENV_FILE" status
 ```
 
+**명령 해설:** 원장에 있는 실제 파일·job·모델·배포의 현재 상태를 조회하고 관측 기록을 남깁니다. 로컬 `score`와 달리 Azure 연결은 필요하지만 새 학습·추론은 시작하지 않습니다. 실패 이유, 실제 모델 ID, 완료 시각을 각각 확인합니다.
+
 **할 일:** 최대 60분의 합의된 대기 범위 안에서 상태를 확인합니다. `succeeded`와 실제 `fine_tuned_model`이 모두 있어야 합니다. 학습/검증 loss는 과적합 진단 자료이며 고객지원 정확도나 안전 점수가 아닙니다.
 
 명시적인 상한으로 같은 작업만 기다릴 수도 있습니다. 시간 초과로 원격 작업을 다시 제출하거나 자동 취소하지 않습니다.
@@ -151,7 +185,16 @@ python -m lab.sft --config "$LAB_ENV_FILE" status
 python -m lab.sft --config "$LAB_ENV_FILE" wait --timeout-seconds 3000 --interval-seconds 60
 ```
 
+**명령 해설:** 같은 job을 **최대 3,000초(50분)** 동안 60초 간격으로 상태 조회합니다. 여기서 `--interval-seconds`는 추론 사례 간 대기가 아니라 **상태 조회 간격**입니다. 이 명령의 대기 상한이 서버 학습을 취소하거나 비용을 차단하지는 않습니다.
+
 이번 작업은 56 train/12 validation, 1 epoch에서 **30,722 trained tokens**를 반환했고 실제 학습 모델 ID가 생겼습니다. 상태 조회마다 `job-observations/`에 원본 응답을 보존했습니다. 서비스의 `trainingType: standard`는 동일한 Standard 유형의 표기 차이이며 Global/Developer로 자동 전환한 것이 아닙니다.
+
+<figure class="portal-shot" id="portal-sft">
+<img src="../web/assets/portal/14-sft-job.png" alt="실제 완료된 SFT 작업의 모델 ID, Supervised, Standard, 학습 및 검증 파일과 epoch 1" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 14 · Build → Fine-tune → 해당 job → Details.</strong> 2026-09-30 Headless Playwright로 기존 작업을 조회한 화면입니다. 로컬 sft-state의 job ID를 맞추고 Completed·Supervised·Standard·파일·epoch를 읽습니다. 생성자·프로필은 가렸고 새 학습·배포는 하지 않았습니다. <a href="../web/assets/portal/14-sft-job.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+**학습 지표는 이렇게 읽습니다.** Loss는 학습 예시의 다음 토큰 예측 오차이고 낮아지는 추세를 봅니다. Train mean token accuracy 0.79는 **고객지원 업무 정확도 79%가 아닙니다.** 학습 데이터에만 잘 맞았을 수 있으므로 dev 비교가 필요합니다. 화면의 `Training tokens billed` 30,000과 원본 API의 `trained_tokens` 30,722는 다른 출처·필드의 값으로 보존하며 임의로 맞추거나 실제 청구 금액으로 환산하지 않습니다. Monitor·Checkpoints는 학습 진단, Deployments는 호출 가능한 배포 확인에 사용합니다.
 
 **완료 신호:** 실제 job·모델 ID, 결과 파일/관측 토큰, 지원되는 배포 계약을 확보했습니다.
 
@@ -177,6 +220,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" deploy --deployment "$SFT_TUNED_DEPLO
 python -m lab.sft --config "$LAB_ENV_FILE" status
 ```
 
+**명령 해설:** `export`는 새 학습 모델의 **배포 이름**을 정합니다. `deploy`는 성공한 자기 job의 실제 모델을 그 이름으로 원격 배포하고 소유 원장에 남깁니다. `--capacity 20`은 검증할 ARM 용량 단위이며 모든 모델에 같은 TPM 환산을 적용하지 않습니다. **지속 호스팅 과금**이 시작될 수 있습니다. `status`로 실제 준비 상태를 확인하며, 이름만 정했다고 배포된 것으로 보지 않습니다.
+
 배포가 실제 준비된 후 dev를 비교합니다.
 
 ```bash
@@ -184,6 +229,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" run-pair --base-deployment "$SFT_BASE
 python -m lab score --run-id sft-dev-base
 python -m lab score --run-id sft-dev-tuned
 ```
+
+**명령 해설:** `run-pair`의 `--base-deployment`·`--tuned-deployment`는 같은 계열의 두 실제 배포입니다. `--split dev`의 12건을 각각 실행하므로 정상 계획은 **12×2 모델 응답**이고, `--run-prefix sft-dev`에서 `sft-dev-base`·`sft-dev-tuned` 두 기록이 만들어집니다. 10초는 사례 간 대기입니다. 뒤의 두 `score`는 각 run의 저장 응답만 로컬 집계하며 추가 모델/Judge 호출은 없습니다.
 
 두 arm에는 같은 system·query/context·생성 설정을 사용합니다. **정적 참조 정책을 제공한 모델 비교**이며 실제 IQ 검색·MCP·버전 에이전트 실행 비교가 아닙니다.
 
@@ -228,6 +275,14 @@ python -m lab score --run-id sft-dev-base
 python -m lab score --run-id sft-dev-tuned
 ```
 
+**명령 해설:**
+
+| 명령 쌍 | 하는 일·확인할 결과 |
+|---|---|
+| 두 `evaluate submit --run-id ... --confirm` | base와 tuned의 **이미 저장된 답변**을 각각 managed 평가에 유료 제출합니다. 에이전트/모델 답변을 다시 생성하지 않으며 각 run의 `managed-eval.json`에 eval/run ID를 남깁니다. |
+| 두 `evaluate collect --run-id ...` | 기록된 원격 평가를 조회·수집합니다. 처리 중이면 같은 ID로 collect만 이어가며 미완료를 점수 0 또는 PASS로 바꾸지 않습니다. |
+| 두 `score --run-id ...` | 수집한 Judge와 원래 응답을 각각 로컬 재집계합니다. 수집 전후의 범위를 확인하고 두 arm의 누락도 함께 봅니다. |
+
 내장 지표는 그 저장된 입력/정의에 대한 진단이며 새로운 업무 전용 교정이나 운영 승인을 대신하지 않습니다. static context를 실제 검색 근거라고 표시하지 않습니다. 같은 run에 다른 Judge를 이어 붙여 재채점하지 않습니다.
 
 원본 test20을 아직 보지 않았고 별도 SFT 실험의 후보·기준이 동결되었으며 남은 작업 범위가 충분한 경우에만 다음 paired 모델 시험을 검토할 수 있습니다.
@@ -235,6 +290,8 @@ python -m lab score --run-id sft-dev-tuned
 ```bash
 python -m lab.sft --config "$LAB_ENV_FILE" run-pair --base-deployment "$SFT_BASE_DEPLOYMENT" --tuned-deployment "$SFT_TUNED_DEPLOYMENT" --split test --run-prefix sft-test --confirm
 ```
+
+**명령 해설:** 같은 두 모델을 **원본 test 20건씩, 총 40응답**으로 비교하는 별도 유료 시험입니다. `--run-prefix sft-test`는 dev 결과와 섞이지 않는 두 저장 ID를 만듭니다. 본문 fresh12를 사용하지 않으며, 동결·미노출·승인 조건을 사람이 먼저 확인해야 합니다.
 
 이것은 본문의 fresh12 에이전트 시도와 **별도 계약**입니다. 실행·Judge·로컬 score가 두 arm 모두 완전하기 전 `compare`로 통과를 주장하지 않습니다. 작은 test20은 광범위한 일반화나 튜닝 효과의 보장이 아닙니다.
 
@@ -257,6 +314,8 @@ python -m lab.sft --config "$LAB_ENV_FILE" run-pair --base-deployment "$SFT_BASE
 ```bash
 python -m lab tune-prepare --kind frontier
 ```
+
+**명령 해설:** `tuning/frontier/`에 train/validation 원본과 중립적인 실험 설명·manifest만 로컬 준비합니다. 확인되지 않은 Frontier 업로드 스키마로 변환하거나 원격 학습을 제출하지 않습니다. **일반 SFT와 이름만 바꾼 동등 기능이 아니므로**, 실제 지원 경로 확인 전에는 여기서 멈춥니다.
 
 **완료 신호:** train 56/validation 12와 실험 목표·평가 계획을 준비한 `PREPARED_NOT_SUBMITTED`. 서비스 전용 업로드 스키마나 실제 Frontier 학습 작업을 구현했다는 뜻이 아닙니다.
 

@@ -52,3 +52,25 @@ Only the local filenames differ. The header and favicon both reference
 foundry.svg; favicon.svg is an identical compatibility copy for existing links.
 Both files are self-contained and work offline without scripts or external
 resources. CSS scales the complete square viewBox without cropping or framing.
+
+Microsoft Foundry portal screenshots
+===================================
+
+Files: portal/01-project-overview.png through portal/14-sft-job.png.
+Product UI: Microsoft Corporation. Source: https://ai.azure.com/
+Captured: 2026-09-30, using the playwright-headless MCP browser after the user
+completed normal authentication in an interactive browser.
+See portal/captures.json for routes, redactions, dimensions and SHA-256 hashes.
+
+These are actual product UI captures of the existing synthetic Contoso lab,
+not mockups or screenshots copied from Microsoft Learn. Personal profile,
+creator and endpoint fields were masked, or excluded by cropping, before
+publication. Dialog-only screenshots exclude the account header. Product
+statuses, scores, instructions and synthetic tool output were not rewritten.
+The optimization target/data wizard was inspected but never submitted.
+Existing result pages were read without starting new paid jobs or deployments.
+
+The captures illustrate this educational guide and do not imply Microsoft
+endorsement, confer product rights, or change the existing artwork terms.
+Authentication state, cookies, signed download URLs and raw browser snapshots
+are not part of these distributable assets.

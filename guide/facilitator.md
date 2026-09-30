@@ -17,6 +17,8 @@ python3 -S -m lab demo
 python -m lab validate
 ```
 
+**명령 해설:** `python3 -S -m lab demo`는 SDK 초기화 없이 고정된 AI 작성 예시를 표시하고, `python -m lab validate`는 원본 100건·분할·생성물을 쓰기 없이 검사합니다. 둘 다 Azure 호출·로그인·유료 평가가 없으므로 환경 준비 실패와 학습 이해도를 분리하는 데 사용합니다.
+
 **완료 신호:** authored DEMO가 SDK/자격 증명 없이 동작하고 원본 100건·분할이 유지됩니다. LIVE rehearsal은 별도 실제 비용·호출 범위가 필요하며 위 명령으로 대신되지 않습니다.
 
 **오류/복구:** DEMO 문제를 해결하려고 참가자를 Azure 로그인으로 보내지 않습니다. 로컬 예시와 cloud 실행 오류를 분리합니다.
@@ -52,7 +54,11 @@ python -m lab validate
 | 05. 지시 개선 | 무엇만 바꿨고 회귀가 있는가? | Agent Optimizer 작업·후보 1개·지시 diff·같은 dev의 전후 근거 | 다른 Optimizer/수작업으로 대체하지 않고 HOLD 기록 |
 | 06. 최종 판정·종료 | 무엇을 채택/보류하고 무엇은 안 했나? | 동결 뒤 fresh12 또는 미실행 이유, 대화 전체·사람 판단·trace·보존 책임 | 점수/시험을 다시 뽑지 않기. 학습 완료와 LIVE/운영 승인 구별 |
 
-각 단계는 “실행 명령 → 출력 예시 → 내 결과 공유·판단 → 다음”으로 진행합니다. 본문 예시는 설명용 발췌이며, 참가자의 점수·ID·답변이 예시와 같아야 하는 것은 아닙니다. 예시를 실제 산출물로 저장하거나 예시에 맞추려고 재실행하지 않습니다. 세부 검사를 새 학습 장으로 늘리지 말고 실제 근거 하나를 읽게 합니다. 차단되면 본문 06의 종료 기록에 이유와 미실행 항목을 남깁니다.
+각 단계는 “기능 이해 → 실행 명령과 해설 → 출력 예시 → 내 결과 공유·판단 → 다음”으로 진행합니다. 본문 예시는 설명용 발췌이며, 참가자의 점수·ID·답변이 예시와 같아야 하는 것은 아닙니다. 예시를 실제 산출물로 저장하거나 예시에 맞추려고 재실행하지 않습니다. 세부 검사를 새 학습 장으로 늘리지 말고 실제 근거 하나를 읽게 합니다. 차단되면 본문 06의 종료 기록에 이유와 미실행 항목을 남깁니다.
+
+**기능 설명은 1분, 실제 근거 읽기는 2–3분으로 분리합니다.** 각 단계의 학습 목표 카드로 “무엇·왜·어떻게”를 설명한 뒤 명령 한 줄이 **로컬 파일 작업인지, Azure 조회인지, 유료/변경 작업인지** 참가자가 먼저 말하게 합니다. 명령 블록 전체를 성공 여부 확인 없이 한꺼번에 실행하지 않습니다.
+
+**스크린샷 활용:** [프로젝트·배포](handbook.md#portal-project), [IQ 연결](handbook.md#portal-knowledge), [Optimizer 설정](handbook.md#portal-optimizer-target), [점수·변경](handbook.md#portal-optimizer-results), [실제 MCP trace](handbook.md#portal-trace-detail), [SFT](sft-appendix.md#portal-sft)는 Headless Playwright로 촬영한 기존 환경입니다. UI 위치를 설명할 때만 사용하며 현재 참가자의 실행 증거가 아닙니다. 모든 그림 아래의 원본 크기 링크로 확대할 수 있습니다.
 
 기존 환경에서 교정을 통과해 끝까지 진행하는 계획은 **결과 공유를 포함해 약 3–4시간**입니다. 아래 공유 지점에 총 약 15–20분을 배정합니다. 모델 호출 간 대기와 Optimizer 처리 시간 때문에 달라질 수 있으며, 신규 인프라 구축·SFT 시간은 별도입니다.
 
@@ -86,6 +92,8 @@ python -m lab validate
 ```bash
 python -m lab explain --run-id iq-dev --case-id ACTUAL_CASE_ID
 ```
+
+**명령 해설:** `--run-id`는 읽을 기존 실행, `--case-id`는 상세히 볼 실제 사례입니다. 사례 하나를 선택해도 전체 점수의 분모·게이트는 유지합니다. 원본·Judge·summary가 일치하는지 검증한 뒤 읽기만 하며 새 평가를 호출하지 않습니다.
 
 | 원본 파일 | 담긴 내용 |
 |---|---|
@@ -125,6 +133,8 @@ python -m lab explain --run-id iq-dev --case-id ACTUAL_CASE_ID
 python -m json.tool --json-lines "$LAB_ARTIFACTS_DIR/runs/optimized-fresh/outputs.jsonl"
 ```
 
+**명령 해설:** JSONL 각 줄을 로컬에서 펼쳐 최종 답뿐 아니라 초기 확인 질문·scripted-user 발언·오류를 읽습니다. `optimized-fresh`가 실제로 생성되지 않았다면 이 명령은 건너뛰며 예시 파일로 채우지 않습니다.
+
 **완료 신호:** 사례 ID·정책 근거·실제 문장·불일치 이유가 구체적입니다. 외부 검토 JSON의 “human” 주장도 도구에서는 `external_unverified`이며 신원 인증이나 운영 승인이 아닙니다.
 
 **별도 기록이 실제로 있을 때만 사용합니다.** AI가 실제 보조 검토했다면 notes를 실제 사례·정책·문장 근거로 바꾼 뒤 기록합니다. 예문을 그대로 저장해 검토했다고 주장하지 않습니다.
@@ -133,11 +143,15 @@ python -m json.tool --json-lines "$LAB_ARTIFACTS_DIR/runs/optimized-fresh/output
 python -m lab review ai --review-id fresh-ai-01 --subject "$LAB_ARTIFACTS_DIR/runs/optimized-fresh/summary.json" --actor "Copilot" --notes "실제 검토한 사례 ID, 정책, 문제 문장을 근거로 기록"
 ```
 
+**명령 해설:** `--review-id`는 로컬 검토 ID, `--subject`는 검토한 파일, `--actor`는 AI 작성자, `--notes`는 실제 근거입니다. 이 명령 자체가 AI에게 새 검토를 요청하지는 않으며 이미 수행한 검토를 해시와 함께 `governance/reviews/`에 기록합니다. 모델 비용이나 사람 승인 생성은 없습니다.
+
 사람이 직접 작성·제공한 기록이 있을 때만 가져옵니다. 없으면 명령을 실행하지 않고 사람 검토 부재를 유지합니다.
 
 ```bash
 python -m lab review import --path "$LAB_ENV_DIR/manual-review.json"
 ```
+
+**명령 해설:** `--path`의 외부 제공 검토 기록과 대상 해시를 검사해 로컬로 가져옵니다. 파일이 `human`이라고 주장해도 실제 신원 인증·운영 권한을 증명하지 않으므로 `external_unverified` 경계를 유지합니다. 기록이 없으면 만들어 대신 제출하지 않습니다.
 
 실제 검토자를 위한 **미작성 형식 예시**입니다. 빈 값은 유효한 검토가 아니며 AI가 `actor_type: human`으로 대신 채우지 않습니다.
 
@@ -225,11 +239,15 @@ v1의 교수법·실행 패턴을 받아들인 결정과 제외 내용은 [이�
 python -m lab --config "$LAB_ENV_FILE" run --stage baseline --split dev --limit 3 --run-id baseline-smoke --resume --confirm
 ```
 
+**명령 해설:** 원래 stage·split·limit·run ID를 유지하고 `--resume`으로 저장된 진행을 확인합니다. 완료된 행을 다시 생성하는 “재실험”이 아니며, 원격 제출이 불명확하면 먼저 원격 상태를 확인합니다. 실제로 남은 모델 요청을 보낼 수 있으므로 원래 유효한 승인이 필요합니다.
+
 중단된 **동결 fresh12 배치**도 원래 동결·holdout·run을 유지합니다.
 
 ```bash
 python -m lab --config "$LAB_ENV_FILE" run --stage optimized --split test --run-id optimized-fresh --freeze-id selected-v1 --holdout-id fresh-01 --interval-seconds 65 --resume --confirm
 ```
+
+**명령 해설:** `--freeze-id`·`--holdout-id`까지 원래 계약과 일치하는 최종 배치만 재개합니다. 65초는 남은 사례의 pacing이며 동결 변경·새 holdout 생성·Judge 재채점 권한이 아닙니다. 완료 응답·실패·불명 상태를 삭제하지 않습니다.
 
 완료된 행은 다시 생성하지 않습니다. 모델 smoke는 같은 ID의 완료 receipt를 읽지만, 결과 불명확 receipt는 재전송을 거부합니다. Judge/교정은 한 번의 시도 계약입니다. 재개는 원하는 답이나 점수를 다시 뽑는 것이 아닙니다.
 
@@ -238,6 +256,8 @@ python -m lab --config "$LAB_ENV_FILE" run --stage optimized --split test --run-
 **본문은 업무 Judge + Agent Optimizer 한 경로로 끝납니다.** 아래 기능은 삭제되지 않았지만 별도 교육 목적과 남은 비용/작업 승인이 있을 때만 사용합니다. 기본 경로의 오류나 교정 HOLD를 해소한 것으로 간주하지 않습니다. 기존 검증 기록의 별도 승인 실행도 본문 전체의 품질 통과를 뜻하지 않습니다.
 
 ### 관리형 Foundry 평가와 대조
+
+**무엇·왜:** managed 평가는 Foundry 서비스가 채점 작업·상태·보고서를 관리하는 기능입니다. 로컬 보고서와 달리 eval/run ID로 포털의 결과를 공유·추적할 수 있지만, 내장 지표가 특정 회사의 모든 업무 규칙을 대신하지는 않습니다. 이미 저장한 답변을 평가하는 경로와 Agent를 다시 실행하는 경로도 구분해야 합니다.
 
 내장 managed Evals와 Contoso 업무 Judge의 차이를 직접 볼 때만 **별도 3건 run**을 사용합니다. 이미 Judge를 적용한 `iq-dev`나 최종 run을 다시 제출하지 않습니다.
 
@@ -248,9 +268,22 @@ python -m lab --config "$LAB_ENV_FILE" evaluate collect --run-id iq-managed-diag
 python -m lab score --run-id iq-managed-diagnostic
 ```
 
+**명령 해설:**
+
+| 명령 | 수행 내용·남는 것 |
+|---|---|
+| `run ... --limit 3 --run-id iq-managed-diagnostic --confirm` | 별도 IQ dev 3건의 응답을 유료 캡처합니다. 기본 `iq-dev`와 파일·Judge 시도를 공유하지 않습니다. |
+| `evaluate submit --run-id ... --confirm` | 저장 응답의 managed Judge 평가를 유료 제출합니다. Agent를 재호출하지 않고 `managed-eval.json`·`judge-contract.json`에 제출·평가 조건을 남깁니다. |
+| `evaluate collect --run-id ...` | 동일 eval/run ID의 상태와 실제 결과를 조회·수집합니다. 처리 중이면 점수를 만들어 채우지 않고 이 명령으로 상태만 이어서 확인합니다. |
+| `score --run-id ...` | 수집된 점수와 기존 응답을 로컬 집계합니다. 별도의 유료 평가가 아닙니다. |
+
 실제 eval/run ID·보고서 URL을 같은 프로젝트의 Evaluations에서 대조합니다. 처리 중이면 `collect`만 재실행하며 `submit`을 반복하지 않습니다. 내장 지표는 해당 입력/정의에 대한 진단이고 업무 교정·최종 게이트를 대신하지 않습니다.
 
+포털의 상태·전체 지표·개별 행 위치는 [실제 평가 화면](handbook.md#portal-evaluation)을 참고합니다. 그 사진은 **Optimizer의 native 후보 평가**이며 위 별도 3건 run의 결과가 아닙니다. 표본 수·평가기·run ID가 다른 결과를 같은 점수처럼 합치지 않습니다.
+
 ### Prompt Optimizer와 대조
+
+**무엇·왜:** Prompt Optimizer는 지시문과 개선 요청을 받아 재작성 제안을 얻는 기능입니다. 짧은 편집 피드백을 얻을 때 유용하지만 그 제안이 에이전트·도구·업무 데이터로 검증됐다는 뜻은 아닙니다. 본문의 Agent Optimizer는 같은 dev로 원본과 후보를 실행·평가하는 별도 경로입니다. 접근 가능한 편집기의 Improve instructions와 Agent의 Optimize 탭을 혼동하지 않습니다.
 
 [공식 Prompt Optimizer 안내](https://learn.microsoft.com/azure/foundry/observability/how-to/prompt-optimizer)의 prompt editor에 보존된 `optimizer/input-prompt.txt`와 아래 요청을 제공합니다. 이는 본문의 **Agent Optimizer와 다른 일시적 제안 기능**입니다. 모델 비교나 별도 Agent 재호스팅이 필요하지 않습니다.
 
@@ -267,6 +300,8 @@ Contoso 고객지원의 기존 JSON 출력 계약을 유지한다.
 ```bash
 python -m lab --config "$LAB_ENV_FILE" optimizer-result --request "$LAB_ARTIFACTS_DIR/prompt-optimizer/service-request.txt" --response "$LAB_ARTIFACTS_DIR/prompt-optimizer/service-response.txt"
 ```
+
+**명령 해설:** `--request`·`--response`는 실제 포털 서비스 호출에서 보존한 **본문 파일**입니다. 가져오기 명령은 이것을 로컬 검사·기록하며 최적화를 새로 실행하지 않습니다. 포털에서 제안을 얻는 원격 단계의 데이터 전송·사용량은 별도 승인 범위입니다. 인증 헤더·HAR·쿠키를 입력 파일로 쓰지 않습니다.
 
 이 명령은 캡처를 읽어 후보와 diff를 남길 뿐 서비스 API를 호출하거나 작업 ID를 만들지 않습니다. 본문의 `optimizer/selected-prompt.txt`·선택 Agent·동결 결과를 덮어쓰지 않습니다. 수작업 후보도 서비스 결과로 표시하지 않습니다.
 

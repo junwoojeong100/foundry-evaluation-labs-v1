@@ -138,7 +138,7 @@ Control Plane에서는 IQ dev의 model span 24개와 tool span 11개를 관측�
 
 ## 6. 로컬·출판 검증 {#local}
 
-전체 자동 검사, 원본 데이터 byte/hash·누출 검사, 실제 문서 CLI 문법, 링크·목차·코드 복사·모바일·인쇄 검사를 구분해 수행했습니다. Playwright **headless**로 웹 검증과 PDF 생성을 진행했습니다. Foundry 포털은 headless 세션에 인증이 없어 정상 로그인/MFA가 있는 브라우저를 사용했으며 자격 증명을 복사하지 않았습니다.
+초기 통합 출판에서는 전체 자동 검사, 원본 데이터 byte/hash·누출 검사, 실제 문서 CLI 문법, 링크·목차·코드 복사·모바일·인쇄 검사를 구분해 수행했습니다. Playwright **headless**로 웹 검증과 PDF 생성을 진행했습니다. 당시 Foundry 포털은 headless 세션에 인증이 없어 정상 로그인/MFA가 있는 브라우저를 사용했으며 자격 증명을 복사하지 않았습니다. 아래의 후속 가이드 화면 보강 촬영과는 구분되는 기록입니다.
 
 좌측 상단과 파비콘은 Microsoft 공식 Azure 아이콘 패키지의 Foundry SVG를 동일 파일로 사용합니다. 원본 모양/색상을 바꾸지 않았고 [출처·사용 조건](../web/assets/NOTICE.txt)을 포함했습니다.
 
@@ -151,7 +151,36 @@ python scripts/verify_pdf.py Foundry-Learning-Loop-Lab-KO.pdf
 python scripts/package_lab.py
 ```
 
+**명령 해설:**
+
+| 명령 | 검사/생성 범위 |
+|---|---|
+| `lab validate` | 원본·분할·내보내기 byte/hash 일치의 로컬 검사. 모델 성능 검사 아님 |
+| `unittest discover -s tests -q` | 로컬 자동 검사를 발견해 실행. `-q`는 간결한 출력이며 LIVE 서비스 실행 아님 |
+| `scripts/build_guide.py` | 등록된 원문에서 HTML·통합 인쇄 HTML 생성 |
+| `scripts/build_guide.py --check` | 생성 파일을 쓰지 않고 원문과의 일치 확인 |
+| `scripts/verify_pdf.py ...pdf` | 이미 만들어진 PDF의 텍스트·빈 페이지·잘림·로컬 링크 검사. PDF 생성 명령 아님 |
+| `scripts/package_lab.py` | 공개 허용 소스·정리된 증거·가이드·PDF를 로컬 ZIP으로 묶음. 업로드/배포 아님 |
+
 독립 ZIP을 새 폴더에 풀어 SDK·자격 증명·네트워크·subprocess 없이 DEMO를 실행했고 원본 100건 검사도 통과했습니다. v1 실행 파일/README가 필요하지 않습니다.
+
+### 후속 가이드 보강 · 실제 포털 화면 {#portal-capture}
+
+**2026-09-30, 정상 사용자 인증 후 Headless Playwright MCP에서 기존 전용 프로젝트를 직접 열어 14장을 추가 촬영했습니다.** 일시적인 로그인 상태 전달 파일은 로컬 세션 폴더에서만 사용한 뒤 제거했고, 인증 정보·쿠키·서명 다운로드 URL·원시 브라우저 스냅샷은 배포 자산에 넣지 않았습니다. 이미 있는 자원·실행을 조회했으며 마법사에서 파일 업로드·Submit·Promote·Deploy·권한 변경은 수행하지 않았습니다.
+
+| 화면 범위 | 안내에서 확인할 것 |
+|---|---|
+| [01–02 프로젝트·모델](handbook.md#portal-project) | 프로젝트 선택, 배포 이름·모델 버전·유형, 배포 성공과 품질의 차이 |
+| [03–04 에이전트](handbook.md#portal-agents) | 단계별 Agent 이름·버전과 모델·지시·도구 구성 |
+| [05–06 Foundry IQ](handbook.md#portal-knowledge) | 실제 KB·source, Low/Extractive data, Agent Knowledge 카드 |
+| [07–08 미제출 Optimizer 설정](handbook.md#portal-optimizer-target) | Choose targets의 Instruction만, 후보 1개, 실제 Judge 배포, 준비한 dev 업로드 경로 |
+| [09–11 기존 Optimizer 결과](handbook.md#portal-optimizer-results) | 서비스 순위·지시 diff·native 평가, 로컬 업무 Judge와의 차이 |
+| [12–13 기존 IQ trace](handbook.md#portal-trace-search) | iq-dev의 atlas-dev-001 response ID로 조회한 실제 MCP 입력/출력. 최종 fresh 결과 아님 |
+| [14 기존 SFT job](sft-appendix.md#portal-sft) | 실제 완료 작업·모델·파일·epoch, 학습 지표와 업무 성능의 차이 |
+
+촬영 시 새 마법사는 **Optimize → Agent → Choose targets** 경로였고, **Select dataset and criteria**를 고르면 Dataset·Criteria 단계가 나타났습니다. 기존 공식 문서의 메뉴 표기와 실제 화면의 차이를 본문에 병기했습니다. 화면은 위조하거나 성공 상태로 바꾸지 않았고 개인정보·endpoint 가림과 부분 잘라내기만 적용했습니다.
+
+파일별 출처·상태·가림·치수·SHA-256은 [`web/assets/portal/captures.json`](../web/assets/portal/captures.json), 이번 보강의 로컬 출판 점검은 [`checks.json`](../evidence/guide-enrichment-20260930/checks.json)과 [`pdf-check.json`](../evidence/guide-enrichment-20260930/pdf-check.json)에 분리합니다. 기존 `integration-20260930`의 LIVE 결과·HOLD·이전 출판 검증은 덮어쓰지 않습니다. 사진에서 trace나 학습 완료가 보여도 미실행 최종 시험과 사람 승인 부재를 해소하지 않습니다.
 
 ## 7. 재개할 때 지킬 기준 {#checks}
 

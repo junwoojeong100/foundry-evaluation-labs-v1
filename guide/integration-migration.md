@@ -244,6 +244,10 @@ python -m unittest discover -s tests -p 'test_guide_build.py' -v
 python -m unittest discover -s tests -p 'test_print_build.py' -v
 ```
 
+**명령 해설:** 첫 줄은 HTML 생성, 두 번째는 쓰기 없는 최신 상태 검사입니다. 뒤의 세 `unittest`는 각각 문서 링크·CLI·사진 계약, 웹 빌더, 통합 인쇄 빌더를 선택해 검사합니다. `-s tests`는 탐색 폴더, `-p`는 파일 패턴, `-v`는 자세한 출력입니다. 기존 원본/실행 결과를 다시 만드는 명령이 아니며 Azure 비용도 발생시키지 않습니다.
+
+포털 사진은 `web/assets/portal/`에 원본 PNG와 `captures.json`의 출처·상태·가림·해시를 함께 둡니다. Markdown의 `figure.portal-shot`에서 상대 경로·설명·원본 크기 링크로 연결하고, 계정·생성자·endpoint는 촬영 시 가립니다. 사진은 참고 화면과 기존 결과이지 새 실험의 증거가 아니며, 인증 상태·서명 URL·HAR·원시 스냅샷을 포함하지 않습니다. 학습 목표 카드는 `lab-concept`를 사용하되 참가자 6단계와 기존 앵커를 유지합니다.
+
 [문서 검사](../tests/test_documentation.py)는 등록된 HTML의 로컬 링크·앵커와 `guide/*.md`의 `python -m lab`/`lab.sft` 명령 문법을 검사합니다. [웹 검사](../tests/test_guide_build.py)는 결정적 렌더링·링크·코드 보존·문서별 상태를, [인쇄 검사](../tests/test_print_build.py)는 목차·앵커·휴대 가능한 링크·정적 출력 계약을 검사합니다. **이 검사들은 실제 Azure 실행을 하지 않습니다.**
 
 PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된 로컬 인쇄 절차로 별도 제작하고 [PDF 검사](../scripts/verify_pdf.py)로 한국어 텍스트·필수 내용·빈 페이지·본문 넘침·로컬 머신 링크를 확인해야 합니다. 기존 PDF를 새 본문에 대한 검증 결과로 재사용하지 않습니다. 검사 도구의 의존성은 참가자 DEMO의 필수 조건이 아닙니다.

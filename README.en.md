@@ -6,7 +6,11 @@
 
 > Understand the example → connect the environment → evaluate the baseline → connect Foundry IQ → improve instructions with Agent Optimizer → decide and finish
 
-**Plan for approximately 3–4 hours, including result discussions**, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows **command → sample output → discuss your results and decision → next step**. Samples illustrate the format and are not evidence of a successful live run.
+**Plan for approximately 3–4 hours, including result discussions**, with an existing environment and successful calibration. This is an estimate, not a measured guarantee; new environment provisioning and SFT are excluded. Each step follows **understand the feature → command and explanation → sample output → discuss your results and decision → next step**. Samples illustrate the format and are not evidence of a successful live run.
+
+Every lab now explains **what the feature is, why it matters, and how to use it**. Command explanations cover options, inputs, output files, cloud/cost boundaries, and safe continuation. New CLI users can start with the [command-reading primer](index.html#cli-basics).
+
+**Fourteen actual Foundry Portal screenshots** accompany the relevant steps and SFT appendix. They were captured through **headless Playwright MCP** after user authentication, covering the existing project, deployments, agents, IQ, optimizer, evaluations, MCP traces, and SFT job. Start at the [project screen](index.html#portal-project); each caption explains navigation and interpretation and links to the full-size image. Personal/endpoint fields are redacted. Wizard screenshots are unsubmitted drafts, result screens are existing runs, and no new paid jobs were started for these captures.
 
 At each evaluation, share **actual results → a representative case → the next decision**. Calibration, baseline diagnosis, IQ, optimizer ranking, candidate re-evaluation, and the fresh holdout answer different questions. These checkpoints use existing reports; they add no paid evaluation calls or automatic external sharing.
 
@@ -71,5 +75,7 @@ python scripts/build_guide.py
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 ```
+
+**Command details:** The first command renders the registered HTML pages and combined print HTML from Markdown. `--check` verifies freshness without writing. The final command runs the local test suite with verbose output (`-v`); it does not execute Azure labs or regenerate the PDF. Screenshot updates must also update the route, redactions, dimensions, and hash in `web/assets/portal/captures.json`.
 
 The builder generates HTML and the print book; regenerate PDF and ZIP separately. `python -m lab` is this repository's educational tool, not an official Microsoft CLI. The guide edition is **v1** and the documentation date is **2026-09-30**.

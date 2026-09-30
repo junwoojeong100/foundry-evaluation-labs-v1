@@ -1,10 +1,12 @@
 import contextlib
+import hashlib
 from html.parser import HTMLParser
 import io
 import json
 from pathlib import Path
 import re
 import shlex
+import struct
 import unittest
 from urllib.parse import unquote, urlsplit
 
@@ -111,7 +113,120 @@ class OutputExampleParser(LearningPathParser):
         super().handle_endtag(tag)
 
 
+class PortalFigureParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.figures = []
+        self.current = None
+        self.in_caption = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "figure" and "portal-shot" in attrs.get("class", "").split():
+            self.current = {"id": attrs.get("id"), "images": [], "links": [], "caption": ""}
+        if self.current is not None:
+            if tag == "img":
+                self.current["images"].append(attrs)
+            elif tag == "a":
+                self.current["links"].append(attrs.get("href"))
+            elif tag == "figcaption":
+                self.in_caption = True
+
+    def handle_data(self, data):
+        if self.in_caption and self.current is not None:
+            self.current["caption"] += data
+
+    def handle_endtag(self, tag):
+        if tag == "figcaption":
+            self.in_caption = False
+        elif tag == "figure" and self.current is not None:
+            self.figures.append(self.current)
+            self.current = None
+
+
 class DocumentationTests(unittest.TestCase):
+    def test_each_participant_step_explains_the_feature_purpose_and_usage(self):
+        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
+        steps = re.split(r"^## ", source, flags=re.MULTILINE)[1:]
+        self.assertEqual(len(steps), 6)
+        for step in steps:
+            with self.subTest(step=step.splitlines()[0]):
+                introduction = step.split("**할 일:**", 1)[0]
+                self.assertIn('class="lab-concept"', introduction)
+                for label in ("경험할 기능:", "왜 중요한가:", "어떻게 경험하나:"):
+                    self.assertIn(label, introduction)
+
+    def test_each_instruction_block_has_a_command_explanation(self):
+        for name in ("handbook.md", "admin-setup.md", "facilitator.md", "sft-appendix.md"):
+            source = (ROOT / "guide" / name).read_text(encoding="utf-8")
+            blocks = list(re.finditer(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL))
+            self.assertTrue(blocks, name)
+            for index, block in enumerate(blocks):
+                end = blocks[index + 1].start() if index + 1 < len(blocks) else len(source)
+                with self.subTest(document=name, command=block.group(1).splitlines()[0]):
+                    self.assertIn("**명령 해설:**", source[block.end():end])
+
+    def test_portal_media_is_captioned_local_and_matches_capture_provenance(self):
+        directory = ROOT / "web/assets/portal"
+        manifest = json.loads((directory / "captures.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["portal_origin"], "https://ai.azure.com")
+        self.assertEqual(manifest["captured_date"], "2026-09-30")
+        self.assertTrue(manifest["headless_verified"])
+        self.assertFalse(manifest["new_paid_runs_submitted"])
+        self.assertFalse(manifest["cloud_configuration_changed"])
+        captures = {item["file"]: item for item in manifest["screenshots"]}
+        self.assertEqual(len(captures), 14)
+        self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
+        for filename, record in captures.items():
+            with self.subTest(screenshot=filename):
+                data = (directory / filename).read_bytes()
+                self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
+                self.assertEqual(struct.unpack(">II", data[16:24]), (record["width"], record["height"]))
+                self.assertEqual(hashlib.sha256(data).hexdigest(), record["sha256"])
+                self.assertTrue(record["redactions"])
+                self.assertNotIn("?", record["route"])
+
+        figures = []
+        for name in ("index.html", "sft.html"):
+            page = PortalFigureParser()
+            page.feed((ROOT / name).read_text(encoding="utf-8"))
+            self.assertEqual(len(page.figures), 13 if name == "index.html" else 1)
+            figures.extend(page.figures)
+        self.assertEqual(len({figure["id"] for figure in figures}), 14)
+        self.assertEqual({Path(figure["images"][0]["src"]).name for figure in figures}, set(captures))
+        for figure in figures:
+            with self.subTest(figure=figure["id"]):
+                self.assertEqual(len(figure["images"]), 1)
+                image = figure["images"][0]
+                record = captures[Path(image["src"]).name]
+                self.assertTrue(image["src"].startswith("web/assets/portal/"))
+                self.assertGreater(len(image["alt"]), 20)
+                self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
+                self.assertIn(image["src"], figure["links"])
+                self.assertIn("원본 크기로 보기", figure["caption"])
+                self.assertGreater(len(figure["caption"]), 80)
+        book = PortalFigureParser()
+        book.feed((ROOT / "print.html").read_text(encoding="utf-8"))
+        self.assertEqual(len(book.figures), 14)
+        self.assertTrue(all(figure["id"].startswith("book-") for figure in book.figures))
+
+    def test_current_portal_navigation_does_not_imply_extra_runs_or_promotions(self):
+        source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
+        for text in (
+            "Optimize 버튼 → Agent",
+            "Choose targets → Instruction만 체크",
+            "Select dataset and criteria → Upload dataset",
+            "사진은 작성 예시가 아닌 실제 화면",
+            "로컬 Contoso 업무 Judge나 최종 fresh 시험의 점수가 아닙니다",
+            "최종 fresh run의 화면이 아닙니다",
+            "Promote candidate는 누르지 않습니다",
+        ):
+            self.assertIn(text, source)
+        css = (ROOT / "web/styles.css").read_text(encoding="utf-8")
+        print_css = css.split("@media print", 1)[1]
+        self.assertIn(".guide-content .portal-shot", print_css)
+        self.assertIn("max-height: 112mm", print_css)
+
     def test_guide_version_labels_are_v1_without_rewriting_judge_history(self):
         sources = [
             ROOT / "README.md", ROOT / "README.en.md", ROOT / "data/README.md",
@@ -220,7 +335,8 @@ class DocumentationTests(unittest.TestCase):
         source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
         self.assertIn("출력 예시는 설명용으로 작성한 발췌", source)
         self.assertEqual(source.count("**완료 확인:**"), 6)
-        self.assertEqual(source.count('export APPLICATIONINSIGHTS_RESOURCE_ID='), 1)
+        shell_blocks = "\n".join(re.findall(r"```bash\s*\n(.*?)```", source, flags=re.DOTALL))
+        self.assertEqual(shell_blocks.count('export APPLICATIONINSIGHTS_RESOURCE_ID='), 1)
         self.assertLess(source.index('export APPLICATIONINSIGHTS_RESOURCE_ID='), source.index("## 03."))
         self.assertEqual(source.count("python -m lab score --run-id baseline-smoke"), 1)
         for step in re.split(r"^## ", source, flags=re.MULTILINE)[1:]:
