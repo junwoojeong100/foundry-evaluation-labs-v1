@@ -15,6 +15,7 @@ from lab.sft import parser as sft_parser
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SITE = ROOT / "docs"
 PAGES = ("index.html", "facilitator.html", "admin.html", "sft.html", "verification.html", "data-guide.html", "english.html", "print.html")
 
 
@@ -145,6 +146,17 @@ class PortalFigureParser(HTMLParser):
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_generated_files_are_grouped_behind_a_small_root_entry(self):
+        self.assertEqual({path.name for path in ROOT.glob("*.html")}, {"index.html"})
+        self.assertFalse(list(ROOT.glob("*.pdf")))
+        for name in (*PAGES, "Foundry-Learning-Loop-Lab-KO.pdf"):
+            self.assertTrue((SITE / name).is_file(), name)
+        entry = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('"docs/index.html" + window.location.search + window.location.hash', entry)
+        self.assertIn('<noscript><meta http-equiv="refresh"', entry)
+        self.assertIn('href="docs/index.html"', entry)
+        self.assertNotIn('class="guide-content"', entry)
+
     def test_only_the_latest_verification_and_current_guides_are_retained(self):
         evidence = ROOT / "evidence"
         self.assertEqual(
@@ -214,7 +226,7 @@ class DocumentationTests(unittest.TestCase):
         figures = []
         for name in ("index.html", "sft.html"):
             page = PortalFigureParser()
-            page.feed((ROOT / name).read_text(encoding="utf-8"))
+            page.feed((SITE / name).read_text(encoding="utf-8"))
             self.assertEqual(len(page.figures), 13 if name == "index.html" else 1)
             figures.extend(page.figures)
         self.assertEqual(len({figure["id"] for figure in figures}), 14)
@@ -224,14 +236,17 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(len(figure["images"]), 1)
                 image = figure["images"][0]
                 record = captures[Path(image["src"]).name]
-                self.assertTrue(image["src"].startswith("web/assets/portal/"))
+                self.assertTrue(image["src"].startswith("../web/assets/portal/"))
+                self.assertEqual(
+                    (SITE / image["src"]).resolve().parent, ROOT / "web/assets/portal"
+                )
                 self.assertGreater(len(image["alt"]), 20)
                 self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
                 self.assertIn(image["src"], figure["links"])
                 self.assertIn("원본 크기로 보기", figure["caption"])
                 self.assertGreater(len(figure["caption"]), 80)
         book = PortalFigureParser()
-        book.feed((ROOT / "print.html").read_text(encoding="utf-8"))
+        book.feed((SITE / "print.html").read_text(encoding="utf-8"))
         self.assertEqual(len(book.figures), 14)
         self.assertTrue(all(figure["id"].startswith("book-") for figure in book.figures))
 
@@ -257,7 +272,7 @@ class DocumentationTests(unittest.TestCase):
             ROOT / "README.md", ROOT / "README.en.md", ROOT / "data/README.md",
             ROOT / "infra/README.md", *(ROOT / "guide").glob("*.md"),
         ]
-        for path in [*sources, *(ROOT / name for name in PAGES)]:
+        for path in [*sources, *(SITE / name for name in PAGES)]:
             with self.subTest(document=path.name):
                 self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bv1\.1\b")
         handbook = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
@@ -300,7 +315,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_each_existing_evaluation_has_a_sharing_checkpoint_in_the_same_path(self):
         page = LearningPathParser()
-        page.feed((ROOT / "index.html").read_text(encoding="utf-8"))
+        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
         self.assertEqual(page.sharing_checkpoints, [
             ("share-calibration", "baseline"),
             ("share-baseline", "baseline"),
@@ -334,7 +349,7 @@ class DocumentationTests(unittest.TestCase):
 
     def output_examples(self):
         page = OutputExampleParser()
-        page.feed((ROOT / "index.html").read_text(encoding="utf-8"))
+        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
         return page.examples
 
     def assert_excerpt(self, example, actual):
@@ -416,7 +431,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_participant_has_exactly_six_steps_and_one_forward_path(self):
         page = LearningPathParser()
-        page.feed((ROOT / "index.html").read_text(encoding="utf-8"))
+        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
         expected = ["start", "prepare", "baseline", "iq", "optimize", "decision"]
         links = ["#" + chapter for chapter in expected]
         self.assertEqual(page.chapters, expected)
@@ -427,7 +442,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_old_participant_anchors_remain_resolvable(self):
         page = LinkParser()
-        page.feed((ROOT / "index.html").read_text(encoding="utf-8"))
+        page.feed((SITE / "index.html").read_text(encoding="utf-8"))
         self.assertTrue({
             "start", "demo", "prepare", "environment", "first-infrastructure-failure",
             "understand", "data", "baseline", "model-smoke", "calibration",
@@ -488,12 +503,11 @@ class DocumentationTests(unittest.TestCase):
 
     def test_every_rendered_page_has_resolvable_local_links_and_unique_ids(self):
         parsed = {}
-        for name in PAGES:
-            path = ROOT / name
-            self.assertTrue(path.is_file(), f"Run the full guide/print builders first: {name}")
+        for path in [ROOT / "index.html", *(SITE / name for name in PAGES)]:
+            self.assertTrue(path.is_file(), f"Run the full guide/print builders first: {path}")
             page = LinkParser()
             page.feed(path.read_text(encoding="utf-8"))
-            self.assertFalse(page.duplicate_ids, (name, page.duplicate_ids))
+            self.assertFalse(page.duplicate_ids, (path.name, page.duplicate_ids))
             parsed[path.resolve()] = page
         for path, page in parsed.items():
             for href in page.links:

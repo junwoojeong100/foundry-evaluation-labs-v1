@@ -17,21 +17,22 @@ CODE = '<a href="facilitator.md#start">원문 링크 예시</a>\n{{BOOK_TOC}} & 
 
 
 def source_fixtures() -> dict[str, str]:
-    return {
-        document.source: (
+    sources = {}
+    for document in build_guide.DOCUMENTS:
+        prefix = "../" if Path(document.source).parent != Path(".") else ""
+        sources[document.source] = (
             f"# {document.label}\n\n## 시작 {{#start}}\n\n"
-            "[이 문서](#start) [참가자](../guide/handbook.md#start) "
-            "[SFT](../guide/sft-appendix.md#start) [강사](../guide/facilitator.md#start)\n\n"
-            "[관리자](../guide/admin-setup.md) [검증](../guide/verification.md) "
-            "[데이터](../data/README.md#start)\n\n"
-            "[코드 파일](../scripts/demo.py) [평가 데이터](../data/splits/test.jsonl)\n\n"
+            f"[이 문서](#start) [참가자]({prefix}guide/handbook.md#start) "
+            f"[SFT]({prefix}guide/sft-appendix.md#start) [강사]({prefix}guide/facilitator.md#start)\n\n"
+            f"[관리자]({prefix}guide/admin-setup.md) [검증]({prefix}guide/verification.md) "
+            f"[데이터]({prefix}data/README.md#start)\n\n"
+            f"[코드 파일]({prefix}scripts/demo.py) [평가 데이터]({prefix}data/splits/test.jsonl)\n\n"
             "[공식 문서](https://learn.microsoft.com/azure/foundry/)\n\n"
-            "![예시 그림](../web/assets/example-diagram.svg)\n\n"
+            f"![예시 그림]({prefix}web/assets/example-diagram.svg)\n\n"
             '<p id="caption">설명</p>\n<div id="panel" aria-describedby="caption">안내</div>\n\n'
             "```html\n" + CODE + "```\n"
         )
-        for document in build_guide.DOCUMENTS
-    }
+    return sources
 
 
 class BookInspector(HTMLParser):
@@ -123,7 +124,7 @@ class PrintBuildTests(unittest.TestCase):
         page.feed(rendered)
         self.assertIn('href="#book-sft--start">원시 HTML</a>', rendered)
         self.assertIn('href="#book-facilitator--start">미리보기</a>', rendered)
-        self.assertIn('src="web/assets/example-diagram.svg"', rendered)
+        self.assertIn('src="../web/assets/example-diagram.svg"', rendered)
         for tag, attrs in page.elements:
             if tag == "a":
                 self.assertNotIn(urlsplit(attrs.get("href", "")).hostname, build_print.LOCAL_HOSTS)
@@ -135,8 +136,8 @@ class PrintBuildTests(unittest.TestCase):
     def test_static_book_has_no_javascript_or_application_controls(self) -> None:
         forbidden = {"script", "button", "dialog", "input", "progress"}
         self.assertFalse(any(tag in forbidden for tag, _ in self.page.elements))
-        self.assertIn('href="web/styles.css"', self.rendered)
-        self.assertIn('src="web/assets/example-diagram.svg"', self.rendered)
+        self.assertIn('href="../web/styles.css"', self.rendered)
+        self.assertIn('src="../web/assets/example-diagram.svg"', self.rendered)
         self.assertIn('<html lang="ko">', self.rendered)
         self.assertIn('class="skip-link" href="#book-main"', self.rendered)
 
@@ -186,7 +187,9 @@ class PrintBuildTests(unittest.TestCase):
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             self.assertEqual(build_print.main(["--output", "print.html"]), 0)
         output.assert_called_once_with("w", encoding="utf-8", newline="\n")
-        output().write.assert_called_once_with(self.rendered)
+        output().write.assert_called_once_with(
+            build_print.render_book(self.sources, self.template, output_base=".")
+        )
 
     def test_missing_source_stops_book_command_without_writing(self) -> None:
         with patch.object(build_guide, "read_sources", side_effect=ValueError("필수 원문이 없습니다: guide/verification.md")), \

@@ -9,8 +9,8 @@ An evidence-first workshop for evaluating and improving a Contoso support agent.
 ## Getting started
 
 - **Online:** Open GitHub Pages above. Reading needs no installation or sign-in.
-- **Offline:** Download the complete repository and open [index.html](index.html#start), or read the [combined PDF](Foundry-Learning-Loop-Lab-KO.pdf).
-- **CLI labs:** Use Python 3.11+ (3.12 recommended) and bash/zsh or Windows WSL2. Follow [step 02](index.html#prepare) for installation and authentication.
+- **Offline:** Download the complete repository and open the [guide](docs/index.html#start), or read the [combined PDF](docs/Foundry-Learning-Loop-Lab-KO.pdf).
+- **CLI labs:** Use Python 3.11+ (3.12 recommended) and bash/zsh or Windows WSL2. Follow [step 02](docs/index.html#prepare) for installation and authentication.
 
 Run the first offline demo from the repository root:
 
@@ -24,11 +24,11 @@ python3 -S -m lab demo
 
 | Topic | Document |
 |---|---|
-| Environment setup | [Operator guide](admin.html) |
-| Facilitation and recovery | [Facilitator guide](facilitator.html) |
-| Optional advanced lab | [SFT appendix](sft.html) |
-| Data contracts | [Data guide](data-guide.html) |
-| Latest verification and attribution | [Guide](verification.html) · [Result JSON](evidence/latest.json) |
+| Environment setup | [Operator guide](docs/admin.html) |
+| Facilitation and recovery | [Facilitator guide](docs/facilitator.html) |
+| Optional advanced lab | [SFT appendix](docs/sft.html) |
+| Data contracts | [Data guide](docs/data-guide.html) |
+| Latest verification and attribution | [Guide](docs/verification.html) · [Result JSON](evidence/latest.json) |
 | 한국어 | [README.md](README.md) |
 
 ## Boundaries
@@ -45,4 +45,6 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 ```
 
-These commands generate HTML, check freshness without writing, and run local tests. Regenerate PDF/ZIP separately. GitHub Pages serves the `main` branch root with `.nojekyll`. `python -m lab` is this repository's educational tool, not an official Microsoft CLI.
+Generated HTML/PDF live in `docs/`; guide sources live in `guide/`. Run the commands from the repository root to build HTML, check freshness, and run local tests. Regenerate PDF/ZIP separately.
+
+GitHub Pages serves the `main` branch root with `.nojekyll`; root `index.html` forwards to the guide. `python -m lab` is an educational tool, not an official Microsoft CLI.

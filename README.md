@@ -9,8 +9,8 @@ Contoso 고객지원 에이전트의 평가·지식 연결·지시 개선을 경
 ## 시작하기
 
 - **온라인:** 위 GitHub Pages 링크를 엽니다. 문서 열람에는 설치나 로그인이 필요 없습니다.
-- **오프라인:** 저장소 전체를 내려받아 [index.html](index.html#start)을 엽니다. [통합 PDF](Foundry-Learning-Loop-Lab-KO.pdf)도 제공합니다.
-- **CLI 실습:** Python 3.11 이상(3.12 권장)과 bash·zsh 또는 Windows WSL2를 사용합니다. 설치·인증은 [가이드 02](index.html#prepare)를 따릅니다.
+- **오프라인:** 저장소 전체를 내려받아 [실습 가이드](docs/index.html#start)를 엽니다. [통합 PDF](docs/Foundry-Learning-Loop-Lab-KO.pdf)도 제공합니다.
+- **CLI 실습:** Python 3.11 이상(3.12 권장)과 bash·zsh 또는 Windows WSL2를 사용합니다. 설치·인증은 [가이드 02](docs/index.html#prepare)를 따릅니다.
 
 저장소 루트에서 실행하는 첫 DEMO입니다.
 
@@ -24,11 +24,11 @@ python3 -S -m lab demo
 
 | 내용 | 문서 |
 |---|---|
-| 환경 준비 | [운영자 안내](admin.html) |
-| 진행·오류 대응 | [강사 안내](facilitator.html) |
-| 선택 심화 | [SFT 부록](sft.html) |
-| 합성 데이터·평가 계약 | [데이터 설명](data-guide.html) |
-| 최신 검증·출처 | [검증 안내](verification.html) · [결과 JSON](evidence/latest.json) |
+| 환경 준비 | [운영자 안내](docs/admin.html) |
+| 진행·오류 대응 | [강사 안내](docs/facilitator.html) |
+| 선택 심화 | [SFT 부록](docs/sft.html) |
+| 합성 데이터·평가 계약 | [데이터 설명](docs/data-guide.html) |
+| 최신 검증·출처 | [검증 안내](docs/verification.html) · [결과 JSON](evidence/latest.json) |
 | English | [README.en.md](README.en.md) |
 
 ## 주의사항
@@ -45,4 +45,6 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -v
 ```
 
-순서대로 HTML 생성, 쓰기 없는 최신 상태 확인, 로컬 테스트입니다. PDF·ZIP은 별도 갱신합니다. GitHub Pages는 `main`의 루트와 `.nojekyll`을 사용합니다. `python -m lab`는 이 저장소의 교육용 도구이며 Microsoft 공식 CLI가 아닙니다.
+HTML·PDF 생성물은 `docs/`, 원문은 `guide/`에 둡니다. 위 명령은 저장소 루트에서 순서대로 HTML 생성, 최신 상태 확인, 로컬 테스트를 수행합니다. PDF·ZIP은 별도 갱신합니다.
+
+GitHub Pages는 `main`의 루트와 `.nojekyll`을 사용하며 루트 `index.html`은 가이드로 연결하는 진입 파일입니다. `python -m lab`는 교육용 도구이며 Microsoft 공식 CLI가 아닙니다.

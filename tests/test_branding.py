@@ -53,7 +53,7 @@ class BrandingTests(unittest.TestCase):
         cls.css = (ROOT / "web/styles.css").read_text(encoding="utf-8")
         cls.notice = (ROOT / "web/assets/NOTICE.txt").read_text(encoding="utf-8")
         cls.page = BrandingParser()
-        cls.page.feed(cls.template)
+        cls.page.feed(cls.template.replace("{{WEB_PATH}}", "web"))
 
     def test_header_and_favicon_reference_the_same_local_svg(self) -> None:
         images = [attrs for tag, attrs in self.page.brand_elements if tag == "img"]
@@ -81,7 +81,9 @@ class BrandingTests(unittest.TestCase):
 
     def test_print_favicon_uses_the_same_asset_without_legacy_copies(self) -> None:
         page = BrandingParser()
-        page.feed((ROOT / "web/print-template.html").read_text(encoding="utf-8"))
+        page.feed(
+            (ROOT / "web/print-template.html").read_text(encoding="utf-8").replace("{{WEB_PATH}}", "web")
+        )
         self.assertEqual([icon.get("href") for icon in page.favicons], [ICON_PATH])
         for name in ("favicon.svg", "architecture.svg", "decision-map.svg", "learning-loop.svg"):
             self.assertFalse((ROOT / "web/assets" / name).exists(), name)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from html.parser import HTMLParser
@@ -153,11 +154,46 @@ class GuideBuildTests(unittest.TestCase):
             source, self.template, relative_base="guide", link_map=build_guide.DOCUMENT_LINKS
         )
         for href in (
-            "facilitator.html#준비", "admin.html?mode=read#rbac", "sft.html",
-            "verification.html", "data-guide.html", "index.html#start",
+            "docs/facilitator.html#준비", "docs/admin.html?mode=read#rbac", "docs/sft.html",
+            "docs/verification.html", "docs/data-guide.html", "docs/index.html#start",
         ):
             self.assertIn(f'href="{href}"', rendered)
         self.assertIn('src="web/assets/example-diagram.svg"', rendered)
+
+    def test_nested_output_rebases_docs_assets_and_source_files_independently(self) -> None:
+        source = (
+            "# 안내\n\n[강사](facilitator.md#start) [정책](../data/knowledge/documents.json)\n\n"
+            "![사진](../web/assets/portal/01-project-overview.png)\n\n"
+            "```bash\npython -m lab validate\n```\n"
+        )
+        rendered = build_guide.render_guide(
+            source, self.template, relative_base="guide",
+            link_map=build_guide.DOCUMENT_LINKS, output_base="docs",
+        )
+        for value in (
+            'href="facilitator.html#start"', 'href="../data/knowledge/documents.json"',
+            'src="../web/assets/portal/01-project-overview.png"',
+            'src="../web/theme.js"', 'href="../web/styles.css"', 'src="../web/app.js"',
+            'href="Foundry-Learning-Loop-Lab-KO.pdf"',
+        ):
+            self.assertIn(value, rendered)
+        self.assertIn("python -m lab validate", rendered)
+        readme = build_guide.render_markdown(
+            "[가이드](docs/index.html?from=readme#start) [검증](evidence/latest.json)",
+            output_base="docs",
+        )
+        self.assertIn('href="index.html?from=readme#start"', readme.content)
+        self.assertIn('href="../evidence/latest.json"', readme.content)
+
+    def test_output_writer_creates_only_requested_directories_and_check_is_read_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "docs/index.html"
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(build_guide.check_or_write({output: "page\n"}, check=True), 1)
+                self.assertFalse(output.parent.exists())
+                self.assertEqual(build_guide.check_or_write({output: "page\n"}, check=False), 0)
+                self.assertEqual(build_guide.check_or_write({output: "page\n"}, check=True), 0)
+            self.assertEqual(output.read_bytes(), b"page\n")
 
     def test_mapping_does_not_rewrite_code_that_looks_like_html_or_markdown(self) -> None:
         code = '<a href="facilitator.md">예시</a>\n![그림](../web/assets/example-diagram.svg)\n{{CONTENT}} & < >\n'
@@ -182,18 +218,22 @@ class GuideBuildTests(unittest.TestCase):
     def test_full_site_is_deterministic_and_namespaces_document_progress(self) -> None:
         pages = self._site_pages()
         self.assertEqual(pages, self._site_pages())
-        self.assertEqual(set(pages), {document.output for document in build_guide.DOCUMENTS} | {"print.html"})
+        self.assertEqual(
+            set(pages),
+            {"docs/" + document.output for document in build_guide.DOCUMENTS} | {"docs/print.html"},
+        )
         identities = []
         for document in build_guide.DOCUMENTS:
             page = PageInspector()
-            page.feed(pages[document.output])
+            rendered = pages["docs/" + document.output]
+            page.feed(rendered)
             identity = next(attrs["data-document-id"] for tag, attrs in page.elements if tag == "body")
             self.assertEqual(identity, document.output)
             identities.append(identity)
             if document.output != "index.html":
-                self.assertIn('class="back-to-main no-print" href="index.html"', pages[document.output])
-            self.assertIn('href="web/styles.css"', pages[document.output])
-            self.assertIn('src="web/app.js"', pages[document.output])
+                self.assertIn('class="back-to-main no-print" href="index.html"', rendered)
+            self.assertIn('href="../web/styles.css"', rendered)
+            self.assertIn('src="../web/app.js"', rendered)
         self.assertEqual(len(identities), len(set(identities)))
         app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
         self.assertIn("document.body.dataset.documentId", app)
@@ -210,12 +250,12 @@ class GuideBuildTests(unittest.TestCase):
         pages = self._site_pages()
         for name in ("index.html", "facilitator.html", "admin.html", "english.html"):
             page = PageInspector()
-            page.feed(pages[name])
+            page.feed(pages["docs/" + name])
             body = next(attrs for tag, attrs in page.elements if tag == "body")
             self.assertEqual(body["data-document-id"], name)
             self.assertEqual(body["data-progress-revision"], "single-path-6" if name == "index.html" else "")
-        self.assertIn("실습 순서", pages["index.html"])
-        self.assertIn("참고 문서 목차", pages["admin.html"])
+        self.assertIn("실습 순서", pages["docs/index.html"])
+        self.assertIn("참고 문서 목차", pages["docs/admin.html"])
         app = (ROOT / "web/app.js").read_text(encoding="utf-8")
         self.assertIn("document.body.dataset.progressRevision", app)
         self.assertIn('stored === null && documentId === "index.html" && !progressRevision', app)
@@ -230,7 +270,8 @@ class GuideBuildTests(unittest.TestCase):
                 def read_output(path: Path) -> bytes:
                     if stale == "missing:" + path.name:
                         raise FileNotFoundError(path)
-                    return b"stale\n" if path.name == stale else pages[path.name].encode("utf-8")
+                    self.assertEqual(path.parent, ROOT / "docs")
+                    return b"stale\n" if path.name == stale else pages[path.relative_to(ROOT).as_posix()].encode("utf-8")
 
                 with patch.object(build_guide, "read_sources", return_value=self._site_sources()), \
                      patch.object(Path, "read_text", autospec=True, side_effect=lambda path, **kwargs: print_template if path.name == "print-template.html" else self.template), \
@@ -302,7 +343,7 @@ class GuideBuildTests(unittest.TestCase):
         self.assertNotIn("본문 검색", self.rendered)
         self.assertNotIn("data-search-open", self.rendered)
         self.assertNotIn("data-print ", self.rendered)
-        self.assertLess(self.template.index('src="web/theme.js"'), self.template.index('href="web/styles.css"'))
+        self.assertLess(self.rendered.index('src="web/theme.js"'), self.rendered.index('href="web/styles.css"'))
         self.assertIn(':root[data-theme="dark"]', self.css)
         self.assertIn('body[data-print="one"] .print-excluded', self.css)
         app = (ROOT / "web/app.js").read_text(encoding="utf-8")

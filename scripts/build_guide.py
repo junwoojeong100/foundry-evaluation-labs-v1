@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build all offline HTML documents, or verify them with ``--check``.
+"""Build the offline HTML documents in docs/, or verify them with ``--check``.
 
 The source is trusted, locally authored Markdown. Relative document links are
 rebased for the output location; fenced-code contents remain unchanged. Use
@@ -26,6 +26,7 @@ from markdown.treeprocessors import Treeprocessor
 
 BUILD_DATE = "2026-09-30"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SITE_DIRECTORY = "docs"
 REQUIRED_PLACEHOLDERS = ("CONTENT", "TOC", "BUILD_DATE")
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
 
@@ -50,7 +51,17 @@ DOCUMENTS = (
     Document("data/README.md", "data-guide.html", "데이터 설명"),
     Document("README.en.md", "english.html", "English quickstart"),
 )
-DOCUMENT_LINKS = {document.source: document.output for document in DOCUMENTS}
+DOCUMENT_LINKS = {
+    document.source: posixpath.join(SITE_DIRECTORY, document.output)
+    for document in DOCUMENTS
+}
+
+
+def output_relative(path: str, output_base: str = "") -> str:
+    root = PROJECT_ROOT.as_posix()
+    return posixpath.relpath(
+        posixpath.join(root, path), posixpath.join(root, output_base or ".")
+    )
 
 
 @dataclass(frozen=True)
@@ -132,6 +143,7 @@ def render_markdown(
     *,
     relative_base: str = "",
     link_map: Mapping[str, str] | None = None,
+    output_base: str = "",
 ) -> RenderedMarkdown:
     converter = Markdown(
         extensions=["fenced_code", "tables", "toc", "attr_list"],
@@ -140,7 +152,7 @@ def render_markdown(
         },
         output_format="html5",
     )
-    if relative_base not in {"", "."} or link_map:
+    if relative_base not in {"", "."} or link_map or output_base not in {"", "."}:
         def rebase(value: str, attribute: str) -> str:
             parsed = urlsplit(value)
             if parsed.scheme or parsed.netloc or not parsed.path or parsed.path.startswith("/"):
@@ -148,6 +160,8 @@ def render_markdown(
             path = posixpath.normpath(posixpath.join(relative_base, parsed.path))
             if attribute == "href" and link_map:
                 path = link_map.get(unquote(path), path)
+            if output_base not in {"", "."}:
+                path = output_relative(path, output_base)
             return urlunsplit(("", "", path, parsed.query, parsed.fragment))
 
         class RebaseLinks(Treeprocessor):
@@ -205,19 +219,32 @@ def render_guide(
     relative_base: str = "",
     link_map: Mapping[str, str] | None = None,
     document_id: str = "index.html",
+    output_base: str = "",
 ) -> str:
     """Return deterministic UTF-8-ready HTML without reading or writing files."""
-    rendered = render_markdown(markdown_text, relative_base=relative_base, link_map=link_map)
+    rendered = render_markdown(
+        markdown_text, relative_base=relative_base, link_map=link_map, output_base=output_base
+    )
+
+    def site_href(filename: str) -> str:
+        return html.escape(
+            output_relative(posixpath.join(SITE_DIRECTORY, filename), output_base),
+            quote=True,
+        )
+
     navigation = ["<ul>"]
     for document in DOCUMENTS:
         current = ' aria-current="page"' if document.output == document_id else ""
-        navigation.append(f'<li><a href="{document.output}"{current}>{document.label}</a></li>')
-    navigation.append('<li><a href="print.html">전체 인쇄본</a></li></ul>')
+        navigation.append(f'<li><a href="{site_href(document.output)}"{current}>{document.label}</a></li>')
+    navigation.append(f'<li><a href="{site_href("print.html")}">전체 인쇄본</a></li></ul>')
     auxiliary = document_id != "index.html"
     replacements = {
         "CONTENT": rendered.content,
         "TOC": rendered.toc,
         "BUILD_DATE": BUILD_DATE,
+        "WEB_PATH": html.escape(output_relative("web", output_base), quote=True),
+        "PRINT_HREF": site_href("print.html"),
+        "PDF_HREF": site_href("Foundry-Learning-Loop-Lab-KO.pdf"),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(document_id, quote=True),
         "PROGRESS_REVISION": "" if auxiliary else "single-path-6",
@@ -230,9 +257,9 @@ def render_guide(
         ),
         "CONTENT_LANGUAGE": "en" if document_id == "english.html" else "ko",
         "DOCUMENT_LINKS": "\n".join(navigation),
-        "HOME_HREF": "index.html" if auxiliary else "#guide-start",
+        "HOME_HREF": site_href("index.html") if auxiliary else "#guide-start",
         "RETURN_LINK": (
-            '<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>'
+            f'<a class="back-to-main no-print" href="{site_href("index.html")}">← 참가자 가이드로 돌아가기</a>'
             if auxiliary else ""
         ),
     }
@@ -266,16 +293,17 @@ def render_site(sources: Mapping[str, str], template: str, print_template: str) 
     else:
         from build_print import render_book
     pages = {
-        document.output: render_guide(
+        posixpath.join(SITE_DIRECTORY, document.output): render_guide(
             sources[document.source],
             template,
             relative_base=posixpath.dirname(document.source),
             link_map=DOCUMENT_LINKS,
             document_id=document.output,
+            output_base=SITE_DIRECTORY,
         )
         for document in DOCUMENTS
     }
-    pages["print.html"] = render_book(sources, print_template)
+    pages[posixpath.join(SITE_DIRECTORY, "print.html")] = render_book(sources, print_template)
     return pages
 
 
@@ -295,6 +323,7 @@ def check_or_write(pages: Mapping[Path, str], *, check: bool) -> int:
             else:
                 print(f"최신 상태 확인: {path}")
         else:
+            path.parent.mkdir(parents=True, exist_ok=True)
             with path.open("w", encoding="utf-8", newline="\n") as output:
                 output.write(rendered)
             print(f"가이드 생성: {path}")
@@ -313,17 +342,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.source is not None:
             output_dir = args.output.resolve().parent
-            link_map = {
-                os.path.relpath(PROJECT_ROOT / document.source, output_dir).replace(os.sep, "/"):
-                os.path.relpath(PROJECT_ROOT / document.output, output_dir).replace(os.sep, "/")
-                for document in DOCUMENTS
-            }
             rendered = render_guide(
                 args.source.read_text(encoding="utf-8"),
                 args.template.read_text(encoding="utf-8"),
-                relative_base=os.path.relpath(args.source.resolve().parent, output_dir).replace(os.sep, "/"),
-                link_map=link_map,
+                relative_base=os.path.relpath(args.source.resolve().parent, PROJECT_ROOT).replace(os.sep, "/"),
+                link_map=DOCUMENT_LINKS,
                 document_id=args.output.name,
+                output_base=os.path.relpath(output_dir, PROJECT_ROOT).replace(os.sep, "/"),
             )
             pages = {args.output: rendered}
         else:

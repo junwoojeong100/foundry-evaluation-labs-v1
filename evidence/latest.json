@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "scope": "Local checks of the current guide and distribution; Azure quality was not reevaluated.",
+  "scope": "Generated guide layout and distribution; no new Azure execution.",
   "new_azure_calls": false,
   "last_known_live_result": {
     "reported_date": "2026-09-30",
@@ -22,48 +22,63 @@
       "test_demo",
       "test_live_summary"
     ],
-    "count": 102,
+    "count": 105,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
-  "data_validation": "PASS",
-  "verified_at": "2026-09-30T08:58:55.409273+00:00",
-  "readme_lines": {
-    "README.md": 48,
-    "README.en.md": 48
+  "verified_at": "2026-09-30T09:46:12.695100+00:00",
+  "layout": {
+    "root_files": [
+      ".env.example",
+      ".gitignore",
+      ".nojekyll",
+      "README.en.md",
+      "README.md",
+      "index.html",
+      "pyproject.toml",
+      "requirements-verification.lock",
+      "requirements.lock"
+    ],
+    "root_file_count": 9,
+    "generated_directory": "docs",
+    "root_entry": "index.html",
+    "guide_entry": "docs/index.html",
+    "runtime_data_assets_moved": false
   },
-  "removed_obsolete_files": 21,
-  "runtime_data_prompts_gates_unchanged": true,
   "html": {
     "pages": [
       "index.html",
-      "facilitator.html",
-      "admin.html",
-      "sft.html",
-      "verification.html",
-      "data-guide.html",
-      "english.html",
-      "print.html"
+      "docs/index.html",
+      "docs/facilitator.html",
+      "docs/admin.html",
+      "docs/sft.html",
+      "docs/verification.html",
+      "docs/data-guide.html",
+      "docs/english.html",
+      "docs/print.html"
     ],
     "sha256": {
-      "index.html": "d2a05ffe68b5b4d44b04038ba714bf81fa7e78e5aa398c5e5e078109fd534d90",
-      "facilitator.html": "60ab76764bfcf6e2d927bcff722342fad3ea65d5fabda6d8671bb4fc55fe70a6",
-      "admin.html": "6cf2392f29c85017ad89ccde36c80f52005d5ee5054d322143c30c82fca0ddca",
-      "sft.html": "95a3a56129ec1f3b44fba4b2de941f88ae8c89399a26508bab98ee0f232e90ae",
-      "verification.html": "6dd178c25efd9dc48fe905c9e57c76a6c01a475d9c6daf66728918cf5c762b57",
-      "data-guide.html": "6b41879bfea28ab0831938878db0baeee01ef499e4192103a04bf4e8d69087c7",
-      "english.html": "5fc60eaf6e30bc87f26aca4de9ef6f7b073612ce6eed16660cf574e934e115d5",
-      "print.html": "950d7598899879911aee3f6a45cf217935708ea65644f31a88e84131942c046f"
+      "index.html": "f11f08f98292c79608500d8e49e65e1d2beb8875ceffb2024ffeaba6329fc603",
+      "docs/index.html": "f4abfcf93fda494058f93ede77bce72bde617616529c25b66bfc63d6004aedb8",
+      "docs/facilitator.html": "2652a66fe3e7c6f87ba5b06c4c883546f1f20385dc504c7ebc5eef4a157c9edf",
+      "docs/admin.html": "969df8724b920fdb35580e9ece454bcbd5872e2f049105be90f8d9c4142674ca",
+      "docs/sft.html": "62049099a0942e9b1141723fb03e9436d83593710e6b5ce4c549b949dac0746d",
+      "docs/verification.html": "37cb4dcd299a65758e9afde187c36def5d9c239a13f676dd109d7053d393fb37",
+      "docs/data-guide.html": "402e5d121aa9460654000014fdcc6d6d6e93938eb01bf3f5472a4861bc39219e",
+      "docs/english.html": "57eb03b598b4e40ea712851cd5d5e82c3a23f63f78100c515e7ff42053d2237c",
+      "docs/print.html": "ae96636449b6f0ffb55402977187c810fb76f220800175684a32ce7a7a863f96"
     }
   },
   "browser": {
     "status": "PASS",
     "engine": "playwright-headless",
+    "root_query_fragment_preserved": true,
+    "explicit_index_redirect": true,
+    "no_javascript_fallback": true,
+    "document_id_preserved": "index.html",
     "participant_steps": 6,
-    "participant_photos": 13,
-    "total_photos": 14,
-    "retired_navigation_links": 0,
+    "total_portal_photos": 14,
     "viewports": [
       1440,
       390
@@ -75,24 +90,24 @@
     "horizontal_overflow": false,
     "mobile_navigation": true,
     "verification_links": [
-      "evidence/latest.json"
+      "../evidence/latest.json"
     ],
-    "page_errors": [],
     "print_scripts": 0,
     "print_local_links": 0
   },
   "pdf": {
     "file": "Foundry-Learning-Loop-Lab-KO.pdf",
-    "sha256": "502b210061402c660a0af91aab835cbae00da6326bcc6a5bc6b4093229339916",
+    "sha256": "e5355b96c615222a7005f85214cdc95f017dbd5d832a9bfc8fee8f21234830b5",
     "pages": 82,
-    "bytes": 4376342,
-    "korean_characters": 43889,
+    "bytes": 4378354,
+    "korean_characters": 43896,
     "minimum_page_characters": 234,
     "missing_required_text": [],
     "almost_empty_pages": [],
     "local_machine_links": [],
     "out_of_page_text": [],
     "status": "PASS",
+    "path": "docs/Foundry-Learning-Loop-Lab-KO.pdf",
     "exact_portal_image_pixel_matches": {
       "01-project-overview.png": [
         5
@@ -138,19 +153,20 @@
       ]
     }
   },
+  "runtime_data_prompts_gates_unchanged": true,
   "pages_configuration": {
     "url": "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/",
     "branch": "main",
     "path": "/",
-    "nojekyll": true
+    "nojekyll": true,
+    "root_entry_redirects_to": "docs/index.html"
   },
   "package": {
     "status": "PASS",
     "file": "dist/foundry-evaluation-labs-v1.1.zip",
-    "files": 137,
+    "files": 138,
     "verification_records": 1,
-    "local_links_resolve": 237,
-    "bytes_match_source": true,
-    "private_files_included": false
+    "resolved_local_links": 238,
+    "bytes_match_source": true
   }
 }

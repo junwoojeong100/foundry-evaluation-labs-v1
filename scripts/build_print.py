@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build only print.html; --check verifies it without writing. No PDF is produced."""
+"""Build docs/print.html; --check verifies it without writing. No PDF is produced."""
 
 from __future__ import annotations
 
 import argparse
 import html
+import os
 import posixpath
 import sys
 from html.parser import HTMLParser
@@ -46,11 +47,13 @@ class _BookContent(guide.HtmlRewriter):
         document: guide.Document,
         anchors: Mapping[str, set[str]],
         documents: Mapping[str, guide.Document],
+        output_base: str,
     ) -> None:
         super().__init__()
         self.document = document
         self.anchors = anchors
         self.documents = documents
+        self.output_base = output_base
         self.links: list[str | None] = []
 
     def _target(self, document: guide.Document, fragment: str) -> str:
@@ -69,6 +72,8 @@ class _BookContent(guide.HtmlRewriter):
         if not parsed.path and not local_http:
             return self._target(self.document, parsed.fragment), None
         path = posixpath.normpath(unquote(parsed.path).lstrip("/"))
+        if not parsed.scheme and not parsed.netloc and not parsed.path.startswith("/"):
+            path = guide.output_relative(posixpath.join(self.output_base, path))
         document = self.documents.get(path)
         if document:
             return self._target(document, parsed.fragment), None
@@ -119,14 +124,19 @@ class _BookContent(guide.HtmlRewriter):
         super().handle_endtag(tag)
 
 
-def render_book(sources: Mapping[str, str], template: str) -> str:
+def render_book(
+    sources: Mapping[str, str], template: str, *, output_base: str = guide.SITE_DIRECTORY
+) -> str:
     """Assemble all source documents with book-local IDs and portable links."""
     guide.require_sources(sources)
     specifications = {document.key: document for document in guide.DOCUMENTS}
     documents = {
         path: document
         for document in guide.DOCUMENTS
-        for path in (document.source, document.output)
+        for path in (
+            document.source, document.output,
+            posixpath.join(guide.SITE_DIRECTORY, document.output),
+        )
     }
     rendered = {}
     anchors = {}
@@ -136,6 +146,7 @@ def render_book(sources: Mapping[str, str], template: str) -> str:
             sources[document.source],
             relative_base=posixpath.dirname(document.source),
             link_map=guide.DOCUMENT_LINKS,
+            output_base=output_base,
         )
         rendered[key] = part
         parser = _Anchors(document.source)
@@ -146,7 +157,7 @@ def render_book(sources: Mapping[str, str], template: str) -> str:
     toc = ["<ol>"]
     for index, key in enumerate(BOOK_ORDER):
         document = specifications[key]
-        parser = _BookContent(document, anchors, documents)
+        parser = _BookContent(document, anchors, documents, output_base)
         parser.feed(rendered[key].content)
         parser.close()
         label = document.label if index == 0 else f"부록 {index} · {document.label}"
@@ -164,6 +175,11 @@ def render_book(sources: Mapping[str, str], template: str) -> str:
         {
             "TITLE": BOOK_TITLE,
             "BUILD_DATE": guide.BUILD_DATE,
+            "WEB_PATH": html.escape(guide.output_relative("web", output_base), quote=True),
+            "HOME_HREF": html.escape(
+                guide.output_relative(posixpath.join(guide.SITE_DIRECTORY, "index.html"), output_base),
+                quote=True,
+            ),
             "CONTENT": "\n".join(sections),
             "BOOK_TOC": "\n".join(toc),
         },
@@ -173,12 +189,15 @@ def render_book(sources: Mapping[str, str], template: str) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="필수 문서를 모아 통합 인쇄본 HTML을 만듭니다. PDF는 생성하지 않습니다.")
-    parser.add_argument("--output", type=Path, default=guide.PROJECT_ROOT / "print.html")
+    parser.add_argument("--output", type=Path, default=guide.PROJECT_ROOT / guide.SITE_DIRECTORY / "print.html")
     parser.add_argument("--template", type=Path, default=guide.PROJECT_ROOT / "web" / "print-template.html")
     parser.add_argument("--check", action="store_true", help="파일을 쓰지 않고 인쇄본의 최신 상태 확인")
     args = parser.parse_args(argv)
     try:
-        rendered = render_book(guide.read_sources(), args.template.read_text(encoding="utf-8"))
+        rendered = render_book(
+            guide.read_sources(), args.template.read_text(encoding="utf-8"),
+            output_base=os.path.relpath(args.output.resolve().parent, guide.PROJECT_ROOT).replace(os.sep, "/"),
+        )
         return guide.check_or_write({args.output: rendered}, check=args.check)
     except (OSError, ValueError) as error:
         print(f"인쇄본 빌드 실패: {error}", file=sys.stderr)

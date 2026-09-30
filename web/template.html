@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
   <title>{{TITLE}} · Foundry 실습 가이드</title>
-  <link rel="icon" type="image/svg+xml" href="web/assets/foundry.svg">
-  <script src="web/theme.js"></script>
-  <link rel="stylesheet" href="web/styles.css">
-  <script src="web/app.js" defer></script>
+  <link rel="icon" type="image/svg+xml" href="{{WEB_PATH}}/assets/foundry.svg">
+  <script src="{{WEB_PATH}}/theme.js"></script>
+  <link rel="stylesheet" href="{{WEB_PATH}}/styles.css">
+  <script src="{{WEB_PATH}}/app.js" defer></script>
 </head>
 <body data-document-id="{{DOCUMENT_ID}}" data-progress-revision="{{PROGRESS_REVISION}}">
   <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
@@ -20,7 +20,7 @@
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a class="brand" href="{{HOME_HREF}}" aria-label="Microsoft Foundry 실습 가이드 처음으로">
-        <img class="brand-symbol" src="web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <img class="brand-symbol" src="{{WEB_PATH}}/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
         <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
       </a>
       <span class="header-context">한국어 · 오프라인 문서</span>
@@ -28,7 +28,7 @@
         <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
         <button class="toolbar-button" type="button" data-print-one title="현재 읽는 {{CHAPTER_UNIT}}만 인쇄" hidden>현재 인쇄</button>
         <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
-        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-KO.pdf">전체 PDF</a></noscript>
+        <noscript><a class="toolbar-button" href="{{PDF_HREF}}">전체 PDF</a></noscript>
       </div>
     </div>
   </header>
@@ -77,7 +77,7 @@
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-      {{RETURN_LINK}}
+{{RETURN_LINK}}
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
         <span class="document-date">문서 기준 <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></span>
@@ -97,7 +97,7 @@
       </nav>
       <footer class="document-footer">
         <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></p>
-        <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
+        <div class="footer-links"><a href="{{PRINT_HREF}}">부록 포함 인쇄본</a><a href="{{PDF_HREF}}">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>
   </div>

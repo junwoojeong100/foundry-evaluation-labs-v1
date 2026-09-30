@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="Microsoft Foundry의 평가, 분석, 개선과 운영을 차례로 살펴보는 한국어 오프라인 실습 가이드">
   <title>선택 부록 · Foundry SFT와 Frontier 접근 확인 · Foundry 실습 가이드</title>
-  <link rel="icon" type="image/svg+xml" href="web/assets/foundry.svg">
-  <script src="web/theme.js"></script>
-  <link rel="stylesheet" href="web/styles.css">
-  <script src="web/app.js" defer></script>
+  <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script src="../web/theme.js"></script>
+  <link rel="stylesheet" href="../web/styles.css">
+  <script src="../web/app.js" defer></script>
 </head>
 <body data-document-id="sft.html" data-progress-revision="">
   <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
@@ -20,7 +20,7 @@
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
-        <img class="brand-symbol" src="web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
         <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
       </a>
       <span class="header-context">한국어 · 오프라인 문서</span>
@@ -101,7 +101,7 @@
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-      <a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
         <span class="document-date">문서 기준 <time datetime="2026-09-30">2026-09-30</time></span>
@@ -327,8 +327,8 @@ python -m lab.sft --config &quot;$LAB_ENV_FILE&quot; status
 <p><strong>명령 해설:</strong> 같은 job을 <strong>최대 3,000초(50분)</strong> 동안 60초 간격으로 상태 조회합니다. 여기서 <code>--interval-seconds</code>는 추론 사례 간 대기가 아니라 <strong>상태 조회 간격</strong>입니다. 이 명령의 대기 상한이 서버 학습을 취소하거나 비용을 차단하지는 않습니다.</p>
 <p>이번 작업은 56 train/12 validation, 1 epoch에서 <strong>30,722 trained tokens</strong>를 반환했고 실제 학습 모델 ID가 생겼습니다. 상태 조회마다 <code>job-observations/</code>에 원본 응답을 보존했습니다. 서비스의 <code>trainingType: standard</code>는 동일한 Standard 유형의 표기 차이이며 Global/Developer로 자동 전환한 것이 아닙니다.</p>
 <figure class="portal-shot" id="portal-sft">
-<img src="web/assets/portal/14-sft-job.png" alt="실제 완료된 SFT 작업의 모델 ID, Supervised, Standard, 학습 및 검증 파일과 epoch 1" width="1440" height="1000" loading="lazy">
-<figcaption><strong>화면 14 · Build → Fine-tune → 해당 job → Details.</strong> 2026-09-30 Headless Playwright로 기존 작업을 조회한 화면입니다. 로컬 sft-state의 job ID를 맞추고 Completed·Supervised·Standard·파일·epoch를 읽습니다. 생성자·프로필은 가렸고 새 학습·배포는 하지 않았습니다. <a href="web/assets/portal/14-sft-job.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/14-sft-job.png" alt="실제 완료된 SFT 작업의 모델 ID, Supervised, Standard, 학습 및 검증 파일과 epoch 1" width="1440" height="1000" loading="lazy">
+<figcaption><strong>화면 14 · Build → Fine-tune → 해당 job → Details.</strong> 2026-09-30 Headless Playwright로 기존 작업을 조회한 화면입니다. 로컬 sft-state의 job ID를 맞추고 Completed·Supervised·Standard·파일·epoch를 읽습니다. 생성자·프로필은 가렸고 새 학습·배포는 하지 않았습니다. <a href="../web/assets/portal/14-sft-job.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <p><strong>학습 지표는 이렇게 읽습니다.</strong> Loss는 학습 예시의 다음 토큰 예측 오차이고 낮아지는 추세를 봅니다. Train mean token accuracy 0.79는 <strong>고객지원 업무 정확도 79%가 아닙니다.</strong> 학습 데이터에만 잘 맞았을 수 있으므로 dev 비교가 필요합니다. 화면의 <code>Training tokens billed</code> 30,000과 원본 API의 <code>trained_tokens</code> 30,722는 다른 출처·필드의 값으로 보존하며 임의로 맞추거나 실제 청구 금액으로 환산하지 않습니다. Monitor·Checkpoints는 학습 진단, Deployments는 호출 가능한 배포 확인에 사용합니다.</p>
