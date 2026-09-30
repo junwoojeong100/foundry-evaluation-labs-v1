@@ -1,6 +1,8 @@
 # Foundry Learning Loop Lab v1 · English
 
-**[Start the lab → index.html](index.html#start)**
+**[Read the lab online → GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)**
+
+Reading the guide needs no installation. For a downloaded package, open [index.html](index.html#start). GitHub Pages serves static documentation only; it does not sign in to Azure, run CLI commands, or execute paid labs.
 
 **Follow six steps on one page, in order.** You do not need to choose a document, evaluator path, or optimizer.
 
@@ -79,3 +81,5 @@ python -m unittest discover -s tests -v
 **Command details:** The first command renders the registered HTML pages and combined print HTML from Markdown. `--check` verifies freshness without writing. The final command runs the local test suite with verbose output (`-v`); it does not execute Azure labs or regenerate the PDF. Screenshot updates must also update the route, redactions, dimensions, and hash in `web/assets/portal/captures.json`.
 
 The builder generates HTML and the print book; regenerate PDF and ZIP separately. `python -m lab` is this repository's educational tool, not an official Microsoft CLI. The guide edition is **v1** and the documentation date is **2026-09-30**.
+
+**Online publishing:** GitHub Pages uses the `main` branch and `/ (root)`. The root `.nojekyll` file serves the generated HTML and relative assets without Jekyll processing. Rebuild HTML/PDF, commit, and push to update the site. Public repository access does not publish private `.lab/` environments, credentials, approvals, or raw execution records, and does not grant Azure access.

@@ -1,6 +1,8 @@
 # Foundry Learning Loop Lab v1 · 한국어
 
-**[실습 시작 → index.html](index.html#start)**
+**[브라우저에서 실습 시작 → GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)**
+
+설치 없이 가이드를 읽을 수 있습니다. 내려받은 패키지는 [index.html](index.html#start)을 열면 됩니다. GitHub Pages는 정적 문서만 제공하며 Azure 로그인·CLI 실행·유료 실습을 대신 수행하지 않습니다.
 
 **참가자는 가이드 한 페이지의 6단계만 순서대로 진행합니다.** 문서나 실습 유형을 고를 필요가 없습니다.
 
@@ -79,3 +81,5 @@ python -m unittest discover -s tests -v
 **명령 해설:** 첫 줄은 Markdown에서 등록된 HTML과 통합 인쇄 HTML을 생성합니다. `--check`는 쓰기 없이 생성물이 원문과 같은지 확인합니다. 마지막 줄은 `tests/`의 자동 검사를 자세한 출력(`-v`)으로 실행합니다. 모두 로컬 제작 명령이며 Azure 실습 성공이나 PDF 재생성을 대신하지 않습니다. 포털 사진을 갱신하면 `web/assets/portal/captures.json`의 출처·가림 범위·치수·해시도 함께 갱신합니다.
 
 HTML·인쇄본은 빌더로 생성하며 PDF·ZIP은 별도 재생성합니다. `python -m lab`는 이 저장소의 교육용 도구이며 Microsoft 공식 CLI가 아닙니다. 가이드는 **v1**, 문서 기준일은 **2026-09-30**입니다.
+
+**온라인 게시:** GitHub Pages의 소스는 `main` 브랜치의 `/ (root)`입니다. 루트의 `.nojekyll`로 Jekyll 변환 없이 생성된 `index.html`과 상대 경로 자산을 그대로 제공합니다. 원문 수정 후 HTML·PDF를 갱신해 커밋·푸시하면 Pages에 반영됩니다. 저장소 공개는 `.lab/`·인증·승인·가공 전 실행 결과의 공개나 별도 Azure 접근 권한을 의미하지 않습니다.

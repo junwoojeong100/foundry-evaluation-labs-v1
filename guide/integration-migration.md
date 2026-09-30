@@ -6,11 +6,13 @@
 
 **이름 안내:** 현재 유지보수 저장소와 실제 디렉터리는 `foundry-evaluation-labs-v1`이며, 가이드 표기는 **v1**입니다. 이 문서의 **참고 원본**은 `foundry-evaluation-labs-v0.9`에 보관된 과거 소스를 뜻합니다. 옛 로컬 경로는 가상환경과 동결 기록의 절대 경로를 유지하는 호환용 링크로 남기며, 실습 데이터·평가기준·Azure 리소스는 바꾸지 않습니다.
 
+**후속 공개 요청:** 2026-09-30 소유자가 최신 변경의 커밋·푸시 후 현재 v1 저장소의 Public 전환과 [GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/) 게시를 별도로 지시했습니다. 아래 Private 유지 조건은 초기 통합 작업의 범위였으며 이 후속 요청과 구분합니다. v0.9 보관 원본은 이 공개 요청의 대상이 아니며 해당 출처 링크는 별도 접근 권한이 필요할 수 있습니다.
+
 ## 1. 소스·범위·판정 용어
 
 | 대상 | 고정 소스 | 이번 작업의 경계 |
 |---|---|---|
-| 현재 가이드 v1 | [`junwoojeong100/foundry-evaluation-labs-v1`](https://github.com/junwoojeong100/foundry-evaluation-labs-v1), 통합 시작 커밋 `8ea5d3aedb2aeef0727d16031033969f30c2d0b0` | PRIVATE 유지. 문서 표기는 v1으로 통일하며 실습 내용·환경은 변경하지 않음 |
+| 현재 가이드 v1 | [`junwoojeong100/foundry-evaluation-labs-v1`](https://github.com/junwoojeong100/foundry-evaluation-labs-v1), 통합 시작 커밋 `8ea5d3aedb2aeef0727d16031033969f30c2d0b0` | 초기 통합은 PRIVATE 유지. 이후 별도 소유자 요청으로 Public·Pages 게시 대상이 됨. 실습 내용·Azure 환경은 변경하지 않음 |
 | 읽기 전용 참고 원본 | [`junwoojeong100/foundry-evaluation-labs-v0.9`][v1-root], 커밋 `93bc07e31373c4cfc278a2dc3757785946404cf2` | 현재 PRIVATE·Archived로 보관되어 있음. 이번 이름 변경에서 원본 파일·브랜치·가시성·보관 상태는 변경하지 않음 |
 | 최초 산출물 | `guide/integration-migration.md` | 구현 전에 비교·계약을 먼저 저장하고 형제 구현 담당자에게 전달 |
 | 후속 문서 범위 | `README.md`, `README.en.md`, `guide/*.md`의 지정 원문 | 가이드 우선 순서로 참가자·운영자·강사·SFT·검증·이관 문서를 통합. HTML/PDF/스크립트/코드는 각 소유 담당자가 처리 |
@@ -263,7 +265,7 @@ PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된
 
 ## 7. 이관 완료·아카이브 준비 체크리스트
 
-**이 절은 아카이브 준비 지침이지 저장소의 archive/visibility 상태를 변경하는 승인이나 실행이 아닙니다.** 보관 원본의 접근·보관 상태와 현재 v1 저장소의 PRIVATE 상태를 변경하지 않습니다.
+**이 절은 초기 아카이브 준비 기록이지 그 자체로 가시성 변경을 승인한 문서가 아닙니다.** 현재 v1의 공개 게시는 위의 별도 소유자 요청에 따른 것이며, 보관 원본의 접근·보관 상태는 변경하지 않습니다.
 
 | 검토 | 완료로 볼 조건 | 하지 않을 일 |
 |---|---|---|
@@ -298,7 +300,7 @@ PDF는 두 빌더가 생성하지 않습니다. 통합 HTML 확인 뒤 승인된
 >
 > 참고 원본의 과거 자료는 **foundry-evaluation-labs-v0.9**에서 보관되어 있습니다. 과거 점수·실행 화면은 현재 가이드의 신규 LIVE 결과가 아닙니다.
 >
-> 현재 저장소는 비공개입니다. 승인된 저장소 접근 또는 배포 패키지를 사용하고, Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.
+> 가이드는 현재 v1 저장소와 GitHub Pages를 통해 공개하는 대상입니다. 과거 참고 원본은 별도 접근 권한이 필요할 수 있습니다. Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.
 
 [v1-root]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2
 [v1-readme]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/blob/93bc07e31373c4cfc278a2dc3757785946404cf2/README.ko.md

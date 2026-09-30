@@ -89,7 +89,7 @@
       "test_branding",
       "test_package"
     ],
-    "tests_run": 69,
+    "tests_run": 70,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -97,32 +97,32 @@
   "pdf": {
     "status": "PASS",
     "file": "Foundry-Learning-Loop-Lab-KO.pdf",
-    "sha256": "39a165ad03026290d64705f6610528cc5fe3a499e7d86aa926f011a73e3c54c3",
+    "sha256": "65f047fa48160de04c17ef068681cf4335c5264d3248547fa092c97123bbfc83",
     "pages": 111,
     "exact_pixel_match_pages": {
-      "01-project-overview.png": [
-        5
-      ],
-      "02-model-deployments.png": [
-        8
-      ],
-      "03-agent-versions.png": [
-        12
+      "08-optimizer-dataset.png": [
+        24
       ],
       "04-baseline-playground.png": [
         12
       ],
-      "05-knowledge-base.png": [
-        18
-      ],
       "06-iq-agent-knowledge.png": [
         19
       ],
-      "07-optimizer-target.png": [
-        23
+      "05-knowledge-base.png": [
+        18
       ],
-      "08-optimizer-dataset.png": [
-        24
+      "14-sft-job.png": [
+        42
+      ],
+      "03-agent-versions.png": [
+        12
+      ],
+      "01-project-overview.png": [
+        5
+      ],
+      "13-trace-tool-call.png": [
+        34
       ],
       "09-optimizer-results.png": [
         25
@@ -130,17 +130,17 @@
       "10-optimizer-changes.png": [
         26
       ],
-      "11-evaluation-results.png": [
-        27
+      "02-model-deployments.png": [
+        8
+      ],
+      "07-optimizer-target.png": [
+        23
       ],
       "12-trace-lookup.png": [
         33
       ],
-      "13-trace-tool-call.png": [
-        34
-      ],
-      "14-sft-job.png": [
-        42
+      "11-evaluation-results.png": [
+        27
       ]
     },
     "manually_inspected_pages": [
@@ -154,7 +154,7 @@
   "package": {
     "status": "PASS",
     "file": "dist/foundry-evaluation-labs-v1.1.zip",
-    "files": 156,
+    "files": 157,
     "portal_screenshots": 14,
     "all_source_bytes_match": true,
     "pdf_bytes_match": true,
@@ -164,5 +164,13 @@
     "original_data_files_byte_identical_to_head": 12,
     "runtime_evaluator_prompt_schema_changes": false
   },
-  "completed_at": "2026-09-30T08:15:07.267850+00:00"
+  "completed_at": "2026-09-30T08:29:17.599349+00:00",
+  "publication_preparation": {
+    "first_guide_push": "544b6ad",
+    "source_branch": "main",
+    "source_path": "/",
+    "nojekyll": true,
+    "site_url": "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/",
+    "scope": "Public-guide preparation; deployment status is verified separately in GitHub."
+  }
 }

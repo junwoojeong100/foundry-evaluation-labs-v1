@@ -137,6 +137,7 @@
 <p><strong>조사 기준: 2026-09-30 KST. 이 문서는 구현 완료나 LIVE 실행 보고서가 아니라, 고정한 두 소스의 비교와 통합 요구조건입니다.</strong></p>
 <p>참고 원본의 장점은 설치 전에 문제를 발견하게 하고, 작은 실험을 끝까지 실행·판단·재개할 수 있게 만든 점입니다. 통합 대상의 장점은 Contoso 데이터 계약, 실제 Agent Service 버전, MCP 기반 IQ, 엄격한 근거 처리와 오프라인 웹·인쇄 제작 체계입니다. <strong>원본의 학습·실행 패턴을 Contoso에 맞게 새로 구현하고, 통합 대상의 기반을 대체하지 않습니다.</strong></p>
 <p><strong>이름 안내:</strong> 현재 유지보수 저장소와 실제 디렉터리는 <code>foundry-evaluation-labs-v1</code>이며, 가이드 표기는 <strong>v1</strong>입니다. 이 문서의 <strong>참고 원본</strong>은 <code>foundry-evaluation-labs-v0.9</code>에 보관된 과거 소스를 뜻합니다. 옛 로컬 경로는 가상환경과 동결 기록의 절대 경로를 유지하는 호환용 링크로 남기며, 실습 데이터·평가기준·Azure 리소스는 바꾸지 않습니다.</p>
+<p><strong>후속 공개 요청:</strong> 2026-09-30 소유자가 최신 변경의 커밋·푸시 후 현재 v1 저장소의 Public 전환과 <a href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/">GitHub Pages</a> 게시를 별도로 지시했습니다. 아래 Private 유지 조건은 초기 통합 작업의 범위였으며 이 후속 요청과 구분합니다. v0.9 보관 원본은 이 공개 요청의 대상이 아니며 해당 출처 링크는 별도 접근 권한이 필요할 수 있습니다.</p>
 <h2 id="1-소스범위판정-용어">1. 소스·범위·판정 용어</h2>
 <table>
 <thead>
@@ -150,7 +151,7 @@
 <tr>
 <td>현재 가이드 v1</td>
 <td><a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1"><code>junwoojeong100/foundry-evaluation-labs-v1</code></a>, 통합 시작 커밋 <code>8ea5d3aedb2aeef0727d16031033969f30c2d0b0</code></td>
-<td>PRIVATE 유지. 문서 표기는 v1으로 통일하며 실습 내용·환경은 변경하지 않음</td>
+<td>초기 통합은 PRIVATE 유지. 이후 별도 소유자 요청으로 Public·Pages 게시 대상이 됨. 실습 내용·Azure 환경은 변경하지 않음</td>
 </tr>
 <tr>
 <td>읽기 전용 참고 원본</td>
@@ -699,7 +700,7 @@ python -m unittest discover -s tests -p 'test_print_build.py' -v
 <li>기존 100건과 제품·증거·안전 경계를 보존해야 하며, 작성 예시·mock·과거 기록을 새 LIVE 성공으로 채우지 않아야 합니다.</li>
 </ul>
 <h2 id="7-이관-완료아카이브-준비-체크리스트">7. 이관 완료·아카이브 준비 체크리스트</h2>
-<p><strong>이 절은 아카이브 준비 지침이지 저장소의 archive/visibility 상태를 변경하는 승인이나 실행이 아닙니다.</strong> 보관 원본의 접근·보관 상태와 현재 v1 저장소의 PRIVATE 상태를 변경하지 않습니다.</p>
+<p><strong>이 절은 초기 아카이브 준비 기록이지 그 자체로 가시성 변경을 승인한 문서가 아닙니다.</strong> 현재 v1의 공개 게시는 위의 별도 소유자 요청에 따른 것이며, 보관 원본의 접근·보관 상태는 변경하지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -789,7 +790,7 @@ python -m unittest discover -s tests -p 'test_print_build.py' -v
 <p>Foundry 평가 실습의 대표 유지보수 저장소는 <strong>foundry-evaluation-labs-v1</strong>이며, 가이드 표기도 <strong>v1</strong>입니다. 전체 패키지에서 <code>index.html</code>을 열어 시작해 주세요.</p>
 <p>v1 가이드는 Contoso 고객지원 시나리오에서 오답 발견 → 무료 작성형 DEMO → 실습 환경 연결 → 실제 평가·검색·개선 → 동결·새 보류 평가 → 사람 검토·운영 관측을 하나의 경로로 안내합니다. 코드·데이터·설치·재개에 참고 원본의 실행 파일은 필요하지 않습니다.</p>
 <p>참고 원본의 과거 자료는 <strong>foundry-evaluation-labs-v0.9</strong>에서 보관되어 있습니다. 과거 점수·실행 화면은 현재 가이드의 신규 LIVE 결과가 아닙니다.</p>
-<p>현재 저장소는 비공개입니다. 승인된 저장소 접근 또는 배포 패키지를 사용하고, Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.</p>
+<p>가이드는 현재 v1 저장소와 GitHub Pages를 통해 공개하는 대상입니다. 과거 참고 원본은 별도 접근 권한이 필요할 수 있습니다. Azure 실행·비용·데이터 처리 승인은 각 실습 환경에서 확인해 주세요. 품질 점수와 사람의 운영 승인은 별개입니다.</p>
 </blockquote>
       </article>
 

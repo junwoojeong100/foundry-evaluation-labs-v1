@@ -15,7 +15,7 @@ ROOT_FILES = (
     "migration.html", "english.html",
     "verification.html", "data-guide.html", "print.html", "pyproject.toml", "requirements.lock",
     "requirements-verification.lock",
-    ".env.example", ".gitignore", "Foundry-Learning-Loop-Lab-KO.pdf",
+    ".env.example", ".gitignore", ".nojekyll", "Foundry-Learning-Loop-Lab-KO.pdf",
 )
 SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "worksheets", "infra", "evidence")
 ARCHIVE_ROOT = "foundry-evaluation-labs-v1.1"

@@ -145,6 +145,18 @@ class PortalFigureParser(HTMLParser):
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_pages_entry_uses_the_public_static_project_site(self):
+        url = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
+        self.assertTrue((ROOT / ".nojekyll").is_file())
+        for name in ("README.md", "README.en.md"):
+            source = (ROOT / name).read_text(encoding="utf-8")
+            self.assertIn(f"{url}#start", source)
+            self.assertIn(".nojekyll", source)
+            self.assertIn("`main`", source)
+        from scripts.package_lab import package_files
+
+        self.assertIn(ROOT / ".nojekyll", package_files(ROOT))
+
     def test_each_participant_step_explains_the_feature_purpose_and_usage(self):
         source = (ROOT / "guide/handbook.md").read_text(encoding="utf-8")
         steps = re.split(r"^## ", source, flags=re.MULTILINE)[1:]
