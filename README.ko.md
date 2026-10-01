@@ -1,6 +1,6 @@
 # Foundry Learning Loop Lab v1 · 한국어
 
-**[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)** · [English README](README.md)
+**[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
 **Microsoft Foundry 관리형 Evaluation과 Agent Optimizer**로 자사 대표 업무의 Agent 응답을 개선합니다.
 
@@ -43,7 +43,7 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 
 | 내용 | 한국어 | English |
 |---|---|---|
-| 참가자 실습 | [시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start) |
+| 참가자 실습 | [시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html) |
 | 운영자 준비 | [운영자](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) | [Operator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) |
 | 진행·복구 | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Facilitator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
 | 데이터 계약 | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |

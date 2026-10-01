@@ -2,7 +2,7 @@
 
 English is the default. See the [main README](README.md) for the current Sol v1/v2 pair, fixed model roles and the complete bilingual guide directory.
 
-**[Start the English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start)** · [Korean guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)
+**[Start the English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html)** · [Korean guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)
 
 The workshop uses actual **Foundry Evaluation → Agent Optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
 

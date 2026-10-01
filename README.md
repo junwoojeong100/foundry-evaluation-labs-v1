@@ -1,6 +1,6 @@
 # Foundry Learning Loop Lab v1
 
-**[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)** · [한국어 README](README.ko.md)
+**[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
 Use **Microsoft Foundry managed Evaluation and Agent Optimizer** to improve an Agent against your own representative business tasks:
 
@@ -43,7 +43,7 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 
 | Guide | English | 한국어 |
 |---|---|---|
-| Participant path | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start) | [실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start) |
+| Participant path | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html) | [실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html) |
 | Operator preparation | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) | [운영자](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) |
 | Facilitation and recovery | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
 | Data contract | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |

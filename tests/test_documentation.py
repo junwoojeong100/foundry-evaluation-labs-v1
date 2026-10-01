@@ -341,6 +341,16 @@ class DocumentationTests(unittest.TestCase):
     def test_readme_html_links_open_pages_not_github_source_views(self):
         for name in ("README.md", "README.en.md", "README.ko.md"):
             source = (ROOT / name).read_text()
+            entry_links = [
+                urlsplit(href.removeprefix(SITE_URL))
+                for href in re.findall(r"\]\(([^)\s]+)\)", source)
+                if href.startswith(SITE_URL)
+                and urlsplit(href.removeprefix(SITE_URL)).path
+                in {"", "index.html", "docs/index.html", "docs/ko/index.html"}
+            ]
+            self.assertGreaterEqual(len(entry_links), 2, name)
+            for link in entry_links:
+                self.assertEqual(link.fragment, "", (name, link.geturl()))
             links = re.findall(r"\]\(([^)\s]+\.html[^)\s]*)\)", source)
             self.assertTrue(links, name)
             for href in links:
