@@ -11,8 +11,8 @@
 영어 대상은 **`contoso-eval-en-sol`**입니다. 영어·한국어 원본 데이터는 분리하며 한국어 가이드가 새로운 한국어 서비스 실행을 입증하지는 않습니다.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../web/assets/portal/en/00-resource-group.png" alt="격리 실습의 위치를 설명하는 이전 리소스 그룹 UI 예시. 현재 검증 결과가 아님" width="1600" height="1000" loading="lazy">
-<figcaption><strong>리소스 그룹 위치 예시입니다.</strong> 이전 포털 캡처이며 현재 v2 결과가 아닙니다. 실제 프로젝트·현재 상태는 운영자 인수 정보로 확인합니다. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/01-project-overview.png" alt="이전 한국어 실습의 Foundry 프로젝트 홈. 프로젝트 선택과 엔드포인트 위치 예시이며 현재 검증 결과가 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>한국어 실습 프로젝트 위치 예시입니다.</strong> 이전 프로젝트 홈이며 리소스 그룹 화면이나 현재 v2 결과가 아닙니다. 메뉴는 원래 영문입니다. 실제 프로젝트·리소스 그룹·현재 상태는 운영자 인수 정보로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## 세 모델 역할 확인 {#prepare}
@@ -28,8 +28,8 @@ Sol은 카탈로그 표시뿐 아니라 고정된 Foundry 프롬프트 Agent 호
 Optimizer는 별도 역할이며 [지원 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로도 지원된다고 가정하지 않습니다.
 
 <figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/en/02-model-deployments.png" alt="배포 이름·버전의 확인 위치를 보여 주는 이전 모델 목록. 현재 Sol 배포 증거가 아님" width="1271" height="820" loading="lazy">
-<figcaption><strong>모델·버전 열의 위치 예시입니다.</strong> Sol 배포 이전 캡처이므로 현재 역할 표와 기록된 API 관측을 사용합니다. 이전 화면을 런타임 성공 근거로 사용하지 않습니다. <a href="../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/02-model-deployments.png" alt="이전 한국어 실습 프로젝트의 모델 배포 목록. 이름·버전 확인 위치 예시이며 현재 Sol 배포 증거가 아님" width="1270" height="750" loading="lazy">
+<figcaption><strong>모델·버전 열의 위치 예시입니다.</strong> 한국어 실습의 Sol 배포 이전 캡처이므로 현재 역할 표와 기록된 API 관측을 사용합니다. 이전 화면을 런타임 성공 근거로 사용하지 않습니다. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## 충분히 강한 v1과 통제된 v2 준비 {#bootstrap}

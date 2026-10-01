@@ -55,6 +55,8 @@ English is the default. Language switching preserves the corresponding section, 
 
 Portal pictures are labeled **UI illustrations from earlier captures**, not current Sol measurements. The latest report and its actual run IDs are the measurement source.
 
+Screenshot sets stay language-specific: English guides use `web/assets/portal/en/`; Korean guides use Korean-lab captures directly in `web/assets/portal/`. Both sets have English portal controls; the lab data and instructions determine the capture language. Each guide includes 12 matching screenshots. The five previously missing Korean evaluation views were captured with Playwright Headless from unsubmitted settings and existing completed runs, without new paid evaluations. The 13 original Korean captures remain unchanged.
+
 ## Execution boundaries
 
 The operator prepares an isolated project and read-only policy connection before class. No separate knowledge-building, Judge-calibration or governance exercise is required. The Agent advises; it cannot issue refunds, submit tickets, delete data or grant access.

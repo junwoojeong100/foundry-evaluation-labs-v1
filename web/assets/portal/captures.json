@@ -1,17 +1,32 @@
 {
   "schema_version": 1,
-  "captured_date": "2026-09-30",
+  "captured_date": "2026-10-01",
+  "date_timezone": "Asia/Seoul",
   "portal_origin": "https://ai.azure.com",
   "tool": "playwright-headless.browser_run_code_unsafe",
   "headless_verified": true,
-  "authentication": "User completed interactive authentication; local temporary state transfer file removed.",
-  "scope": "Existing dedicated Contoso lab only. Route templates omit tenant, subscription and resource identifiers.",
+  "ui_language": "en-US",
+  "data_language": "ko",
+  "authentication": "User completed normal interactive authentication. The earlier temporary transfer file was removed. Additional captures reused authentication only in memory; the isolated login browser and authenticated headless context were closed.",
+  "scope": "Existing dedicated Korean-data Contoso lab only. Portal controls are English; Korean questions and instructions are not translated English-run images. Route templates omit tenant, subscription and resource identifiers.",
   "new_paid_runs_submitted": false,
   "cloud_configuration_changed": false,
+  "additional_capture_verification": {
+    "captured_date": "2026-10-01",
+    "headless_user_agent_verified": true,
+    "new_screenshots": 5,
+    "evaluation_definitions_before": 2,
+    "evaluation_definitions_after": 2,
+    "optimizer_evaluation_runs_before": 6,
+    "optimizer_evaluation_runs_after": 6,
+    "evaluation_wizard_submitted": false,
+    "authentication_state_written_to_disk": false
+  },
   "edits": "Crop and opaque privacy masks only; no status, score or content replacement.",
   "screenshots": [
     {
       "file": "01-project-overview.png",
+      "capture_session_date": "2026-09-30",
       "route": "/home",
       "state": "existing-resource",
       "redactions": ["profile", "welcome-name", "project-endpoint", "openai-endpoint"],
@@ -20,6 +35,7 @@
     },
     {
       "file": "02-model-deployments.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/models/deployments",
       "state": "existing-resource",
       "redactions": ["creator-column", "request-panel-excluded-by-crop"],
@@ -28,6 +44,7 @@
     },
     {
       "file": "03-agent-versions.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents",
       "state": "existing-resource",
       "redactions": ["profile"],
@@ -36,6 +53,7 @@
     },
     {
       "file": "04-baseline-playground.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{baseline-agent}/build",
       "state": "existing-resource-no-chat-sent",
       "redactions": ["profile"],
@@ -44,6 +62,7 @@
     },
     {
       "file": "05-knowledge-base.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/knowledge/search/c/{connection}/bases/{knowledge-base}",
       "state": "existing-resource",
       "redactions": ["profile"],
@@ -52,6 +71,7 @@
     },
     {
       "file": "06-iq-agent-knowledge.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/build",
       "state": "existing-resource-no-chat-sent",
       "redactions": ["profile"],
@@ -60,6 +80,7 @@
     },
     {
       "file": "07-optimizer-target.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization",
       "state": "unsubmitted-draft-target",
       "redactions": ["dialog-only-account-header-excluded"],
@@ -68,6 +89,7 @@
     },
     {
       "file": "08-optimizer-dataset.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization",
       "state": "unsubmitted-draft-no-upload",
       "redactions": ["dialog-only-account-header-excluded", "creator-column"],
@@ -76,6 +98,7 @@
     },
     {
       "file": "09-optimizer-results.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
       "state": "existing-completed-run",
       "redactions": ["profile"],
@@ -84,6 +107,7 @@
     },
     {
       "file": "10-optimizer-changes.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
       "state": "existing-candidate-not-promoted",
       "redactions": ["dialog-only-account-header-excluded"],
@@ -92,6 +116,7 @@
     },
     {
       "file": "11-evaluation-results.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
       "state": "existing-completed-run",
       "redactions": ["profile"],
@@ -100,6 +125,7 @@
     },
     {
       "file": "12-trace-lookup.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/traces",
       "state": "existing-iq-dev-response-filter",
       "redactions": ["profile"],
@@ -108,11 +134,57 @@
     },
     {
       "file": "13-trace-tool-call.png",
+      "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/traces",
       "state": "existing-iq-dev-mcp-span",
       "redactions": ["dialog-only-account-header-excluded"],
       "width": 1440, "height": 1000,
       "sha256": "05fad7f92b63108cf788f449bb3b3f6ae4793b09c7ee70a676ccc6e9d31e6069"
+    },
+    {
+      "file": "15-evaluation-dataset.png",
+      "capture_session_date": "2026-10-01",
+      "route": "/build/evaluations/submit",
+      "state": "unsubmitted-draft; existing Korean contoso-dev-v11-860db66e version1 with query/context/ground_truth; five-row preview only; no upload",
+      "redactions": ["profile", "creator-column"],
+      "width": 1440, "height": 1000,
+      "sha256": "df985d8c44d11c6850be46c53a8b343b0f10ae5aa066ca7b22e64a6d60889d81"
+    },
+    {
+      "file": "16-evaluation-criteria.png",
+      "capture_session_date": "2026-10-01",
+      "route": "/build/evaluations/submit",
+      "state": "unsubmitted-Korean-draft; Relevance threshold4 and TaskAdherence threshold1 verified in the form; existing Korean-project Judge lab-judge-860db66e, not the current Sol/Luna comparison",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "1d2b080b3042264eea7b06cd13736867e4693495f87c4466e32e384e8da24901"
+    },
+    {
+      "file": "17-evaluation-review.png",
+      "capture_session_date": "2026-10-01",
+      "route": "/build/evaluations/submit",
+      "state": "unsubmitted-Korean-draft-review; existing lab-20260930-live-iq target and contoso-dev-v11-860db66e version1; individual-turn one-time evaluation; no Submit clicked",
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "214ac5b7b051d48539e90c3a723c1fd1fbdb4570b5f21b21a6f09f85fb7e5250"
+    },
+    {
+      "file": "19-evaluation-case.png",
+      "capture_session_date": "2026-10-01",
+      "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
+      "state": "existing-completed-Korean-optimizer-candidate; actual first-case question and answer in User view; visible 1-error badge and incorrect response retained; not current Sol evidence",
+      "redactions": ["fullscreen-dialog-excludes-account-header", "empty-area-cropped"],
+      "width": 1440, "height": 440,
+      "sha256": "5f4307c84fc89d94c5fb7e8fa5e7d2d6f13cca68e53a8fcfe8d4f1ad9c168bbc"
+    },
+    {
+      "file": "20-evaluation-comparison.png",
+      "capture_session_date": "2026-10-01",
+      "route": "/build/evaluations/{native-optimizer-eval}/compare",
+      "state": "existing-completed-Korean-optimizer-baseline-and-candidate; baseline selected explicitly; TTest; relevance4.08vs4.00 and task_adherence0.58vs0.67; both Inconclusive; not current Sol comparison",
+      "redactions": ["profile", "empty-area-cropped"],
+      "width": 1440, "height": 520,
+      "sha256": "7af164c7e23a2c01180227932e71872064240904991a5b03b75c8e92cd6335ed"
     }
   ]
 }

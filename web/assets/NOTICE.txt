@@ -56,19 +56,29 @@ cropping or framing.
 Microsoft Foundry portal screenshots
 ===================================
 
-Files: portal/01-project-overview.png through portal/13-trace-tool-call.png.
+Files: portal/01-project-overview.png through portal/13-trace-tool-call.png,
+plus portal/15-evaluation-dataset.png, portal/16-evaluation-criteria.png,
+portal/17-evaluation-review.png, portal/19-evaluation-case.png, and
+portal/20-evaluation-comparison.png.
 Product UI: Microsoft Corporation. Source: https://ai.azure.com/
-Captured: 2026-09-30, using the playwright-headless MCP browser after the user
-completed normal authentication in an interactive browser.
+Captured: 2026-09-30 (original 13) and 2026-10-01 (five additional evaluation
+views), using Playwright Headless after normal interactive authentication.
 See portal/captures.json for routes, redactions, dimensions and SHA-256 hashes.
 
-These are actual product UI captures of the existing synthetic Contoso lab,
+These are actual product UI captures of the existing Korean-data Contoso lab,
 not mockups or screenshots copied from Microsoft Learn. Personal profile,
 creator and endpoint fields were masked, or excluded by cropping, before
 publication. Dialog-only screenshots exclude the account header. Product
 statuses, scores, instructions and synthetic tool output were not rewritten.
 The optimization target/data wizard was inspected but never submitted.
 Existing result pages were read without starting new paid jobs or deployments.
+Korean guides use these language-matched captures. Portal controls are English;
+the questions and instructions belong to the Korean lab. The five additional
+views use the same existing Korean project: evaluation settings were left
+unsubmitted, and case/comparison views use previously completed runs. Actual
+errors, incorrect model responses, and statistical outcomes remain visible.
+The new captures are not evidence of a new Korean Sol evaluation.
+The original 13 images remain byte-for-byte unchanged.
 
 The captures illustrate this educational guide and do not imply Microsoft
 endorsement, confer product rights, or change the existing artwork terms.
@@ -95,7 +105,7 @@ results. Only cropping and opaque privacy masks are applied. Identifying
 account, creator, subscription, and endpoint values are excluded; actual
 statuses, instruction text, synthetic data, and scores are not altered.
 
-The current Sol v1/v2 guides use these captures only as historical UI
+The current English Sol v1/v2 guides use these captures only as historical UI
 illustrations. They are not the current Sol evaluation evidence. Current
 questions, actual responses, scores and reasons are published in
 evidence/latest.json; do not substitute the older screenshot values.

@@ -92,7 +92,7 @@ v1 run은 **`evalrun_077d41ff8a534b9caee64f9d6c2a339d`**, 최종 정식 v2 run�
 
 현재 보고서는 최신 v2와 같은 모델의 v1 대조군만 보여 줍니다. 과거 원본은 로컬 감사용으로 보존하며 Azure·Git 이력을 삭제하거나 결과를 바꾸지 않았습니다.
 
-[촬영 기록](../web/assets/portal/en/captures.json)과 [NOTICE](../web/assets/NOTICE.txt)의 포털 이미지는 **이전 UI의 조작 위치 예시**이지 현재 Sol 채점 근거가 아닙니다. 측정에는 현재 run ID와 전체 공개 사례 기록을 사용합니다.
+[한국어 실습 촬영 기록](../web/assets/portal/captures.json)과 [NOTICE](../web/assets/NOTICE.txt)의 포털 이미지는 **조작 위치 예시**이지 현재 Sol 채점 근거가 아닙니다. 포털 메뉴는 영문이지만 질문·지침은 한국어 실습의 원본입니다. 2026-10-01에 누락된 평가 화면 5개를 Playwright Headless로 촬영했으며, 설정은 제출하지 않고 결과는 이전 완료 실행을 열었습니다. 새 평가·최적화·모델 호출 없이 기존 평가 정의 2개와 Optimizer 평가 run 6개가 유지됨을 확인했습니다. 측정에는 현재 run ID와 전체 공개 사례 기록을 사용합니다.
 
 공식 문서: [Agent 평가](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent) · [Agent Optimizer](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent) · [최적화 모델 역할](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models) · [평가기 정의](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators).
 

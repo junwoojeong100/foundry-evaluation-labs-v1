@@ -363,48 +363,112 @@ class DocumentationTests(unittest.TestCase):
                     self.assertIn(SITE_URL + "docs/" + output, source)
 
     def test_actual_screenshot_provenance_dimensions_and_redactions_match(self):
-        directory = ROOT / "web/assets/portal/en"
-        manifest = json.loads((directory / "captures.json").read_text())
-        self.assertTrue(manifest["headless_verified"])
-        self.assertEqual(manifest["data_language"], "en")
-        self.assertEqual(manifest["ui_language"], "en-US")
-        captures = {item["file"]: item for item in manifest["screenshots"]}
-        self.assertTrue({
-            "15-evaluation-dataset.png", "16-evaluation-criteria.png", "17-evaluation-review.png",
-            "18-evaluation-results.png", "19-evaluation-case.png", "20-evaluation-comparison.png",
-            "07-optimizer-target.png", "08-optimizer-dataset.png", "09-optimizer-results.png", "10-optimizer-changes.png",
-        }.issubset(captures))
-        self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
-        for name, record in captures.items():
-            image = (directory / name).read_bytes()
-            self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
-            self.assertEqual(struct.unpack(">II", image[16:24]), (record["width"], record["height"]))
-            self.assertEqual(hashlib.sha256(image).hexdigest(), record["sha256"])
-            self.assertTrue(record["redactions"])
-            self.assertNotIn("?", record["route"])
+        hashes = {}
+        for language in ("en", "ko"):
+            directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
+            manifest = json.loads((directory / "captures.json").read_text())
+            self.assertTrue(manifest["headless_verified"])
+            self.assertEqual(manifest["data_language"], language)
+            self.assertEqual(manifest["ui_language"], "en-US")
+            captures = {item["file"]: item for item in manifest["screenshots"]}
+            self.assertEqual(len(captures), len(manifest["screenshots"]))
+            self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
+            hashes[language] = set()
+            for name, record in captures.items():
+                with self.subTest(language=language, capture=name):
+                    image = (directory / name).read_bytes()
+                    self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
+                    self.assertEqual(struct.unpack(">II", image[16:24]), (record["width"], record["height"]))
+                    digest = hashlib.sha256(image).hexdigest()
+                    self.assertEqual(digest, record["sha256"])
+                    hashes[language].add(digest)
+                    self.assertTrue(record["redactions"])
+                    self.assertNotIn("?", record["route"])
+        self.assertTrue(hashes["en"].isdisjoint(hashes["ko"]))
+
+    def test_screenshots_use_the_document_language_in_sources_pages_and_print(self):
+        required = {
+            "en": {
+                "00-resource-group.png", "02-model-deployments.png",
+                "07-optimizer-target.png", "08-optimizer-dataset.png",
+                "09-optimizer-results.png", "10-optimizer-changes.png",
+                "15-evaluation-dataset.png", "16-evaluation-criteria.png", "17-evaluation-review.png",
+                "18-evaluation-results.png", "19-evaluation-case.png", "20-evaluation-comparison.png",
+            },
+            "ko": {
+                "01-project-overview.png", "02-model-deployments.png",
+                "07-optimizer-target.png", "08-optimizer-dataset.png",
+                "09-optimizer-results.png", "10-optimizer-changes.png", "11-evaluation-results.png",
+                "15-evaluation-dataset.png", "16-evaluation-criteria.png", "17-evaluation-review.png",
+                "19-evaluation-case.png", "20-evaluation-comparison.png",
+            },
+        }
         for language, prefix in (("en", ""), ("ko", "ko/")):
-            count = 0
+            directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
+            manifest = json.loads((directory / "captures.json").read_text())
+            captures = {item["file"]: item for item in manifest["screenshots"]}
+
+            def inspect(path, *, full_size_links=True):
+                text = path.read_text()
+                links = LinkParser()
+                links.feed(text)
+                for value in links.links:
+                    url = urlsplit(value)
+                    if url.scheme or url.netloc:
+                        continue
+                    target = (path.parent / unquote(url.path)).resolve()
+                    if target.is_relative_to(ROOT / "web/assets/portal"):
+                        self.assertEqual(target.parent, directory, (path, value))
+                page = PortalFigureParser()
+                page.feed(text)
+                for figure in page.figures:
+                    with self.subTest(language=language, document=path.relative_to(ROOT), figure=figure["id"]):
+                        self.assertTrue(figure["id"])
+                        self.assertEqual(len(figure["images"]), 1)
+                        image = figure["images"][0]
+                        image_path = (path.parent / image["src"]).resolve()
+                        self.assertEqual(image_path.parent, directory)
+                        self.assertIn(image_path.name, captures)
+                        record = captures[image_path.name]
+                        self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
+                        self.assertGreater(len(image["alt"]), 15)
+                        if full_size_links:
+                            self.assertIn(image["src"], figure["links"])
+                        self.assertGreater(len(figure["caption"]), 60)
+                return page.figures
+
+            book_ids = set()
+            used = []
             for document in documents_for(language):
                 path = SITE / document.output
-                page = PortalFigureParser()
-                page.feed(path.read_text())
-                count += len(page.figures)
-                for figure in page.figures:
-                    self.assertTrue(figure["id"])
-                    self.assertEqual(len(figure["images"]), 1)
-                    image = figure["images"][0]
-                    image_path = (path.parent / image["src"]).resolve()
-                    self.assertEqual(image_path.parent, directory)
-                    record = captures[image_path.name]
-                    self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
-                    self.assertGreater(len(image["alt"]), 15)
-                    self.assertIn(image["src"], figure["links"])
-                    self.assertGreater(len(figure["caption"]), 60)
-            self.assertGreaterEqual(count, 10)
-            book = PortalFigureParser()
-            book.feed((SITE / prefix / "print.html").read_text())
-            self.assertEqual(len(book.figures), count)
-            self.assertTrue(all(figure["id"].startswith("book-") for figure in book.figures))
+                source_path = ROOT / document.source
+                source_figures = inspect(source_path)
+                page_figures = inspect(path)
+                self.assertEqual(
+                    [(figure["id"], (source_path.parent / figure["images"][0]["src"]).resolve()) for figure in source_figures],
+                    [(figure["id"], (path.parent / figure["images"][0]["src"]).resolve()) for figure in page_figures],
+                )
+                book_ids.update(f'book-{document.key}--{figure["id"]}' for figure in page_figures)
+                used.extend(Path(figure["images"][0]["src"]).name for figure in page_figures)
+            self.assertCountEqual(required[language], used)
+            book = inspect(SITE / prefix / "print.html", full_size_links=False)
+            self.assertEqual({figure["id"] for figure in book}, book_ids)
+            self.assertCountEqual([Path(figure["images"][0]["src"]).name for figure in book], used)
+
+    def test_every_english_screenshot_has_a_korean_counterpart_with_the_same_anchor(self):
+        english = {document.key: document for document in documents_for("en")}
+        for document in documents_for("ko"):
+            en_page, ko_page = PortalFigureParser(), PortalFigureParser()
+            en_page.feed((ROOT / english[document.key].source).read_text())
+            source = (ROOT / document.source).read_text()
+            ko_page.feed(source)
+            self.assertNotIn("한국어 화면 캡처 미제공", source)
+            korean_ids = {figure["id"] for figure in ko_page.figures}
+            self.assertEqual({figure["id"] for figure in en_page.figures}, korean_ids)
+            for output, prefix in ((document.output, ""), ("ko/print.html", f"book-{document.key}--")):
+                page = LinkParser()
+                page.feed((SITE / output).read_text())
+                self.assertTrue({prefix + anchor for anchor in korean_ids}.issubset(page.ids))
 
     def test_documented_native_add_run_command_is_parseable(self):
         for language in ("en", "ko"):

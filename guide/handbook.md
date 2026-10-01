@@ -19,7 +19,7 @@
 
 **버전 의미:** v1/v2는 Foundry Agent 전체 구성 버전입니다. 현재 실측은 둘 다 `gpt-6-sol`이며 지침만 다릅니다. v1을 약화하거나 측정 전에 개선을 보장하지 않습니다. 후보는 초안에서 개발하고 정식 버전은 **v1·v2**만 유지합니다.
 
-<p class="output-notice" id="portal-screenshots-note"><strong>화면 읽는 방법:</strong> 실제 영문 포털의 이전 캡처이며 조작 위치를 설명합니다. 화면의 모델·버전·점수는 현재 Sol 검증이 아닙니다. 실제 질문·응답·점수·이유 전체와 현재 비교는 <a href="verification.md">최신 v2 보고서</a>를 기준으로 읽습니다. 한국어 설명이 한국어 실측 완료를 뜻하지 않습니다.</p>
+<p class="output-notice" id="portal-screenshots-note"><strong>화면 읽는 방법:</strong> 한국어 데이터·지침을 사용한 실습의 실제 캡처입니다. 누락됐던 평가 화면 5개는 2026-10-01에 기존 한국어 프로젝트에서 Playwright Headless로 촬영했습니다. 설정 화면은 미제출 상태이며 결과 화면은 이전 완료 실행입니다. 포털 메뉴는 원래 영문이고, 화면의 모델·버전·점수는 현재 Sol 검증이 아닙니다. 실제 질문·응답·점수·이유 전체와 현재 비교는 <a href="verification.md">최신 v2 보고서</a>를 기준으로 읽습니다. 재촬영이 새로운 한국어 Sol 실측 완료를 뜻하지 않습니다.</p>
 
 ## 01. 데이터셋 준비 {#start}
 
@@ -42,8 +42,8 @@
 **Individual turns**, **One time**, **Existing dataset**을 선택합니다. 준비된 dev12 등록을 재사용하며 새 승인 프로젝트에서 등록이 없을 때만 원본을 업로드합니다. 미리 보기가 5행이어도 전체는 12행입니다.
 
 <figure class="portal-shot" id="portal-evaluation-dataset">
-<img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Existing dataset과 5행 미리 보기의 위치를 설명하는 이전 영문 Foundry 화면. 현재 실측이 아님" width="1440" height="1000" loading="lazy">
-<figcaption><strong>데이터셋 선택 위치.</strong> 현재 운영자가 지정한 등록을 사용합니다. 미리 보기의 행 수를 전체 데이터셋 건수로 해석하지 않습니다. <a href="../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/15-evaluation-dataset.png" alt="기존 한국어 dev12 등록의 query·context·ground_truth 미리 보기. 평가를 제출하지 않은 실제 Foundry 화면" width="1440" height="1000" loading="lazy">
+<figcaption><strong>한국어 데이터셋을 선택합니다.</strong> 기존 한국어 등록을 선택한 미제출 화면입니다. 자신의 운영자가 지정한 등록·버전과 원본을 대조하며, 5행 미리 보기를 전체 데이터셋 건수로 해석하지 않습니다. <a href="../web/assets/portal/15-evaluation-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **완료 신호:** 명시적 v1과 변경 없는 12행 데이터셋을 선택하고 건수·버전·해시를 기록했습니다. [데이터 계약](../data/README.md#schema).
@@ -74,8 +74,8 @@
 Sol의 실제 Agent·도구 호출을 확인했습니다. 카탈로그 표시만으로 충분하지 않으며 [Optimizer 지원 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)은 별도입니다. 카탈로그 평가기 버전 링크가 비공개 서비스 루브릭 고정의 증거는 아니므로 실제 정의와 한계를 기록합니다.
 
 <figure class="portal-shot" id="portal-evaluation-criteria">
-<img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Relevance·TaskAdherence와 별도 Judge 선택 위치를 설명하는 이전 영문 화면" width="1440" height="1000" loading="lazy">
-<figcaption><strong>지표별 척도 확인.</strong> Relevance 임계값 4, 이진 TaskAdherence 통과값 1과 현재 Luna Judge를 유지합니다. <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/16-evaluation-criteria.png" alt="한국어 데이터셋을 선택한 평가 설정의 Relevance·TaskAdherence와 Judge 위치. 기존 한국어 프로젝트의 미제출 화면" width="1440" height="1000" loading="lazy">
+<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> 한국어 프로젝트의 미제출 설정에서 Relevance 4·TaskAdherence 1을 각각 확인했습니다. 화면의 이전 Judge 배포를 현재 Luna 배포로 오인하지 말고 자신의 운영자 인수 정보를 사용합니다. <a href="../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **완료 신호:** 두 평가기 척도·임계값·매핑·실제 Judge를 기록했습니다. 오래된 로컬 환경 기본값이 아니라 저장된 원격 정의가 Judge를 결정합니다.
@@ -89,8 +89,8 @@ Sol의 실제 Agent·도구 호출을 확인했습니다. 카탈로그 표시만
 새 승인 수업은 **Review → Submit**으로 한 번 제출하고 실제 evaluation ID·run ID를 기록합니다. 완료를 기다리고 오류·누락까지 전체 12건을 확인합니다. 초안 구성·HTTP 생성 응답·모델 연결 확인이 평가 완료를 뜻하지 않습니다.
 
 <figure class="portal-shot" id="portal-evaluation-review">
-<img src="../web/assets/portal/en/17-evaluation-review.png" alt="평가 Review 조작 위치를 설명하는 이전 화면. 현재 Sol 대상과 실제 ID를 별도로 사용" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Submit 전 검토.</strong> 이전 조작 예시이지 현재 Sol 실행 결과가 아닙니다. 실제 고정 버전과 저장된 평가 계약을 확인합니다. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/17-evaluation-review.png" alt="기존 한국어 Agent·dev12·두 평가기를 검토하는 Review 화면. 촬영용 설정이며 Submit하지 않음" width="1440" height="1000" loading="lazy">
+<figcaption><strong>Submit 전 검토 위치.</strong> 기존 한국어 Agent와 한국어 데이터셋을 선택한 촬영용 미제출 설정입니다. 자신의 고정 버전·평가 계약을 확인하며, 이 화면을 평가 완료나 현재 Sol 실행의 증거로 사용하지 않습니다. <a href="../web/assets/portal/17-evaluation-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **완료 신호:** 실제 Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. 실패·부분 실행을 그대로 기록하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.
@@ -106,15 +106,15 @@ Sol의 실제 Agent·도구 호출을 확인했습니다. 카탈로그 표시만
 실패 또는 최저점 사례와 잘한 사례를 골라 **질문 → 실제 응답 → 점수·이유 → 정책·참고 답변**을 연결합니다. 실패가 없으면 그 사실을 말하며 사례를 만들려고 기준선을 약화하지 않습니다.
 
 <figure class="portal-shot" id="portal-evaluation">
-<img src="../web/assets/portal/en/18-evaluation-results.png" alt="평가 요약·상세 지표의 위치 예시. 현재 수치는 최신 v2 보고서에서 확인" width="1440" height="1000" loading="lazy">
-<figcaption><strong>점수·이유 위치.</strong> 이전 UI 예시이지 현재 검증이 아닙니다. 현재 run ID와 전체 사례는 최신 보고서를 기준으로 읽습니다. <a href="../web/assets/portal/en/18-evaluation-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/11-evaluation-results.png" alt="이전 한국어 Optimizer 후보의 관리형 평가 결과. 한국어 질문과 상세 지표의 위치 예시이며 현재 Sol 검증이 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>한국어 질문과 점수 위치.</strong> 이전 한국어 Optimizer 후보의 관리형 평가 화면입니다. 현재 Sol 실행이나 영어 실측을 나타내지 않습니다. 현재 run ID와 전체 사례는 최신 보고서를 기준으로 읽습니다. <a href="../web/assets/portal/11-evaluation-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 통과이지 낮은 5점 척도 점수가 아닙니다. 누락은 0점이나 성공 행이 아니며 범용 평가기가 모든 업무 규칙을 인증하지는 않습니다.
 
 <figure class="portal-shot" id="portal-evaluation-case">
-<img src="../web/assets/portal/en/19-evaluation-case.png" alt="질문·JSON 응답을 보여 주는 conversation_id User view의 이전 예시. 채점 이유가 아님" width="1440" height="340" loading="lazy">
-<figcaption><strong>응답은 별도로 읽습니다.</strong> 이유는 Detailed metrics result로 돌아가 정책과 대조합니다. 이전 그림의 답을 최신 결과로 복사하지 않습니다. <a href="../web/assets/portal/en/19-evaluation-case.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/19-evaluation-case.png" alt="이전 한국어 Optimizer 후보의 실제 질문과 JSON 응답을 연 User view. 오류 표시와 잘못된 정책 응답을 그대로 보존한 사례" width="1440" height="440" loading="lazy">
+<figcaption><strong>한국어 응답도 정책과 대조합니다.</strong> 이전 완료 실행의 실제 응답이며 정답 예시가 아닙니다. 화면의 오류 표시와 잘못된 정책 설명을 그대로 보존했습니다. 채점 이유는 Detailed metrics result로 돌아가 읽으며 현재 Sol 결과로 복사하지 않습니다. <a href="../web/assets/portal/19-evaluation-case.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 날짜 경계 오류, 불필요한 가정, 정책 ID 대신 숫자 검색 ID, 사람 검토 분류 오류, 실행 완료 주장과 근거 없는 확신을 확인합니다. 정직한 불확실성을 높은 점수를 위한 허위 사실로 바꾸지 않습니다.
@@ -142,15 +142,15 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 | Criteria | Relevance 4, TaskAdherence 이진 통과 1 |
 
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/en/07-optimizer-target.png" alt="지침 전용 Agent Optimizer 설정 위치의 이전 예시. 현재 Sol 작업 설정이 아님" width="1210" height="968" loading="lazy">
-<figcaption><strong>모델 역할을 구분합니다.</strong> 현재 Sol 대상·Luna Judge·지원 생성 모델을 사용합니다. 그림은 조작 위치만 설명합니다. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/07-optimizer-target.png" alt="이전 한국어 Agent의 지침 전용 Optimizer 설정 화면. 현재 Sol 작업 설정이 아님" width="1210" height="968" loading="lazy">
+<figcaption><strong>모델 역할을 구분합니다.</strong> 이전 한국어 Agent의 미제출 설정 화면입니다. 현재 Sol 대상·Luna Judge·지원 생성 모델은 운영자 인수 정보로 확인하며 이전 배포 이름을 복사하지 않습니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. 각 기본 평가기의 임계값을 설정하고 Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="기존 영어 dev12를 선택하는 Agent Optimizer 데이터셋 화면의 예시" width="1210" height="968" loading="lazy">
-<figcaption><strong>데이터 재사용.</strong> 같은 등록 버전과 12행 전체를 사용합니다. 데이터를 새로 생성하거나 수정 업로드하면 실험 조건이 달라집니다. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/08-optimizer-dataset.png" alt="이전 한국어 실습 프로젝트의 Optimizer 데이터셋 선택 목록. 아직 등록을 선택하지 않은 화면" width="1210" height="968" loading="lazy">
+<figcaption><strong>한국어 데이터 재사용.</strong> 이전 한국어 프로젝트의 선택 전 목록입니다. 화면의 첫 항목을 그대로 고르지 말고 운영자가 지정한 한국어 dev12·같은 등록 버전과 12행 전체를 사용합니다. 데이터를 새로 생성하거나 수정 업로드하면 실험 조건이 달라집니다. <a href="../web/assets/portal/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 승인된 비용 범위에서 한 번 제출하고 최대 60분 기다린 뒤 실제 상태를 남깁니다. 재개 시 기존 job ID를 사용합니다. 작업 하나에도 여러 내부 호출이 포함됩니다.
@@ -160,13 +160,13 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 **현재 실행:** 관리형 Optimizer는 이미 강한 v1을 유지하도록 선택했습니다. 생성 후보를 자동 승격하지 않았고, 운영자가 관측한 실패를 바탕으로 지침을 정리한 뒤 초안을 별도로 검증했습니다. 따라서 현재 v2는 **Agent Optimizer 이후 운영자가 검토한 지침**이며 서비스가 자동 추천한 후보라고 표시하지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Optimizer 결과 조작 위치의 이전 예시. 최신 작업의 실측은 별도 보고서에 있음" width="1440" height="1000" loading="lazy">
-<figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 이전 UI 예시입니다. 현재 보고서에서 실제 작업·후보 ID를 확인합니다. <a href="../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/09-optimizer-results.png" alt="이전 한국어 Agent Optimizer의 완료 결과와 후보 순위. 최신 Sol 작업의 실측이 아님" width="1440" height="1000" loading="lazy">
+<figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 이전 한국어 실습의 결과이며 이 화면의 개선 폭은 현재 Sol 결과가 아닙니다. 현재 보고서에서 실제 작업·후보 ID를 확인합니다. <a href="../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <figure class="portal-shot" id="portal-optimizer-diff">
-<img src="../web/assets/portal/en/10-optimizer-changes.png" alt="지침을 비교하는 View changes 대화상자의 이전 예시. 현재 Sol 후보 지침이 아님" width="1038" height="622" loading="lazy">
-<figcaption><strong>현재 지침의 실제 차이를 검토합니다.</strong> 허위 정책·근거 없는 확신·설정 변경을 거부합니다. 지침이 길다고 더 좋지는 않습니다. <a href="../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/10-optimizer-changes.png" alt="이전 한국어 기준선·후보 지침을 비교하는 View changes 대화상자. 현재 Sol 후보 지침이 아님" width="1038" height="622" loading="lazy">
+<figcaption><strong>한국어 지침의 실제 차이를 읽습니다.</strong> 이전 한국어 후보 예시이지 현재 Sol 지침이 아닙니다. 자신의 현재 후보에서 허위 정책·근거 없는 확신·설정 변경을 거부합니다. 지침이 길다고 더 좋지는 않습니다. <a href="../web/assets/portal/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **v3·v4 등 정식 버전을 계속 만들지 않습니다.** 운영자가 후보를 명시적 초안으로 먼저 평가합니다. **같은 기준의 실제 검증에서 품질 회귀 없는 개선을 확인한 뒤에만 Promote 또는 v2 생성**을 진행합니다. 승격은 운영용 게시·운영 트래픽 변경 승인이 아닙니다.
@@ -203,8 +203,8 @@ receipt는 중복 제출을 방지합니다. 동일 명령·경로는 같은 run
 **Evaluation runs**에서 두 행을 선택하고 **Compare runs**를 엽니다. **Baseline을 v1으로 명시 선택**하며 행 선택 순서 때문에 비교 방향이 바뀌지 않게 합니다.
 
 <figure class="portal-shot" id="portal-evaluation-comparison">
-<img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Compare runs의 이전 화면 예시. 현재 v1/v2 수치와 통계 결과는 최신 보고서에서 확인" width="1440" height="520" loading="lazy">
-<figcaption><strong>비교 방향 확인.</strong> Baseline 조작 위치의 예시이지 현재 Sol 실측이 아닙니다. 최신 보고서의 정확한 두 run ID를 사용합니다. <a href="../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/20-evaluation-comparison.png" alt="이전 한국어 Optimizer의 두 완료 평가 run을 연 Compare runs. baseline 선택, TTest와 Inconclusive 결과를 그대로 보존" width="1440" height="520" loading="lazy">
+<figcaption><strong>비교 방향과 결과를 함께 확인합니다.</strong> 이전 한국어 Optimizer의 완료 run 두 개를 관리형 평가에서 비교한 화면입니다. 표시된 TTest·평균·Inconclusive는 현재 Sol 비교와 별개입니다. 자신의 정확한 기준선·후보 ID를 사용하며 이 화면을 새 재평가 완료로 해석하지 않습니다. <a href="../web/assets/portal/20-evaluation-comparison.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 현재 [v2 검증](verification.md#status)은 v1 대조군과 12건 전체의 응답·점수·이유를 공개합니다. 전체 기준 통과와 각 지표의 통과 건수·평균이 낮아지지 않고 하나 이상이 명확히 개선되어야 합니다. 사실·분류·응답 형식도 확인하며 지연·토큰·통계 검정은 구분해 보고합니다.

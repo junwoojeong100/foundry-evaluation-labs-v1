@@ -704,6 +704,11 @@
       "count": 565,
       "status": "PASS"
     },
+    "documentation_tests": {
+      "count": 67,
+      "status": "PASS",
+      "scope": "Documentation, guide build, print build and package tests, including screenshot language in sources, HTML and print editions."
+    },
     "dataset_freshness": {
       "en": "PASS",
       "ko": "PASS"
@@ -741,7 +746,7 @@
         "links": 38
       },
       "docs/ko/index.html": {
-        "sha256": "bdc843365af27c6bbebcf5fba91fd4254a3e2a74623d7c171973063721fa6df9",
+        "sha256": "3f5eaac8f088c7048bf90349a4b228976f9799cecfd01c69fe6405aa9dcd38b5",
         "ids": 53,
         "links": 68
       },
@@ -751,12 +756,12 @@
         "links": 35
       },
       "docs/ko/admin.html": {
-        "sha256": "d82f53d407eb4ca66f8ef6659b4987a050cc1bd3545966c06b37631d1c7849f8",
+        "sha256": "8cdc633b1eaea63e07f8f1f6b60a2557fda8b743ee7f4c2841c1e7980967a1f1",
         "ids": 28,
         "links": 41
       },
       "docs/ko/verification.html": {
-        "sha256": "3a48eb182be95df57303237f5edb0b379ce76101fdb20172509f73e7c650d50a",
+        "sha256": "839f8ff4609b694efd936375ffbc0aed33aa51a70e75de40e1bb3fecb5f15b27",
         "ids": 24,
         "links": 42
       },
@@ -771,7 +776,7 @@
         "links": 59
       },
       "docs/ko/print.html": {
-        "sha256": "022b5a0a25539d9508beb2f4d411cad7b5cd9f4441f5d90ff75d64870f4a2e8c",
+        "sha256": "a0c1ddaafee26244b12bdf8dfa6cdc766e505e434355c225634d9b83ae1a3d91",
         "ids": 81,
         "links": 59
       },
@@ -805,6 +810,23 @@
       "removed_pages_return_404": true,
       "javascript_errors": [],
       "missing_assets": []
+    },
+    "screenshot_browser": {
+      "checked_at": "2026-10-01T02:20:06.834Z",
+      "engine": "playwright-headless",
+      "widths": [
+        1440,
+        390
+      ],
+      "page_viewport_checks": 24,
+      "javascript_errors": [],
+      "missing_assets": [],
+      "failures": [],
+      "private_paths_not_served": true,
+      "status": "PASS",
+      "english_screenshots": 12,
+      "korean_screenshots": 12,
+      "korean_capture_gaps": 0
     },
     "pdf": {
       "en": {
@@ -862,18 +884,21 @@
         },
         "portal_image_count": 12,
         "all_portal_images_match_exact_source_pixels": true,
+        "capture_data_language": "en",
+        "wrong_language_portal_images": [],
+        "missing_capture_notice_count": 0,
         "latest_sol_results_and_limits_present": true,
         "obsolete_current_reports_absent": true
       },
       "ko": {
         "file": "Foundry-Learning-Loop-Lab-KO.pdf",
         "language": "ko",
-        "sha256": "26061d1a265f5ab8cf4d631cad70be8ae7168f15c5fab037a77d4f6ecff4e126",
-        "pages": 25,
-        "bytes": 2650621,
-        "korean_characters": 9691,
-        "latin_characters": 6475,
-        "minimum_page_characters": 254,
+        "sha256": "70b39b92674845529ae402e118d1c5139e5f50ee4a9ea1fb5fa6c462ee10fd17",
+        "pages": 26,
+        "bytes": 2697217,
+        "korean_characters": 10240,
+        "latin_characters": 6553,
+        "minimum_page_characters": 320,
         "missing_required_text": [],
         "almost_empty_pages": [],
         "local_machine_links": [],
@@ -881,23 +906,26 @@
         "removed_sft_content_present": false,
         "status": "PASS",
         "portal_image_pages": {
-          "00-resource-group.png": [
-            15
-          ],
-          "02-model-deployments.png": [
+          "01-project-overview.png": [
             16
           ],
-          "07-optimizer-target.png": [
-            7
+          "02-model-deployments.png": [
+            17
           ],
-          "08-optimizer-dataset.png": [
+          "07-optimizer-target.png": [
             8
           ],
-          "09-optimizer-results.png": [
+          "08-optimizer-dataset.png": [
             9
           ],
+          "09-optimizer-results.png": [
+            10
+          ],
           "10-optimizer-changes.png": [
-            9
+            10
+          ],
+          "11-evaluation-results.png": [
+            6
           ],
           "15-evaluation-dataset.png": [
             3
@@ -908,27 +936,62 @@
           "17-evaluation-review.png": [
             5
           ],
-          "18-evaluation-results.png": [
-            6
-          ],
           "19-evaluation-case.png": [
             6
           ],
           "20-evaluation-comparison.png": [
-            11
+            12
           ]
         },
         "portal_image_count": 12,
         "all_portal_images_match_exact_source_pixels": true,
+        "capture_data_language": "ko",
+        "wrong_language_portal_images": [],
+        "missing_capture_notice_count": 0,
         "latest_sol_results_and_limits_present": true,
         "obsolete_current_reports_absent": true
       }
     },
     "portal_captures": {
-      "count": 12,
-      "manifest": "web/assets/portal/en/captures.json",
-      "manifest_sha256": "f519dc59391197b10fd341c255bf88597a5ab29dbf1e90ee7359c145752f42bb",
-      "current_verification_role": "Earlier real UI illustrations only; latest scores come from the full current v2 case evidence."
+      "status": "PASS",
+      "image_language_separation": "PASS",
+      "count": 30,
+      "original_files_unchanged": true,
+      "original_file_count": 25,
+      "new_korean_capture_count": 5,
+      "language_manifests": {
+        "en": {
+          "count": 12,
+          "used_in_guides": 12,
+          "manifest": "web/assets/portal/en/captures.json",
+          "manifest_sha256": "f519dc59391197b10fd341c255bf88597a5ab29dbf1e90ee7359c145752f42bb"
+        },
+        "ko": {
+          "count": 18,
+          "used_in_guides": 12,
+          "manifest": "web/assets/portal/captures.json",
+          "manifest_sha256": "78e50112025c9a858b2dc598b3b27edf0dc5a3bcc3d203cd92ec4f7e690d3a46"
+        }
+      },
+      "missing_korean_steps": [],
+      "capture_policy": "Both guides have 12 language-matched images, matching full-size links and reciprocal figure anchors. English-run pictures are not substituted into Korean guides.",
+      "recapture": {
+        "date": "2026-10-01",
+        "engine": "playwright-headless",
+        "headless_user_agent_verified": true,
+        "source": "Existing Korean lab; unsubmitted evaluation settings and previously completed Optimizer evaluation runs.",
+        "evaluation_definitions_before": 2,
+        "evaluation_definitions_after": 2,
+        "optimizer_evaluation_runs_before": 6,
+        "optimizer_evaluation_runs_after": 6,
+        "evaluation_wizard_submitted": false,
+        "authentication_state_written_to_disk": false,
+        "isolated_login_browser_closed": true,
+        "authenticated_headless_context_closed": true
+      },
+      "new_paid_runs_submitted_during_screenshot_audit": false,
+      "cloud_configuration_changed_during_screenshot_audit": false,
+      "current_verification_role": "Real UI illustrations of existing lab settings and earlier runs only; recapturing them does not rerun evaluation. Latest scores come from the full current v2 case evidence."
     }
   }
 }
