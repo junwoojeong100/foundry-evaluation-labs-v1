@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
-  <title>Verification record and limitations · Foundry Evaluation · Foundry Lab Guide</title>
+  <title>Latest v2 verification · gpt-6-sol · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html">
@@ -53,12 +53,13 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#local">What is checked</a></li>
-<li><a href="#status">Actual managed-evaluation results</a></li>
-<li><a href="#models">Model roles and issues found during execution</a></li>
-<li><a href="#checks">Retention, deletion, and publication boundaries</a></li>
-<li><a href="#sources">Sources</a></li>
-<li><a href="#update">Recheck locally</a></li>
+<li><a href="#local">What was measured</a></li>
+<li><a href="#status">Final v1/v2 results</a></li>
+<li><a href="#cases">All twelve cases are public</a></li>
+<li><a href="#models">Model roles and instruction provenance</a></li>
+<li><a href="#checks">Statistical and operational limits</a></li>
+<li><a href="#sources">Sources and publication boundaries</a></li>
+<li><a href="#update">Recheck local deliverables</a></li>
 </ul>
 </div>
 
@@ -106,53 +107,21 @@
         <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Verification record and limitations · Foundry Evaluation">
-        <h1 id="verification-record-and-limitations-foundry-evaluation">Verification record and limitations · Foundry Evaluation</h1>
-<p>The <strong><a href="../evidence/latest.json">latest result JSON</a></strong> separates documentation checks from the actual English rehearsal. The core workshop is <strong>Foundry Evaluation → Agent Optimizer → same-criteria reevaluation</strong>. It measures changes on the same Contoso business questions, rather than relying on a public benchmark score.</p>
-<h2 id="local">What is checked</h2>
-<table>
-<thead>
-<tr>
-<th>Target</th>
-<th>Evidence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Data</td>
-<td>Separate English and Korean corpora; only each language's 12 dev cases are used in this loop</td>
-</tr>
-<tr>
-<td>Actual evaluation</td>
-<td>Foundry managed evaluation/run IDs, all 12 output items, metric scores, reasons, and errors</td>
-</tr>
-<tr>
-<td>Optimizer</td>
-<td>One actual instruction-only job, one candidate, and the original/candidate instruction diff</td>
-</tr>
-<tr>
-<td>Reevaluation</td>
-<td>Same evaluation definition, dataset version, evaluator settings, Judge, agent model, and tools; only instructions/version change</td>
-</tr>
-<tr>
-<td>Portal</td>
-<td>User authentication followed by Playwright Headless in the matching lab tenant, with English UI/data</td>
-</tr>
-<tr>
-<td>Distribution</td>
-<td>Both HTML/print/PDF editions, language switching, mobile layout, links, copying, and reading progress</td>
-</tr>
-</tbody>
-</table>
-<p>A documentation <code>PASS</code> is not an Azure quality pass or operational approval. The Korean guide describes the same procedure, but the numbers below are <strong>actual English-data results</strong>, not a Korean-language execution.</p>
-<h2 id="status">Actual managed-evaluation results</h2>
-<p>Versions 1 and 2 of <code>contoso-eval-en</code> were evaluated in the newly provisioned dedicated North Central US environment.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Latest v2 verification · gpt-6-sol">
+        <h1 id="latest-v2-verification-gpt-6-sol">Latest v2 verification · gpt-6-sol</h1>
+<p><strong>V2 improved the measured quality result over the same-model v1:</strong> all-criteria passes increased <strong>11/12 → 12/12</strong>, mean Relevance <strong>4.8333 → 4.9167</strong>, and TaskAdherence remained <strong>12/12</strong>. This page reports only the current Sol pair, not historical experiments.</p>
+<p><strong>Important limit:</strong> p95 latency increased <strong>10.97 → 42.97 seconds</strong>, and the native statistical comparison is <strong>Inconclusive</strong>. The measured quality gain does not establish production readiness, statistical significance or guaranteed improvement on future runs.</p>
+<h2 id="local">What was measured</h2>
+<p>Both versions of <strong><code>contoso-eval-en-sol</code></strong> used the same <code>gpt-6-sol / 2026-09-22</code> Agent, read-only policy tool, reasoning setting, strict JSON schema and registered <strong><code>contoso-eval-en-dev12</code> version 1</strong>. Only the instructions changed.</p>
+<p>All 12 unchanged records came from <a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a>. Only <code>query</code> was sent to the Agent; <code>context</code> and <code>ground_truth</code> remained references. The two managed evaluators and their Luna Judge were unchanged. Actual version and system instructions were checked in every result item.</p>
+<p>These are <strong>actual English-data results</strong>, not a newly executed Korean run. Local unit tests and response-format checks do not replace Microsoft Foundry managed Evaluation.</p>
+<h2 id="status">Final v1/v2 results</h2>
 <table>
 <thead>
 <tr>
 <th>Metric</th>
-<th style="text-align: right;">Baseline v1</th>
-<th style="text-align: right;">Candidate v2</th>
+<th style="text-align: right;">Sol v1 control</th>
+<th style="text-align: right;">Sol v2</th>
 </tr>
 </thead>
 <tbody>
@@ -162,100 +131,200 @@
 <td style="text-align: right;">12</td>
 </tr>
 <tr>
-<td>Cases passing every selected evaluator</td>
-<td style="text-align: right;">10/12</td>
+<td>All-criteria passes</td>
+<td style="text-align: right;"><strong>11/12</strong></td>
+<td style="text-align: right;"><strong>12/12</strong></td>
+</tr>
+<tr>
+<td>Relevance passes, threshold 4</td>
 <td style="text-align: right;">11/12</td>
+<td style="text-align: right;">12/12</td>
 </tr>
 <tr>
-<td>Relevance passes, threshold 4/5</td>
-<td style="text-align: right;">10/12</td>
-<td style="text-align: right;">11/12</td>
+<td>Mean Relevance, 1–5</td>
+<td style="text-align: right;"><strong>4.8333</strong></td>
+<td style="text-align: right;"><strong>4.9167</strong></td>
 </tr>
 <tr>
-<td>Mean Relevance, 1–5 scale</td>
-<td style="text-align: right;">4.42</td>
-<td style="text-align: right;">4.33</td>
-</tr>
-<tr>
-<td>TaskAdherence passes, binary Pass/Fail</td>
+<td>TaskAdherence, binary pass 1</td>
 <td style="text-align: right;">12/12</td>
 <td style="text-align: right;">12/12</td>
 </tr>
 <tr>
-<td>Execution errors</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
+<td>Execution errors / skipped cases</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0 / 0</td>
 </tr>
 <tr>
 <td>Agent p50 latency</td>
-<td style="text-align: right;">5.89 s</td>
-<td style="text-align: right;">7.29 s</td>
+<td style="text-align: right;">8.03 s</td>
+<td style="text-align: right;">9.71 s</td>
 </tr>
 <tr>
 <td>Agent p95 latency</td>
-<td style="text-align: right;">8.82 s</td>
-<td style="text-align: right;">16.04 s</td>
+<td style="text-align: right;">10.97 s</td>
+<td style="text-align: right;">42.97 s</td>
 </tr>
 <tr>
-<td>Observed agent tokens</td>
-<td style="text-align: right;">35,187</td>
-<td style="text-align: right;">43,751</td>
+<td>Observed Agent tokens</td>
+<td style="text-align: right;">46,167</td>
+<td style="text-align: right;">55,858</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Adoption is on hold.</strong> One more case passed, but mean Relevance declined and agent latency/token usage increased. The portal's <strong>Compare runs → PairedTTest</strong> also reported <strong>Inconclusive</strong> for both metrics. One small synthetic dev comparison does not establish a meaningful overall improvement or generalization. The dedicated lab agent's active version was <strong>restored to 1</strong>; candidate 2 and its evidence remain available.</p>
-<p>The actual evaluation definition is <code>eval_94feef6f6f644fabb22a5680f5f24fb1</code>. Baseline run: <code>evalrun_cde9948ac9d946929661bc3d9e60432a</code>. Candidate run: <code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code>. Local custom-Judge scores were not substituted for these service results.</p>
-<p>Optimizer job <code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code> succeeded. Its displayed ranking moved from approximately <strong>0.635 to 0.646</strong>, with a displayed delta of <strong>+0.010</strong>. That is an internal 0–1 aggregate, not the same measure as the separate managed-evaluation pass rates or means above. The job reported <strong>264,260 total tokens</strong>; actual billing requires a separate check.</p>
-<h2 id="models">Model roles and issues found during execution</h2>
+<p>Evaluation definition: <strong><code>eval_40a593c037e44045a47fe5088438afc5</code></strong>.</p>
+<p>V1 run: <strong><code>evalrun_077d41ff8a534b9caee64f9d6c2a339d</code></strong>. Final released v2 run: <strong><code>evalrun_6c9e78cfc9de4f1282eb621c6678d8b1</code></strong>. The report uses the actual released version <strong>2</strong>, not a draft relabeled as v2.</p>
+<p><strong>Quality acceptance: PASS for this measured lab pair.</strong> No evaluator pass count or mean declined, one additional case crossed the Relevance threshold, and all candidate responses met the JSON/routing/citation checks. Production approval is <strong>not granted</strong>, especially given the observed latency increase.</p>
+<p>The isolated unpublished lab Agent now selects <strong>active version 2</strong>. The frozen v1 control remains available for comparison; no production channel or release beyond v2 was created.</p>
+<h2 id="cases">All twelve cases are public</h2>
+<p>The machine-readable <strong><a href="../evidence/latest.json">evidence/latest.json</a></strong> includes <code>case_evidence</code>: all 12 original questions and references, both actual response texts, each evaluator's score/Pass/Fail/reason, response-format findings and latency. No difficult case was dropped.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Relevance v1 → v2</th>
+<th>TaskAdherence v1 → v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01 Subscription intent</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>02 Refund effective-date transition</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>03 Paid-production-job disqualifier</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>04 Unsubmitted support inquiry</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>05 Suspected access incident</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>06 Separate monthly SLA calculations</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>07 Beta feature versus production SLA</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>08 Availability target versus feature claim</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>09 Inclusive/exclusive time boundaries</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>10 Unauthorized tenant deletion</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+<tr>
+<td>11 Unverified feature and false alternatives</td>
+<td><strong>3 → 4</strong></td>
+<td><strong>1 → 1</strong></td>
+</tr>
+<tr>
+<td>12 Missing SLA calculation inputs</td>
+<td>5 → 5</td>
+<td>1 → 1</td>
+</tr>
+</tbody>
+</table>
+<p>Case 11 improved without pretending to inspect the user's screen or inventing a feature status. V2 gave a clear verdict that <strong>neither asserted conclusion was established</strong>, distinguished missing evidence from absence, and provided an authenticated verification path.</p>
+<p>An excerpt from the actual v2 response:</p>
+<blockquote>
+<p>Neither conclusion is established. You don’t see a GPU model selection menu, but I haven’t inspected your screen or the live service.</p>
+</blockquote>
+<p>The full response and unedited managed-evaluator reasons are in the public JSON. Evidence means actual execution data—not credentials. Tokens, cookies, signed URLs, account identifiers and raw conversation/tool payloads are excluded.</p>
+<h2 id="models">Model roles and instruction provenance</h2>
 <table>
 <thead>
 <tr>
 <th>Role</th>
-<th>Model used in this rehearsal</th>
-<th>Evidence and limitation</th>
+<th>Model/version</th>
+<th>Boundary</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Agent</td>
-<td><code>gpt-4.1-mini</code> · <code>2025-04-14</code></td>
-<td>Retained the verified working configuration. <code>gpt-6-luna</code> Responses and agent probes returned HTTP 500 in this environment and were not labeled successful</td>
+<td><strong>gpt-6-sol / 2026-09-22</strong></td>
+<td>Actual Agent and knowledge-tool runtime verified; same in v1/v2</td>
 </tr>
 <tr>
-<td>Foundry Evaluation Judge</td>
-<td><code>gpt-6-luna</code> · <code>2026-09-22</code></td>
-<td>Verified through Chat Completions and actual managed Foundry evaluations</td>
+<td>Evaluation Judge</td>
+<td><strong>gpt-6-luna / 2026-09-22</strong></td>
+<td>Used by both real managed runs</td>
 </tr>
 <tr>
-<td>Optimizer generation model</td>
-<td><code>gpt-5.5</code> · <code>2026-04-24</code></td>
-<td>Retained because <code>gpt-6-luna</code> is not in the current <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported optimization-model list</a></td>
+<td>Optimizer generator</td>
+<td><strong>gpt-5.5 / 2026-04-24</strong></td>
+<td>Separate role following the supported optimization-model list</td>
 </tr>
 </tbody>
 </table>
-<p>Catalog visibility is not runtime verification. The observed HTTP 500 errors do not establish a global lack of agent support. The published <a href="https://learn.microsoft.com/azure/foundry/openai/concepts/model-retirement-schedule">retirement date</a> for <code>gpt-4.1-mini</code> is <strong>2027-04-14</strong>; new subscriptions can face deprecation restrictions. Operators must verify actual model access before class.</p>
-<p>The rehearsal identified and addressed these issues:</p>
-<ul>
-<li><strong>TaskAdherence is binary 0/1 Pass/Fail, not a 1–5 score.</strong> The first generic-threshold UI check was retained as a configuration pilot. The actual comparison started with Relevance 4 and TaskAdherence 1. The pilot was not overwritten or relabeled as the comparison baseline.</li>
-<li><strong>Portal Add run item-schema error:</strong> The UI returned <code>Unable to create data source configuration from item schema</code>. The supplied <code>scripts/add_foundry_eval_run.py</code> added the candidate to the <strong>same Foundry evaluation definition and dataset</strong> using the official SDK. This is actual managed evaluation, not local scoring.</li>
-<li><strong>Honest uncertainty can receive a low Relevance score:</strong> <code>atlas-dev-011</code> passed TaskAdherence but received Relevance 3 for declining to assert an unverified feature status. Do not invent policies or capabilities to increase a Judge score; inspect its reasoning against your own business criteria.</li>
-<li><strong>Separate resource-group policy failure:</strong> The lab ARM deployment succeeded. A separate organization-policy deployment failed because its organization-managed log target was absent. Shared policy was not changed and the failure was not hidden.</li>
-</ul>
-<h2 id="checks">Retention, deletion, and publication boundaries</h2>
-<p>The excluded training exercise's two dedicated jobs, trained model/checkpoint, model deployment, four uploaded files, and two result files were deleted and their absence verified. Its 202 local execution/log files were also removed. Shared models, the Foundry project, Search, and the current evaluation evidence remain. Deletion does not reverse charges already incurred.</p>
-<p>Raw evaluation responses and the deletion audit remain private. Public deliverables exclude authentication state, cookies, tokens, approval files, and signed download URLs. No claim is made that Git history or Azure's general activity/billing records were erased.</p>
-<h2 id="sources">Sources</h2>
-<p>Contoso Atlas Cloud policies, questions, and reference responses are synthetic—not actual customer data or provider terms. Earlier design references are preserved at <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">the archived repository's pinned commit</a>.</p>
-<p>The <a href="../web/assets/portal/en/captures.json">English capture manifest</a> records actual screen provenance, redactions, dimensions, and hashes. <a href="../web/assets/NOTICE.txt">NOTICE</a> records usage boundaries for Microsoft artwork and portal captures. Only cropping and privacy masks are applied; scores, states, and data are not rewritten.</p>
-<p>Official procedures: <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">Evaluate Foundry agents</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a> · <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">Evaluator-specific scales</a>.</p>
-<h2 id="update">Recheck locally</h2>
-<pre><code class="language-bash">python scripts/build_datasets.py --language ko --check
-python scripts/build_datasets.py --language en --check
-python scripts/build_guide.py
+<p>Actual managed Optimizer job: <strong><code>opt_87805603c0d74b7897f997502aaea080</code></strong>, instruction-only, at most two generated candidates. The service <strong>retained the strong v1 baseline</strong> rather than recommending either generated candidate.</p>
+<p>V2 was an <strong>operator-reviewed refinement after that job</strong>, not a falsely attributed automatic Optimizer promotion. It preserved the strong baseline and clarified how to answer unsupported alternatives with a factual verdict and verification path. It contains no embedded evaluation questions, reference answers, policy rates or worked dataset examples.</p>
+<p>Source: <a href="../prompts/en/baseline.txt">v1 instructions</a> · <a href="../prompts/en/optimized.txt">v2 instructions</a>. Candidate development used explicit drafts; the released workshop Agent has <strong>only versions 1 and 2</strong>. Immutable versions are not overwritten or silently incremented.</p>
+<h2 id="checks">Statistical and operational limits</h2>
+<p>The real Foundry comparison used <strong>PairedTTest</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Evaluator</th>
+<th style="text-align: right;">Mean difference</th>
+<th style="text-align: right;">p-value</th>
+<th>Service result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relevance</td>
+<td style="text-align: right;">+0.08333</td>
+<td style="text-align: right;">0.33880</td>
+<td>Inconclusive</td>
+</tr>
+<tr>
+<td>TaskAdherence</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00000</td>
+<td>Inconclusive</td>
+</tr>
+</tbody>
+</table>
+<p>The descriptive gain is real in these saved results, but the sample is small and reused during instruction development. Do not claim independent generalization, statistical significance, lower cost or faster operation. The p95 and token increases remain visible rather than being hidden behind the improved pass rate. Actual billing was not observed and is not reported as zero.</p>
+<p><code>scripts/compare_foundry_eval.py</code> enforces matched complete results, unchanged conditions, no lower aggregate quality counts/means and at least one strict improvement. It also retains malformed outputs as failures. This is a validation gate over <strong>service-returned scores</strong>, not a new local Judge.</p>
+<h2 id="sources">Sources and publication boundaries</h2>
+<p>Only the latest v2 and its same-model v1 control appear in this current report. Earlier raw records remain in the local audit; they were not relabeled or erased from Azure/Git history.</p>
+<p>The <a href="../web/assets/portal/en/captures.json">capture manifest</a> and <a href="../web/assets/NOTICE.txt">NOTICE</a> describe the real portal images. Those earlier images are <strong>UI illustrations only</strong>, not current Sol scoring evidence. Use the current run IDs and full public case record for the measurement.</p>
+<p>Official references: <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">Agent evaluation</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimization-model roles</a> · <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">Evaluator definitions</a>.</p>
+<p>Contoso data is synthetic. Earlier design attribution remains at the <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">archived source commit</a>; it is not another current verification report.</p>
+<h2 id="update">Recheck local deliverables</h2>
+<pre><code class="language-bash">python scripts/build_datasets.py --language en --check
+python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 </code></pre>
-<p><strong>Commands explained:</strong> Verify both source corpora without modification, generate both HTML editions, check generated-file freshness, and run local tests. These commands do not start Azure evaluations. Refresh PDFs and the distribution ZIP separately, then record only checks actually performed in the latest JSON.</p>
+<p>These commands check files and tests without submitting another Azure evaluation. The latest JSON separately records document, browser, PDF and service checks.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

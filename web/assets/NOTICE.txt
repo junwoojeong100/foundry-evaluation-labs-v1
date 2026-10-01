@@ -94,3 +94,8 @@ Individual capture states distinguish unsubmitted settings from actual job
 results. Only cropping and opaque privacy masks are applied. Identifying
 account, creator, subscription, and endpoint values are excluded; actual
 statuses, instruction text, synthetic data, and scores are not altered.
+
+The current Sol v1/v2 guides use these captures only as historical UI
+illustrations. They are not the current Sol evaluation evidence. Current
+questions, actual responses, scores and reasons are published in
+evidence/latest.json; do not substitute the older screenshot values.

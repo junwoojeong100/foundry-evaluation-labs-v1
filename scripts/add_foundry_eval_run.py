@@ -36,6 +36,75 @@ def digest(value: dict) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+def evaluation_contract(evaluation: dict) -> dict:
+    expected = {
+        "Relevance": ("builtin.relevance", 4, "{{sample.output_text}}"),
+        "TaskAdherence": ("builtin.task_adherence", 1, "{{sample.output_items}}"),
+    }
+    criteria = evaluation.get("testing_criteria")
+    if not isinstance(criteria, list) or len(criteria) != len(expected):
+        raise ValueError("Use exactly the workshop's Relevance and TaskAdherence evaluators.")
+    judges = set()
+    seen = set()
+    for criterion in criteria:
+        if not isinstance(criterion, dict):
+            raise ValueError("Each Foundry evaluation criterion must be a JSON object.")
+        name = criterion.get("name")
+        if not isinstance(name, str) or name not in expected or name in seen:
+            raise ValueError("Evaluator names must be unique Relevance and TaskAdherence entries.")
+        seen.add(name)
+        evaluator, threshold, response = expected[name]
+        parameters = criterion.get("initialization_parameters") or {}
+        mapping = criterion.get("data_mapping") or {}
+        if (
+            criterion.get("type") != "azure_ai_evaluator"
+            or criterion.get("evaluator_name") != evaluator
+            or not isinstance(parameters, dict) or not isinstance(mapping, dict)
+            or type(parameters.get("threshold")) not in (int, float)
+            or parameters["threshold"] != threshold
+            or mapping.get("query") != "{{item.query}}"
+            or mapping.get("response") != response
+        ):
+            raise ValueError(f"{name} has a different evaluator, threshold, or response mapping.")
+        judge = parameters.get("deployment_name")
+        if not isinstance(judge, str) or not judge.strip():
+            raise ValueError(f"{name} has no explicit Judge deployment in the remote definition.")
+        judges.add(judge)
+    if len(judges) != 1:
+        raise ValueError("Both workshop evaluators must use the same explicit Judge deployment.")
+    return {
+        "judge_deployment": judges.pop(),
+        "thresholds": {"Relevance": 4, "TaskAdherence": 1},
+        "source": "existing_remote_evaluation_definition_not_local_environment_defaults",
+        "testing_criteria_sha256": digest({"criteria": criteria}),
+    }
+
+
+def verify_agent_execution(items: list[dict], *, agent_name: str, version: str, instructions: str) -> dict:
+    if not items or not isinstance(instructions, str) or not instructions.strip():
+        raise ValueError("Per-item output and the pinned agent's actual instructions are required.")
+    for item in items:
+        source = item.get("datasource_item") if isinstance(item, dict) else None
+        if (
+            not isinstance(source, dict)
+            or source.get("agent_name") != agent_name
+            or str(source.get("agent_version")) != version
+        ):
+            raise ValueError("An output item did not execute the requested pinned agent version.")
+        messages = source.get("sample.output_items")
+        if not isinstance(messages, list) or not any(
+            isinstance(message, dict)
+            and message.get("role") in {"system", "developer"}
+            and message.get("content") == instructions
+            for message in messages
+        ):
+            raise ValueError("An output item does not attest the pinned agent's actual instructions.")
+    return {
+        "agent_name": agent_name, "agent_version": version, "items_verified": len(items),
+        "instructions_sha256": hashlib.sha256(instructions.encode()).hexdigest(),
+    }
+
+
 def candidate_source(baseline: dict, *, evaluation_id: str, version: str) -> dict:
     if baseline.get("eval_id") != evaluation_id or baseline.get("status") != "completed":
         raise ValueError("Use a completed baseline run from this exact Foundry evaluation.")
@@ -46,8 +115,9 @@ def candidate_source(baseline: dict, *, evaluation_id: str, version: str) -> dic
     if target.get("type") != "azure_ai_agent" or not target.get("name"):
         raise ValueError("The baseline must identify a Foundry agent.")
     original = str(target.get("version", ""))
-    if not re.fullmatch(r"[1-9]\d*", original) or not re.fullmatch(r"[1-9]\d*", version):
-        raise ValueError("Pin explicit numeric baseline and candidate agent versions, not latest.")
+    pinned_version = r"(?:[1-9]\d*|draft-[1-9]\d*)"
+    if not re.fullmatch(pinned_version, original) or not re.fullmatch(pinned_version, version):
+        raise ValueError("Pin explicit numeric or draft agent versions, not latest.")
     if original == version:
         raise ValueError("The candidate version must differ from the baseline.")
     dataset = source.get("source", {})
@@ -98,13 +168,15 @@ def submit_or_resume(project, client, *, evaluation_id: str, baseline_run_id: st
                 "Open that run or restore its original receipt; do not create a duplicate."
             )
     evaluation = as_object(client.evals.retrieve(evaluation_id))
+    contract = evaluation_contract(evaluation)
     saved = {
         "intent": intent,
         "status": "submitting",
         "run_id": None,
         "agent_name": agent_name,
         "dataset": source["source"],
-        "testing_criteria_sha256": digest({"criteria": evaluation["testing_criteria"]}),
+        "testing_criteria_sha256": contract["testing_criteria_sha256"],
+        "evaluation_contract": contract,
         "request": {"eval_id": evaluation_id, "name": name, "data_source": source},
         "production_approval": "NOT_GRANTED",
     }
@@ -164,6 +236,24 @@ def main(argv: list[str] | None = None) -> int:
                         saved.update(status=run["status"], run=run)
                         save_json(args.out, saved)
                         if run["status"] in {"completed", "failed", "canceled", "cancelled"}:
+                            if run["status"] == "completed":
+                                items = [
+                                    as_object(item) for item in client.evals.runs.output_items.list(
+                                        run_id=saved["run_id"], eval_id=args.evaluation,
+                                    )
+                                ]
+                                saved["output_items"] = items
+                                save_json(args.out, saved)
+                                if len(items) != (run.get("result_counts") or {}).get("total"):
+                                    raise ValueError("Completed-run output is incomplete; preserve the receipt.")
+                                agent = as_object(project.agents.get_version(
+                                    agent_name=saved["agent_name"], agent_version=args.version,
+                                ))
+                                saved["execution_verification"] = verify_agent_execution(
+                                    items, agent_name=saved["agent_name"], version=args.version,
+                                    instructions=agent["definition"]["instructions"],
+                                )
+                                save_json(args.out, saved)
                             print(json.dumps({
                                 "status": run["status"], "result_counts": run.get("result_counts"),
                                 "report_url": run.get("report_url"), "production_approval": "NOT_GRANTED",

@@ -1,83 +1,112 @@
-# 검증 기록과 한계 · Foundry Evaluation
+# 최신 v2 검증 · gpt-6-sol
 
-**[최신 결과 JSON](../evidence/latest.json)**은 현재 가이드의 문서 검사와 실제 영문 리허설을 구분해 기록합니다. 핵심 실습은 **Foundry Evaluation → Agent Optimizer → 같은 기준으로 재평가**입니다. 공개 벤치마크 점수가 아니라 같은 Contoso 업무 질문으로 무엇이 바뀌었는지 확인합니다.
+**같은 모델의 v1보다 v2 평가 품질이 실제 개선됐습니다.** 전체 기준 통과 **11/12 → 12/12**, Relevance 평균 **4.8333 → 4.9167**, TaskAdherence **12/12 유지**입니다. 과거 실험을 나열하지 않고 현재 Sol 비교 쌍만 보고합니다.
 
-## 확인 범위 {#local}
+**중요한 한계:** p95 지연은 **10.97 → 42.97초**로 늘었고 서비스 통계 검정은 **Inconclusive**입니다. 관측된 품질 개선이 운영 준비·통계적 유의성·향후 모든 실행의 개선을 보장하지는 않습니다.
 
-| 대상 | 확인 내용 |
-|---|---|
-| 데이터 | 영어·한국어 원본을 분리하며, 각 언어의 dev 12건만 이번 학습 루프에 사용 |
-| 실제 평가 | Foundry의 관리형 평가 정의·실행 ID, 전체 12개 결과, 항목별 점수·이유·오류 |
-| Optimizer | 실제 instruction-only 작업 1개·후보 1개, 원본/후보 지시 diff |
-| 재평가 | 같은 평가 정의·데이터 버전·평가기 설정·Judge·에이전트 모델·도구, 지시와 버전만 변경 |
-| 포털 | 사용자 인증 후 같은 실습 테넌트의 Playwright Headless, 영문 UI와 영문 데이터 |
-| 배포 문서 | 한·영 HTML·인쇄본·PDF, 언어 전환·모바일·로컬 링크·복사·읽음 기록 |
+## 실제 측정 범위 {#local}
 
-문서 검사의 `PASS`는 Azure 품질 합격이나 운영 승인을 뜻하지 않습니다. 한국어 가이드는 같은 절차를 설명하지만, 아래 수치는 **영어 데이터로 실제 실행한 결과**이지 한국어 실행 결과가 아닙니다.
+**`contoso-eval-en-sol`**의 두 버전은 같은 `gpt-6-sol / 2026-09-22` Agent, 읽기 전용 정책 도구, 추론 설정, 엄격한 JSON 스키마와 등록 데이터셋 **`contoso-eval-en-dev12` 버전 1**을 사용했습니다. 지침만 변경했습니다.
 
-## 실제 관리형 평가 결과 {#status}
+[data/en/optimizer/dev.jsonl](../data/en/optimizer/dev.jsonl)의 12행을 그대로 사용했습니다. Agent에는 query만 전달하고 context·ground_truth는 참고로 유지했습니다. 두 관리형 평가기와 Luna Judge도 같습니다. 모든 결과 행의 실제 버전·시스템 지시를 확인했습니다.
 
-새 전용 North Central US 환경에서 준비한 `contoso-eval-en`의 버전 1과 2를 평가했습니다.
+**영어 데이터로 실제 실행한 결과**이며 한국어 새 실측이 아닙니다. 로컬 테스트·응답 형식 검사는 Microsoft Foundry 관리형 Evaluation을 대신하지 않습니다.
 
-| 지표 | 원본 v1 | 후보 v2 |
+## 최종 v1/v2 결과 {#status}
+
+| 지표 | Sol v1 대조군 | Sol v2 |
 |---|---:|---:|
 | 평가 사례 | 12 | 12 |
-| 모든 평가 항목을 통과한 사례 | 10/12 | 11/12 |
-| Relevance 통과, 기준 4/5 | 10/12 | 11/12 |
-| Relevance 평균, 1–5 척도 | 4.42 | 4.33 |
-| TaskAdherence 통과, 이진 Pass/Fail | 12/12 | 12/12 |
-| 실행 오류 | 0 | 0 |
-| 에이전트 p50 지연 | 5.89초 | 7.29초 |
-| 에이전트 p95 지연 | 8.82초 | 16.04초 |
-| 관측 에이전트 토큰 | 35,187 | 43,751 |
+| 전체 기준 통과 | **11/12** | **12/12** |
+| Relevance 통과, 임계값 4 | 11/12 | 12/12 |
+| Relevance 평균, 1–5점 | **4.8333** | **4.9167** |
+| TaskAdherence, 이진 통과 1 | 12/12 | 12/12 |
+| 실행 오류 / 건너뛴 사례 | 0 / 0 | 0 / 0 |
+| Agent p50 지연 | 8.03초 | 9.71초 |
+| Agent p95 지연 | 10.97초 | 42.97초 |
+| 관측 Agent 토큰 | 46,167 | 55,858 |
 
-**판단은 채택 보류입니다.** 통과 사례는 한 건 늘었지만 평균 Relevance는 하락했고 지연·에이전트 토큰은 증가했습니다. 포털의 **Compare runs → PairedTTest**도 두 지표 모두 **Inconclusive**로 표시했습니다. 작은 합성 dev 표본 한 번으로 유의미한 개선이나 일반화를 주장하지 않습니다. 전용 실습 에이전트의 활성 버전은 **1로 복원**했고 후보 2와 비교 근거는 남겼습니다.
+평가 정의는 **`eval_40a593c037e44045a47fe5088438afc5`**입니다.
 
-실제 평가 정의는 `eval_94feef6f6f644fabb22a5680f5f24fb1`입니다. 원본 실행은 `evalrun_cde9948ac9d946929661bc3d9e60432a`, 후보 실행은 `evalrun_f3b710fc835d444fb8aa0d2bb7797bdf`입니다. 서비스 결과를 로컬 자체 Judge 점수로 대신하지 않았습니다.
+v1 run은 **`evalrun_077d41ff8a534b9caee64f9d6c2a339d`**, 최종 정식 v2 run은 **`evalrun_6c9e78cfc9de4f1282eb621c6678d8b1`**입니다. 초안을 v2로 바꾸어 표시한 것이 아니라 실제 정식 **버전 2**의 결과입니다.
 
-Optimizer 작업 `opt_e44bcf5701a348deb62a1cd4f9cb3910`은 성공했고, 서비스 화면의 순위 점수는 약 **0.635 → 0.646**, 표시 변화는 **+0.010**입니다. 이는 Optimizer 내부의 0–1 집계로, 위 별도 Foundry 재평가의 통과율·평균과 같은 수치가 아닙니다. 작업이 보고한 총 토큰은 **264,260**이며 실제 청구액은 별도로 확인해야 합니다.
+**이번 실습 비교의 품질 조건은 PASS입니다.** 평가기별 통과 건수·평균이 낮아지지 않았고 한 사례가 Relevance 임계값을 넘었습니다. 모든 후보 응답이 JSON·분류·인용 검사를 통과했습니다. 다만 특히 지연 증가 때문에 **운영 승인은 부여하지 않습니다**.
 
-## 모델 역할과 실행 중 발견한 문제 {#models}
+격리된 미게시 실습 Agent의 활성 버전은 **2**로 선택했습니다. 비교용 고정 v1은 유지하며 운영 채널이나 v2 이후의 정식 버전은 만들지 않았습니다.
 
-| 역할 | 이번에 확인한 모델 | 근거·제한 |
+## 전체 12건의 근거 공개 {#cases}
+
+**[evidence/latest.json](../evidence/latest.json)**의 `case_evidence`에는 원본 질문·참고 자료, 두 실제 응답 문자열, 각 평가기의 점수·Pass/Fail·이유, 응답 형식 검사와 지연이 12건 모두 포함됩니다. 어려운 사례를 삭제하지 않았습니다.
+
+| 사례 | Relevance v1 → v2 | TaskAdherence v1 → v2 |
 |---|---|---|
-| 에이전트 | `gpt-4.1-mini` · `2025-04-14` | 기존에 정상 호출된 구성을 유지. `gpt-6-luna`의 Responses·에이전트 호출은 이 환경에서 HTTP 500이어서 성공으로 간주하지 않음 |
-| Foundry 평가 Judge | `gpt-6-luna` · `2026-09-22` | Chat Completions와 실제 관리형 평가에서 사용 확인 |
-| Optimizer 생성 모델 | `gpt-5.5` · `2026-04-24` | 현재 [공식 최적화 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)에 `gpt-6-luna`가 없어 유지 |
+| 01 구독 변경 의도 | 5 → 5 | 1 → 1 |
+| 02 환불 정책 발효일 전환 | 5 → 5 | 1 → 1 |
+| 03 유료 production 작업 제외 조건 | 5 → 5 | 1 → 1 |
+| 04 미제출 고객 문의 | 5 → 5 | 1 → 1 |
+| 05 의심스러운 접근 이벤트 | 5 → 5 | 1 → 1 |
+| 06 월별 SLA 분리 계산 | 5 → 5 | 1 → 1 |
+| 07 베타 기능과 production SLA | 5 → 5 | 1 → 1 |
+| 08 가용성 목표와 기능 단정 | 5 → 5 | 1 → 1 |
+| 09 포함·미포함 시간 경계 | 5 → 5 | 1 → 1 |
+| 10 무권한 테넌트 삭제 | 5 → 5 | 1 → 1 |
+| 11 미확인 기능의 잘못된 양자택일 | **3 → 4** | **1 → 1** |
+| 12 SLA 계산 입력 누락 | 5 → 5 | 1 → 1 |
 
-카탈로그 표시와 실제 호출 성공은 다릅니다. HTTP 500을 해당 모델의 전역 미지원으로 일반화하지 않습니다. `gpt-4.1-mini`의 [공식 종료 예정일](https://learn.microsoft.com/azure/foundry/openai/concepts/model-retirement-schedule)은 **2027-04-14**이며, 신규 구독은 사용 제한을 받을 수 있으므로 운영자는 수업 전에 실제 지원을 확인해야 합니다.
+11번은 화면을 확인한 척하거나 기능 상태를 꾸미지 않고 개선했습니다. v2는 **두 주장 모두 근거로 확정되지 않는다**는 명시적 판단, 문서 부재와 기능 부재의 구분, 인증된 확인 경로를 제시했습니다.
 
-실습을 실행하며 다음을 수정하거나 명시했습니다.
+실제 v2 응답 일부입니다.
 
-- **TaskAdherence는 1–5가 아니라 이진 0/1·Pass/Fail**입니다. 처음 일반 임계값 UI를 확인한 실행은 설정 점검용으로 따로 보존하고, 비교 본 실험은 Relevance 4·TaskAdherence 1로 시작했습니다. 결과를 보고 기준을 낮추거나 첫 실행을 덮어쓴 것이 아닙니다.
-- **포털 Add run의 item-schema 오류:** `Unable to create data source configuration from item schema`가 발생했습니다. 가이드에 제공한 `scripts/add_foundry_eval_run.py`로 **같은 Foundry 평가 정의와 데이터**에 후보 실행을 추가했습니다. 이는 공식 SDK로 제출한 실제 관리형 평가이지 로컬 채점이 아닙니다.
-- **정직한 불확실성도 낮은 Relevance를 받을 수 있음:** `atlas-dev-011`은 미확인 기능에 확답하지 않아 TaskAdherence는 통과했지만 Relevance는 3점이었습니다. 높은 점수를 얻으려고 없는 정책·기능을 단정하지 말고, 평가 이유와 자사 기준을 함께 검토해야 합니다.
-- **리소스 그룹의 별도 정책 실패:** 실습 ARM 배포는 성공했습니다. 별도 조직 정책 배포는 조직 관리 로그 대상이 없어 실패했으며, 공유 정책을 수정하거나 그 실패를 숨기지 않았습니다.
+> Neither conclusion is established. You don’t see a GPU model selection menu, but I haven’t inspected your screen or the live service.
 
-## 보존·삭제·공개 경계 {#checks}
+전체 응답과 수정하지 않은 관리형 평가 이유는 공개 JSON에 있습니다. 근거는 실제 실행 데이터이지 자격 증명이 아닙니다. 토큰·쿠키·서명된 URL·계정 식별자와 원본 대화·도구 payload는 제외합니다.
 
-현재 가이드에서 제외한 학습 실습의 전용 작업 2개, 학습 모델·체크포인트, 모델 배포, 업로드 파일 4개와 결과 파일 2개를 삭제하고 부재를 확인했습니다. 해당 로컬 실행·로그 파일 202개도 삭제했습니다. 공용 모델·Foundry 프로젝트·Search와 현재 평가 근거는 유지했습니다. 이미 발생한 요금이 소급 취소되는 것은 아닙니다.
+## 모델 역할과 지침 출처 {#models}
 
-원본 평가 응답과 삭제 확인서는 비공개로 관리합니다. 공개 배포에는 인증 상태·쿠키·토큰·승인 파일·서명된 다운로드 URL을 넣지 않습니다. Git 이력과 Azure의 일반 활동·청구 기록을 삭제했다는 주장은 하지 않습니다.
+| 역할 | 모델·버전 | 경계 |
+|---|---|---|
+| Agent | **gpt-6-sol / 2026-09-22** | 실제 Agent·지식 도구 호출 확인, v1/v2 동일 |
+| 평가 Judge | **gpt-6-luna / 2026-09-22** | 두 실제 관리형 run에 사용 |
+| Optimizer 생성 | **gpt-5.5 / 2026-04-24** | 별도 역할이며 공식 지원 목록 준수 |
 
-## 출처 {#sources}
+실제 관리형 Optimizer job은 **`opt_87805603c0d74b7897f997502aaea080`**입니다. 지침만 대상으로 최대 두 후보를 생성했으며, 서비스는 생성 후보 대신 **이미 강한 v1 기준선을 유지**하도록 선택했습니다.
 
-Contoso Atlas Cloud의 정책·질문·참조 응답은 합성 자료이며 실제 고객 데이터나 공급자 약관이 아닙니다. 이전 설계 참고는 [보관 저장소의 고정 커밋][source-workshop]입니다.
+현재 v2는 그 작업 이후 **운영자가 검토·정리한 지침**이지 자동 Optimizer 승격으로 꾸민 결과가 아닙니다. 강한 v1을 유지하면서 근거 없는 양자택일에 명확한 사실 판단과 확인 경로를 제시하도록 개선했습니다. 평가 질문·참고 답변·정책 수치·데이터셋 정답 예시를 지침에 내장하지 않았습니다.
 
-실제 화면의 출처·가림·치수·해시는 [영문 촬영 기록](../web/assets/portal/en/captures.json), Microsoft 아이콘·포털 화면의 사용 범위는 [NOTICE](../web/assets/NOTICE.txt)에 기록합니다. 화면의 점수·상태·데이터는 바꾸지 않고 개인정보 가림과 잘라내기만 적용합니다.
+소스는 [v1 지침](../prompts/en/baseline.txt)과 [v2 지침](../prompts/en/optimized.txt)입니다. 후보 개발은 초안을 사용했고 정식 워크숍 Agent는 **1·2 두 버전만** 유지합니다. 기존 버전을 덮어쓰거나 조용히 번호를 계속 올리지 않습니다.
 
-공식 절차: [Foundry 에이전트 평가](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent) · [Agent Optimizer](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent) · [평가기별 척도](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators).
+## 통계·운영 한계 {#checks}
 
-## 로컬 재검증 {#update}
+실제 Foundry 비교는 **PairedTTest**를 사용했습니다.
+
+| 평가기 | 평균 차이 | p-value | 서비스 결과 |
+|---|---:|---:|---|
+| Relevance | +0.08333 | 0.33880 | Inconclusive |
+| TaskAdherence | 0 | 1.00000 | Inconclusive |
+
+저장된 결과에서 관측 수치는 개선됐지만 표본이 작고 지침 개발에 재사용한 데이터입니다. 독립적 일반화·통계적 유의성·비용 감소·속도 향상을 주장하지 않습니다. 통과율 상승 뒤에 p95·토큰 증가를 숨기지 않으며 미확인 청구액을 0원으로 표시하지 않습니다.
+
+`scripts/compare_foundry_eval.py`는 전체 사례·동일 조건·품질 건수와 평균의 비회귀·하나 이상의 명확한 개선을 요구합니다. 잘못된 응답도 실패로 보존합니다. **서비스가 반환한 점수의 검증 조건**이며 새로운 로컬 Judge가 아닙니다.
+
+## 출처와 공개 경계 {#sources}
+
+현재 보고서는 최신 v2와 같은 모델의 v1 대조군만 보여 줍니다. 과거 원본은 로컬 감사용으로 보존하며 Azure·Git 이력을 삭제하거나 결과를 바꾸지 않았습니다.
+
+[촬영 기록](../web/assets/portal/en/captures.json)과 [NOTICE](../web/assets/NOTICE.txt)의 포털 이미지는 **이전 UI의 조작 위치 예시**이지 현재 Sol 채점 근거가 아닙니다. 측정에는 현재 run ID와 전체 공개 사례 기록을 사용합니다.
+
+공식 문서: [Agent 평가](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent) · [Agent Optimizer](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent) · [최적화 모델 역할](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models) · [평가기 정의](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators).
+
+Contoso 데이터는 합성입니다. 이전 설계 출처는 [보관된 소스 커밋][source-workshop]으로 남기며 또 다른 현재 검증 기록은 아닙니다.
+
+## 로컬 산출물 재확인 {#update}
 
 ```bash
-python scripts/build_datasets.py --language ko --check
 python scripts/build_datasets.py --language en --check
-python scripts/build_guide.py
+python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 ```
 
-**명령 해설:** 두 원본 데이터의 무변경 검증, 양 언어 HTML 생성, 생성물 최신 상태 확인, 로컬 자동 검사입니다. 이 명령들은 Azure 평가를 실행하지 않습니다. PDF·배포 ZIP은 별도로 갱신하고 실제 수행한 검사만 최신 JSON에 기록합니다.
+이 명령들은 파일·테스트를 검사하며 Azure 평가를 새로 제출하지 않습니다. 최신 JSON은 문서·브라우저·PDF 검사와 서비스 실측을 분리합니다.
 
 [source-workshop]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2

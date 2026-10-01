@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
-  <title>Operator prerequisites · an isolated NCUS workshop · Foundry Lab Guide</title>
+  <title>Operator prerequisites · the fixed Sol v1/v2 pair · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
@@ -53,13 +53,13 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">Start with the prepared lab environment</a></li>
-<li><a href="#prepare">Verify three separate model roles</a></li>
-<li><a href="#bootstrap">Prepare the project and sample agent</a></li>
-<li><a href="#scope">Bound the actual workshop</a></li>
-<li><a href="#rbac">Verify identities and least-privilege access</a></li>
-<li><a href="#cost">Cost and end-of-session ownership</a></li>
-<li><a href="#handoff">Hand off a usable participant contract</a></li>
+<li><a href="#start">Use the existing isolated project</a></li>
+<li><a href="#prepare">Verify the three model roles</a></li>
+<li><a href="#bootstrap">Prepare a strong v1, then a controlled v2</a></li>
+<li><a href="#scope">Freeze the comparison and spending scope</a></li>
+<li><a href="#rbac">Verify least-privilege access</a></li>
+<li><a href="#cost">Costs and operational boundaries</a></li>
+<li><a href="#handoff">Hand off the current pair</a></li>
 </ul>
 </div>
 
@@ -107,368 +107,121 @@
         <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Operator prerequisites · an isolated NCUS workshop">
-        <h1 id="operator-guide">Operator prerequisites · an isolated NCUS workshop</h1>
-<p><a href="index.html#start">Participant path</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="verification.html">Measured verification</a></p>
-<p>Prepare the project and sample agent <strong>before</strong> participants begin. The participant path is dataset preparation, managed Evaluation, failure analysis, instruction-only Agent Optimizer, and matching reevaluation—not infrastructure deployment.</p>
-<h2 id="start">Start with the prepared lab environment</h2>
-<p>The operator has provisioned a <strong>new, isolated North Central US (NCUS) resource group</strong> for this rehearsal. Confirm its actual identity, ownership, and readiness from the private preparation evidence. Do not recreate it merely because the documentation changed or use a shared production environment.</p>
-<p>Keep three claims separate: <strong>resources exist</strong>, <strong>the intended runtime works</strong>, and <strong>task quality is acceptable</strong>. A successful deployment proves neither agent execution nor managed-evaluator support. Record measured preparation and run outcomes in <a href="verification.html">verification</a>, not by copying a screenshot's status.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Operator prerequisites · the fixed Sol v1/v2 pair">
+        <h1 id="operator-guide">Operator prerequisites · the fixed Sol v1/v2 pair</h1>
+<p><a href="index.html#start">Participant guide</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="verification.html">Latest v2 verification</a></p>
+<p>Prepare the environment before class. The participant exercise is <strong>dataset → evaluators → Foundry Evaluation → case analysis → Agent Optimizer → reevaluation</strong>, not infrastructure construction.</p>
+<h2 id="start">Use the existing isolated project</h2>
+<p>Use the operator-owned North Central US project, its existing policy connection, and the approved synthetic Contoso data. Confirm the actual account, tenant and subscription for the CLI, SDK and portal separately. Do not recreate resources, reuse production traffic or broaden shared permissions because a client is signed in as the wrong identity.</p>
+<p>The English target is <strong><code>contoso-eval-en-sol</code></strong>. The original English and Korean source corpora remain separate. A Korean guide is not proof of a new Korean service run.</p>
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../web/assets/portal/en/00-resource-group.png" alt="Dedicated new English rehearsal resource group with lab resources and deployment status" width="1600" height="1000" loading="lazy">
-<figcaption><strong>Prepared resource group.</strong> The visible Failed count includes a separate organization-policy deployment failure involving its logging target. Do not hide it, repair shared policy as part of this workshop, or confuse it with the lab deployment's status. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/00-resource-group.png" alt="Earlier resource-group UI capture used only to locate the isolated lab, not current verification" width="1600" height="1000" loading="lazy">
+<figcaption><strong>Resource-group orientation only.</strong> This earlier portal picture is not the current v2 result. Verify the actual project and current state from the operator handoff. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<h2 id="prepare">Verify three separate model roles</h2>
-<p>Use the <strong>actual deployment names below</strong>, not model family names in deployment fields, after confirming the authorized project. The separate English baseline is now <strong><code>contoso-eval-en</code> version <code>1</code></strong>, verified working with its existing <strong>read-only knowledge connection preserved</strong>. Keep this role mapping unchanged through the comparison.</p>
+<h2 id="prepare">Verify the three model roles</h2>
 <table>
 <thead>
 <tr>
 <th>Role</th>
-<th>Required decision</th>
+<th>Actual deployment</th>
+<th>Model/version</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Agent runtime</td>
-<td><strong><code>lab-agent-dea3cec5</code> → <code>gpt-4.1-mini</code> / <code>2025-04-14</code></strong>, verified on <strong><code>contoso-eval-en</code> v1</strong>. Preserve its read-only knowledge connection; <code>gpt-6-luna</code> Responses/Agent verification failed here</td>
+<td>Agent</td>
+<td><code>lab-agent-sol-dea3cec5</code></td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong></td>
 </tr>
 <tr>
-<td>Evaluation Judge</td>
-<td><strong><code>lab-judge-luna-dea3cec5</code> → <code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, verified in the actual managed baseline and candidate evaluations</td>
+<td>Managed Evaluation Judge</td>
+<td><code>lab-judge-luna-dea3cec5</code></td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong></td>
 </tr>
 <tr>
-<td>Optimizer instruction generator</td>
-<td><strong><code>lab-planner-dea3cec5</code> → <code>gpt-5.5</code> / <code>2026-04-24</code></strong>. The <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">official optimization-model list</a> does <strong>not</strong> list <code>gpt-6-luna</code></td>
+<td>Agent Optimizer instruction generator</td>
+<td><code>lab-planner-dea3cec5</code></td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Observed capability evidence:</strong> <code>gpt-6-luna</code> version <code>2026-09-22</code> is GA in NCUS with <strong>GlobalStandard</strong>. The new deployments are <code>lab-agent-luna-dea3cec5</code> and <code>lab-judge-luna-dea3cec5</code>; Chat Completions returned <strong>READY</strong>. An actual native Foundry <strong>Relevance</strong> evaluation completed with <strong>passed 1 / total 1 / errors 0</strong> on <strong>one authored compatibility fixture</strong>: evaluation <code>eval_589a069bfd8343cf980b4b88f57771e8</code>, run <code>evalrun_e662077a904543d6bd1420b202a1b078</code>.</p>
-<p>That earlier record verifies Judge capability, <strong>not agent quality</strong>. It is separate from the configuration pilot below and from the clean corrected comparison; do not merge their counts or IDs.</p>
-<p><strong>Runtime limit:</strong> Direct Responses and a <strong>pinned <code>gpt-6-luna</code> prompt-agent v2</strong> both returned <strong>HTTP 500 in this environment</strong>. Do not claim model-wide lack of support; runtime verification failed here. Keep the verified <code>gpt-4.1-mini</code> agent until the provider issue is resolved, without silently selecting the experimental agent.</p>
-<p>The <code>gpt-4.1-mini</code> / <code>2025-04-14</code> Azure retirement date is <strong>2027-04-14</strong>. A <strong>Deprecated</strong> label in public documentation can restrict fresh subscriptions; it does not erase the existing deployment's observed usability. Verify the actual account and existing deployment before handoff rather than promising access to every new subscription.</p>
-<p>The user requested <code>gpt-6-luna</code> <strong>where supported</strong>, acknowledging that the three roles need not support it equally. Catalog visibility, deployment success, and a chat response do not verify every API/runtime. Do not silently switch a role after baseline or report a model change as an instruction-only gain.</p>
-<p>The optimization model <strong>writes candidate instructions</strong>; it is separate from the agent model being optimized and the Judge that scores responses. Use the same verified Judge for direct Evaluation, Optimizer evaluation, and direct reevaluation.</p>
+<p>Sol was verified through an actual pinned Foundry prompt-agent invocation and successful <code>knowledge_base_retrieve</code> call, not just a model catalog entry. The generated response used the four-field JSON contract. Both versions keep the same model, read-only tools, reasoning setting and structured-output schema.</p>
+<p>The Optimizer model is a separate role with its own <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>. Do not assume that a model usable as an Agent or Judge is automatically an allowed optimization model.</p>
 <figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployments showing distinct deployment names and model versions for the rehearsal" width="1271" height="820" loading="lazy">
-<figcaption><strong>Deployments are role inputs, not runtime proof.</strong> Check model version and deployment name against the private handoff. A listed deployment alone does not establish Agent, Responses, evaluator, or Optimizer compatibility. <a href="../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/02-model-deployments.png" alt="Earlier model-deployment list showing where to inspect names and versions, not the current Sol deployment" width="1271" height="820" loading="lazy">
+<figcaption><strong>Locate model/version fields.</strong> The picture predates the Sol deployment. Use the role table and current recorded API observations, not this older list, as runtime evidence. <a href="../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<h2 id="bootstrap">Prepare the project and sample agent</h2>
-<p>Use the official <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent#prerequisites">direct agent-evaluation prerequisites</a> and <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites">prompt-agent Optimizer prerequisites</a>. They define the supported project, agent, model, and access requirements. Do not require participants to run a whole legacy bootstrap sequence.</p>
-<table>
-<thead>
-<tr>
-<th>Preparation</th>
-<th>Evidence required before handoff</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Intended account and project</td>
-<td>Actual signed-in tenant/account, subscription, resource group, and project match the authorized lab. Check portal and any operator CLI/SDK identity separately</td>
-</tr>
-<tr>
-<td>Prepared Contoso agent</td>
-<td>Existing <strong><code>contoso-eval-en</code> version <code>1</code></strong> on <strong><code>lab-agent-dea3cec5</code></strong>; read-only knowledge connection preserved. Check the English four-key response contract without changing the baseline configuration</td>
-</tr>
-<tr>
-<td>Runtime</td>
-<td>Actual response from that pinned agent through the intended runtime; a model chat smoke is not a substitute</td>
-</tr>
-<tr>
-<td>Managed Evaluation</td>
-<td><strong><code>contoso-en-learning-loop</code></strong> is <strong>Completed</strong>: 12 rows, 10 passed / 2 failed / 0 errored; Relevance 10/12 and binary TaskAdherence 12/12. Keep the pilot separate</td>
-</tr>
-<tr>
-<td>Agent Optimizer</td>
-<td>Optimize Preview access, Instruction-only target, Max candidates 1, <strong><code>lab-planner-dea3cec5</code></strong>, and the same Judge <strong><code>lab-judge-luna-dea3cec5</code></strong></td>
-</tr>
-<tr>
-<td>Dataset</td>
-<td><strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, registered through the native Evaluation wizard from unchanged <code>data/en/optimizer/dev.jsonl</code>, exactly 12 rows; retain the original file SHA-256</td>
-</tr>
-</tbody>
-</table>
-<p>Configure policy access before class, then hold it constant. Participants neither build a separate knowledge system nor repair infrastructure to obtain a better score. If the prepared agent lacks needed evidence, report the setup blocker rather than appending reference answers to its input.</p>
-<p>For a fresh baseline still at v1, select <strong>Pin currently latest</strong>, reselect the cleared checkbox, and confirm <strong>1 target before Next</strong>. The recorded agent retains candidate v2, but <strong>active version is restored to 1</strong>. Use explicit versions and saved evaluation IDs; do not equate “latest” with active. The failed <code>gpt-6-luna</code> v2 was another agent.</p>
-<p>In the English pilot, <strong>Existing dataset</strong> with matching schema auto-resolved <strong>Field mapping</strong>, then proceeded to <strong>Configure agents → custom prompt override unset → Criteria</strong>. For the corrected run, remove extras from the 23 suggestions and retain exactly two evaluators: <strong>Relevance Threshold 4</strong>, <strong>TaskAdherence binary pass 1</strong> (<strong>Threshold 1</strong> if a generic control is shown).</p>
-<p>The <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">official agent-evaluator definitions</a> identify TaskAdherence as <strong>Binary Pass/Fail, raw 0/1</strong>, not 1–5. The pilot UI accepted TaskAdherence Threshold 4, but actual <code>score=1</code> returned <code>passed=true</code>; that generic setting was not meaningful. Preserve the pilot and start a clean corrected comparison instead of changing its historical definition.</p>
-<p>Use the English dataset with <code>contoso-eval-en</code>. The Korean counterpart is operator-prepared <strong><code>contoso-eval-ko</code> v1</strong>, using <code>data/optimizer/dev.jsonl</code>, <code>contoso-eval-ko-dev12</code>, and a Korean response contract. <strong>Korean was not re-executed in this rehearsal; no new Korean measured results or registration are claimed.</strong> Verify its preparation separately rather than relabeling English evidence.</p>
-<p><strong>Retained CONFIGURATION PILOT — portal execution, not the corrected baseline:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Recorded item</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Pilot evaluation name</td>
-<td><code>contoso-en-baseline-luna-judge</code></td>
-</tr>
-<tr>
-<td>Pilot evaluation definition ID</td>
-<td><code>eval_06d9c6cb93df4c7bad2bc3a62da9bc90</code></td>
-</tr>
-<tr>
-<td>Pilot run ID</td>
-<td><code>evalrun_98ac1b10a98d4ebe9d72bed5c66ed0f2</code></td>
-</tr>
-<tr>
-<td>Inputs</td>
-<td><code>contoso-eval-en</code> pinned v1; <code>contoso-eval-en-dev12</code> version 1; all 12 cases</td>
-</tr>
-<tr>
-<td>Pilot configuration issue</td>
-<td>Relevance threshold 4; generic TaskAdherence threshold 4 was <strong>not meaningful for its binary output</strong>. Judge: <code>lab-judge-luna-dea3cec5</code> / <code>gpt-6-luna</code></td>
-</tr>
-<tr>
-<td>Reported status</td>
-<td><strong>Completed; 12 output items</strong></td>
-</tr>
-<tr>
-<td>Pilot Agent usage</td>
-<td><strong>12 invocations</strong>, <code>contoso-eval-en</code> pinned v1 on <code>gpt-4.1-mini</code></td>
-</tr>
-<tr>
-<td>Pilot service-reported Judge usage</td>
-<td><strong>24 <code>gpt-6-luna-2026-09-22</code> invocations; 83,492 tokens</strong>; not corrected-comparison usage</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Completed canonical baseline — portal; SDK candidate execution verified below:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Recorded item</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Corrected Evaluation name</td>
-<td><strong><code>contoso-en-learning-loop</code></strong></td>
-</tr>
-<tr>
-<td>Corrected evaluation ID</td>
-<td><code>eval_94feef6f6f644fabb22a5680f5f24fb1</code></td>
-</tr>
-<tr>
-<td>Corrected baseline run ID</td>
-<td><code>evalrun_cde9948ac9d946929661bc3d9e60432a</code></td>
-</tr>
-<tr>
-<td>Inputs</td>
-<td><code>contoso-eval-en</code> pinned v1; <code>contoso-eval-en-dev12</code> version 1; the same 12 cases</td>
-</tr>
-<tr>
-<td>Criteria / Judge</td>
-<td>Relevance threshold 4; TaskAdherence binary threshold/pass 1; <code>lab-judge-luna-dea3cec5</code> / <code>gpt-6-luna</code></td>
-</tr>
-<tr>
-<td>Confirmed response bindings</td>
-<td>Relevance <code>response={{sample.output_text}}</code>; TaskAdherence <code>response={{sample.output_items}}</code></td>
-</tr>
-<tr>
-<td>Execution / overall</td>
-<td><strong>Completed; 12 rows; 10 passed / 2 failed / 0 errored</strong></td>
-</tr>
-<tr>
-<td>Per-evaluator results</td>
-<td><strong>Relevance 10/12</strong>, threshold 4; <strong>TaskAdherence 12/12</strong>, binary 1</td>
-</tr>
-<tr>
-<td>Relevance failures</td>
-<td><code>atlas-dev-001</code>: vague subscription-reduction answer versus explicit clarification in the reference. <code>atlas-dev-011</code>: honest unverified-feature answer judged incomplete</td>
-</tr>
-<tr>
-<td>Evidence boundary</td>
-<td>HTTP 201 was the creation receipt; completion is now separately confirmed. These are baseline-only results; do not change policy facts to chase scores</td>
-</tr>
-</tbody>
-</table>
-<p>Baseline Review used <strong>Evaluation name → Submit</strong>. Candidate <strong>Add run</strong> under the same definition did not work end-to-end: Pin v2 / Individual turns led to <strong>Configure agents: Config required → Add custom prompt / User prompt</strong>. Even <code>{{item.query}}</code> failed client-side with <strong><code>Unable to create data source configuration from item schema</code></strong>. <strong>No candidate remote run was submitted by that portal attempt.</strong> Do not create another definition as a workaround.</p>
-<p><strong>Optimizer succeeded with one candidate:</strong> <code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code>, instruction-only, same dataset, <code>gpt-5.5</code> generator, <code>gpt-6-luna</code> Judge, no model comparison. UI scores: <strong>0.635 → 0.646</strong>, <strong>UI-reported +0.010</strong>, <strong>264,260 reported tokens</strong>. Preserve the displayed delta rather than deriving a different one from rounded display fields. This is not the direct candidate evaluation.</p>
-<p><strong>Portal Promote created lab-only <code>contoso-eval-en</code> v2.</strong> The operator verified exact candidate instructions and unchanged model/knowledge tool. <strong>Latest active version affects all channels</strong>: only an <strong>isolated, unpublished lab agent</strong> may use this promotion; <strong>never production</strong>. V1 remains the explicit recorded baseline. Do not repeat promotion or treat v2 activation as production approval.</p>
-<p>In Optimizer <strong>Criteria</strong>, <strong>No custom evaluators available</strong> is a filter state: switch <strong>Custom only OFF</strong> or choose <strong>View built-in evaluators</strong>. Select a Relevance or TaskAdherence row to open <strong>Configure...</strong>, set <strong>Relevance 4 / TaskAdherence 1</strong>, then <strong>Apply</strong>. Do not add custom evaluators as a workaround.</p>
+<h2 id="bootstrap">Prepare a strong v1, then a controlled v2</h2>
+<p>Use <strong><code>prompts/en/baseline.txt</code></strong> for the English baseline. It covers policy evidence, dates, routing, uncertainty and action boundaries. V1 must not be weakened to manufacture an apparent improvement.</p>
+<p><strong>V1 and v2 are complete Foundry Agent versions</strong>, not just document revision labels. In this comparison only their instructions differ. Changing the model, tools, reasoning or output schema requires a new matched experiment, not reuse of old-model scores.</p>
+<p>Released versions are immutable. <code>ensure_fixed_release</code> in <code>lab/agents.py</code> permits only <strong>1 and 2</strong>, reuses a matching existing release, blocks mismatches and never silently creates v3. For development, use explicitly pinned <strong><code>draft-…</code></strong> versions. Draft support was verified in this subscription; verify it elsewhere because unsupported draft creation can fall back to a regular release.</p>
+<p><code>native_response_format()</code> projects the shared response schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency are still checked after generation; a valid JSON shape alone is not policy correctness.</p>
+<p>Keep the English registered dataset <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, all 12 rows from <code>data/en/optimizer/dev.jsonl</code>, with the original SHA-256. The Agent receives <strong><code>query</code> only</strong>; reference columns are not injected into generation.</p>
 <p><a id="sdk-prerequisites"></a></p>
-<p><strong>Prerequisites for the single SDK step:</strong> Supply Python 3.11+ (3.12 recommended), Azure CLI, the operator-owned <code>scripts/add_foundry_eval_run.py</code>, and the current <code>requirements.lock</code>. From the repository root, use the approved <strong>project endpoint</strong> and subscription, not an endpoint guessed from a model deployment:</p>
-<pre><code class="language-bash">export AZURE_AI_PROJECT_ENDPOINT=&quot;OPERATOR_PROJECT_ENDPOINT&quot;
-export AZURE_SUBSCRIPTION_ID=&quot;OPERATOR_SUBSCRIPTION_ID&quot;
-</code></pre>
-<p>Only if <code>.venv</code> is absent, prepare it once with <code>python3 -m venv .venv</code>. Activate/install the locked environment and verify the actual account:</p>
+<p>Provide Python 3.11–3.14, Azure CLI, the checked-out source and <code>requirements.lock</code>. Use a separate prepared environment, not an unrelated user's environment:</p>
 <pre><code class="language-bash">source .venv/bin/activate
 python -m pip install -r requirements.lock
 az login
-az account set --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&quot; -o json
 </code></pre>
-<p>Check user, tenant, and subscription against the operator's approval and portal identity; do not proceed with another cached identity. Role assignment is not part of this check. Copy <code>FOUNDRY_EVALUATION_ID</code> and <code>FOUNDRY_BASELINE_RUN_ID</code> from the canonical baseline portal URL or <strong>Raw JSON</strong>, using the actual IDs above, never the pilot or Optimizer job ID.</p>
-<p>The <a href="index.html#decision">single command in step 06</a> uses Azure AI Projects/OpenAI Evals SDKs to clone baseline <code>data_source</code>, retain existing criteria, change only target version to 2, and verify identical model/tools. It submits <strong>one real Foundry evaluation run under the same evalID</strong>, not a local Judge or bespoke cloud scoring. Its <code>.lab/foundry-evaluations/candidate-v2.json</code> receipt is private; repeating the identical command collects the same run. Do not delete/change the receipt or create another definition to force a retry.</p>
-<p><strong>Verified end-to-end SDK execution:</strong> the helper actually submitted candidate run <strong><code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code></strong> under the <strong>same <code>eval_94feef6f6f644fabb22a5680f5f24fb1</code></strong>, targeting <strong><code>contoso-eval-en</code> v2</strong>. It is <strong>Completed: 12 rows, 11 passed / 1 failed / 0 errored</strong>, versus baseline <strong>10 passed / 2 failed / 0 errored</strong>. The helper confirmed identical dataset/evaluators/Judge/model/tools; only instructions/version changed.</p>
-<p>Reuse the receipt and open <strong><code>contoso-en-learning-loop</code> → Evaluation runs → baseline/candidate checkboxes → Compare runs</strong>. <strong>Set the Baseline dropdown to the original <code>contoso-eval-en</code>.</strong> It defaults to the first selected row, which was <code>candidate-v2</code> here; confirm direction before interpreting results. The portal item-schema failure remains real; the completed candidate came from the SDK.</p>
-<table>
-<thead>
-<tr>
-<th>Final observed comparison, n = 12</th>
-<th>Baseline v1</th>
-<th>Candidate v2</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>All-criteria passes; errors</td>
-<td>10/12; 0</td>
-<td>11/12; 0</td>
-</tr>
-<tr>
-<td>Relevance passes; mean (1–5)</td>
-<td>10/12; 4.4167</td>
-<td>11/12; 4.3333</td>
-</tr>
-<tr>
-<td>TaskAdherence passes; binary mean</td>
-<td>12/12; 1.0</td>
-<td>12/12; 1.0</td>
-</tr>
-<tr>
-<td>Relevance rows 1 / 2 / 6 / 11</td>
-<td>3 / 5 / 5 / 3</td>
-<td>4 / 4 / 4 / 3</td>
-</tr>
-<tr>
-<td>Latency p50 (ms)</td>
-<td>5,891.09</td>
-<td>7,287.52</td>
-</tr>
-<tr>
-<td>Latency p95 (ms)</td>
-<td>8,817.33</td>
-<td>16,038.35</td>
-</tr>
-<tr>
-<td>Agent tokens</td>
-<td>35,187</td>
-<td>43,751</td>
-</tr>
-</tbody>
-</table>
-<p>Native <strong>PairedTTest: Inconclusive</strong> for <strong>both Relevance and TaskAdherence</strong>. Row 1 crossed the pass threshold, but rows 2/6 declined and row 11 stayed at 3 for honest uncertainty rather than an unsupported definitive answer. Do not change policy facts to chase scores. <strong>HOLD adoption; keep pinned v1 pending further review/new representative cases.</strong> Higher pass count does not offset the lower mean and observed latency/token tradeoffs or prove overall improvement. No production approval is granted.</p>
-<h2 id="scope">Bound the actual workshop</h2>
+<p>Check those values against the approved project. The operator supplies its endpoint, subscription, current evaluation ID and completed baseline run ID. Do not copy historical rehearsal IDs or use an Optimizer job ID as an evaluation ID.</p>
+<p>The reevaluation helper clones the baseline data source and validates the <strong>remote</strong> evaluator contract. A stale local <code>JUDGE_DEPLOYMENT</code> must not replace the actual Judge in the evaluation definition.</p>
+<h2 id="scope">Freeze the comparison and spending scope</h2>
 <p><a id="approval"></a></p>
-<p>Agree current authorization for the <strong>actual account, project, data, processing locations, and costs</strong>. Another rehearsal's approval is not transferable. GlobalStandard describes a processing arrangement, not a promise that every request is processed only in NCUS.</p>
 <table>
 <thead>
 <tr>
-<th>Work</th>
-<th>Bound</th>
+<th>Item</th>
+<th>Fixed requirement</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Baseline</td>
-<td>One correctly configured direct managed evaluation of all 12 cases; the retained pilot is not this baseline</td>
+<td>Data</td>
+<td>Same English dev12 bytes, registration/version, questions and references</td>
 </tr>
 <tr>
-<td>Optimization</td>
-<td>One instruction-only job, <strong>Max candidates 1</strong>, wait <strong>at most 60 minutes</strong></td>
+<td>Relevance</td>
+<td>Managed <code>builtin.relevance</code>, scale 1–5, threshold <strong>4</strong></td>
 </tr>
 <tr>
-<td>Candidate check</td>
-<td>One SDK-submitted real Foundry run in the <strong>same evalID</strong>, same data/version/hash, Relevance 4 / TaskAdherence binary pass 1 / Judge; receipt-based collection, portal comparison</td>
+<td>TaskAdherence</td>
+<td>Managed <code>builtin.task_adherence</code>, binary 0/1, pass <strong>1</strong></td>
 </tr>
 <tr>
-<td>Agent changes</td>
-<td>Lab v2 only; latest-active changes affect all channels. Promotion is restricted to the isolated unpublished agent, never production</td>
+<td>Judge</td>
+<td>Same explicit Luna deployment in both evaluator definitions</td>
 </tr>
 <tr>
-<td>Extra features</td>
-<td>Unverified features are not run; no alternate exercise is used to claim completion</td>
+<td>Agent</td>
+<td>Same Sol model/version, tools, reasoning and strict output schema</td>
+</tr>
+<tr>
+<td>Change</td>
+<td>Instructions only; releases remain v1/v2</td>
+</tr>
+<tr>
+<td>Optimizer</td>
+<td>Instruction target only, model/tool-description changes off, bounded candidate count</td>
+</tr>
+<tr>
+<td>Publication</td>
+<td>Latest v2 and its frozen v1 control; all 12 sanitized case outcomes</td>
 </tr>
 </tbody>
 </table>
-<p>Setup checks have their own authorized usage; one Optimizer job can include many internal calls. An error is not permission to repeat jobs, widen scope, change regions, or rerun until a preferred result appears.</p>
-<h2 id="rbac">Verify identities and least-privilege access</h2>
-<p>Check the current <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">Foundry RBAC guidance</a> against the operations actually needed. Role-assignment authority is separate from permission to run an agent.</p>
-<table>
-<thead>
-<tr>
-<th>Identity</th>
-<th>Access to verify at the narrowest appropriate lab scope</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Participant/operator</td>
-<td>Open the project, read the pinned agent, upload/select a dataset, create/read evaluations, and use Agent Optimizer</td>
-</tr>
-<tr>
-<td>Project managed identity</td>
-<td>Required model and existing tool/connection access</td>
-</tr>
-<tr>
-<td>Supporting service identities</td>
-<td>Only the access required by the prepared agent's actual connections</td>
-</tr>
-<tr>
-<td>Operator maintaining the lab</td>
-<td>Authorized version creation, resource/cost inspection, and any separately approved lifecycle actions</td>
-</tr>
-</tbody>
-</table>
-<p>Do not give participants subscription-wide Owner access as a shortcut, expose credentials, change organization policy, or bypass network restrictions. An account shown in a portal tab is not proof that a different client uses the same identity.</p>
-<h2 id="cost">Cost and end-of-session ownership</h2>
-<p>Costs include agent responses, Judge evaluation, instruction generation, internal Optimizer calls, policy tools, and any continuously running supporting resources or logs. <strong>Unknown cost is not zero</strong>, quota is not a free allowance, and closing a browser does not stop hosting charges.</p>
-<p>Name the operator responsible for remaining jobs, cost inspection, and authorized cleanup of workshop resources. Do not turn resource deletion or broad account changes into participant exercises. Keep credentials, private configuration, and raw account identifiers out of shared guides and packages.</p>
-<h2 id="handoff">Hand off a usable participant contract</h2>
-<table>
-<thead>
-<tr>
-<th>Give participants</th>
-<th>Required specificity</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Portal target</td>
-<td>The correct project and <strong><code>contoso-eval-en</code></strong>; separately prepared Korean target <strong><code>contoso-eval-ko</code></strong></td>
-</tr>
-<tr>
-<td>Agent versions</td>
-<td><strong>Active v1 restored</strong>, recorded baseline v1 and retained candidate v2; <strong><code>lab-agent-dea3cec5</code></strong>, <code>gpt-4.1-mini</code> / <code>2025-04-14</code>. Keep explicit versions and all evidence</td>
-</tr>
-<tr>
-<td>Model roles</td>
-<td>Agent <strong><code>lab-agent-dea3cec5</code></strong>, Judge <strong><code>lab-judge-luna-dea3cec5</code></strong>, Optimizer <strong><code>lab-planner-dea3cec5</code></strong>, with recorded versions and support limits</td>
-</tr>
-<tr>
-<td>Dataset</td>
-<td>Registered English <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, original file, n = 12 and SHA-256; Korean registration requires its own confirmation</td>
-</tr>
-<tr>
-<td>Evaluation contract</td>
-<td>Same corrected definition; <strong>Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1</strong>, generic TaskAdherence Threshold 1 if shown; query-only input, no custom override</td>
-</tr>
-<tr>
-<td>Bounds and ownership</td>
-<td>Authorized scope, one candidate, 60-minute optimization wait, cost/cleanup owner, and escalation contact</td>
-</tr>
-<tr>
-<td>SDK context</td>
-<td>Verified venv/dependencies and <code>az login</code> account; operator project endpoint/subscription; baseline URL/Raw JSON IDs; helper and persistent receipt path</td>
-</tr>
-<tr>
-<td>Evidence</td>
-<td>Completed baseline/SDK candidate, matched inputs, final metrics/row regressions and PairedTTest Inconclusive; HOLD adoption pending further review/new representative cases. Pilot excluded</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Record generated mappings, do not override them.</strong> The corrected submission confirmed <strong>Relevance <code>response={{sample.output_text}}</code></strong> and <strong>TaskAdherence <code>response={{sample.output_items}}</code></strong>. UI defaults also showed <code>query={{item.query}}</code> and TaskAdherence's <code>tool_definitions={{sample.tool_definitions}}</code>. Inspect <strong>Raw JSON</strong>; do not replace the submitted TaskAdherence binding with the earlier UI output-text value. These are sample bindings, not extra dataset columns.</p>
-<p><strong>Version limit:</strong> Catalog links showed <code>relevance</code> <strong>v14</strong> and <code>task_adherence</code> <strong>v17</strong>; actual service criteria had <strong><code>evaluator_version</code> empty/default</strong>. Record names/configuration, Judge and dataset versions, and this limitation. Reusing one definition does not prove private service rubric versions are fully pinned.</p>
-<p><strong>Execution worked; adoption remains HOLD.</strong> Preserve both runs, receipt, and the measured tradeoffs. Keep pinned baseline v1 for selection; lab v2 activation remains a separate all-channel operator concern. The Optimizer's +0.010 and native pass-count increase are not proven overall improvement, statistical significance, production approval, a repaired portal path, or new Korean results.</p>
-<p><strong>Executed final lab state:</strong> <code>contoso-eval-en</code> active version was restored to <strong>1</strong> through <strong>Details → Agent configuration → Active version → Edit → Version 1</strong>. Candidate v2 and all evaluation/receipt evidence remain; do not delete them. <strong>No production Publish was performed; no production channels/traffic are configured.</strong> Foundry nevertheless automatically provides <strong>RBAC-only Responses/preview endpoints without Publish</strong>. Endpoint existence is not production publication.</p>
+<p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
+<h2 id="rbac">Verify least-privilege access</h2>
+<p>Use the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. Participants need only the authorized project operations. Role-assignment authority is separate from model or evaluation access.</p>
+<p>Keep the policy tool read-only. Do not assign subscription-wide Owner, disable network restrictions, change organization policy or transfer tokens between users as a shortcut.</p>
+<h2 id="cost">Costs and operational boundaries</h2>
+<p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Quota is not free usage, and GlobalStandard is not an NCUS-only processing guarantee. Record measured tokens and actual billing separately; unknown billing is not zero.</p>
+<p>Name the cost/cleanup owner. Do not publish to production or activate a candidate merely because an Optimizer ranking increased. Keep the baseline active unless the measured decision and authorized operational review justify a change. Closing a browser does not stop resource charges.</p>
+<h2 id="handoff">Hand off the current pair</h2>
+<p>Give participants the current Agent/version IDs, deployment-role map, dev12 hash, exact evaluator settings, SDK context, approval scope and <a href="verification.html">latest verification record</a>. The English report publishes actual responses, scores and reasons for every case.</p>
+<p>Raw service files can contain account metadata, tokens or signed URLs. Keep those local; <strong>the synthetic evaluation results themselves are not secret</strong>. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

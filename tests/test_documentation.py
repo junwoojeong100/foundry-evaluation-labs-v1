@@ -165,6 +165,37 @@ class DocumentationTests(unittest.TestCase):
         for name in ("README.md", "README.en.md", "README.ko.md"):
             self.assertIn("evidence/latest.json", (ROOT / name).read_text())
 
+    def test_latest_v2_publishes_every_case_without_obsolete_reports(self):
+        latest = json.loads((ROOT / "evidence/latest.json").read_text())
+        self.assertEqual(latest["kind"], "LATEST_SOL_V2_MANAGED_EVALUATION")
+        self.assertEqual(latest["models"]["agent"]["name"], "gpt-6-sol")
+        self.assertEqual(latest["scope"]["released_versions"], ["1", "2"])
+        self.assertEqual(latest["baseline"]["agent_version"], "1")
+        self.assertEqual(latest["candidate"]["agent_version"], "2")
+        self.assertEqual(latest["agent"]["active_lab_version"], "2")
+        self.assertNotIn("follow_up_refinement", latest)
+        self.assertNotIn("native_foundry", latest)
+        self.assertFalse(latest["decision"]["guarantees_future_results"])
+        self.assertEqual(latest["decision"]["production_approval"], "NOT_GRANTED")
+        dataset = [json.loads(line) for line in (ROOT / "data/en/optimizer/dev.jsonl").read_text().splitlines()]
+        self.assertEqual(len(latest["case_evidence"]), len(dataset))
+        for expected, actual in zip(dataset, latest["case_evidence"], strict=True):
+            self.assertEqual(expected["query"], actual["query"])
+            self.assertEqual(expected["context"], actual["reference_context"])
+            self.assertEqual(expected["ground_truth"], actual["reference_answer"])
+            for arm in ("baseline", "candidate"):
+                self.assertTrue(actual[arm]["response"])
+                self.assertEqual(set(actual[arm]["metrics"]), {"Relevance", "TaskAdherence"})
+                for metric in actual[arm]["metrics"].values():
+                    self.assertTrue(metric["reason"])
+                    self.assertIs(type(metric["passed"]), bool)
+                self.assertNotIn("conversation_id", actual[arm])
+        for edition in ("guide/verification.md", "guide/en/verification.md"):
+            text = (ROOT / edition).read_text()
+            self.assertIn(latest["candidate"]["run_id"], text)
+            self.assertNotIn("evalrun_edcc42822c0c4d27ad734b474379964e", text)
+            self.assertNotIn("evalrun_9609268e6d30446abc01c6b1fe2011d8", text)
+
     def test_removed_training_guides_do_not_return_in_any_edition(self):
         for name in ("guide/sft-appendix.md", "guide/en/sft-appendix.md", "docs/sft.html", "docs/ko/sft.html", "web/assets/portal/14-sft-job.png"):
             self.assertFalse((ROOT / name).exists(), name)
@@ -224,16 +255,19 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotIn("TaskAdherence 4", source)
                 self.assertNotIn("Task Adherence 4", source)
 
-    def test_verified_model_roles_and_the_real_runtime_limitation_are_visible(self):
+    def test_verified_model_roles_and_fixed_release_boundaries_are_visible(self):
         for language in ("en", "ko"):
             source = self.source(language)
             admin = (ROOT / ("guide/en/admin-setup.md" if language == "en" else "guide/admin-setup.md")).read_text()
             with self.subTest(language=language):
                 self.assertIn("gpt-6-luna", source + admin)
                 self.assertIn("gpt-5.5", source + admin)
-                self.assertIn("gpt-4.1-mini", source + admin)
-                self.assertIn("500", source + admin)
-                self.assertIn("2027-04-14", source + admin)
+                self.assertIn("gpt-6-sol", source + admin)
+                self.assertIn("2026-09-22", source + admin)
+                self.assertIn("ensure_fixed_release", admin)
+                self.assertIn("native_response_format", admin)
+                self.assertIn("draft-", admin)
+                self.assertNotIn("gpt-4.1-mini", source + admin)
                 self.assertIn("agent-optimizer-overview#models", source + admin)
 
     def test_optimizer_changes_only_instructions_and_requires_a_real_reevaluation(self):

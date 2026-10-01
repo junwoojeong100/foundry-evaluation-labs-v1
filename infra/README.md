@@ -44,26 +44,25 @@ The current defaults are candidates that require a fresh availability check:
 
 | Role | Model | Version | Deployment type | Requested ARM capacity |
 |---|---|---|---|---:|
-| Prepared sample agent | gpt-4.1-mini | 2025-04-14 | Standard | 20 |
+| Prepared sample agent | gpt-6-sol | 2026-09-22 | GlobalStandard | 20 |
 | Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 20 |
 | Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | GlobalStandard | 20 |
 | Read-only knowledge embeddings | text-embedding-3-small | 1 | GlobalStandard | 10 |
 
-The requested `gpt-6-luna` Judge was verified through a real managed Foundry
-evaluation. Its direct Responses and prompt-agent probes returned HTTP 500 in
-the tested environment, so an unverified agent version was not substituted for
-the working baseline. This is an observed runtime limitation, not a universal
-claim that the model lacks agent support.
+The `gpt-6-sol` Agent was verified through an actual pinned Foundry prompt-agent
+call with the read-only knowledge tool, followed by managed Evaluation.
+The separate `gpt-6-luna` Judge was verified in the real managed evaluation.
+Runtime support is role-specific; catalog visibility alone is not sufficient.
 
 `gpt-6-luna` is not in the current official list of supported **optimization
 models**, so that role remains `gpt-5.5`. See
 [Agent Optimizer model roles](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models).
 
-The existing `gpt-4.1-mini` deployment works for this rehearsal, but its published
-retirement is **2027-04-14**, and new subscriptions may face deprecation
-restrictions. Do not promise that a fresh customer subscription can deploy it.
-An operator must verify a working replacement before class, pin its version, and
-start a new baseline if the agent model changes.
+Both released instruction variants use the same Sol model and generation
+settings. Changing the Agent model requires a new same-model baseline and
+candidate comparison; old scores are not transferable. Keep the workshop's
+released versions at v1/v2 and use explicitly pinned drafts for candidate
+development. An existing released version is immutable and is not overwritten.
 
 To choose other verified deployments, supply an explicit models JSON with
 `plan --models-json <file>`. Each entry contains `name`, `version`, `sku`,

@@ -1,6 +1,8 @@
 """Create immutable prompt-agent candidates; never invoke a mutable latest version."""
 
 import hashlib
+import json
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 import time
@@ -14,6 +16,83 @@ from lab.config import Config, LabError
 from lab.content import content_path, language_metadata, require_content_language
 from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, record_created, safe_run_dir, sha256_file, workspace, write_once_json
 from lab.preflight import model_snapshot, save_json
+
+
+def native_response_format() -> dict:
+    contract = read_json(ROOT / "schemas/response.schema.json")
+    schema = {
+        key: deepcopy(contract[key])
+        for key in ("type", "additionalProperties", "required", "properties")
+    }
+    # Routing conditions and citation uniqueness remain validation requirements;
+    # the model's structured-output subset does not support allOf/uniqueItems.
+    schema["properties"]["citations"].pop("uniqueItems")
+    schema["properties"]["route"]["type"] = "string"
+    return {"format": {
+        "type": "json_schema", "name": "contoso_support_response", "strict": True,
+        "schema": schema,
+    }}
+
+
+def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, agent_name: str,
+                         version: str, definition: dict, receipt: Path) -> dict:
+    if version not in {"1", "2"}:
+        raise LabError("This workshop permits only released v1 and v2; use drafts for experiments.")
+    if definition.get("kind") != "prompt" or not isinstance(definition.get("instructions"), str) or not definition["instructions"].strip():
+        raise LabError("A nonempty prompt-agent definition is required.")
+    intent = {
+        "project_endpoint": project_endpoint, "agent_name": agent_name, "version": version,
+        "definition_sha256": hashlib.sha256(
+            json.dumps(definition, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+    }
+    previous = read_json(receipt) if receipt.exists() else None
+    if previous is not None and previous["intent"] != intent:
+        raise LabError("The fixed-version receipt belongs to a different definition or environment.")
+    try:
+        existing = project.agents.get_version(agent_name=agent_name, agent_version=version).as_dict()
+    except ResourceNotFoundError:
+        existing = None
+    if existing is not None:
+        if existing["definition"] != definition:
+            raise LabError("The released version is immutable and differs from this source; no new version was created.")
+        record = {"intent": intent, "status": "verified", "agent": existing}
+        if previous is None:
+            write_once_json(receipt, record)
+        else:
+            save_json(receipt, record)
+        return record
+    if previous is not None:
+        raise LabError("The creation outcome is unknown; inspect the receipt and remote state, do not resubmit.")
+    try:
+        releases = [
+            item.as_dict() for item in project.agents.list_versions(agent_name=agent_name)
+            if not item.draft and not item.version.startswith("draft-")
+        ]
+    except ResourceNotFoundError:
+        releases = []
+    if {item["version"] for item in releases} != ({"1"} if version == "2" else set()):
+        raise LabError("Unexpected release history; refusing to create v3 or reset existing versions.")
+    if version == "2":
+        baseline = releases[0]["definition"]
+        if {key: value for key, value in baseline.items() if key != "instructions"} != {
+            key: value for key, value in definition.items() if key != "instructions"
+        }:
+            raise LabError("V1 and v2 must keep the same model, tools and generation settings.")
+        if baseline["instructions"] == definition["instructions"]:
+            raise LabError("Identical instructions are not a new improvement candidate.")
+    record = {"intent": intent, "status": "creating", "agent": None}
+    write_once_json(receipt, record)
+    created = project.agents.create_version(
+        agent_name=agent_name, definition=PromptAgentDefinition(definition), draft=False,
+        metadata={"lab": "foundry-evaluation-optimizer", "release_policy": "fixed-v1-v2"},
+        description=f"Fixed workshop v{version}; separate managed evaluation is required.",
+    ).as_dict()
+    record.update(status="created", agent=created)
+    save_json(receipt, record)
+    if created["version"] != version or created["definition"] != definition:
+        raise LabError("The created version differs from the requested fixed version; receipt preserved.")
+    return record
 
 
 def smoke_model(config: Config, run_id: str) -> dict:

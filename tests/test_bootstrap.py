@@ -316,7 +316,7 @@ class BootstrapTests(unittest.TestCase):
             self.assertNotIn(identity, json.dumps(report))
         self.assertEqual(report["models"][0]["free_available_units"], 100)
         self.assertFalse(report["models"][0]["deprecated"])
-        self.assertEqual(report["models"][0]["lifecycle"], ["Legacy"])
+        self.assertEqual(report["models"][0]["lifecycle"], ["GenerallyAvailable"])
         self.assertIn("model-specific", report["models"][0]["capacity_unit"])
 
     def test_wrong_active_identity_stops_before_resource_queries(self):
@@ -353,9 +353,11 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(b.preflight(self.path, run=self.azure)["readiness_status"], "READY")
 
     def test_explicit_standard_agent_plan_preserves_model_family_and_other_roles(self):
+        models = deepcopy(list(b.DEFAULT_MODELS))
+        models[0].update(name="gpt-4.1-mini", version="2025-04-14")
         planned = b.plan(
             subscription_id=SUB, tenant_id=TENANT, expected_user=USER,
-            environment="lab-standard", root=self.root, agent_sku="Standard",
+            environment="lab-standard", root=self.root, agent_sku="Standard", models=models,
         )
         path = Path(planned["config_path"])
         config = json.loads(path.read_text())
@@ -369,12 +371,13 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(selected["usage_name"], "OpenAI.Standard.gpt4.1-mini")
         fake.usage[0]["name"]["value"] = "OpenAI.Standard.gpt-4.1-mini"
         self.assertEqual(b.preflight(path, run=fake)["status"], "BLOCKED")
-        self.assertEqual(self.config["models"][0]["sku"], "Standard")
+        self.assertEqual(self.config["models"][0]["sku"], "GlobalStandard")
         self.assertNotEqual(config["scope_sha256"], self.config["scope_sha256"])
         self.assertEqual(fake.mutations, [])
 
     def test_explicit_catalog_quota_pin_preserves_non_model_name_spelling(self):
         models = deepcopy(list(b.DEFAULT_MODELS))
+        models[0].update(name="gpt-4.1-mini", version="2025-04-14", sku="Standard")
         models[0]["usage_name"] = "OpenAI.Standard.gpt4.1-mini"
         planned = b.plan(
             subscription_id=SUB, tenant_id=TENANT, expected_user=USER, root=self.root,
@@ -388,6 +391,7 @@ class BootstrapTests(unittest.TestCase):
 
     def test_invented_quota_pin_and_finetune_quota_are_not_accepted_as_base(self):
         models = deepcopy(list(b.DEFAULT_MODELS))
+        models[0].update(name="gpt-4.1-mini", version="2025-04-14", sku="Standard")
         models[0]["usage_name"] = "OpenAI.Standard.gpt-4.1-mini"
         planned = b.plan(
             subscription_id=SUB, tenant_id=TENANT, expected_user=USER, root=self.root,
@@ -403,7 +407,7 @@ class BootstrapTests(unittest.TestCase):
 
     def test_ambiguous_catalog_quota_requires_an_explicit_pin(self):
         alternate = deepcopy(self.azure.catalog[0]["model"]["skus"][0])
-        alternate["usageName"] = "OpenAI.Standard.another-base-quota"
+        alternate["usageName"] = f"OpenAI.{alternate['name']}.another-base-quota"
         self.azure.catalog[0]["model"]["skus"].append(alternate)
         self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")
         self.assertEqual(self.azure.mutations, [])

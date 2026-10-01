@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
-  <title>Facilitator guide · the evaluation learning loop · Foundry Lab Guide</title>
+  <title>Facilitator guide · improve the measured result · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
@@ -53,13 +53,13 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#prepare">Before the session</a></li>
-<li><a href="#checkpoints">Keep the six-step path explicit</a></li>
-<li><a href="#evaluation-sharing">Discuss evidence, not a desired score</a></li>
-<li><a href="#interpret-results">Explain what the metrics do not prove</a></li>
+<li><a href="#prepare">Before class</a></li>
+<li><a href="#checkpoints">Keep exactly six participant steps</a></li>
+<li><a href="#evaluation-sharing">Discuss the actual cases</a></li>
+<li><a href="#interpret-results">Interpret improvements correctly</a></li>
 <li><a href="#resume">Recover without changing the experiment</a></li>
 <li><a href="#misconceptions">Correct common misconceptions</a></li>
-<li><a href="#finish">Finish with an honest result</a></li>
+<li><a href="#finish">Finish with one current report</a></li>
 </ul>
 </div>
 
@@ -107,201 +107,119 @@
         <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Facilitator guide · the evaluation learning loop">
-        <h1 id="facilitator-guide">Facilitator guide · the evaluation learning loop</h1>
-<p><a href="index.html#start">Six participant steps</a> · <a href="admin.html#handoff">Operator prerequisites</a> · <a href="verification.html">Measured verification</a></p>
-<p>Teach <strong>evaluate → learn from failure → improve → reevaluate</strong>. Require an actual question, answer, evaluator reason, and policy reference—not just “the score improved.” Representative company-owned tasks, policy edge cases, and known failures make domain evaluation useful; this workshop demonstrates the method with synthetic Contoso data only.</p>
-<h2 id="prepare">Before the session</h2>
-<p>The operator prepares the environment, sample agent, and SDK prerequisites. Participants start with the dataset. Use <strong>Microsoft Foundry managed Evaluation</strong>, <strong>instruction-only Agent Optimizer</strong>, then <strong>one SDK command for the real candidate run and portal Compare runs</strong>. It is not a local Judge. Keep exactly two evaluators and six steps.</p>
-<ul>
-<li>Confirm the project and authorization from the <a href="admin.html#handoff">operator handoff</a>. English preparation is verified: <strong><code>contoso-eval-en</code> version <code>1</code></strong>, <strong><code>lab-agent-dea3cec5</code></strong>, existing <strong>read-only knowledge connection preserved</strong>. The Korean counterpart is operator-prepared <strong><code>contoso-eval-ko</code></strong>; no new Korean execution or measured results are claimed.</li>
-<li>English <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong> is registered from unchanged <code>data/en/optimizer/dev.jsonl</code>, 12 cases. Retain its SHA-256. Korean uses <code>data/optimizer/dev.jsonl</code>, also 12 cases, with separately confirmed <code>contoso-eval-ko-dev12</code> registration.</li>
-<li>Distinguish the one-fixture <strong><code>gpt-6-luna</code> / <code>2026-09-22</code> compatibility check</strong>, the completed configuration pilot, and the clean corrected comparison. Direct Responses/pinned prompt-agent v2 failed with HTTP 500 here, not everywhere. Keep <strong><code>gpt-4.1-mini</code> / <code>2025-04-14</code></strong> as the verified agent runtime.</li>
-<li>Use <strong><code>lab-judge-luna-dea3cec5</code></strong> for the <code>gpt-6-luna</code> Judge and <strong><code>lab-planner-dea3cec5</code></strong> for the <strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong> instruction generator. The generator is not the agent being optimized or the Judge. <code>gpt-6-luna</code> is not on the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported optimization-model list</a>.</li>
-<li>Confirm Agent Optimizer access and one candidate. If a required role is unverified, do not lead participants through a submission as though support were established.</li>
-<li>Complete <a href="admin.html#sdk-prerequisites">SDK prerequisites</a>: prepared venv, <code>requirements.lock</code>, <code>az login</code> and verified account/subscription, operator project endpoint/subscription, and baseline URL/Raw JSON IDs. Do not treat a missing helper/dependency as permission to change the scoring method.</li>
-</ul>
-<p>Screenshots illustrate the <strong>English UI and English-data rehearsal</strong>, not a participant's current result or a Korean run. Use them to locate controls. Read current measured status from verification; do not turn historical images or a reading checkbox into execution evidence.</p>
-<p><strong>Canonical baseline complete:</strong> <code>contoso-en-learning-loop</code> has <strong>12 rows, 10 passed / 2 failed / 0 errored; Relevance 10/12, binary TaskAdherence 12/12</strong> on pinned v1 and the same Judge. The earlier <code>contoso-en-baseline-luna-judge</code> remains a <strong>CONFIGURATION PILOT</strong>. Actual IDs are in <a href="index.html#baseline">step 03</a>; do not mix pilot aggregates into the canonical comparison.</p>
-<p><strong>Optimizer succeeded with one candidate:</strong> <code>opt_e44bcf5701a348deb62a1cd4f9cb3910</code>, same dataset, <code>gpt-5.5</code> generator / <code>gpt-6-luna</code> Judge, no model comparison. UI <strong>0.635 → 0.646</strong>, <strong>UI-reported +0.010</strong>, <strong>264,260 reported tokens</strong> are optimization results, not the final direct comparison. Promote created verified lab-only v2 with exact candidate instructions and unchanged model/knowledge tool.</p>
-<p><strong>Promotion warning:</strong> active-version changes affect <strong>all channels</strong> and belong only to the <strong>isolated, unpublished lab, never production</strong>. After HOLD, active v1 was restored; candidate v2 remains available. Use explicit versions and the saved baseline rather than assuming “latest” is active.</p>
-<p><strong>Native SDK execution verified; adoption HOLD:</strong> candidate <strong><code>evalrun_f3b710fc835d444fb8aa0d2bb7797bdf</code></strong>, v2, completed under <strong><code>eval_94feef6f6f644fabb22a5680f5f24fb1</code></strong> with <strong>12 rows, 11 passed / 1 failed / 0 errored</strong>, versus v1 <strong>10 passed / 2 failed / 0 errored</strong>. Matched dataset/evaluators/Judge/model/tools leave only instructions/version changed. Relevance passes rose 10/12→11/12 but mean fell <strong>4.4167→4.3333</strong>; TaskAdherence stayed <strong>12/12, binary mean 1.0</strong>. The portal's <strong>PairedTTest is Inconclusive for both metrics</strong>, not proof of overall improvement.</p>
-<p>Observed latency worsened: <strong>p50 5,891.09→7,287.52 ms; p95 8,817.33→16,038.35 ms</strong>. Agent tokens rose <strong>35,187→43,751</strong>. Keep pinned v1 pending further review/new representative cases; do not present Optimizer +0.010 or the native pass-count increase alone as success.</p>
-<h2 id="checkpoints">Keep the six-step path explicit</h2>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Facilitator guide · improve the measured result">
+        <h1 id="facilitator-guide">Facilitator guide · improve the measured result</h1>
+<p><a href="index.html#start">Six participant steps</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="verification.html">Latest v2 verification</a></p>
+<p>Teach <strong>evaluate → learn → improve → reevaluate</strong> using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
+<h2 id="prepare">Before class</h2>
+<p>The operator provides <strong><code>contoso-eval-en-sol</code></strong>, Sol model deployment, the existing read-only policy tool, the registered English dev12, a Luna Judge and a supported <code>gpt-5.5</code> Optimizer deployment. Verify model roles and identity using the <a href="admin.html#prepare">operator guide</a>.</p>
+<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning and strict output schema match; only instructions differ. V1 already has useful grounding, routing, date and uncertainty safeguards. Candidate development uses drafts, not an ever-growing sequence of released versions.</p>
+<p>Keep English and Korean data/Agents separate. The Korean guide explains the procedure; the current published measurements are <strong>English-data results only</strong>.</p>
+<h2 id="checkpoints">Keep exactly six participant steps</h2>
 <table>
 <thead>
 <tr>
-<th>Participant step</th>
-<th>Portal action and exact choice</th>
-<th>Completion signal</th>
+<th>Step</th>
+<th>Required action</th>
+<th>Completion evidence</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="index.html#start">01 Dataset</a></td>
-<td>For a fresh agent still latest v1: New experience → Build → Evaluations → Create, Pin currently latest, reselect <strong>1 target</strong>; Individual turns / One time / Existing dataset. For the recorded promoted agent, inspect its existing v1 baseline</td>
-<td>Correct pinned version/data, n = 12 and hash; never confuse latest v2 with baseline v1</td>
+<td>01 Dataset</td>
+<td>Inspect the unchanged three-column JSONL and existing registration</td>
+<td>All 12 rows, version and SHA-256</td>
 </tr>
 <tr>
-<td><a href="index.html#prepare">02 Criteria</a></td>
-<td>Query only, no custom override; retain <strong>Relevance threshold 4 + TaskAdherence binary pass 1</strong>, generic TaskAdherence <strong>Threshold 1</strong> if shown; explicit Judge</td>
-<td>Two criteria with distinct scales and settings recorded</td>
+<td>02 Criteria</td>
+<td>Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1; Luna Judge</td>
+<td>Saved remote definition and query-only Agent input</td>
 </tr>
 <tr>
-<td><a href="index.html#baseline">03 Baseline</a></td>
-<td>Open the completed <strong><code>contoso-en-learning-loop</code></strong> baseline; do not resubmit</td>
-<td>12 rows and canonical metric results; separate from the pilot</td>
+<td>03 Baseline</td>
+<td>Run actual Foundry Evaluation against pinned Sol v1</td>
+<td>Completed run ID and all output items</td>
 </tr>
 <tr>
-<td><a href="index.html#analyze">04 Analysis</a></td>
-<td>Read <strong>Detailed metrics result</strong> reasons; <strong>conversation_id → User view</strong> opens the question/JSON response, not a Judge panel</td>
-<td>Actual response, Relevance.reason / TaskAdherence.reason, and policy reference connected</td>
+<td>04 Analysis</td>
+<td>Read actual answers, metric scores, reasons and source policy</td>
+<td>A concrete improvement hypothesis, including failures</td>
 </tr>
 <tr>
-<td><a href="index.html#optimize">05 Optimization</a></td>
-<td>Recorded job succeeded; inspect original/candidate and diff. For fresh setup: Custom only OFF → built-in rows → Configure... → Apply, Relevance 4 / TaskAdherence 1</td>
-<td>One real candidate, verified lab v2; latest-active warning respected</td>
+<td>05 Optimization</td>
+<td>Actual instruction-only Agent Optimizer; inspect the candidate diff</td>
+<td>Real job/candidate IDs, unchanged non-instruction configuration</td>
 </tr>
 <tr>
-<td><a href="index.html#decision">06 Comparison</a></td>
-<td>Reuse the completed <strong><code>scripts/add_foundry_eval_run.py</code></strong> run's receipt; <strong>Evaluation runs → both checkboxes → Compare runs → Baseline dropdown: original <code>contoso-eval-en</code></strong>, not first-selected <code>candidate-v2</code></td>
-<td>Verified execution, measured tradeoffs, PairedTTest Inconclusive both; HOLD adoption, no production approval</td>
+<td>06 Reevaluation</td>
+<td>Same definition/data/Judge, explicitly pinned candidate; Compare runs</td>
+<td>Matched item-level evidence, improvement checks and honest decision</td>
 </tr>
 </tbody>
 </table>
-<p>The dataset preview shows the <strong>first five rows</strong>, not the total. In the observed English wizard, the matching schema <strong>auto-resolved Field mapping</strong>, then proceeded to <strong>Configure agents → leave custom prompt override unset → Criteria</strong>. If a schema-dependent mapping screen appears, use <strong>query → query</strong>. Never append <code>context</code> or <code>ground_truth</code> to generation. Use Upload new dataset only when the authorized project lacks the intended registration.</p>
-<p>Remove extras from the <strong>23 suggested evaluators</strong>. <strong>Relevance is 1–5, threshold 4. TaskAdherence is Binary Pass/Fail, raw 0/1, pass 1</strong>; set its generic UI <strong>Threshold to 1</strong> if shown. The <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">official definitions</a> confirm this distinction. The pilot's TaskAdherence Threshold 4 yielded <code>score=1</code>, <code>passed=true</code>; the generic setting did not define a meaningful 1–5 rubric.</p>
-<p>Use <strong><code>lab-judge-luna-dea3cec5</code></strong>. Catalog links showed <code>relevance</code> <strong>v14</strong> / <code>task_adherence</code> <strong>v17</strong>, but service criteria had <strong><code>evaluator_version</code> empty/default</strong>: do not teach those links as fully pinned private rubric versions.</p>
-<p>The corrected submission confirmed <strong>Relevance <code>response={{sample.output_text}}</code></strong> and <strong>TaskAdherence <code>response={{sample.output_items}}</code></strong>. UI defaults also showed <code>query={{item.query}}</code> and TaskAdherence's <code>tool_definitions={{sample.tool_definitions}}</code>. Inspect <strong>Raw JSON</strong> and <strong>do not override generated mappings</strong> with the earlier UI output-text value for TaskAdherence. They are service bindings, not extra dataset fields or generation inputs.</p>
-<p>For a fresh baseline, <strong>Pin currently latest</strong> must resolve to v1 before changes, then reselect the cleared checkbox. The recorded candidate is already promoted v2: v1 remains in the saved baseline run, and step 06 explicitly targets version 2 with the SDK. <code>gpt-4.1-mini</code> retires in Azure on <strong>2027-04-14</strong>; public <strong>Deprecated</strong> status may restrict fresh subscriptions.</p>
-<p><strong>Optimizer filter, not missing evaluator support:</strong> If Criteria says <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or click <strong>View built-in evaluators</strong>. Selecting each row opens <strong>Configure...</strong>; set Relevance <strong>4</strong> or TaskAdherence <strong>1</strong>, then <strong>Apply</strong>. This differs from the direct Evaluation wizard's Edit/Update controls and requires no custom evaluator.</p>
-<h2 id="evaluation-sharing">Discuss evidence, not a desired score</h2>
-<p>Spend a few minutes after the baseline, after inspecting the Optimizer diff, and after direct reevaluation. These are discussions of existing results, not additional submissions.</p>
-<table>
-<thead>
-<tr>
-<th>Discuss</th>
-<th>Ask for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Baseline</td>
-<td>Run ID; <strong>n = 12</strong>; each metric's scored/total, pass count, missing/errors; a failure or lowest-score case and a good case if one exists</td>
-</tr>
-<tr>
-<td>Candidate</td>
-<td>Actual job/candidate ID; original versus candidate per-evaluator results; changed instruction and plausible regression</td>
-</tr>
-<tr>
-<td>Reevaluation</td>
-<td>New direct run ID under the same definition; same dataset/version/hash and recorded evaluator/Judge configuration; actual before/after answers/reasons and rubric-version limits</td>
-</tr>
-</tbody>
-</table>
-<p>Use this unfilled discussion prompt:</p>
-<blockquote>
-<p>“In corrected run <strong><em>, metric ___ uses scale ___ and pass rule ___ (Relevance ≥4; TaskAdherence =1). It has ___ scored rows out of 12, ___ passes, and ___ missing/errors. Answer ___ conflicts/agrees with policy ___ because </em></strong>. Our next decision is ___.”</p>
-</blockquote>
-<p>If no failure or no good case exists, report that observation. Do not manufacture one, weaken the baseline, copy a screenshot's values, or demand an improved candidate.</p>
-<h2 id="interpret-results">Explain what the metrics do not prove</h2>
+<p>Use <strong>Individual turns / One time / Existing dataset</strong>. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.</p>
+<h2 id="evaluation-sharing">Discuss the actual cases</h2>
+<p>Ask participants to connect <strong>question → actual answer → evaluator score and reason → policy/reference answer</strong>. <code>conversation_id → User view</code> shows the conversation; the evaluator reasons belong in <strong>Detailed metrics result</strong>, such as <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</p>
+<p>Discuss at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer or substitute local scores.</p>
+<p>The latest public record includes all 12 synthetic questions, both actual responses and the managed evaluator reasons. Those results are not credentials. Exclude tokens, cookies, signed URLs and private account metadata, not unsuccessful outcomes.</p>
+<h2 id="interpret-results">Interpret improvements correctly</h2>
 <p><a id="review"></a></p>
-<p><strong>Completed is not a quality pass.</strong> Relevance's <strong>1–5 score is not percent accuracy</strong>. TaskAdherence is <strong>binary 0/1</strong>, not a five-point score: 1 means Pass, 0 means Fail. Missing/errors are not scored zeros. Report counts, coverage, reasons, and each metric's proper result type.</p>
-<p>Relevance asks whether the response addresses the question. TaskAdherence assesses the agent's task instructions and constraints. Neither certifies every policy, citation, authority boundary, or safety property. Some evaluators do not use the reference columns; participants still compare the actual answer/reason with the original policy and reference answer.</p>
-<p>The application values cases such as policy-date boundaries, necessary clarification, unsupported approval claims, and safe handling of restricted requests. Use an actual row to show why a generic public benchmark cannot substitute for those domain decisions.</p>
-<p><strong>Canonical v1 baseline Relevance failures:</strong> <code>atlas-dev-001</code> gave vague subscription-reduction guidance where the reference required explicit clarification; <code>atlas-dev-011</code> honestly called an undocumented feature unverified but was judged incomplete. TaskAdherence passed both. These are not candidate regression findings; do not change policy facts or remove justified uncertainty to chase Judge scores.</p>
-<p>Screenshot 19 is <strong>conversation_id → User view</strong> for <code>atlas-dev-001</code>: question and actual JSON response, <strong>not an inline Judge-reason panel</strong>. Return to <strong>Detailed metrics result</strong> for <strong><code>Relevance.reason</code> / <code>TaskAdherence.reason</code></strong>, then read the reference policy. Do not invent quotations or reasons not present in the run.</p>
-<p>Keep model/tools, language, 12 cases, dataset/version/hash, <strong>Relevance 4 / TaskAdherence binary pass 1</strong>, and Judge fixed. The SDK helper clones baseline <code>data_source</code> and reuses existing criteria, changes only target version, verifies model/tools, and submits a real Foundry run in the same evalID. Repeating the identical command and receipt path collects safely rather than resubmitting. No bespoke cloud scoring or new definition is involved.</p>
-<p>The portal <strong>Add run</strong> attempt for Pin v2 / Individual turns required <strong>Configure agents → Config required → Add custom prompt / User prompt</strong>. Even <code>{{item.query}}</code> failed client-side with <strong><code>Unable to create data source configuration from item schema</code></strong>; <strong>no remote candidate run was submitted by that attempt</strong>. Use the SDK route, not a new evaluation definition or handcrafted score. Private service rubric versions remain unproven pinned.</p>
-<p><strong>Recorded row changes:</strong> Relevance row 1 improved <strong>3→4</strong>, rows 2 and 6 declined <strong>5→4</strong>, and row 11 stayed <strong>3</strong> while maintaining honest uncertainty. A threshold crossing can raise pass count even as the mean falls. Native <strong>PairedTTest: Inconclusive</strong> for Relevance and TaskAdherence does not prove improvement or equivalence. Reused dev12 is not statistical significance, independent generalization, or production approval.</p>
+<p><strong>Relevance 4/5 is not 80% accuracy. TaskAdherence 1 is Pass, not a poor one-out-of-five score.</strong> Report each evaluator separately, all-criteria passes, errors and coverage.</p>
+<p><code>scripts/compare_foundry_eval.py</code> requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.</p>
+<p>Read answers for unsupported certainty, incorrect policy arithmetic, action claims and wrong routing even if the generic evaluator passed them. A request demanding an impossible certainty must not be satisfied with invented facts.</p>
+<p>Optimizer ranking is internal selection evidence, not the direct managed reevaluation mean or pass rate. A higher ranking alone does not establish a better v2.</p>
 <h2 id="resume">Recover without changing the experiment</h2>
-<p>Inspect the existing run/job and its exact inputs before doing anything else. If submission status is uncertain, locate the request with the operator rather than creating another. Keep failures and missing rows visible.</p>
 <table>
 <thead>
 <tr>
 <th>Symptom</th>
-<th>Safe response</th>
+<th>Response</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Wrong account/project, 401/403, network restriction</td>
-<td>Operator checks identity and authorized access; do not broaden shared permissions or bypass restrictions</td>
+<td>Wrong identity, 401/403</td>
+<td>Confirm the approved account/project; do not widen shared permissions</td>
 </tr>
 <tr>
-<td>Catalog model is visible but runtime/evaluator fails</td>
-<td>Record role, deployment, error, and request/run ID. Catalog visibility is not runtime proof</td>
+<td>Catalog or deployment succeeds but Agent fails</td>
+<td>Record the actual API/runtime error; verify the intended role</td>
 </tr>
 <tr>
-<td><code>gpt-6-luna</code> Responses/pinned agent v2 HTTP 500</td>
-<td>Keep that runtime unverified here and the agent on verified <code>gpt-4.1-mini</code>; do not undo the distinct native Relevance Judge capability result or claim model-wide lack of support</td>
+<td>Portal Add run item-schema error</td>
+<td>Use the official SDK helper with the existing baseline data source, not a different scorer</td>
 </tr>
 <tr>
-<td>Upload preview has five rows</td>
-<td>Confirm the unchanged local file has 12 and the correct registered dataset is selected</td>
+<td>No custom evaluators available</td>
+<td>Switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong></td>
 </tr>
 <tr>
-<td>Wrong schema or input</td>
-<td>Use the exact three-column file; <code>ground_truth</code> stays a JSON string and only <code>query</code> reaches the agent</td>
+<td>Duplicate local receipt or existing remote run</td>
+<td>Retrieve that same run; do not rename it to force another submission</td>
 </tr>
 <tr>
-<td>Pinning leaves no selected target</td>
-<td>The version change clears the row checkbox; reselect it and confirm 1 target before Next</td>
+<td>Candidate changes model/tools/reasoning/schema</td>
+<td>Reject an instruction-only comparison claim</td>
 </tr>
 <tr>
-<td>UI mapping differs from submitted TaskAdherence mapping</td>
-<td>Keep the generated <code>sample.output_items</code> binding; inspect Raw JSON, do not override it to <code>sample.output_text</code></td>
+<td>Draft becomes a numbered release</td>
+<td>Stop; draft support is not enabled as expected</td>
 </tr>
 <tr>
-<td>Compare runs is disabled</td>
-<td>In the same definition's Evaluation runs table, select both baseline and candidate rows; wait for completion before interpreting results</td>
+<td>Existing released v2 differs from local source</td>
+<td>Do not overwrite it or create v3; preserve the release and inspect the mismatch</td>
 </tr>
 <tr>
-<td>Comparison direction looks reversed</td>
-<td>Baseline defaults to the first selected row (<code>candidate-v2</code> here). Explicitly choose original <code>contoso-eval-en</code> in the Baseline dropdown before interpreting deltas/tests</td>
+<td>Missing output or metrics</td>
+<td>Report incomplete execution; do not reduce the denominator</td>
 </tr>
 <tr>
-<td>Partial evaluation or missing score</td>
-<td>Report n = 12 with scored/missing/error counts; do not remove rows or fabricate reasons</td>
-</tr>
-<tr>
-<td>Optimizer Max candidates disabled</td>
-<td>Clear Model and select Instruction only; Tool description off, Max candidates 1</td>
-</tr>
-<tr>
-<td>Optimizer Criteria: No custom evaluators available</td>
-<td>Switch Custom only OFF or View built-in evaluators; select each row → Configure... → Relevance 4 / TaskAdherence 1 → Apply</td>
-</tr>
-<tr>
-<td>Portal candidate Submit shows item-schema error</td>
-<td>No remote run was created by that failed form. Use the single SDK command; never create another definition as a workaround</td>
-</tr>
-<tr>
-<td>SDK receipt exists or run is still processing</td>
-<td>Keep the same <code>.lab/foundry-evaluations/candidate-v2.json</code> and repeat the identical command to collect. Do not delete/change the receipt to force another submission</td>
-</tr>
-<tr>
-<td>SDK identity/model/tool validation fails</td>
-<td>Stop and check operator context; do not bypass validation, switch models, or substitute local Judge scores</td>
-</tr>
-<tr>
-<td>First-run Optimizer shows a tax-agent benchmark</td>
-<td>Label it product example, not Contoso results; use Optimize my agent → Agent</td>
-</tr>
-<tr>
-<td>Optimization exceeds 60 minutes</td>
-<td>Record the actual job status and stop waiting/submitting; operator owns follow-up and remaining costs</td>
-</tr>
-<tr>
-<td>Candidate changes models/tools, or evaluator contract differs</td>
-<td>Do not claim instruction-only improvement; record the mismatch and keep baseline</td>
-</tr>
-<tr>
-<td>Optimizer or reevaluation is blocked</td>
-<td>Record unrun work. Do not substitute a different feature, handwritten candidate, or repeated favorable run</td>
+<td>Statistical comparison is Inconclusive</td>
+<td>Report that result; do not claim significance or equivalence</td>
 </tr>
 </tbody>
 </table>
+<p>Relevance maps to <code>{{sample.output_text}}</code>; TaskAdherence maps to <code>{{sample.output_items}}</code>. Do not overwrite service-generated bindings or feed <code>ground_truth</code> into the Agent. The actual remote Judge overrides any stale local default.</p>
 <h2 id="misconceptions">Correct common misconceptions</h2>
 <table>
 <thead>
@@ -312,45 +230,35 @@
 </thead>
 <tbody>
 <tr>
-<td>“Upload or Review succeeded, so evaluation completed.”</td>
-<td>Preparation is not submission. Require real evaluation/run IDs and final results</td>
+<td>“V2 is a prompt file number only.”</td>
+<td>It is a complete Agent version; this experiment changes only its instructions</td>
 </tr>
 <tr>
-<td>“Relevance 4/5 means 80% accuracy.”</td>
-<td>It is an ordinal Relevance score, not an accuracy estimate</td>
+<td>“A more powerful model makes v2 better than old-model v1.”</td>
+<td>Both versions must use the same model for the instruction comparison</td>
 </tr>
 <tr>
-<td>“TaskAdherence 1 means a poor one-out-of-five answer.”</td>
-<td>No: it is binary <strong>Pass = 1</strong>. Do not apply a five-point scale or threshold 4</td>
+<td>“A better v2 can be guaranteed before execution.”</td>
+<td>Only observed improvement can be established; future stochastic results are not guaranteed</td>
 </tr>
 <tr>
-<td>“The three roles must all use the same model.”</td>
-<td>Runtime, Judge, and instruction generator have separate support constraints</td>
+<td>“Keep only successful rows.”</td>
+<td>Keep every case, including failures and missing/error outcomes</td>
 </tr>
 <tr>
-<td>“The candidate ranks higher, so promote to production.”</td>
-<td>Never. Latest-active promotion affects all channels and is restricted here to the isolated unpublished lab; direct evaluation and production approval are separate</td>
+<td>“The source schema certifies correct business decisions.”</td>
+<td>It controls output structure, not policy truth or proper routing</td>
 </tr>
 <tr>
-<td>“No improvement means we should keep trying.”</td>
-<td>Report no improvement and keep baseline. Do not rerun until favorable</td>
-</tr>
-<tr>
-<td>“English screenshots prove the Korean path ran.”</td>
-<td>They illustrate UI only; language-specific execution needs its own evidence</td>
-</tr>
-<tr>
-<td>“These private-domain lessons used private customer data.”</td>
-<td>Contoso is synthetic. Real company data requires separate authorization, privacy controls, and representative review</td>
+<td>“Public evidence must include cookies and raw logs.”</td>
+<td>Publish actual synthetic responses and reasons through an allowlist, not authentication data</td>
 </tr>
 </tbody>
 </table>
-<h2 id="finish">Finish with an honest result</h2>
+<h2 id="finish">Finish with one current report</h2>
 <p><a id="next-loop"></a></p>
-<p>Ask for the shared evaluation definition ID, distinct baseline/candidate run IDs, optimization job/candidate ID, pinned agent versions and model roles, dataset version/hash, recorded criteria/configuration and service-version limits, per-metric comparison, a case-level explanation, regressions, and the decision. In-progress, failed, or unrun work stays explicitly unfinished.</p>
-<p><strong>Final workshop decision: HOLD adoption; keep pinned baseline v1.</strong> Pass count rose, but mean Relevance fell, rows regressed, and latency/token usage increased; neither metric's PairedTTest is conclusive. Further review/new representative cases belong to a later authorized cycle, not an added required lab or reruns until favorable. No production approval or statistical significance is claimed.</p>
-<p><strong>HOLD was executed:</strong> after setting the original Baseline explicitly in Compare, the operator used <strong>Details → Agent configuration → Active version → Edit → Version 1</strong> to restore active v1. Keep candidate v2, both evaluation runs, and receipts; do not delete comparison evidence. No production Publish or production channels/traffic were configured. <strong>RBAC-only Responses/preview endpoints still exist automatically without Publish</strong>; do not teach “unpublished” as “no endpoints.”</p>
-<p>Name the cost/cleanup owner and remaining blockers. Share only approved synthetic examples and redacted summaries. For a future company-owned evaluation, separately authorize data use and select representative tasks and known failures; do not claim this 12-case exercise certifies production.</p>
+<p>Publish <strong>the latest v2 verification and its frozen v1 control</strong>, not a sequence of obsolete current-version reports. Keep earlier raw receipts for audit without relabeling them as this pair.</p>
+<p>Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

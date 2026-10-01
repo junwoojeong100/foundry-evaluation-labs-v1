@@ -1,71 +1,82 @@
 # Foundry Learning Loop Lab v1 · 한국어
 
-**[한국어 실습 시작 → GitHub Pages](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)** · **[English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)** · [English README](README.md)
+**[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/#start)** · [English README](README.md)
 
-**Microsoft Foundry 관리형 Evaluation과 Agent Optimizer를 직접 사용하는 실습**입니다.
+**Microsoft Foundry 관리형 Evaluation과 Agent Optimizer**로 자사 대표 업무의 Agent 응답을 개선합니다.
 
-> 데이터셋 준비 → 평가기 선택 → Foundry 평가 실행 → 점수·실패 사례 확인 → 지시 최적화 → 같은 기준으로 재평가·비교
+> 데이터셋 → 평가기 → Foundry Evaluation → 실제 점수·이유 → 지침 개선 → 같은 기준으로 재평가
 
-목적은 공개 벤치마크 점수만 보는 대신 **자사 데이터·업무 기준으로 평가**하는 것입니다. 가상의 Contoso 정책과 질문으로 **평가 → 실패에서 학습 → 개선 → 재평가**의 학습 루프를 경험합니다.
+Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 운영 인증이 아니라 **평가 → 학습 → 개선 → 재평가**를 익힙니다.
 
-## 실습 시작
+## 현재 Sol v1/v2 비교 하나
 
-운영자가 수업 전에 격리된 프로젝트, 예제 에이전트, 모델 배포와 승인 범위를 준비합니다. 참가자는 기준선·Optimizer를 포털에서 실행하고, 공식 SDK helper 명령 하나로 두 번째 **Foundry 관리형 평가 run**을 만든 뒤 포털의 **Compare runs**로 비교합니다. 자체 로컬 Judge 실습으로 Foundry Evaluation을 대신하지 않습니다.
-
-한국어는 `data/optimizer/dev.jsonl`, 영어는 `data/en/optimizer/dev.jsonl`의 **12건 전체**를 사용합니다. 개선 전후에 데이터 버전·평가기 설정·Judge·에이전트 모델·도구를 유지하고 지시와 고정 에이전트 버전만 바꿉니다.
-
-| 평가 기준 | 해석 |
+| 역할 | 확인한 모델·버전 |
 |---|---|
-| Relevance | 1–5점, 통과 임계값 **4** |
-| TaskAdherence | 이진 0/1 **Pass/Fail**, 통과 **1**. 5점 중 1점이 아님 |
+| Agent | **gpt-6-sol / 2026-09-22** |
+| Foundry 평가 Judge | **gpt-6-luna / 2026-09-22** |
+| Agent Optimizer 생성 | **gpt-5.5 / 2026-04-24** |
 
-**기본 언어는 영어이며 모든 가이드에 한국어 버전이 있습니다.** 상단 언어 전환은 대응하는 절과 읽음 기록을 유지합니다. 문서 열람에는 로그인·JavaScript가 필요 없습니다. 오프라인에서는 저장소 전체를 내려받아 `index.html` 또는 `docs/ko/index.html`을 열며 폴더를 함께 유지합니다.
+영어 Agent는 **`contoso-eval-en-sol`**입니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 이번 비교는 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정은 같습니다. v1부터 강한 기준선을 사용하며 개선을 크게 보이게 하려고 약화하지 않습니다.
 
-## GitHub Pages 가이드
+후보는 명시적 초안에서 개발합니다. `ensure_fixed_release`는 정식 **1·2만 허용**하고 동일 버전을 재사용하며, v3를 조용히 만들거나 기존 버전을 덮어쓰지 않습니다. 현재 [v2 지침](prompts/en/optimized.txt)과 [v1 기준선](prompts/en/baseline.txt)을 분리했습니다.
+
+**[최신 v2 검증·v1 대조군](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html#status)** · **[전체 공개 사례 근거](evidence/latest.json)**
+
+현재 비교 하나만 보고하며 **질문 12건, 두 실제 응답, 평가 점수·이유 전체**를 실패까지 포함해 공개합니다. 과거 원본 receipt는 로컬 감사용으로 보존하고 인증·쿠키·서명된 URL·비공개 계정 메타데이터는 공개하지 않습니다.
+
+실제 관리형 Optimizer는 생성 후보 대신 v1을 유지하도록 선택했습니다. 현재 v2는 **해당 Optimizer 실행 이후 운영자가 검토·개선한 지침**을 별도 관리형 평가로 검증한 것입니다. 서비스가 자동 추천한 후보라고 바꾸어 표시하지 않습니다.
+
+## 같은 데이터와 평가 기준
+
+변경 없는 **`data/en/optimizer/dev.jsonl`**, 등록 `contoso-eval-en-dev12` 버전 `1`을 사용합니다. **12행 JSONL**은 query·context·JSON 문자열 ground_truth를 포함하며 Agent에는 query만 전달합니다. 한국어 원본은 별도로 유지합니다. 현재 공개 수치는 영어 실측이며 한국어 새 실행 결과가 아닙니다.
+
+| 관리형 평가기 | 척도·통과 기준 |
+|---|---|
+| Relevance | 1–5점, 임계값 **4** |
+| TaskAdherence | 이진 0/1 Pass/Fail, 통과 **1** |
+
+SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Judge·임계값·매핑을 확인하고 중복 제출을 막으며, 결과 행의 실제 고정 버전·지시도 검증합니다. **로컬 Judge가 아닙니다.**
+
+`scripts/compare_foundry_eval.py`는 전체 사례 대응, 품질 통과 건수·평균의 비회귀와 하나 이상의 명확한 관측 개선을 요구합니다. 잘못된 응답을 숨기거나 미래의 확률적 결과를 보장하지 않습니다. 통계 검정, 지연·토큰 상충 관계도 별도로 보고합니다.
+
+## 가이드
 
 | 내용 | 한국어 | English |
 |---|---|---|
-| 참가자 6단계 | [실습 시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start) |
-| 운영자 사전 준비 | [운영자 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) | [Operator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) |
-| 진행·복구 | [강사 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Facilitator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
-| 데이터 계약 | [데이터 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |
-| 실제 검증·출처 | [검증 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) | [Verification](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) |
-| 통합 인쇄본 | [한국어 인쇄본](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) | [Print](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) |
-| PDF | [한국어 PDF](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) | [English PDF](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) |
+| 참가자 실습 | [시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#start) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#start) |
+| 운영자 준비 | [운영자](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) | [Operator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) |
+| 진행·복구 | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Facilitator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
+| 데이터 계약 | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |
+| 최신 v2 근거 | [검증](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) | [Verification](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) |
+| 통합 인쇄본 | [열기](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) | [Print](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) |
+| PDF | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) |
 
-## 확인한 모델과 결과
+기본 언어는 영어입니다. 언어를 전환해도 대응 절·읽음 기록·테마를 유지합니다. 로그인·JavaScript 없이 열람할 수 있으며 오프라인에서는 저장소 전체의 폴더 구조를 유지합니다.
 
-| 역할 | 확인된 선택 |
-|---|---|
-| 에이전트 | `gpt-4.1-mini` / `2025-04-14`. 이 환경의 `gpt-6-luna` Responses·Agent 호출이 HTTP 500이어서 정상 동작한 구성 유지 |
-| Foundry 평가 Judge | **`gpt-6-luna` / `2026-09-22`**, 실제 관리형 기준선·후보 평가에서 사용 |
-| Optimizer 생성 모델 | `gpt-5.5` / `2026-04-24`. 현재 [지원 최적화 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)에 `gpt-6-luna`가 없어 유지 |
-
-기존 에이전트 모델의 [사용 중단 예정일](https://learn.microsoft.com/azure/foundry/openai/concepts/model-retirement-schedule)은 **2027-04-14**이며 신규 구독은 제한을 받을 수 있습니다. 운영자는 수업 전에 실제 런타임 지원을 확인해야 합니다. 카탈로그 표시는 에이전트 호출 성공이 아닙니다.
-
-**실제 영문 리허설:** 12건으로 Foundry 관리형 평가, 지시 전용 Optimizer 작업 하나, 같은 정의의 재평가를 수행했습니다. 모든 항목을 통과한 사례는 **10/12 → 11/12**였지만 Relevance 평균은 **4.42 → 4.33**, p95 지연은 **8.82 → 16.04초**였습니다. 포털 통계 비교도 **Inconclusive**이므로 채택은 **HOLD**이며 활성 v1을 복원하고 후보 v2는 보존했습니다.
-
-자세한 내용은 [검증 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html)과 [evidence/latest.json](evidence/latest.json)에 있습니다. 영어 데이터 결과이며 새로운 한국어 실행 결과·운영 승인·일반화 보장이 아닙니다.
+포털 그림은 **이전 촬영분의 조작 위치 예시**로 표시하며 현재 Sol 실측으로 사용하지 않습니다. 실제 측정 근거는 최신 보고서와 그 안의 run ID입니다.
 
 ## 실행 경계
 
-- 안내 에이전트는 환불이나 업무 권한 부여를 실제 실행하지 않습니다. 운영 트래픽이 아닌 격리된 실습 에이전트만 사용합니다.
-- 이 포털 버전의 **Add run**에서 item-schema 오류가 발생했습니다. 06단계의 `scripts/add_foundry_eval_run.py`는 **같은 Foundry 평가**에 데이터·기준을 유지해 run을 제출하고, ID를 기록하며 중복 제출을 방지합니다.
-- 자신의 endpoint·구독·평가·기준선 run ID로 자리표시자를 교체합니다. 리허설 ID를 새 근거처럼 복사하거나 좋은 점수가 나올 때까지 재실행하지 않습니다.
-- `.env`·`.lab/`·자격 증명·비공개 원본·서명된 다운로드 URL을 공개하지 않습니다. 브라우저를 닫아도 자원 비용이 멈추지 않습니다.
+운영자가 격리 프로젝트와 읽기 전용 정책 연결을 준비합니다. 별도 지식 구축·Judge 교정·governance는 추가 필수 실습이 아닙니다. Agent는 안내하며 환불·티켓 제출·삭제·권한 부여를 실제 수행하지 않습니다.
 
-## 문서 유지보수
+지원 범위는 역할별로 다릅니다. 실제 Agent·도구 호출과 [지원 Optimizer 모델](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인하고 비교 도중 모델을 바꾸지 않습니다.
 
-`requirements.lock`의 의존성이 설치된 저장소 루트에서 실행합니다.
+운영용 게시는 실습에 포함하지 않습니다. 브라우저 종료로 과금이 멈추지 않습니다. 실제 실패를 보존하며 같은 후보를 유리한 점수가 나올 때까지 반복하지 않습니다.
+
+## 산출물 유지보수
+
+잠금 의존성이 설치된 환경에서 실행합니다.
 
 ```bash
+python scripts/build_datasets.py --language en --check
+python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py
 python scripts/build_guide.py --check
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -q
 ```
 
-영문 원문은 `guide/en/*.md`·`data/README.en.md`, 한국어 원문은 `guide/*.md`·`data/README.md`, 공통 UI는 `web/locales.json`입니다. HTML은 영어 `docs/`, 한국어 `docs/ko/`에 생성합니다. 대응 절 ID와 언어별 원본 데이터를 보존합니다.
+영어 원문은 `guide/en/*.md`·`data/README.en.md`, 한국어는 `guide/*.md`·`data/README.md`입니다. HTML은 `docs/`와 `docs/ko/`에 생성합니다. 대응 절 ID·별도 언어 원본을 유지합니다.
 
-각 통합 인쇄본을 배경 그래픽 포함 A4 PDF로 저장합니다. `requirements-verification.lock`의 검증 환경에서 `python scripts/verify_pdf.py docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko`로 확인하고, 영어는 해당 파일명과 `--language en`을 사용합니다. 오프라인 ZIP은 `python scripts/package_lab.py`로 갱신합니다.
+통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성하고 `requirements-verification.lock` 환경의 `scripts/verify_pdf.py`로 검사합니다. ZIP은 `python scripts/package_lab.py`로 다시 만들고 `evidence/latest.json`에는 실제 수행한 검증과 서비스 결과만 기록합니다.
 
-GitHub Pages는 **`main` 브랜치 루트**와 `.nojekyll`을 사용합니다. 루트 `index.html`과 기존 `docs/english.html`은 쿼리·절 링크를 보존해 기본 영문 가이드로 연결합니다.
+GitHub Pages는 **main 브랜치 루트**와 `.nojekyll`을 사용합니다. 루트 index.html·기존 docs/english.html은 쿼리와 절 링크를 유지하며 영어로 연결합니다.
