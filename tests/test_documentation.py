@@ -65,6 +65,9 @@ class LearningPathParser(LinkParser):
         self.sharing_checkpoints = []
         self.learning_frames = []
         self.step_figures = []
+        self.completion_checks = []
+        self.wizard_steps = []
+        self.concept_figures = []
         self.in_article = False
         self.in_toc = False
         self.in_overview = False
@@ -86,6 +89,12 @@ class LearningPathParser(LinkParser):
             self.learning_frames.append((attrs["data-learning-frame"], self.chapters[-1] if self.chapters else None))
         if self.in_article and tag == "figure" and "portal-shot" in attrs.get("class", "").split():
             self.step_figures.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
+        if self.in_article and tag == "figure" and "concept-flow" in attrs.get("class", "").split():
+            self.concept_figures.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
+        if self.in_article and tag == "p" and "completion-check" in attrs.get("class", "").split():
+            self.completion_checks.append(self.chapters[-1] if self.chapters else None)
+        if self.in_article and "data-wizard-step" in attrs:
+            self.wizard_steps.append((attrs["data-wizard-step"], self.chapters[-1] if self.chapters else None))
         if self.in_article and tag == "p" and "share-checkpoint" in attrs.get("class", "").split():
             self.sharing_checkpoints.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
         if tag == "a":
@@ -283,6 +292,61 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("{{item.query}}", source)
                 self.assertIn("--baseline", source)
                 self.assertIn("--version", source)
+
+    def test_beginner_landmarks_and_completion_checks_survive_web_and_print(self):
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            with self.subTest(language=language):
+                page = LearningPathParser()
+                page.feed((SITE / prefix / "index.html").read_text())
+                self.assertIn("basics", page.ids)
+                self.assertEqual(page.completion_checks, STEPS)
+                self.assertEqual(page.wizard_steps, [
+                    ("1", "start"), ("2", "prepare"), ("3", "baseline"),
+                ])
+                self.assertEqual(page.concept_figures, [
+                    ("resource-map", "resources"), ("evaluation-flow", "start"),
+                ])
+                book = (SITE / prefix / "print.html").read_text()
+                for anchor in ("basics", "resource-map", "evaluation-flow"):
+                    self.assertIn(f'id="book-index--{anchor}"', book)
+                self.assertEqual(book.count('class="completion-check"'), len(STEPS))
+                self.assertEqual(book.count('data-wizard-step="'), 3)
+                self.assertNotIn("{: .completion-check}", book)
+
+    def test_shared_commands_are_distinguished_from_os_specific_setup(self):
+        for language in ("en", "ko"):
+            with self.subTest(language=language):
+                blocks = re.findall(r"```(bash|sh|powershell)\s*\n(.*?)```", self.source(language), re.DOTALL)
+                bash = [text for syntax, text in blocks if syntax == "bash"]
+                powershell = [text for syntax, text in blocks if syntax == "powershell"]
+                shared = "\n".join(text for syntax, text in blocks if syntax == "sh")
+                self.assertEqual(len(bash), 2)
+                self.assertEqual(len(powershell), 2)
+                self.assertIn("source .venv/bin/activate", bash[0])
+                self.assertIn("export LAB_LANGUAGE=", bash[1])
+                self.assertIn(".venv\\Scripts\\Activate.ps1", powershell[0])
+                self.assertIn("$env:LAB_LANGUAGE", powershell[1])
+                for command in ("az login", "bootstrap plan", "native-agent --version 1", "native-evals", "add_foundry_eval_run.py", "az group delete"):
+                    self.assertIn(command, shared)
+                self.assertNotIn("source .venv", shared)
+                self.assertNotIn("$env:", shared)
+
+    def test_advanced_mapping_checks_have_a_linked_operator_home(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            source = self.source(language)
+            admin = (folder / "admin-setup.md").read_text()
+            with self.subTest(language=language):
+                self.assertIn("admin-setup.md#evaluation-mapping", source)
+                self.assertIn("{#evaluation-mapping}", admin)
+                admin_page = SITE / ("ko/admin.html" if language == "ko" else "admin.html")
+                self.assertIn('class="print-with-table"', admin_page.read_text())
+                self.assertIn("response={{sample.output_text}}", admin)
+                self.assertIn("response={{sample.output_items}}", admin)
+                self.assertIn("{{item.query}}", source)
+                self.assertIn("candidate.txt.txt", source)
+                self.assertIn("handbook.md#basics", (folder / "facilitator.md").read_text())
+                self.assertIn("handbook.md#evaluation-flow", (folder / "facilitator.md").read_text())
 
     def test_the_two_datasets_and_evaluator_scales_are_not_conflated(self):
         for language in ("en", "ko"):
@@ -733,7 +797,8 @@ class DocumentationTests(unittest.TestCase):
                 "Cost Management", "soft-delete",
             ):
                 self.assertIn(term, cleanup)
-            commands = re.findall(r"```bash\s*\n(.*?)```", cleanup, re.DOTALL)
+            commands = re.findall(r"```(?:bash|sh)\s*\n(.*?)```", cleanup, re.DOTALL)
+            self.assertTrue(commands)
             for block in commands:
                 self.assertNotIn("--yes", block)
                 self.assertNotIn("purge", block)

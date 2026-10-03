@@ -14,6 +14,10 @@
 
 CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 사용자에게 운영자의 토큰이나 로그인 세션을 넘기지 않습니다. bootstrap에 묶인 생성 명령은 소유 운영자가 실행합니다. 다른 참가자는 본인에게 부여된 포털 권한을 사용하며, SDK를 사용할 경우 본인의 신원에 맞는 별도 설정과 권한이 필요합니다.
 
+**Azure·Foundry를 처음 사용하는 단체 수업에는 운영자 사전 준비를 권장합니다.** 참가자는 01의 본인 계정·PC 확인 후 02–03의 완료 근거를 인수하고 04부터 진행합니다. 참가자용 SDK 설정을 제공하지 않는다면 운영자가 06의 ID 조회, 09의 v2 생성·재평가 명령, 10의 소유 객체 정리를 맡습니다. 참가자는 본인의 포털 권한으로 설정·결과를 읽습니다.
+
+개별 실습은 참가자별 환경·Agent를 구분합니다. 하나의 Agent를 함께 쓰는 조별 실습은 **v2 생성과 유료 제출을 담당할 한 명**을 지정합니다. 여러 사람이 같은 Agent의 v2를 각각 만들거나 같은 평가를 중복 제출하지 않도록 인수표에 적습니다.
+
 기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 인수표에 기록합니다.
 
 <figure class="portal-shot" id="portal-resource-group">
@@ -80,6 +84,19 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
 
+### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
+
+참가자는 [05의 두 평가기·Judge 선택](handbook.md#prepare)을 수행하고 자동 매핑을 유지합니다. Raw JSON(원시 설정)을 해석하거나 SDK 내부 필드를 추측하는 일을 초보자의 필수 단계로 두지 않습니다.
+
+| 확인할 설정 | 유지할 값 |
+|---|---|
+| Agent 사용자 입력 | `{{item.query}}`만 사용하고 지침 override는 비웁니다. |
+| Relevance 응답 | `response={{sample.output_text}}` |
+| TaskAdherence 응답 | `response={{sample.output_items}}` |
+| Judge·임계값 | 실제 `JUDGE_DEPLOYMENT`, Relevance 4·TaskAdherence 이진 통과 1 |
+
+필수 항목이 **Unassigned**이면 원격 정의·대상 Agent·데이터 열을 대조합니다. 참고 답변을 response에 넣거나 이전 UI의 매핑을 복사하지 않습니다. [공식 포털 평가 안내](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app)를 참고하되 이 실습의 고정 조건은 바꾸지 않습니다. 09의 helper도 원격 계약을 검사하며, 오류를 숨겨 제출하지 않습니다.
+
 ## 실제 승인에 맞춰 승인서를 작성합니다 {#approval}
 
 `approval.example.json`을 편집기에서 열어 **approval.json으로 따로 저장**합니다. 다음 표는 필드 작성 설명이며 승인된 문서 자체가 아닙니다. 조직의 실제 승인 근거를 비공개로 보관합니다. JSON 문자열에는 큰따옴표를 사용하고 숫자·true·false·null에는 따옴표를 붙이지 않습니다.
@@ -138,8 +155,8 @@ Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 �
 | 필수 항목 | 기록할 실제 값·완료 근거 |
 |---|---|
 | 로그인 범위 | 사용자, tenant ID, subscription ID입니다. 비밀번호·토큰은 포함하지 않습니다. |
-| 실행 담당 | 생성·SDK·포털 실습·비용·삭제를 각각 누가 수행하는지 기록합니다. |
-| 로컬 경로 | 환경 이름, bootstrap config 경로, 런타임 `.env` 경로, `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`입니다. |
+| 실행 담당 | 생성·06 ID 조회·09 v2 생성/재평가·포털 실습·비용·삭제 담당자를 기록합니다. 공동 Agent라면 유료 제출 담당 한 명을 지정합니다. |
+| 로컬 경로 | 환경 이름, bootstrap config 경로, 런타임 `.env` 경로, `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`입니다. 참가자용 설정 제공 여부와 명령 실행 PC도 구분합니다. |
 | Azure 환경 | 리소스 그룹·Foundry account·project·project endpoint·Search 이름입니다. |
 | 모델 | 네 배포의 실제 이름·제품명·버전·SKU·용량입니다. |
 | 정책 검색 | 정책 원본·언어, 업로드 8건, knowledge base·connection 이름, `retrieval_verified`입니다. |
@@ -156,6 +173,7 @@ Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 �
 ## 삭제와 보존을 확인합니다 {#cleanup}
 
 [10의 삭제 절차](handbook.md#cleanup)를 종료 체크리스트로 사용합니다. 생성 승인은 삭제 승인이 아니며 실습 자료만으로 타인의 자원을 삭제하지 않습니다.
+{: .print-with-table}
 
 | 대상 | 삭제 또는 인계 확인 |
 |---|---|

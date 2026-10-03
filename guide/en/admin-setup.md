@@ -14,6 +14,10 @@ Use this reference for participant steps **02 provisioning authorization, 03 Age
 
 Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.
 
+**For groups new to Azure and Foundry, operator-prepared environments are recommended.** Participants check their own account/computer in 01, receive completion evidence for 02â€“03, and continue at 04. Without participant-specific SDK configuration, the operator handles ID lookup in 06, v2 creation/reevaluation commands in 09, and owned-object cleanup in 10. Participants inspect settings/results using their own portal access.
+
+Use separate environments/Agents for individual labs. For a group sharing one Agent, designate **one person to create v2 and submit paid jobs**. Record that responsibility so several participants do not attempt different v2 releases or duplicate the same evaluation.
+
 Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the handoff.
 
 <figure class="portal-shot" id="portal-resource-group">
@@ -80,6 +84,19 @@ Retrieve IDs with `native-evals --name lab-en-learning-loop`. The reevaluation h
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
 
+### Check evaluation response mappings {#evaluation-mapping}
+
+Participants select the [two evaluators and Judge in 05](handbook.md#prepare) and preserve automatic mappings. Reading Raw JSON or guessing SDK fields is not a beginner prerequisite.
+
+| Setting | Required value |
+|---|---|
+| Agent user input | Only `{{item.query}}`; leave the instruction override unset |
+| Relevance response | `response={{sample.output_text}}` |
+| TaskAdherence response | `response={{sample.output_items}}` |
+| Judge/thresholds | Actual `JUDGE_DEPLOYMENT`; Relevance 4, TaskAdherence binary pass 1 |
+
+If a required field is **Unassigned**, compare the remote definition, target Agent, and data columns. Never map the reference answer as the response or copy old UI bindings. Consult the [official portal evaluation guide](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app) without changing this lab's fixed conditions. The helper in 09 checks the remote contract too and does not suppress errors to submit a run.
+
 ## Complete the actual authorization file {#approval}
 
 Open `approval.example.json` and **Save As approval.json**. This worksheet explains fields; it is not an approved request. Keep the actual organizational authorization private. Use double quotes for JSON strings, but not for numbers, true, false, or null.
@@ -138,8 +155,8 @@ Copy this table into the private class record and fill it with actual values. â€
 | Required item | Actual values or evidence |
 |---|---|
 | Identity | User, tenant ID, and subscription ID; never passwords or tokens |
-| Responsibilities | Who performs provisioning, SDK operations, portal exercises, cost monitoring, and cleanup |
-| Local paths | Environment name, bootstrap config, runtime `.env`, `LAB_LANGUAGE`, and `LAB_ARTIFACTS_DIR` |
+| Responsibilities | Owners for provisioning, 06 ID lookup, 09 v2 creation/reevaluation, portal exercises, cost, and cleanup; one paid-submission owner per shared Agent |
+| Local paths | Environment name, bootstrap config, runtime `.env`, `LAB_LANGUAGE`, and `LAB_ARTIFACTS_DIR`; distinguish participant-specific configuration and which computer runs commands |
 | Azure environment | Resource group, Foundry account/project, project endpoint, and Search service |
 | Models | Actual names, product/version, SKU, and capacity for all four deployments |
 | Policy search | Source/language, eight uploaded documents, knowledge-base/connection names, and `retrieval_verified` |
@@ -156,6 +173,7 @@ Raw service files can contain account metadata, tokens or signed URLs. Keep thos
 ## Verify deletion and retention {#cleanup}
 
 Use [step 10](handbook.md#cleanup) as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.
+{: .print-with-table}
 
 | Target | Deletion or handoff check |
 |---|---|

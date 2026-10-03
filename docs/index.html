@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
-  <title>Great agents start with evaluation · v1 · Foundry Lab Guide</title>
+  <title>Evaluate and improve a customer-support Agent · v1 · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -111,19 +111,45 @@
         <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Great agents start with evaluation · v1">
-        <h1 id="좋은-에이전트는-평가에서-시작된다-v1">Great agents start with evaluation · v1</h1>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Evaluate and improve a customer-support Agent · v1">
+        <h1 id="좋은-에이전트는-평가에서-시작된다-v1">Evaluate and improve a customer-support Agent · v1</h1>
 <p class="eyebrow">CONTOSO ATLAS CLOUD · ONE LEARNING PATH</p>
 
-<p><strong>Prepare Azure, evaluate and improve an Agent you create, and delete the resources when you finish.</strong> Start at 01 if this is your first visit. If you received a prepared environment, still confirm your identity, permissions, and handoff details first.</p>
-<p>Microsoft Foundry brings model deployment, Agent versioning, and evaluation into a project-based development environment. This lab builds a fictional <strong>Contoso Atlas Cloud support Agent</strong> and compares its responses using the same policies and 12 questions. Here, learning means <strong>reading evaluation results and improving instructions</strong>, not retraining model weights.</p>
+<p><strong>Score a support AI on 12 questions, improve its instructions, then compare its answers to the same questions.</strong> No Azure or Foundry experience is required. You do need to install tools on your computer and have an Azure environment with access and cost authorization.</p>
+<p><strong>Azure</strong> is Microsoft's cloud platform. <strong>Microsoft Foundry</strong> is the platform for building and evaluating AI models and Agents on Azure. An <strong>Agent</strong> combines a model with instructions and tools. Here, a fictional <strong>Contoso Atlas Cloud support Agent</strong> searches policy documents before answering.</p>
 <div class="hero-summary" aria-label="Lab purpose and outcomes">
-<div><strong>WHAT YOU BUILD</strong><span>A policy-grounded support Agent and a comparison record containing actual responses and evaluator reasons.</span></div>
-<div><strong>WHY IT MATTERS</strong><span>Explain improvement using matched conditions, scores, evidence, and failures rather than one convincing answer.</span></div>
-<div><strong>HOW YOU PROCEED</strong><span>Prepare → evaluate v1 → analyze weaknesses → improve instructions → reevaluate → clean up.</span></div>
-<div><strong>WHAT YOU KEEP</strong><span>Actual run IDs, dataset hashes, an accept/retain/hold decision, and deletion or retention-handoff evidence.</span></div>
+<div><strong>WHAT YOU BUILD</strong><span>A support Agent that answers using policy evidence.</span></div>
+<div><strong>WHY IT MATTERS</strong><span>Judge quality from 12 answers and scoring reasons, not one convincing answer.</span></div>
+<div><strong>HOW YOU PROCEED</strong><span>Keep questions, models, and scoring criteria fixed; change only instructions.</span></div>
+<div><strong>WHAT YOU KEEP</strong><span>A before/after comparison, your decision, and resource-cleanup records.</span></div>
 </div>
 
+<p class="step-next no-print"><a href="#setup">Start with step 01 →</a></p>
+
+<p><strong>First, find your starting point.</strong> The operator is the person responsible for the environment, access, and cost. For a solo lab, that is you or your organization's Azure administrator.</p>
+<table>
+<thead>
+<tr>
+<th>Your situation</th>
+<th>Your path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A facilitator or operator provided the environment</td>
+<td>Complete your identity/computer checks in 01. Use the <a href="admin.html#handoff">handoff</a> to verify 02–03 and agree who runs commands, then continue at 04. Do not repeat creation.</td>
+</tr>
+<tr>
+<td>You have an authorized subscription and will create the environment</td>
+<td>Follow 01–10. An authorized person performs the resource creation and access configuration in 02.</td>
+</tr>
+<tr>
+<td>You have no assigned subscription/project or cost authorization</td>
+<td>Do not start Azure creation or calls. Send the <a href="admin.html#start">operator preparation guide</a> to the responsible person.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Time and cost:</strong> Allow half a day when starting from scratch, plus any permission/quota approval wait. Prepared environments still need evaluation/optimization waiting time. Model calls, Search, and logs can incur charges. <strong>Closing your browser does not end those charges; finish the cleanup in 10.</strong></p>
 <ol class="learning-path" role="list" aria-label="Lab steps">
 <li><a href="#setup"><strong>01</strong> Check your account, computer, and access</a></li>
 <li><a href="#resources"><strong>02</strong> Create the Foundry environment</a></li>
@@ -137,7 +163,7 @@
 <li><a href="#cleanup"><strong>10</strong> Save results and delete resources</a></li>
 </ol>
 
-<p>Use <strong>your own representative tasks and business criteria</strong>, not a public benchmark alone. Synthetic Contoso policies demonstrate <strong>evaluate → learn → improve → reevaluate</strong> without publishing private customer data.</p>
+<p>Here, <strong>learning means reading evaluation results and improving instructions</strong>, not retraining model weights. Use only the supplied synthetic policies and questions. Do not upload private customer records or put the test answers into the instructions.</p>
 <table>
 <thead>
 <tr>
@@ -151,8 +177,8 @@
 <td>Verify identity, subscription, permissions, actual resources, and deletion scope.</td>
 </tr>
 <tr>
-<td>Local terminal</td>
-<td>Prepare files and the virtual environment, then run authorized setup and ID-lookup commands.</td>
+<td>Your computer's terminal</td>
+<td>The window where you prepare files and run supplied commands. Step 01 explains how to open it.</td>
 </tr>
 <tr>
 <td><a href="https://ai.azure.com">Microsoft Foundry</a></td>
@@ -160,39 +186,9 @@
 </tr>
 </tbody>
 </table>
-<p><strong>How to read a step:</strong> Start with its <strong>what, why, and how</strong> panel. Follow the commands or numbered actions, and find the controls named in each screenshot caption. Check the final <strong>completion criteria</strong> before continuing. Opening a screen or marking a section as read does not complete a live operation.</p>
-<p><strong>How to follow this guide:</strong> Steps 01–03 prepare the environment; 04–09 use the Foundry portal for evaluation and improvement. Unless stated otherwise, run commands from the repository's top-level folder. Replace <code>YOUR_...</code> placeholders with your own values. Use resource names and endpoints from your plan and <code>.env</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Before you start</th>
-<th>Guidance</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Time</td>
-<td>Allow half a day for first-time setup. Permission and quota approval waits are separate.</td>
-</tr>
-<tr>
-<td>Cost</td>
-<td>Model, evaluation, and optimization calls, Search hosting, and logs can incur charges. A free subscription does not guarantee access to every model.</td>
-</tr>
-<tr>
-<td>Access</td>
-<td>Use a dedicated lab environment you are authorized to create and clean up. An operator can perform only the privileged steps and supply the handoff.</td>
-</tr>
-<tr>
-<td>Prepared environment</td>
-<td>Obtain every value in the <a href="admin.html#handoff">operator handoff</a>, verify the completion criteria in 02–03, and continue at 04 without creating duplicate resources.</td>
-</tr>
-<tr>
-<td>Finish</td>
-<td>Complete the deletion checks or approved retention handoff in 10, not just the evaluation report.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Version meaning:</strong> v1/v2 are complete Foundry Agent versions. Keep the model, tools, and output format fixed; change only instructions. Do not weaken v1 or promise an improvement before measuring it. In a new lab, v2 is initially a comparison candidate; creating it is not acceptance or production approval.</p>
+<p><strong>How to read a step:</strong> Follow the explanation, actions, then <strong>completion criteria</strong>. Keep Azure Portal and Foundry open in separate browser tabs. Match controls by their English UI names. <strong>Use your own account/project values, not the names in the illustrations.</strong></p>
+<p>Steps 01–03 prepare the environment, 04–09 evaluate and improve, and 10 cleans up. <strong>Steps 04–06 continue in the same evaluation wizard.</strong> Do not create a separate evaluation for each step. Reading marks are personal bookmarks, not evidence of completed operations.</p>
+<p><strong>V1 is the original Agent; v2 is the candidate with revised instructions.</strong> These are complete Agent versions. Keep their models, tools, and output format fixed. Retaining v1 when no improvement is found is a valid lab outcome; creating v2 is not production approval.</p>
 <h2 id="setup">01. Check your account, computer, and access</h2>
 <p><a id="environment"></a><a id="sdk-prerequisites"></a></p>
 <div class="lab-concept" data-learning-frame="setup">
@@ -201,11 +197,23 @@
 <p><strong>How · where:</strong> Check subscription/access in Azure Portal, then compare tools, login, and language settings in the terminal. No Azure resources are created yet.</p>
 </div>
 
+<div class="concept-primer" id="basics" role="group" aria-label="Azure terms for first-time participants">
+<p><strong>Six terms to recognize before opening the portal.</strong> You do not need to memorize them; distinguish their roles.</p>
+<dl>
+<div><dt>Tenant / Directory</dt><dd>The boundary that manages an organization's users and access. One account can access several organizations, so check the selected directory too.</dd></div>
+<div><dt>Subscription</dt><dd>The unit that groups Azure usage and billing. Confirm which subscription will pay for this lab.</dd></div>
+<div><dt>Resource group</dt><dd>A group of Azure resources managed together. A dedicated lab group makes the eventual deletion scope easier to identify.</dd></div>
+<div><dt>Project</dt><dd>The Foundry workspace for your Agents, data, and evaluations. Stay in the same project throughout the lab.</dd></div>
+<div><dt>Model</dt><dd>The AI that generates answers. Deploying makes a model available to call; the deployment name identifies that callable deployment.</dd></div>
+<div><dt>Role / Scope</dt><dd>A role defines allowed actions; its scope defines where they apply. Signing in does not automatically grant creation, evaluation, and deletion access.</dd></div>
+</dl>
+</div>
+
 <h3 id="setup-account">Confirm your Azure account and subscription</h3>
 <ol>
-<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a>. If you do not have an account, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Azure account instructions</a> to obtain your own or an organization-provided account. For an organization account, first request access to the approved subscription.</li>
+<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a> with <strong>your own account assigned for this lab</strong>. A prepared class does not require creating another account or subscription. Only if you have no account, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Azure account instructions</a>; request approved subscription access for an organization account.</li>
 <li>Search for <strong>Subscriptions</strong> in the top search box and open the intended subscription. Confirm portal status <strong>Active</strong> and record its <strong>Subscription ID</strong> and <strong>Directory/Tenant ID</strong>. The CLI describes the same usable subscription as <strong>Enabled</strong>. If it is missing, check directory and subscription filters under your account.</li>
-<li>Open <strong>Access control (IAM) → Check access</strong> and inspect your assignments. Older UI versions may label this <strong>View my access</strong>. Automated setup requires both resource creation and role-assignment permissions. Contributor alone does not grant role-assignment authority. See <a href="admin.html#rbac">required access and administrator requests</a>.</li>
+<li>Open the permissions menu <strong>Access control (IAM) → Check access</strong> and inspect your role and scope. Older UI versions may label this <strong>View my access</strong>. The person creating the environment needs both resource-creation and role-assignment authority. Participants using a prepared environment do not need those same creation privileges. See <a href="admin.html#rbac">access by responsibility</a>.</li>
 <li>Agree on a budget, end time, and cleanup owner. Do not create resources without subscription access and cost authorization. Do not grant new subscription-wide Owner access or disable organizational security controls as a shortcut.</li>
 </ol>
 <figure class="portal-shot" id="portal-subscription-overview" data-capture-scope="shared">
@@ -219,13 +227,18 @@
 </figure>
 
 <h3 id="setup-local">Install tools and download the lab</h3>
-<p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>. Use a <strong>macOS/Linux terminal or Windows PowerShell</strong>, not the interactive Python prompt. Open a new terminal after installation.</p>
-<pre><code class="language-bash">git --version
+<p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>. Python runs the supplied programs, Git downloads the lab, and Azure CLI provides the <code>az</code> sign-in/query commands. Request administrator help if your work computer restricts installation.</p>
+<p>Open a <strong>new terminal</strong> after installation. Search for <strong>PowerShell</strong> in Windows Start, <strong>Terminal</strong> in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Azure Portal's Cloud Shell or the Python prompt showing <code>&gt;&gt;&gt;</code>.</p>
+<p><strong>Reading commands:</strong> Run <strong>one command at a time</strong> and wait for it to finish. A long command can wrap across screen/PDF lines; do not insert a line break within that command.</p>
+<p>Copy buttons copy the <strong>whole block</strong>. If it contains several commands, paste into an editor first and run them individually. Replace <code>YOUR_...</code> with your value, preserving the surrounding double quotes.</p>
+<p>Blocks labeled <code>Shared terminal</code> work in both environments; run only your own OS's <code>macOS/Linux</code> or <code>PowerShell</code> blocks. <strong>Stop at an error instead of running the next command</strong>, and use that step's troubleshooting link.</p>
+<pre><code class="language-sh">git --version
 az version
 git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 </code></pre>
 <p>If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub <strong>Code → Download ZIP</strong>, extract the archive first and open the folder containing <code>pyproject.toml</code> and <code>requirements.lock</code>. Downloading only an HTML file omits the code, data, and images.</p>
+<p>Run subsequent commands from the <strong>lab folder containing <code>pyproject.toml</code> and <code>requirements.lock</code></strong>. <code>.venv</code> is an isolated Python package environment for this lab. Check that the first command below reports Python 3.11–3.14 before running the remaining lines.</p>
 <p><strong>On macOS/Linux, run:</strong></p>
 <pre><code class="language-bash">python3 --version
 python3 -m venv .venv
@@ -238,13 +251,14 @@ py -3 -m venv .venv
 </code></pre>
 <p>If PowerShell policy blocks activation, do not change organizational policy. Replace <code>python</code> in subsequent commands with <code>.\.venv\Scripts\python.exe</code>. If <code>.venv</code> already exists, confirm that it belongs to this lab rather than overwriting another task's environment.</p>
 <p><strong>After preparing the virtual environment, run these shared commands:</strong></p>
-<pre><code class="language-bash">python -m pip install -r requirements.lock
+<pre><code class="language-sh">python -m pip install -r requirements.lock
 python -m lab --help
 python scripts/build_datasets.py --language en --check
 </code></pre>
 <p>Confirm that the command list appears and the dataset check succeeds. For <code>ModuleNotFoundError</code>, use <code>python -m pip --version</code> to check that Python and pip belong to <code>.venv</code>. Do not install packages into an unrelated system interpreter.</p>
 <h3 id="setup-login">Pin the CLI identity and lab language</h3>
-<pre><code class="language-bash">az login
+<p>First replace <code>YOUR_SUBSCRIPTION_ID</code> below with the subscription ID you recorded. Sign in with <strong>the same account</strong> in the browser opened by <code>az login</code>, then return to the terminal.</p>
+<pre><code class="language-sh">az login
 az account list --query &quot;[].{name:name,id:id,state:state}&quot; -o table
 az account set --subscription &quot;YOUR_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
@@ -260,7 +274,8 @@ export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-en/artifacts&quot;
 $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifacts&quot;
 </code></pre>
 <p>Repeat virtual-environment activation and these two settings in each new terminal. Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder. The generated <code>.env</code> is configuration, not a shell or PowerShell script; do not execute or <code>source</code> it.</p>
-<p><strong>Completion criteria:</strong> The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
+<p class="note"><strong>Prepared environment:</strong> Agree on your responsibilities using the <a href="admin.html#handoff">handoff</a>. If command-line/Python access has not been configured for your own account, the operator performs setup in 02–03, ID lookup in 06, and commands in 09, then supplies the results. Do not copy the operator's <code>.env</code> or sign-in session.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Foundry environment →</a></p>
 
 <h2 id="resources">02. Create the Foundry environment</h2>
@@ -271,18 +286,44 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 <p><strong>How · where:</strong> Plan, authorize, and provision from the terminal, then compare both portals with the outputs. Reuse a prepared environment instead of creating duplicates.</p>
 </div>
 
-<pre><code class="language-text">Azure subscription
-└─ Dedicated lab resource group
-   ├─ Foundry resource
-   │  ├─ Four role-specific model deployments
-   │  └─ Project → Agent, evaluations, data
-   ├─ Azure AI Search → read-only Contoso policy retrieval
-   └─ Application Insights + Log Analytics → monitoring and logs
-</code></pre>
-<p>A project is the workspace containing Agents and evaluations. A model name identifies the product; a <strong>deployment name identifies the model instance your environment calls</strong>. The project endpoint and Azure OpenAI endpoint are not interchangeable.</p>
+<p class="note"><strong>Do not run creation commands for an already prepared environment.</strong> Compare the hierarchy below, actual portal values, and completion evidence for 02–03 with the handoff, then continue at <a href="#start">04</a>.</p>
+<figure class="concept-flow" id="resource-map" aria-label="Containment from Azure subscription to Foundry project">
+<ol>
+<li><strong>Azure subscription</strong><span>Usage and billing</span></li>
+<li><strong>Resource group</strong><span>This lab's resources</span></li>
+<li><strong>Foundry resource</strong><span>AI service and deployments</span></li>
+<li><strong>Project</strong><span>Agents, data, evaluations</span></li>
+</ol>
+<figcaption>Each item contains the next. The same lab group also contains <strong>Azure AI Search</strong> for policy retrieval and <strong>Application Insights / Log Analytics</strong> for execution records.</figcaption>
+</figure>
+
+<p>An <strong>endpoint</strong> is the address a program uses to connect to a service. Use the project's <strong>Project endpoint</strong> for this lab, not the adjacent Azure OpenAI endpoint.</p>
 <h3 id="resources-plan">Create a local provisioning plan</h3>
-<p>Insert the three identity values from 01. This command creates only a plan and unapproved authorization example under <code>.lab/lab-en/</code>; it makes no Azure calls.</p>
-<pre><code class="language-bash">python -m lab bootstrap plan --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --tenant &quot;YOUR_TENANT_ID&quot; --expected-user &quot;YOUR_SIGN_IN_NAME&quot; --environment lab-en --location northcentralus
+<p>Replace the placeholders with the values recorded in 01. An <strong>ID identifies a resource; it is not its display name</strong>. Do not enter a subscription name in an ID field.</p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Your value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>YOUR_SUBSCRIPTION_ID</code></td>
+<td><code>subscription</code> from <code>az account show</code></td>
+</tr>
+<tr>
+<td><code>YOUR_TENANT_ID</code></td>
+<td><code>tenant</code> from the same output</td>
+</tr>
+<tr>
+<td><code>YOUR_SIGN_IN_NAME</code></td>
+<td><code>user</code> from the same output</td>
+</tr>
+</tbody>
+</table>
+<p>This command writes only a plan and unapproved authorization example under <code>.lab/lab-en/</code> on your computer; it does not call Azure.</p>
+<pre><code class="language-sh">python -m lab bootstrap plan --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --tenant &quot;YOUR_TENANT_ID&quot; --expected-user &quot;YOUR_SIGN_IN_NAME&quot; --environment lab-en --location northcentralus
 </code></pre>
 <p>Confirm <code>plan_status: CREATED_LOCAL_ONLY</code>, <code>mutations_performed: false</code>, and <code>config_path</code>. <code>BLOCKED_AWAITING_APPROVAL</code> means that spending is not yet authorized, not that Azure provisioning failed or completed.</p>
 <table>
@@ -311,18 +352,20 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 </tr>
 </tbody>
 </table>
-<p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-small</code>. Check the exact versions, SKUs, and capacity units in the <a href="admin.html#prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
+<p>Use your text editor's <strong>Open file</strong> action to inspect these files. <code>.lab</code> stores lab records and may appear as a hidden folder. JSON stores settings as name/value pairs. Do not convert these files to Word documents or change their extensions.</p>
+<p>The model roles are <strong>answer generation (Agent), scoring (Judge), instruction suggestions/search planning (Optimizer/planner), and numerical representations for search (embedding)</strong>. You do not develop a new model in this lab.</p>
+<p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-small</code>. Check the exact versions, SKUs (deployment types), and capacity units in the <a href="admin.html#prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
 <h3 id="resources-approval">Check readiness and obtain cost authorization</h3>
-<pre><code class="language-bash">python -m lab bootstrap preflight --config .lab/lab-en/config.json
+<pre><code class="language-sh">python -m lab bootstrap preflight --config .lab/lab-en/config.json
 </code></pre>
-<p>Look for <code>readiness_status: READY</code>. If access, provider registration, model version, quota, or capacity is blocked, read <code>reason</code> and follow <a href="troubleshooting.html#provisioning">provisioning troubleshooting</a>. Without an approval file, the overall status can still await approval even when readiness is READY. Do not keep creating new environments or switching regions.</p>
+<p><strong>Preflight checks readiness before execution.</strong> Look for <code>readiness_status: READY</code>. Quota is your subscription's allowed usage; capacity is actual availability in a region. If blocked, read <code>reason</code> and follow <a href="troubleshooting.html#provisioning">provisioning troubleshooting</a>. Without an approval file, the overall status can still await approval even when readiness is READY. Do not keep creating new environments or switching regions.</p>
 <p>The actual budget owner opens <code>.lab/lab-en/approval.example.json</code> in an editor and uses <strong>Save As</strong> to create <code>.lab/lab-en/approval.json</code>. Keep the original <code>scope_sha256</code>, <code>models</code>, and <code>retention_days</code>. Complete <strong>every field in the <a href="admin.html#approval">approval worksheet</a></strong> according to the real authorization, including approver, currently valid timestamps, currency/budget, wait/hosting bounds, and resource/RBAC/global-processing consent.</p>
 <p>Changing only <code>approved</code> to <code>true</code> is insufficient. The budget value is not an Azure spending cutoff, and a documentation example is not spending authorization.</p>
-<pre><code class="language-bash">python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+<pre><code class="language-sh">python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
 <p><strong>Proceed only when both <code>readiness_status: READY</code> and <code>status: READY_FOR_APPROVED_APPLY</code> are present.</strong></p>
 <h3 id="resources-create">Provision and confirm the resources in the portal</h3>
-<pre><code class="language-bash">python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+<pre><code class="language-sh">python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
 <p>The first command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second <code>apply</code> in another terminal. Confirm <strong>APPLIED</strong>, a generated <code>.lab/lab-en/.env</code>, and <code>status</code> showing <code>phase: succeeded</code> with the expected resources present. After a timeout, inspect <code>status</code> first and follow the <a href="troubleshooting.html#provisioning">resume procedure</a>.</p>
@@ -347,9 +390,9 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <figcaption><strong>Check the project and endpoint.</strong> Compare the upper-left project name and <strong>Project endpoint</strong> with your configuration. Do not substitute Azure OpenAI endpoint. Open the model list through View deployments. <a href="../web/assets/portal/en/25-project-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env preflight
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env preflight
 </code></pre>
-<p><strong>Completion criteria:</strong> Runtime preflight reports <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Runtime preflight reports <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
 
 <h2 id="agent">03. Connect policies and create the Agent</h2>
@@ -361,12 +404,19 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 </div>
 
 <h3 id="agent-knowledge">Verify the model and policy retrieval</h3>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
-python -m lab --config .lab/lab-en/.env iq prepare --confirm
-python -m lab --config .lab/lab-en/.env iq probe --confirm
+<p class="note warning"><strong>These three commands perform actual uploads/model calls and can incur charges.</strong> For a prepared environment, obtain the operator's verified results instead of repeating them. When preparing your own environment, check each result before continuing.</p>
+<p><strong>1. Verify that the model responds.</strong> <code>smoke</code> is a short functional check.</p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 </code></pre>
-<p>The first command obtains a real model response. The second prepares the <a href="../data/en/knowledge/documents.json">eight synthetic policies</a>, embeddings, search index, knowledge base, and project MCP connection. The third performs actual retrieval.</p>
-<p>Confirm smoke <code>status: completed</code>, knowledge setup <code>uploaded_documents: 8</code>, and retrieval <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only, not successful retrieval. If Search is not ready, preserve the records and follow <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>.</p>
+<p>Confirm <strong><code>status: completed</code></strong> in the output.</p>
+<p><strong>2. Prepare policy retrieval.</strong> Upload the <a href="../data/en/knowledge/documents.json">eight supplied synthetic policies</a> to the search service.</p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env iq prepare --confirm
+</code></pre>
+<p>Confirm <strong><code>uploaded_documents: 8</code></strong>. The program prepares a search index (searchable documents), a knowledge base, and an MCP connection through which the Agent calls retrieval. You do not need to edit the implementation.</p>
+<p><strong>3. Verify that a query retrieves policies.</strong></p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env iq probe --confirm
+</code></pre>
+<p>Confirm <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only. If an error occurs, preserve the records and follow <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>.</p>
 <p>In the portal, open <strong>Build → Knowledge → Knowledge bases</strong> and inspect Connection, the created knowledge base, and Knowledge sources. One knowledge-base row does not mean there is only one policy document.</p>
 <figure class="portal-shot" id="portal-policy-connection">
 <img src="../web/assets/portal/en/26-knowledge-base.png" alt="Knowledge Foundry IQ page with Connection, knowledge-base name, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
@@ -374,9 +424,9 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </figure>
 
 <h3 id="agent-create">Create v1 with the fixed comparison configuration</h3>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>
-<p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using <code>prompts/en/baseline.txt</code>, the verified policy tool, and strict four-field JSON output. Record <code>agent_name</code>, <code>version</code>, and <code>receipt</code>. The command reuses an identical v1 in the same owned workspace; it does not adopt an unrelated same-named Agent or create v3.</p>
+<p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using the instructions in <code>prompts/en/baseline.txt</code> and the verified policy tool. Record <code>agent_name</code>, <code>version</code>, and <code>receipt</code>. A <strong>receipt is a file recording the operation's result</strong>. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3.</p>
 <figure class="portal-shot" id="portal-agent-configuration">
 <img src="../web/assets/portal/en/27-agent-configuration.png" alt="Agent Playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <a href="../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
@@ -386,8 +436,35 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <blockquote>
 <p>I first purchased a monthly subscription in September 2026. What are the refund application conditions?</p>
 </blockquote>
-<p>Check for <code>answer</code>, <code>citations</code>, <code>route</code>, and <code>needs_human</code>. Inspect the execution details for a real <strong><code>knowledge_base_retrieve</code> call and response</strong>. Compare <code>ATLAS-*</code> policy IDs with the answer's evidence. Direct retrieval can succeed while the Agent fails because its managed identity has different access.</p>
-<p><strong>Completion criteria:</strong> Your pinned v1 answers a real question and uses the policy tool. Connection success or valid JSON alone is not measured quality. Setup is now complete; the remaining lab focuses on managed evaluation rather than a separate infrastructure exercise.</p>
+<p>The reply is <strong>JSON with four fields</strong>, not just a chat sentence. Braces and quotation marks are expected, not an error.</p>
+<table>
+<thead>
+<tr>
+<th>Response field</th>
+<th>How to read it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>answer</code></td>
+<td>The English answer intended for the user</td>
+</tr>
+<tr>
+<td><code>citations</code></td>
+<td>Supporting <code>ATLAS-*</code> policy IDs</td>
+</tr>
+<tr>
+<td><code>route</code></td>
+<td><code>answer</code>, <code>clarify</code> (ask a follow-up), <code>escalate</code> (hand off to a person), or <code>refuse</code></td>
+</tr>
+<tr>
+<td><code>needs_human</code></td>
+<td><code>true</code> or <code>false</code>; it is <code>true</code> only when <code>route</code> is <code>escalate</code></td>
+</tr>
+</tbody>
+</table>
+<p>Inspect execution details for a real <strong><code>knowledge_base_retrieve</code> call and response</strong>, then compare policy IDs with the answer's evidence. A <strong>managed identity is the Azure service's identity</strong>, not your signed-in user. Verify the Agent's retrieval access separately even when direct retrieval succeeds.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Your pinned v1 answers a real question and uses the policy tool. Connection success or valid JSON alone is not measured quality. Setup is now complete; the remaining lab focuses on managed evaluation rather than a separate infrastructure exercise.</p>
 <p class="step-next no-print"><a href="#start" data-next-step>Next: 04. Register the dataset →</a></p>
 
 <h2 id="start">04. Register the dataset</h2>
@@ -398,10 +475,12 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Check count/hash in the terminal, then register the original file or reuse its exact version in the Foundry evaluation wizard.</p>
 </div>
 
-<p>Use <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong> unchanged: <strong>12 JSONL rows</strong>. JSONL contains one JSON object per line. Do not convert it to Excel, CSV, or a JSON array.</p>
-<pre><code class="language-bash">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
+<p class="wizard-context" data-wizard-step="1"><strong>Part 1 of the same evaluation wizard.</strong> 04 selects data → 05 sets scoring criteria → 06 submits. Do not select Submit yet.</p>
+
+<p>A <strong>dataset is the collection of test questions</strong>. Use <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong>: <strong>12 JSONL rows</strong>, called <strong>dev12</strong> for short. Each line is one test case in JSON format. Do not edit it or convert it to Excel, CSV, or a JSON array.</p>
+<pre><code class="language-sh">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
 </code></pre>
-<p>Record <code>rows = 12</code> and SHA-256. Use the same file and registered version for the baseline, optimization, and reevaluation.</p>
+<p>Record <code>rows = 12</code> and SHA-256 in your private notes. The <strong>SHA-256 hash is a fingerprint of the file's contents</strong>, used to confirm the file has not changed. Copy the output; you do not need to memorize or type it manually.</p>
 <table>
 <thead>
 <tr>
@@ -428,16 +507,31 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tr>
 </tbody>
 </table>
-<p>Record all 12 rows, the registration/version and file SHA-256. Keep the bytes identical through baseline, optimization and reevaluation. The source has other reserved subsets; they are not part of this workshop.</p>
-<p>The Agent returns exactly <code>answer</code>, <code>citations</code>, <code>route</code>, <code>needs_human</code>. <code>answer</code> is English, citations are supporting policy IDs, route is <code>answer/clarify/escalate/refuse</code>, and the Boolean <code>needs_human</code> is true only for <code>escalate</code>. The Agent cannot actually submit, refund, delete or grant access.</p>
-<p>Open <strong>Foundry New experience → Build → Evaluations → Create → Create new evaluation</strong>. Select target type <strong>Agent → <code>lab-en-iq</code></strong>, pin the baseline explicitly to <strong>v1</strong>, and confirm one checked target. <strong>Pin currently latest</strong> is safe only while latest really is v1; selecting it can clear the checkbox.</p>
-<p>Choose <strong>Individual turns</strong> and <strong>One time</strong>. In a new project, select <strong>Upload new dataset → Browse</strong>, then the repository's <code>data/en/optimizer/dev.jsonl</code>. Name it <strong><code>lab-en-dev12</code></strong>, use first version <strong><code>1</code></strong>, and wait for upload/registration to finish. If already registered, use <strong>Existing dataset</strong> and select that same name/version. The preview may show five rows; the dataset still has 12.</p>
+<p>Only the question reaches the Agent. <code>context</code> and <code>ground_truth</code> support compatible evaluators and human case review. The other supplied dataset files are outside this required lab.</p>
+<figure class="concept-flow" id="evaluation-flow" aria-label="Flow from the question to the response and its scoring">
+<ol>
+<li><strong>Question · query</strong><span>One dataset row at a time</span></li>
+<li><strong>Agent</strong><span>Model + instructions + retrieval</span></li>
+<li><strong>Actual response</strong><span>answer and three other fields</span></li>
+<li><strong>Evaluators + Judge</strong><span>Scores and reasons</span></li>
+</ol>
+<figcaption>The Agent searches policies through its tool. Do not append the dataset's reference answer to the Agent input. The Agent only advises; it cannot actually refund, submit, delete, or grant access.</figcaption>
+</figure>
+
+<p><strong>In Foundry, follow these actions.</strong> If the operator supplied different names, use the handoff values instead of the example names below.</p>
+<ol>
+<li>Open <strong>Build → Evaluations → Create → Create new evaluation</strong>. Some layouts label the same menu <strong>Evaluation</strong>, singular.</li>
+<li>Select target type <strong>Agent</strong>, <strong><code>lab-en-iq</code></strong>, and version <strong>1</strong>. Use <strong>Pin currently latest</strong> only while latest really is version 1. If changing the version clears its checkbox, check it again and confirm <strong>one selected target</strong>.</li>
+<li>Select <strong>Individual turns</strong> (evaluate each response) and <strong>One time</strong> (not recurring). Do not select Synthetic data to generate new questions.</li>
+<li>Select <strong>Upload new dataset → Browse</strong>, then choose <code>data/en/optimizer/dev.jsonl</code> <strong>inside your computer's lab folder</strong>. Name it <strong><code>lab-en-dev12</code></strong>, use first version <strong><code>1</code></strong>, and wait for registration. If it already exists, select the same name/version under <strong>Existing dataset</strong>.</li>
+<li>Verify <code>query</code>, <code>context</code>, and <code>ground_truth</code>. A <strong>five-row preview is not the dataset total</strong>; the original contains 12. Record its name/version and continue to 05 in this same wizard.</li>
+</ol>
 <figure class="portal-shot" id="portal-evaluation-dataset">
 <img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Foundry evaluation dataset selection and preview of query, context, and ground_truth columns." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Select the English dataset.</strong> Confirm the registration name/version and the query, context, and ground_truth columns. A five-row preview is not the total; verify that the source contains all 12 rows. <a href="../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p><strong>Completion criteria:</strong> The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. <a href="data-guide.html#schema">Data contract</a>.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. <a href="data-guide.html#schema">Data contract</a>.</p>
 <p class="step-next no-print"><a href="#prepare" data-next-step>Next: 05. Select evaluation criteria →</a></p>
 
 <h2 id="prepare">05. Select evaluation criteria</h2>
@@ -448,8 +542,15 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Open each evaluator's settings in Foundry Criteria and confirm the threshold and Judge. Send only query to the Agent.</p>
 </div>
 
-<p>In <strong>Configure agents</strong>, leave the custom prompt override unset. Input is <strong><code>{{item.query}}</code> only</strong>; never append <code>context</code> or <code>ground_truth</code>. If field mapping appears, use query → query.</p>
-<p>Retain exactly these two managed evaluators:</p>
+<p class="wizard-context" data-wizard-step="2"><strong>Part 2 of the same evaluation wizard.</strong> Continue from the screen left open in 04. Do not create another evaluation or select Submit yet.</p>
+
+<p>An <strong>evaluator defines what to score</strong>; the <strong>Judge is the AI model doing the scoring</strong>. <strong>Managed evaluation</strong> means Foundry runs the evaluation and manages its results, rather than your computer doing the scoring.</p>
+<ol>
+<li>In <strong>Configure agents</strong>, leave the custom prompt override unset. Use <strong><code>{{item.query}}</code> only</strong> as user input. This template inserts each row's question: <strong>keep the braces and text unchanged</strong>, rather than replacing them with your own question or reference answer.</li>
+<li>If field mapping appears, connect the input <code>query</code> to the dataset's <code>query</code> column. Mapping pairs <strong>an input field with a data column</strong>. Do not append <code>context</code> or <code>ground_truth</code> to the Agent input.</li>
+<li>In <strong>Criteria → Add evaluators</strong>, retain only the two evaluators below and remove other defaults. TaskAdherence can also appear as <strong>Task Adherence</strong>.</li>
+<li>Open each evaluator's settings, set its pass rule below, and select <strong>Apply</strong>. Under <strong>Evaluation model/Judge</strong>, select the <strong>deployment name identified by <code>JUDGE_DEPLOYMENT</code></strong> in your <code>.env</code> or handoff.</li>
+</ol>
 <table>
 <thead>
 <tr>
@@ -462,17 +563,16 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <tr>
 <td>Relevance</td>
 <td>Addresses the question, <strong>1–5</strong></td>
-<td><strong>Threshold 4</strong></td>
+<td><strong>Threshold 4</strong>: 4–5 pass; 1–3 fail</td>
 </tr>
 <tr>
 <td>TaskAdherence</td>
 <td>Follows the task, <strong>binary 0/1 Pass/Fail</strong></td>
-<td><strong>Pass 1</strong>, not threshold 4</td>
+<td><strong>Pass 1</strong>, fail 0; not threshold 4</td>
 </tr>
 </tbody>
 </table>
-<p>In <strong>Criteria → Add evaluators</strong>, select the two evaluators. Open each row's settings, enter its threshold, and select <strong>Apply</strong>. For <strong>Evaluation model/Judge</strong>, select the deployment named by <code>JUDGE_DEPLOYMENT</code> in your <code>.env</code>, not the Agent or Optimizer deployment.</p>
-<p>Preserve service-generated mappings: Relevance <code>response={{sample.output_text}}</code>; TaskAdherence <code>response={{sample.output_items}}</code>. Read the definition's Raw JSON rather than substituting old UI bindings.</p>
+<p>Preserve the service-generated <code>response</code> mappings. If a response field is <strong>Unassigned</strong>, or the prepared Judge is missing, request the <a href="admin.html#evaluation-mapping">operator mapping check</a> instead of guessing a value.</p>
 <table>
 <thead>
 <tr>
@@ -505,7 +605,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence pass 1. Select the Judge deployment named by your <code>JUDGE_DEPLOYMENT</code> setting. <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p><strong>Completion criteria:</strong> The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.</p>
 <p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run Foundry Evaluation →</a></p>
 
 <h2 id="baseline">06. Run Foundry Evaluation</h2>
@@ -515,19 +615,48 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Review and submit once in Foundry, inspect all 12 items, and use read-only terminal lookup to record the actual evaluation and run IDs.</p>
 </div>
 
-<p>Review <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>. Name the new evaluation <strong><code>lab-en-learning-loop</code></strong> and, if a run-name field is available, name the baseline <strong><code>baseline-v1</code></strong>. In a prepared class, use the operator's names. If the baseline run already completed, use its results rather than submitting it again.</p>
-<p>For a new authorized class, <strong>Review → Submit</strong> once. Keep the actual evaluation ID and run ID. Wait for completion and account for all 12 cases, including errors or missing results. A configured draft, HTTP creation receipt or successful model smoke is not a completed evaluation.</p>
+<p class="wizard-context" data-wizard-step="3"><strong>Part 3 of the same evaluation wizard.</strong> Review the settings from 04–05 and select Submit once here. Submission incurs real model-call costs.</p>
+
+<p>An <strong>evaluation is the saved configuration</strong>; a <strong>run is one execution of it</strong>. The first v1 run is your <strong>baseline</strong>, the starting point for comparison.</p>
+<ol>
+<li>In <strong>Review</strong>, confirm <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>.</li>
+<li>Name the evaluation <strong><code>lab-en-learning-loop</code></strong> and, if available, name the run <strong><code>baseline-v1</code></strong>. Use handoff names in a prepared class. If the baseline is already completed, open its results instead of submitting again.</li>
+<li>For an authorized job not already submitted, select <strong>Submit</strong> once. The run is complete only after you confirm <strong>Completed and all 12 results</strong>, not immediately after clicking.</li>
+</ol>
 <figure class="portal-shot" id="portal-evaluation-review">
 <img src="../web/assets/portal/en/17-evaluation-review.png" alt="Foundry evaluation Review page for checking Agent, version, dataset, and evaluator settings." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Review before Submit.</strong> Confirm Agent version 1, the same dev12, query-only input, both evaluators, and the Judge. Submit once within the approved scope, then inspect the run status. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p>Open <strong>Evaluations → your evaluation name → Evaluation runs → baseline run</strong>. If Running, refresh that run and wait. If it remains unfinished after 30 minutes, record the state/error and notify the facilitator. Stopping your wait does not cancel the remote job.</p>
+<p>Open <strong>Evaluations → your evaluation name → Evaluation runs → baseline run</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Running / In Progress</td>
+<td>Refresh the same run and wait. Do not submit another.</td>
+</tr>
+<tr>
+<td>Completed</td>
+<td>Check all 12 results and error counts, then continue to 07. This does not mean every answer is correct.</td>
+</tr>
+<tr>
+<td>Failed / Partial, or missing results</td>
+<td>Preserve the error/run ID and use <a href="troubleshooting.html#evaluation">evaluation troubleshooting</a>. Do not mark it complete.</td>
+</tr>
+</tbody>
+</table>
+<p>If it remains unfinished after 30 minutes, record the state/error and notify the facilitator. Stopping your wait does not cancel the remote job.</p>
 <p>Use this <strong>read-only command</strong> to retrieve actual evaluation and run IDs. If you chose a different name, use that exact name with <code>--name</code>.</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 </code></pre>
 <p>Record <code>evaluation_id</code> and the <code>run_id</code> whose <strong><code>agent_version</code> is <code>"1"</code> and <code>status</code> is <code>completed</code></strong>. Evaluation IDs use <code>eval_...</code>; run IDs use <code>evalrun_...</code>. They are not interchangeable. If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. This command submits nothing.</p>
-<p><strong>Completion criteria:</strong> The real Foundry run is Completed and exposes 12 output items. Record failed/error counts in <code>result_counts</code> too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> The real Foundry run is Completed and exposes 12 output items. Record failed/error counts in <code>result_counts</code> too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.</p>
 <p class="step-next no-print"><a href="#analyze" data-next-step>Next: 07. Read scores and reasons →</a></p>
 
 <h2 id="analyze">07. Read scores and reasons</h2>
@@ -538,21 +667,48 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Read Foundry detailed metrics, User view, and the source policy together; record a hypothesis and behaviors to preserve in notes.md.</p>
 </div>
 
-<p>Read summary counts and <strong>Detailed metrics result</strong>, especially <strong><code>Relevance.reason</code></strong> and <strong><code>TaskAdherence.reason</code></strong>. <code>conversation_id → User view</code> opens the actual question/answer, not an inline Judge-reason panel.</p>
-<p>Select a failing or lowest-score case and a good case. Connect <strong>question → actual response → score/reason → policy and parsed reference answer</strong>. If no failure exists, say so; never weaken the baseline to produce one.</p>
+<ol>
+<li>Open the completed baseline run from 06 and read its pass/fail/error counts.</li>
+<li>In <strong>Detailed metrics result</strong>, select a failing or lowest-score row and read <strong><code>Relevance.reason</code></strong> and <strong><code>TaskAdherence.reason</code></strong>. A <code>reason</code> explains why that score was assigned.</li>
+<li>Open the row's <strong><code>conversation_id → User view</code></strong> to read the actual question/answer. Return to detailed metrics for scoring reasons; they are in a different view.</li>
+<li>Find the cited policy ID in the <a href="../data/en/knowledge/documents.json">source policies</a>. Review a good case the same way. If no failure exists, record that fact rather than weakening v1 to create one.</li>
+</ol>
 <figure class="portal-shot" id="portal-evaluation">
 <img src="../web/assets/portal/en/18-evaluation-results.png" alt="Foundry evaluation summary and per-question detailed metrics." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read per-question scores and reasons.</strong> Check pass, fail, and error counts, then open Detailed metrics result for Relevance.reason and TaskAdherence.reason. Inspect individual cases, not only averages. <a href="../web/assets/portal/en/18-evaluation-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p>Relevance 4/5 is not 80% accuracy. TaskAdherence 1 means Pass, not a low five-point score. Missing values are not zeros or successful rows. Generic evaluators do not certify every business rule.</p>
+<p><strong>Illustrative scores, not results from an actual run:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Example scores for one answer</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relevance <strong>3</strong>, TaskAdherence <strong>1</strong></td>
+<td>It followed the task but missed the relevance threshold of 4. It did not pass both criteria.</td>
+</tr>
+<tr>
+<td>Relevance <strong>5</strong>, TaskAdherence <strong>1</strong></td>
+<td>It passed both scoring criteria. A person must still check policy dates, conditions, and citations.</td>
+</tr>
+<tr>
+<td>Missing score</td>
+<td>Check for an evaluation error or missing output. Do not record it as zero or a pass.</td>
+</tr>
+</tbody>
+</table>
 <figure class="portal-shot" id="portal-evaluation-case">
 <img src="../web/assets/portal/en/19-evaluation-case.png" alt="User view showing the question and the Agent&#x27;s JSON response." width="1440" height="340" loading="lazy">
 <figcaption><strong>Compare the response with policy.</strong> Read the question and JSON answer in User view, then check policy dates, conditions, and citations. Return to Detailed metrics result for the reasons; an incorrect response is not a reference answer. <a href="../web/assets/portal/en/19-evaluation-case.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p>Watch for wrong date boundaries, unnecessary assumptions, numeric retrieval IDs instead of document citations, incorrect human routing, invented actions and unsupported certainty. A truthful statement of uncertainty must not be replaced with a fabricated fact to satisfy a Judge.</p>
-<p>Create <code>.lab/lab-en/notes.md</code> in your editor and fill in this worksheet with your own results. Retain full responses and reasons separately; use the worksheet for identifiable runs/cases and concise observations.</p>
+<p>Create <code>.lab/lab-en/notes.md</code> in a text editor and fill in this worksheet with your results. <code>.md</code> is a plain-text note file; create your local lab-record folder first if it does not yet exist. Bring across the values recorded in 01–06. Keep full responses/reasons separately, and use the worksheet for identifiable runs/cases and concise observations.</p>
 <table>
 <thead>
 <tr>
@@ -585,7 +741,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </table>
 <p class="share-checkpoint" id="share-baseline"><strong>Discuss:</strong> State the run ID, each metric's scale/pass count, a concrete problematic answer and the instruction behavior you want to improve.</p>
 
-<p><strong>Completion criteria:</strong> You can explain a real weakness and a supported improvement hypothesis, not just an average.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Use an actual case to explain what you intend to change, or why you would retain the current instructions. An average score alone is insufficient.</p>
 <p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
 
 <h2 id="optimize">08. Improve instructions with Agent Optimizer</h2>
@@ -596,7 +752,12 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Run Instruction only in Foundry and inspect View changes. Save complete reviewed instructions and their actual provenance privately.</p>
 </div>
 
-<p>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize → Agent</strong>, not Cost. For a new job, select <strong>Create an optimization run</strong> or <strong>Create optimization run</strong>. If preview access or model support differs in your subscription, see <a href="troubleshooting.html#optimizer">Optimizer troubleshooting</a>.</p>
+<p><strong>Agent Optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
+<ol>
+<li>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize</strong>.</li>
+<li>Select <strong>Agent</strong>, not <strong>Cost</strong>, which optimizes a different concern.</li>
+<li>Select <strong>Create an optimization run / Create optimization run</strong> and use the settings below. Preview means a pre-release feature. If the menu or model is unavailable, stop and follow <a href="troubleshooting.html#optimizer">Optimizer troubleshooting</a>.</li>
+</ol>
 <table>
 <thead>
 <tr>
@@ -611,7 +772,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tr>
 <tr>
 <td>Choose targets</td>
-<td><strong>Instruction only</strong>; Model and Tool description off</td>
+<td><strong>Instruction only</strong> (change instructions); Model and Tool description off</td>
 </tr>
 <tr>
 <td>Max candidates</td>
@@ -658,11 +819,18 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <figcaption><strong>Read the instruction changes.</strong> Use View changes to identify which response behaviors change. Reject invented policy, unsupported certainty, and non-instruction configuration changes; assess content and effect rather than length. <a href="../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p><strong>Bring the candidate into the next step.</strong> Select it in the result and copy the complete revised instructions from <strong>View changes</strong>. Save them as UTF-8 plain text in <code>.lab/lab-en/candidate.txt</code>. Do not include diff <code>+</code>/<code>-</code> markers, UI explanations, or scores. Record any manual edits and their reasons in <code>notes.md</code>. Use this saved file in the next step, not the repository's <code>prompts/en/candidate.txt</code>.</p>
+<p><strong>Save a candidate only after reviewing it.</strong></p>
+<ol>
+<li>Select the candidate and inspect <strong>View changes</strong>. Reject instructions that invent policy or unsupported certainty.</li>
+<li>Copy the <strong>complete revised instructions</strong>. If the view shows only changed lines, ask the operator to confirm the full text rather than using those fragments as the instruction file.</li>
+<li>Save <strong>UTF-8 plain text</strong> to <code>.lab/lab-en/candidate.txt</code>. Do not use Word/rich text; check that the name is not <code>candidate.txt.txt</code>. Exclude diff (change comparison) <code>+</code>/<code>-</code> markers, UI explanations, and scores.</li>
+<li>Record real job/candidate IDs and any manual edits/reasons in <code>notes.md</code>. Use this file next, not the repository's <code>prompts/en/candidate.txt</code>.</li>
+</ol>
 <p><strong>Do not continually create v3, v4 and later releases.</strong> Use the next step's CLI to create one v2 for comparison, so <strong>do not use both Promote candidate and the CLI creation command</strong>. Creating a version is separate from publishing it or approving activation.</p>
 <p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Present the reviewed candidate and explain the changed behaviors, expected improvements, and possible regressions.</p>
 
-<p><strong>Completion criteria:</strong> Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.</p>
+<p><strong>Next path:</strong> With a reviewed candidate file, continue to <a href="#decision">09 reevaluation</a>. Without one, go to <a href="#cleanup">10 cleanup</a>. Do not create v2 just to have another version.</p>
 <p class="step-next no-print"><a href="#decision" data-next-step>Next: 09. Reevaluate and compare v1/v2 →</a></p>
 
 <h2 id="decision">09. Reevaluate and compare v1/v2</h2>
@@ -673,11 +841,12 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case in Foundry Compare runs. Do not publish to production.</p>
 </div>
 
-<p>Keep the model, tools, dataset, evaluators, and Judge fixed. Create v2 of the same Agent once from your reviewed file and preserve v1.</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
+<p class="note"><strong>For a prepared environment, confirm who runs commands first.</strong> Version creation checks ownership records. If you have no participant-specific configuration and execution records, the owning operator runs these commands. Do not bypass that check by replacing the user name in their configuration. Participants compare the two supplied runs in the portal.</p>
+<p><strong>1. Create v2 from the reviewed instructions.</strong> Keep models, tools, data, evaluators, and Judge fixed, and preserve v1.</p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
 </code></pre>
 <p>Confirm <code>agent_name: lab-en-iq</code> and <code>version: "2"</code>. If a different v2 already exists or the model deployment changed, stop and preserve the original records. A new version alone does not demonstrate improvement.</p>
-<p>Add the candidate run to the <strong>same Foundry evaluation definition</strong>. The Azure AI Projects/OpenAI Evals helper below reuses the baseline dataset and evaluators to run the managed evaluation.</p>
+<p><strong>2. Add a v2 run to the same evaluation configuration.</strong> The helper below is a supplied Python program. It uses the official Azure AI Projects/OpenAI SDK to reuse the baseline's dataset and evaluator settings, rather than creating a different evaluation.</p>
 <table>
 <thead>
 <tr>
@@ -705,11 +874,11 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tbody>
 </table>
 <p>Replace all four values and execute this single-line command. Submitting a new run incurs charges.</p>
-<pre><code class="language-bash">python scripts/add_foundry_eval_run.py --endpoint &quot;YOUR_PROJECT_ENDPOINT&quot; --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
+<pre><code class="language-sh">python scripts/add_foundry_eval_run.py --endpoint &quot;YOUR_PROJECT_ENDPOINT&quot; --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
 </code></pre>
 <p>Confirm <code>status: completed</code> and all 12 cases. If the default 30-minute wait expires, the command returns exit code 2 with Still running. If the receipt contains a run ID, repeat the <strong>identical command and <code>--out</code> path</strong> to collect that run. For an unknown submission without a run ID or an existing remote name, follow <a href="troubleshooting.html#evaluation">duplicate-submission recovery</a>. Do not delete the receipt or rename the run to resubmit.</p>
 <p>The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions.</p>
-<p>In <strong>Evaluation runs</strong>, select both rows and <strong>Compare runs</strong>. Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
+<p><strong>3. Return to Foundry and compare.</strong> In the same evaluation's <strong>Evaluation runs</strong>, select the v1 and v2 rows and <strong>Compare runs</strong>. Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
 <figure class="portal-shot" id="portal-evaluation-comparison">
 <img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Compare runs view showing baseline and candidate scores, means, and statistical results." width="1440" height="520" loading="lazy">
 <figcaption><strong>Confirm the comparison direction and results.</strong> Select v1 as Baseline, then compare scores, pass counts, and statistical results. Inconclusive means a difference was not established; it is not evidence of equivalence. <a href="../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
@@ -719,7 +888,30 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p class="share-checkpoint" id="share-optimized"><strong>Explain the result:</strong> Identify the actual gain, unchanged criteria, any regression, and the remaining uncertainty. Observed improvement is not a guarantee that every future stochastic run will improve.</p>
 
 <p>In <code>notes.md</code>, record v1/v2 pass counts and means per metric, errors, latency/tokens, statistical results, and your decision side by side. If improvement criteria are not met, <strong>retain v1 or hold the decision</strong>. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.</p>
-<p><strong>Completion criteria:</strong> Record the two actual run IDs, complete same-criteria comparison, and the reasons for accepting, retaining, or holding. Do not accumulate release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.</p>
+<p><strong>Latency</strong> is time spent waiting for a response; <strong>tokens</strong> measure the amount of text processed by the model. A small score improvement can come with increased waiting time and cost.</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>When it fits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consider v2 for adoption</td>
+<td>All 12 cases use the same conditions, quality does not regress and at least one measure improves, no policy errors are found, and latency/token tradeoffs were reviewed. Production approval is separate.</td>
+</tr>
+<tr>
+<td>Retain v1</td>
+<td>No improvement, or previously correct behavior got worse. This is a valid learning outcome.</td>
+</tr>
+<tr>
+<td>Hold the decision</td>
+<td>Errors, missing results, or different conditions prevent a fair judgment. Record the missing evidence.</td>
+</tr>
+</tbody>
+</table>
+<p class="completion-check"><strong>Completion criteria:</strong> Record the two actual run IDs, complete same-criteria comparison, and the reasons for accepting, retaining, or holding. Do not accumulate release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.</p>
 <p class="step-next no-print"><a href="#cleanup" data-next-step>Next: 10. Save results and delete resources →</a></p>
 
 <h2 id="cleanup">10. Save results and delete resources</h2>
@@ -761,16 +953,17 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tr>
 </tbody>
 </table>
-<p>For shared resources with local ownership records, first inspect this <strong>plan-only</strong> command:</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env cleanup
+<p><strong>Follow only the path matching your environment.</strong> In a shared environment without your own configuration and local ownership records, hand CLI cleanup to the operator too. Do not copy another person's records to perform deletion.</p>
+<p>For shared resources with your own local ownership records, first inspect this <strong>plan-only</strong> command:</p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env cleanup
 </code></pre>
 <p>Read <code>mode: LOCAL_PLAN_ONLY</code>, <code>actions</code>, <code>never_deleted</code>, and <code>manual_follow_up</code>. Verify names, project, and ownership. Run the following only after obtaining authorization for exactly those deletions. If your environment name differs, use its matching prefix.</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env cleanup --confirm-prefix lab-en
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env cleanup --confirm-prefix lab-en
 </code></pre>
 <p>Confirm <code>OWNED_OBJECTS_ABSENT</code>. This removes recorded Agent versions, search objects, and connections, but <strong>not resource groups, model deployments, Search hosting, logs, or RBAC</strong>. It does not automatically remove every portal-created dataset, evaluation, Optimizer job, Playground conversation, or model-smoke response. Delete authorized items individually in their owning view; if no delete action is offered, hand retention or project cleanup to the operator.</p>
 <h3 id="cleanup-delete">Delete a dedicated group and verify its absence</h3>
 <p>Replace <code>YOUR_LAB_RESOURCE_GROUP</code> with <strong><code>names.resource_group</code></strong> from <code>config.json</code>. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.</p>
-<pre><code class="language-bash">az group show --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;{name:name,location:location,tags:tags}&quot; -o json
+<pre><code class="language-sh">az group show --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;{name:name,location:location,tags:tags}&quot; -o json
 az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-group &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;[].{name:name,type:type}&quot; -o table
 </code></pre>
 <p><strong>Resource-group deletion is irreversible and removes the group's Foundry resources, model deployments, Search, and monitoring together.</strong> After saving evidence and receiving approval for that exact group, choose one method:</p>
@@ -783,14 +976,14 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Verify the group name and every resource. Only after authorization, enter the group name and proceed with Delete. Use Cancel if the target is wrong or deletion is not approved. <a href="../web/assets/portal/en/28-delete-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<pre><code class="language-bash">az group delete --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
+<pre><code class="language-sh">az group delete --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
 </code></pre>
 <p>An accepted request is not completed deletion. Check portal notifications and group status, then verify that this command successfully prints <strong><code>false</code></strong>:</p>
-<pre><code class="language-bash">az group exists --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
+<pre><code class="language-sh">az group exists --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
 </code></pre>
 <p>Authentication or network errors are not <code>false</code> and do not prove deletion. If <code>true</code>, inspect deletion progress. For <strong>Locks</strong>, permissions, or dependencies in other groups, follow <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>. Do not remove organizational locks without authorization.</p>
 <p>Afterward, open <strong>Cost Management → Cost analysis</strong> for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.</p>
-<p><strong>Final completion criteria:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">operator cleanup worksheet</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
+<p class="completion-check"><strong>Final completion criteria:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">operator cleanup worksheet</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

@@ -406,7 +406,9 @@
     toolbar.className = "code-toolbar no-print";
     const language = document.createElement("span");
     language.className = "code-language";
-    language.textContent = (Array.from(code.classList).find((name) => name.startsWith("language-")) || "language-code").slice(9);
+    const syntax = (Array.from(code.classList).find((name) => name.startsWith("language-")) || "language-code").slice(9);
+    const shellLabels = new Map([["sh", "shellShared"], ["bash", "shellBash"], ["powershell", "shellPowerShell"]]);
+    language.textContent = shellLabels.has(syntax) ? t(shellLabels.get(syntax)) : syntax;
     const button = document.createElement("button");
     button.className = "copy-button";
     button.type = "button";

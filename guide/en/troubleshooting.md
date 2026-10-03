@@ -4,6 +4,18 @@
 
 **Start with the blocked step, then follow symptom, cause, resolution, and verification.** Historical Azure measurements, this revision's read-only observations, and local checks are distinct. Documenting a resolution does not establish that a new cloud execution succeeded.
 
+**Blocked right now?** Stop before the next command or Submit, note the error and step, and choose the matching symptom below. Do not use a new name to retry an operation whose creation/submission result is unknown.
+
+| Symptom | Go directly to |
+|---|---|
+| Subscription, project, or Judge is unfamiliar | [Basic terms](handbook.md#basics) · [Agent versus Judge](handbook.md#prepare) |
+| Installation, sign-in, or file-path problem | [Environment and login](#environment) |
+| Authorization, permissions, or model capacity blocks creation | [Provisioning](#provisioning) |
+| Policy retrieval or Agent response fails | [Knowledge and Agent](#knowledge) |
+| Evaluation does not finish, or scores/reasons are missing | [Evaluation and results](#evaluation) |
+| Optimize is unavailable or candidate selection is unclear | [Optimizer](#optimizer) |
+| Deletion fails or costs remain | [Deletion and cost](#cleanup) |
+
 ## Scope and how to use this record {#start}
 
 | Evidence category | Source and limitation |
@@ -115,6 +127,31 @@ Original responses, scores, reasons, and actual run IDs are in the [latest quali
 | Soft-deleted items remain | Follow service-specific retention policy. An authorized owner decides whether separate permanent deletion/purge is necessary. |
 
 Follow the [Azure resource-group deletion documentation](https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group). Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.
+
+## Beginner readability and learning-path improvements {#beginner-review}
+
+On 2026-10-03, the source and web/print learning paths were reviewed for participants with no Azure or Foundry experience. The previous guide had ten steps and illustrations, but sometimes assumed familiarity with terminology, execution responsibilities, and screen transitions.
+
+| Entry barrier | Improvement |
+|---|---|
+| Subscription, tenant, project, and deployment are easily confused | Six basic terms before the first portal actions, plus containment and evaluation-flow diagrams |
+| Installation links jump straight into commands | Tool purpose, OS-specific terminal opening, one-line-at-a-time execution, placeholders, extensions, and working-folder guidance |
+| A prepared environment leaves command identity unclear | Explicit operator/participant responsibilities for 06/09/10 and duplicate-submission prevention for individual/group environments |
+| Steps 04, 05, and 06 look like separate evaluation creations | One wizard marked 1/3, 2/3, 3/3, ordered actions, and one Submit |
+| JSON, hashes, scores, runs, and candidates appear without explanation | Response-field table, file fingerprints, labeled illustrative scores, and ID/candidate definitions |
+| Raw JSON looks mandatory and completion criteria blend into the prose | Linked operator mapping details and ten visually distinct completion checks |
+| The next-step link leads to v2 even without a candidate | Explicit candidate-to-09 / no-candidate-to-10 paths, with retain/hold outcomes |
+
+Both Korean and English were updated. **Policies, questions, reference answers, instructions, models, evaluation conditions, and historical measurements remain unchanged.** This is a documentation/local-presentation revision, not new Azure provisioning, permission changes, paid evaluations, Optimizer runs, or cloud deletion. It does not replace a usability study with first-time participants or a full execution in a new environment.
+
+| Local check | Verified scope |
+|---|---|
+| Documentation/build | All 90 related automated checks passed. Both guides preserve their original executable command text; links, matching sections, ten completion checks, and three wizard notices were checked. |
+| Web layout | Both languages at 320, 390, 768, and 1440px in light/dark themes have no page-level horizontal overflow. Language switching, reading marks, and the mobile menu work. Copy-button content was checked with a test clipboard. JavaScript-disabled reading and unobscured term/diagram links were also checked. |
+| Complete PDF | Both editions retain 20 portal images and pass missing-text, out-of-page text, local-machine-link, and nearly-empty-page checks. The cleanup checklist stays together rather than leaving its final row alone on another page. |
+| Execution limits | Local checks ran on macOS. They do not claim Windows execution or successful deployment, billing, or evaluation in a new Azure environment. |
+
+Official references used: [Foundry overview](https://learn.microsoft.com/azure/foundry/what-is-foundry) and [portal evaluation creation](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app). UI-label guidance was clarified without changing the fixed data or evaluation conditions.
 
 ## Portal illustrations and learning structure {#portal-captures}
 

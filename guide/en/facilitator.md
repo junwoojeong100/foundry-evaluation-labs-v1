@@ -8,6 +8,12 @@ Teach **evaluate → learn → improve → reevaluate** using business-specific 
 
 Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete [handoff](admin-setup.md#handoff) and verified project, Agent, retrieval, and dataset registration.
 
+**Separate environment preparation from learning evaluation in beginner classes.** Prefer operator preparation for 02–03, but still have participants verify their own account, project, and completion evidence. Assign SDK-command responsibility before class; do not distribute the operator's sign-in or ownership records.
+
+Start together with the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Ask participants to explain that **the Agent answers and the Judge scores**, and that **instructions, not model weights, will change**. Do not require memorized terminology or high scores to begin.
+
+Steps 04–06 use one evaluation wizard, not three evaluations. Read one scored example together in 07 before independent analysis. If a group shares an Agent, assign one owner for v2 creation and paid submissions.
+
 New lab Agents use `lab-en-iq` or `lab-ko-iq`. Do not assume the historical `contoso-eval-en-sol` already exists in a new project. Verify [model roles and identity](admin-setup.md#prepare), and reserve time for cleanup in 10.
 
 Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.

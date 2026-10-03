@@ -139,6 +139,13 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn(".guide-content div.hero-summary { display: grid;", self.css)
         self.assertIn(".guide-content .hero-summary > div > strong", self.css)
 
+    def test_beginner_reference_anchors_clear_the_sticky_header(self) -> None:
+        self.assertIn(
+            ".guide-content .concept-primer, .guide-content .concept-flow "
+            "{ scroll-margin-top: calc(var(--header-height) + 1.5rem); }",
+            self.css,
+        )
+
     def test_source_relative_document_links_are_rebased_for_root_html(self) -> None:
         source = (
             "# 링크 검사\n\n## 시작\n\n"

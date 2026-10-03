@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -64,6 +64,7 @@
 </li>
 <li><a href="#optimizer">Agent Optimizer and result interpretation</a></li>
 <li><a href="#cleanup">Deletion and ongoing costs</a></li>
+<li><a href="#beginner-review">Beginner readability and learning-path improvements</a></li>
 <li><a href="#portal-captures">Portal illustrations and learning structure</a></li>
 <li><a href="#verification">Checks from the preceding ten-step revision</a></li>
 </ul>
@@ -118,6 +119,45 @@
         <h1 id="issue-guide">Execution issues and resolutions</h1>
 <p><a href="index.html#setup">Guide from the beginning</a> · <a href="admin.html#approval">Operator authorization and handoff</a> · <a href="verification.html">Actual quality measurements</a></p>
 <p><strong>Start with the blocked step, then follow symptom, cause, resolution, and verification.</strong> Historical Azure measurements, this revision's read-only observations, and local checks are distinct. Documenting a resolution does not establish that a new cloud execution succeeded.</p>
+<p><strong>Blocked right now?</strong> Stop before the next command or Submit, note the error and step, and choose the matching symptom below. Do not use a new name to retry an operation whose creation/submission result is unknown.</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Go directly to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription, project, or Judge is unfamiliar</td>
+<td><a href="index.html#basics">Basic terms</a> · <a href="index.html#prepare">Agent versus Judge</a></td>
+</tr>
+<tr>
+<td>Installation, sign-in, or file-path problem</td>
+<td><a href="#environment">Environment and login</a></td>
+</tr>
+<tr>
+<td>Authorization, permissions, or model capacity blocks creation</td>
+<td><a href="#provisioning">Provisioning</a></td>
+</tr>
+<tr>
+<td>Policy retrieval or Agent response fails</td>
+<td><a href="#knowledge">Knowledge and Agent</a></td>
+</tr>
+<tr>
+<td>Evaluation does not finish, or scores/reasons are missing</td>
+<td><a href="#evaluation">Evaluation and results</a></td>
+</tr>
+<tr>
+<td>Optimize is unavailable or candidate selection is unclear</td>
+<td><a href="#optimizer">Optimizer</a></td>
+</tr>
+<tr>
+<td>Deletion fails or costs remain</td>
+<td><a href="#cleanup">Deletion and cost</a></td>
+</tr>
+</tbody>
+</table>
 <h2 id="start">Scope and how to use this record</h2>
 <table>
 <thead>
@@ -437,6 +477,74 @@
 </tbody>
 </table>
 <p>Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">Azure resource-group deletion documentation</a>. Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.</p>
+<h2 id="beginner-review">Beginner readability and learning-path improvements</h2>
+<p>On 2026-10-03, the source and web/print learning paths were reviewed for participants with no Azure or Foundry experience. The previous guide had ten steps and illustrations, but sometimes assumed familiarity with terminology, execution responsibilities, and screen transitions.</p>
+<table>
+<thead>
+<tr>
+<th>Entry barrier</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription, tenant, project, and deployment are easily confused</td>
+<td>Six basic terms before the first portal actions, plus containment and evaluation-flow diagrams</td>
+</tr>
+<tr>
+<td>Installation links jump straight into commands</td>
+<td>Tool purpose, OS-specific terminal opening, one-line-at-a-time execution, placeholders, extensions, and working-folder guidance</td>
+</tr>
+<tr>
+<td>A prepared environment leaves command identity unclear</td>
+<td>Explicit operator/participant responsibilities for 06/09/10 and duplicate-submission prevention for individual/group environments</td>
+</tr>
+<tr>
+<td>Steps 04, 05, and 06 look like separate evaluation creations</td>
+<td>One wizard marked 1/3, 2/3, 3/3, ordered actions, and one Submit</td>
+</tr>
+<tr>
+<td>JSON, hashes, scores, runs, and candidates appear without explanation</td>
+<td>Response-field table, file fingerprints, labeled illustrative scores, and ID/candidate definitions</td>
+</tr>
+<tr>
+<td>Raw JSON looks mandatory and completion criteria blend into the prose</td>
+<td>Linked operator mapping details and ten visually distinct completion checks</td>
+</tr>
+<tr>
+<td>The next-step link leads to v2 even without a candidate</td>
+<td>Explicit candidate-to-09 / no-candidate-to-10 paths, with retain/hold outcomes</td>
+</tr>
+</tbody>
+</table>
+<p>Both Korean and English were updated. <strong>Policies, questions, reference answers, instructions, models, evaluation conditions, and historical measurements remain unchanged.</strong> This is a documentation/local-presentation revision, not new Azure provisioning, permission changes, paid evaluations, Optimizer runs, or cloud deletion. It does not replace a usability study with first-time participants or a full execution in a new environment.</p>
+<table>
+<thead>
+<tr>
+<th>Local check</th>
+<th>Verified scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Documentation/build</td>
+<td>All 90 related automated checks passed. Both guides preserve their original executable command text; links, matching sections, ten completion checks, and three wizard notices were checked.</td>
+</tr>
+<tr>
+<td>Web layout</td>
+<td>Both languages at 320, 390, 768, and 1440px in light/dark themes have no page-level horizontal overflow. Language switching, reading marks, and the mobile menu work. Copy-button content was checked with a test clipboard. JavaScript-disabled reading and unobscured term/diagram links were also checked.</td>
+</tr>
+<tr>
+<td>Complete PDF</td>
+<td>Both editions retain 20 portal images and pass missing-text, out-of-page text, local-machine-link, and nearly-empty-page checks. The cleanup checklist stays together rather than leaving its final row alone on another page.</td>
+</tr>
+<tr>
+<td>Execution limits</td>
+<td>Local checks ran on macOS. They do not claim Windows execution or successful deployment, billing, or evaluation in a new Azure environment.</td>
+</tr>
+</tbody>
+</table>
+<p>Official references used: <a href="https://learn.microsoft.com/azure/foundry/what-is-foundry">Foundry overview</a> and <a href="https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app">portal evaluation creation</a>. UI-label guidance was clarified without changing the fixed data or evaluation conditions.</p>
 <h2 id="portal-captures">Portal illustrations and learning structure</h2>
 <p>On 2026-10-03, after the user completed login, <strong>Playwright Headless</strong> captured 14 new image files. The temporary login browser and authenticated headless context were closed afterward; authentication state was not exported to a file. Only opaque privacy masks and cropping were applied, without replacing statuses, failure history, or instructions.</p>
 <table>

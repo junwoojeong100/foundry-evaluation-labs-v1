@@ -10,6 +10,8 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 
 Start at 01 for first-time setup. The guide includes Windows PowerShell and macOS/Linux installation/venv commands, where to find input values, authorization fields, actual Agent creation and evaluation-ID lookup, and completion checks. Prepared environments use a handoff rather than duplicate creation.
 
+**New to Azure or Foundry? Read the participant guide first.** It explains accounts, subscriptions, projects, and opening a terminal before using them. Steps 04–06 form one evaluation wizard, with ordered actions, score-reading examples, and visible completion checks. Open operator references only when linked. For beginner groups, prefer operator-prepared environments with explicit command responsibilities.
+
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
 
 **[Execution issues and resolutions](guide/en/troubleshooting.md)** distinguish this revision's read-only checks from historical paid measurements. The results below are not a new Korean execution.

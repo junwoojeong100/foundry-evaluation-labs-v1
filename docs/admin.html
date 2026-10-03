@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -56,7 +56,10 @@
 <li><a href="#start">Distinguish new and prepared environments</a></li>
 <li><a href="#prepare">Verify model roles and actual deployments</a></li>
 <li><a href="#bootstrap">Prepare an executable Agent</a></li>
-<li><a href="#scope">Freeze the comparison conditions</a></li>
+<li><a href="#scope">Freeze the comparison conditions</a><ul>
+<li><a href="#evaluation-mapping">Check evaluation response mappings</a></li>
+</ul>
+</li>
 <li><a href="#approval">Complete the actual authorization file</a></li>
 <li><a href="#rbac">Verify permissions and provider registration</a></li>
 <li><a href="#cost">Costs and operational boundaries</a></li>
@@ -138,6 +141,8 @@
 </tbody>
 </table>
 <p>Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.</p>
+<p><strong>For groups new to Azure and Foundry, operator-prepared environments are recommended.</strong> Participants check their own account/computer in 01, receive completion evidence for 02–03, and continue at 04. Without participant-specific SDK configuration, the operator handles ID lookup in 06, v2 creation/reevaluation commands in 09, and owned-object cleanup in 10. Participants inspect settings/results using their own portal access.</p>
+<p>Use separate environments/Agents for individual labs. For a group sharing one Agent, designate <strong>one person to create v2 and submit paid jobs</strong>. Record that responsibility so several participants do not attempt different v2 releases or duplicate the same evaluation.</p>
 <p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the handoff.</p>
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/en/00-resource-group.png" alt="Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
@@ -240,6 +245,35 @@
 </tbody>
 </table>
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
+<h3 id="evaluation-mapping">Check evaluation response mappings</h3>
+<p>Participants select the <a href="index.html#prepare">two evaluators and Judge in 05</a> and preserve automatic mappings. Reading Raw JSON or guessing SDK fields is not a beginner prerequisite.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Required value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent user input</td>
+<td>Only <code>{{item.query}}</code>; leave the instruction override unset</td>
+</tr>
+<tr>
+<td>Relevance response</td>
+<td><code>response={{sample.output_text}}</code></td>
+</tr>
+<tr>
+<td>TaskAdherence response</td>
+<td><code>response={{sample.output_items}}</code></td>
+</tr>
+<tr>
+<td>Judge/thresholds</td>
+<td>Actual <code>JUDGE_DEPLOYMENT</code>; Relevance 4, TaskAdherence binary pass 1</td>
+</tr>
+</tbody>
+</table>
+<p>If a required field is <strong>Unassigned</strong>, compare the remote definition, target Agent, and data columns. Never map the reference answer as the response or copy old UI bindings. Consult the <a href="https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app">official portal evaluation guide</a> without changing this lab's fixed conditions. The helper in 09 checks the remote contract too and does not suppress errors to submit a run.</p>
 <h2 id="approval">Complete the actual authorization file</h2>
 <p>Open <code>approval.example.json</code> and <strong>Save As approval.json</strong>. This worksheet explains fields; it is not an approved request. Keep the actual organizational authorization private. Use double quotes for JSON strings, but not for numbers, true, false, or null.</p>
 <table>
@@ -372,11 +406,11 @@
 </tr>
 <tr>
 <td>Responsibilities</td>
-<td>Who performs provisioning, SDK operations, portal exercises, cost monitoring, and cleanup</td>
+<td>Owners for provisioning, 06 ID lookup, 09 v2 creation/reevaluation, portal exercises, cost, and cleanup; one paid-submission owner per shared Agent</td>
 </tr>
 <tr>
 <td>Local paths</td>
-<td>Environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code></td>
+<td>Environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code>; distinguish participant-specific configuration and which computer runs commands</td>
 </tr>
 <tr>
 <td>Azure environment</td>
@@ -415,7 +449,7 @@
 <p>Historical results are separate in the <a href="verification.html">verification record</a>. Keep English and Korean source data separate; do not relabel English measurements as a Korean execution.</p>
 <p>Raw service files can contain account metadata, tokens or signed URLs. Keep those local; <strong>the synthetic evaluation results themselves are not secret</strong>. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.</p>
 <h2 id="cleanup">Verify deletion and retention</h2>
-<p>Use <a href="index.html#cleanup">step 10</a> as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.</p>
+<p class="print-with-table">Use <a href="index.html#cleanup">step 10</a> as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.</p>
 <table>
 <thead>
 <tr>
