@@ -183,12 +183,13 @@ def render_markdown(
     link_map: Mapping[str, str] | None = None,
     output_base: str = "",
     language: str = "en",
+    toc_depth: str = "2-3",
 ) -> RenderedMarkdown:
     text = locale(language)["shell"]
     converter = Markdown(
         extensions=["fenced_code", "tables", "toc", "attr_list"],
         extension_configs={
-            "toc": {"slugify": slugify_unicode, "toc_depth": "2-3"},
+            "toc": {"slugify": slugify_unicode, "toc_depth": toc_depth},
         },
         output_format="html5",
     )
@@ -263,13 +264,14 @@ def render_guide(
     language: str = "en",
 ) -> str:
     """Return deterministic UTF-8-ready HTML without reading or writing files."""
+    filename = posixpath.basename(document_id)
+    auxiliary = filename != "index.html"
     rendered = render_markdown(
         markdown_text, relative_base=relative_base, link_map=link_map,
         output_base=output_base, language=language,
+        toc_depth="2-3" if auxiliary else "2-2",
     )
     text = locale(language)["shell"]
-    filename = posixpath.basename(document_id)
-    auxiliary = filename != "index.html"
     chapter_unit = text["CHAPTER_UNIT" if auxiliary else "STEP_UNIT"]
 
     def site_href(filename: str) -> str:

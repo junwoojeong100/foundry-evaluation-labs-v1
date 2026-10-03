@@ -51,14 +51,23 @@ class PageInspector(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.elements: list[tuple[str, dict[str, str | None]]] = []
         self.pre_text: list[str] = []
+        self.toc_links: list[str] = []
+        self._in_toc = False
         self._pre: list[str] | None = None
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        self.elements.append((tag, dict(attrs)))
+        attributes = dict(attrs)
+        self.elements.append((tag, attributes))
+        if tag == "nav" and attributes.get("id") == "chapter-nav":
+            self._in_toc = True
+        if self._in_toc and tag == "a" and attributes.get("href"):
+            self.toc_links.append(attributes["href"])
         if tag == "pre":
             self._pre = []
 
     def handle_endtag(self, tag: str) -> None:
+        if tag == "nav":
+            self._in_toc = False
         if tag == "pre" and self._pre is not None:
             self.pre_text.append("".join(self._pre))
             self._pre = None
@@ -317,6 +326,29 @@ class GuideBuildTests(unittest.TestCase):
             href = attrs.get("href", "") or ""
             if tag == "a" and href.startswith("#"):
                 self.assertIn(unquote(href[1:]), ids, href)
+
+    def test_participant_sidebar_has_only_main_steps_but_preserves_body_subsections(self) -> None:
+        steps = ["#시작하기", "#시작하기_1", "#next-step"]
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            for filename in ("index.html", "admin.html"):
+                with self.subTest(language=language, document=filename):
+                    rendered = build_guide.render_guide(
+                        FIXTURE, self.template, document_id=prefix + filename, language=language,
+                    )
+                    page = PageInspector()
+                    page.feed(rendered)
+                    expected = steps if filename == "index.html" else [steps[0], "#명령-실행", *steps[1:]]
+                    self.assertEqual(page.toc_links, expected)
+                    self.assertIn(("h3", {"id": "명령-실행"}), page.elements)
+                    self.assertEqual(page.pre_text, self.page.pre_text)
+
+    def test_sidebar_depth_does_not_change_body_content_or_anchor_ids(self) -> None:
+        complete = build_guide.render_markdown(FIXTURE)
+        simplified = build_guide.render_markdown(FIXTURE, toc_depth="2-2")
+        self.assertEqual(simplified.content, complete.content)
+        self.assertEqual(simplified.title, complete.title)
+        self.assertIn('href="#명령-실행"', complete.toc)
+        self.assertNotIn('href="#명령-실행"', simplified.toc)
 
     def test_accessible_landmarks_and_control_references(self) -> None:
         elements = {attrs["id"]: (tag, attrs) for tag, attrs in self.page.elements if "id" in attrs}

@@ -60,6 +60,8 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
+Participant sidebars show only the ten main steps. Detailed headings and direct links remain in the body; reference documents keep their own navigation.
+
 Portal pictures are labeled **UI illustrations from earlier captures**, not current Sol measurements. The latest report and its actual run IDs are the measurement source.
 
 Screenshot sets stay language-specific: English uses `web/assets/portal/en/` and Korean uses its lab captures in `web/assets/portal/`. Only language-neutral subscription/access controls share `web/assets/portal/shared/`. Each complete language edition contains **12 previous + 6 new language-specific + 2 shared = 20 screenshots**. The 14 new files were captured on 2026-10-03 with Playwright Headless, using existing resources and empty deletion-confirmation forms without creating, saving, chatting, or confirming deletion. Earlier pictures and measured output remain unchanged.

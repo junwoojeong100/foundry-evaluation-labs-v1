@@ -252,9 +252,7 @@ class DocumentationTests(unittest.TestCase):
                 links = ["#" + step for step in STEPS]
                 self.assertEqual(page.chapters, STEPS)
                 self.assertEqual(page.subchapters, [item for values in SUBSTEPS.values() for item in values])
-                self.assertEqual(page.toc_links, [
-                    "#" + item for step in STEPS for item in [step, *SUBSTEPS.get(step, [])]
-                ])
+                self.assertEqual(page.toc_links, links)
                 self.assertEqual(page.overview_links, links)
                 self.assertEqual(page.next_links, links[1:])
                 self.assertIn('data-progress-revision="end-to-end-10"', (SITE / filename).read_text())
