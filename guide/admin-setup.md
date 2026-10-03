@@ -14,11 +14,11 @@
 
 CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 사용자에게 운영자의 토큰이나 로그인 세션을 넘기지 않습니다. bootstrap에 묶인 생성 명령은 소유 운영자가 실행합니다. 다른 참가자는 본인에게 부여된 포털 권한을 사용하며, SDK를 사용할 경우 본인의 신원에 맞는 별도 설정과 권한이 필요합니다.
 
-새 한국어 예시는 **`lab-ko-iq`**, 영어 예시는 **`lab-en-iq`**입니다. 과거 측정의 `contoso-eval-en-sol`과 `lab-...-dea3cec5` 배포는 참고 이름이지 신규 환경에서 사용할 고정 이름이 아닙니다.
+기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 인수표에 기록합니다.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../web/assets/portal/01-project-overview.png" alt="이전 한국어 실습의 Foundry 프로젝트 홈입니다. 프로젝트 선택과 엔드포인트 위치 예시이며 현재 검증 결과는 아닙니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>한국어 실습 프로젝트 위치 예시입니다.</strong> 이전 프로젝트 홈이며 리소스 그룹 화면이나 현재 v2 결과가 아닙니다. 메뉴는 원래 영문입니다. 실제 프로젝트·리소스 그룹·현재 상태는 운영자 인수 정보로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/01-project-overview.png" alt="Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
+<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 인수표의 값과 대조합니다. 리소스 그룹은 Azure Portal의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## 모델 역할과 실제 배포를 확인합니다 {#prepare}
@@ -32,11 +32,11 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 
 
 숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
 
-과거 Sol 실측은 카탈로그뿐 아니라 Agent·`knowledge_base_retrieve` 호출을 확인했습니다. 신규 환경에서도 [03의 실제 응답 확인](handbook.md#agent)을 수행합니다. Optimizer는 별도 [지원 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로 지원된다고 가정하지 않습니다.
+[03의 실제 응답 확인](handbook.md#agent)으로 Agent와 `knowledge_base_retrieve` 호출을 확인합니다. Optimizer는 별도 [지원 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로 지원된다고 가정하지 않습니다.
 
 <figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/02-model-deployments.png" alt="이전 한국어 실습 프로젝트의 모델 배포 목록입니다. 이름·버전 확인 위치 예시이며 현재 Sol 배포 증거는 아닙니다." width="1270" height="750" loading="lazy">
-<figcaption><strong>모델·버전 열의 위치 예시입니다.</strong> 한국어 실습의 Sol 배포 이전 캡처이므로 현재 역할 표와 기록된 API 관측을 사용합니다. 이전 화면을 런타임 성공 근거로 사용하지 않습니다. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/02-model-deployments.png" alt="Foundry 모델 배포 목록의 배포 이름·모델·버전·상태를 확인하는 화면입니다." width="1270" height="750" loading="lazy">
+<figcaption><strong>모델·버전·상태를 확인합니다.</strong> 각 배포를 역할 표의 Agent·Judge·Optimizer·embedding과 대조합니다. 배포 이름은 <code>.env</code>와 같아야 하며, 준비된 배포의 실제 호출도 확인합니다. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## Agent를 실제로 준비합니다 {#bootstrap}

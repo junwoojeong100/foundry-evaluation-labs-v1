@@ -85,7 +85,7 @@
 </tbody>
 </table>
 <p><strong>How to read a step:</strong> Start with its <strong>what, why, and how</strong> panel. Follow the commands or numbered actions, and find the controls named in each screenshot caption. Check the final <strong>completion criteria</strong> before continuing. Opening a screen or marking a section as read does not complete a live operation.</p>
-<p><strong>How to follow this guide:</strong> Steps 01–03 prepare the environment; 04–09 use the Foundry portal for evaluation and improvement. Unless stated otherwise, run commands from the repository's top-level folder. Replace <code>YOUR_...</code> placeholders with your own values. Names in illustrative output and historical screenshots are not your resource names.</p>
+<p><strong>How to follow this guide:</strong> Steps 01–03 prepare the environment; 04–09 use the Foundry portal for evaluation and improvement. Unless stated otherwise, run commands from the repository's top-level folder. Replace <code>YOUR_...</code> placeholders with your own values. Use resource names and endpoints from your plan and <code>.env</code>.</p>
 <table>
 <thead>
 <tr>
@@ -117,8 +117,6 @@
 </tbody>
 </table>
 <p><strong>Version meaning:</strong> v1/v2 are complete Foundry Agent versions. Keep the model, tools, and output format fixed; change only instructions. Do not weaken v1 or promise an improvement before measuring it. In a new lab, v2 is initially a comparison candidate; creating it is not acceptance or production approval.</p>
-<p class="output-notice" id="book-index--portal-screenshots-note"><strong>How to read the pictures:</strong> These are real Portal captures made with Playwright Headless. Steps 01–03 and 10 were illustrated on 2026-10-03: two subscription/access views are shared administrative controls; six additional views use the existing English lab. Controls are English. Identifying information is masked, not statuses, instructions, or scores. No creation, saving, chat, or final deletion was submitted. Compare names with your own environment. Neither earlier evaluation pictures nor new captures replace the <a href="#book-verification">measured quality report</a>.</p>
-
 <h2 id="book-index--setup">01. Check your account, computer, and access</h2>
 <p><a id="book-index--environment"></a><a id="book-index--sdk-prerequisites"></a></p>
 <div class="lab-concept" data-learning-frame="setup">
@@ -135,13 +133,13 @@
 <li>Agree on a budget, end time, and cleanup owner. Do not create resources without subscription access and cost authorization. Do not grant new subscription-wide Owner access or disable organizational security controls as a shortcut.</li>
 </ol>
 <figure class="portal-shot" id="book-index--portal-subscription-overview" data-capture-scope="shared">
-<img src="../web/assets/portal/shared/21-subscription-overview.png" alt="Actual Azure subscription Overview showing Essentials, Subscription ID, Directory, Status, and My role; identity and billing details are masked or cropped." width="1440" height="347" loading="lazy">
-<figcaption><strong>Check the subscription and status.</strong> Find Subscription ID, Directory, Status, and My role under Essentials. Portal <strong>Active</strong> and CLI <strong>Enabled</strong> describe the same usable state. This administrative view is shared between the two guide languages. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/shared/21-subscription-overview.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/shared/21-subscription-overview.png" alt="Azure subscription Overview with Subscription ID, Directory, Status, and My role under Essentials." width="1440" height="347" loading="lazy">
+<figcaption><strong>Check the subscription and status.</strong> Find Subscription ID, Directory, Status, and My role under Essentials. Portal <strong>Active</strong> and CLI <strong>Enabled</strong> describe the same usable state. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/shared/21-subscription-overview.png</code>)</span></span></figcaption>
 </figure>
 
 <figure class="portal-shot" id="book-index--portal-check-access" data-capture-scope="shared">
-<img src="../web/assets/portal/shared/22-check-access.png" alt="Actual Azure Portal Access control IAM and Check access page showing active role and scope, with user identity masked." width="1440" height="850" loading="lazy">
-<figcaption><strong>Read the role and its scope together.</strong> Find Access control (IAM) on the left, Check access at the top, and active assignments below. Owner was already assigned to the capture account; the picture is not a recommendation to grant participants that role. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/shared/22-check-access.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/shared/22-check-access.png" alt="Access control IAM Check access page showing active roles and their scopes." width="1440" height="850" loading="lazy">
+<figcaption><strong>Read the role and its scope together.</strong> Open Access control (IAM) → Check access and inspect your active assignments. Confirm where each role applies; do not add broader access than the task requires. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/shared/22-check-access.png</code>)</span></span></figcaption>
 </figure>
 
 <h3 id="book-index--setup-local">Install tools and download the lab</h3>
@@ -259,18 +257,18 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, locate the deployments matching <code>.env</code> values <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, and <code>EMBEDDING_DEPLOYMENT</code>. See <a href="#book-admin--prepare">portal orientation</a> if labels differ.</li>
 </ol>
 <figure class="portal-shot" id="book-index--portal-created-resources">
-<img src="../web/assets/portal/en/23-resource-group.png" alt="Actual Overview of the existing English lab resource group, including Foundry, project, Search, monitoring resources, and preserved earlier deployment failures." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Compare the plan with actual resources.</strong> Check the group name and Location, then identify Foundry, Foundry project, Search, Application Insights, and Log Analytics. Earlier Failed deployment history remains visible. This existing environment is not presented as a new bootstrap success. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/23-resource-group.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/23-resource-group.png" alt="Resource group Overview showing Foundry, project, Search, monitoring resources, and deployment status." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Compare the plan with actual resources.</strong> Check the group name and Location, then identify Foundry, Foundry project, Search, Application Insights, and Log Analytics. Open Deployments to inspect each deployment's status and any failure details. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/23-resource-group.png</code>)</span></span></figcaption>
 </figure>
 
 <figure class="portal-shot" id="book-index--portal-select-project" data-capture-layout="dialog">
-<img src="../web/assets/portal/en/24-select-project.png" alt="Actual New Foundry entry dialog with the existing English project selected; this selects a project rather than creating one." width="640" height="474" loading="lazy">
+<img src="../web/assets/portal/en/24-select-project.png" alt="New Foundry project-selection dialog with the project selector and Let&#x27;s go button." width="640" height="474" loading="lazy">
 <figcaption><strong>Select the project you prepared.</strong> Compare its name with <code>names.project</code> and open it with Let's go. This selects an existing project; it does not create another. After bootstrap, do not use Create a new project to duplicate the environment. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/24-select-project.png</code>)</span></span></figcaption>
 </figure>
 
 <figure class="portal-shot" id="book-index--portal-project-endpoint">
-<img src="../web/assets/portal/en/25-project-overview.png" alt="Existing English Foundry project Home showing the selected project, New Foundry, View deployments, and two endpoint fields with identifying values masked." width="1440" height="492" loading="lazy">
-<figcaption><strong>Check the project and endpoint.</strong> First confirm the upper-left project name. The value to copy and compare is <strong>Project endpoint</strong>, not Azure OpenAI endpoint. Open the model list through View deployments. Read masked values in your own portal. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/25-project-overview.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/25-project-overview.png" alt="Foundry project Home with the project selector, View deployments, Project endpoint, and Azure OpenAI endpoint." width="1440" height="492" loading="lazy">
+<figcaption><strong>Check the project and endpoint.</strong> Compare the upper-left project name and <strong>Project endpoint</strong> with your configuration. Do not substitute Azure OpenAI endpoint. Open the model list through View deployments. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/25-project-overview.png</code>)</span></span></figcaption>
 </figure>
 
 <pre><code class="language-bash">python -m lab --config .lab/lab-en/.env preflight
@@ -295,7 +293,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p>Confirm smoke <code>status: completed</code>, knowledge setup <code>uploaded_documents: 8</code>, and retrieval <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only, not successful retrieval. If Search is not ready, preserve the records and follow <a href="#book-troubleshooting--knowledge">retrieval troubleshooting</a>.</p>
 <p>In the portal, open <strong>Build → Knowledge → Knowledge bases</strong> and inspect Connection, the created knowledge base, and Knowledge sources. One knowledge-base row does not mean there is only one policy document.</p>
 <figure class="portal-shot" id="book-index--portal-policy-connection">
-<img src="../web/assets/portal/en/26-knowledge-base.png" alt="Actual Knowledge Foundry IQ page in the English lab with the Connection, knowledge-base row, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
+<img src="../web/assets/portal/en/26-knowledge-base.png" alt="Knowledge Foundry IQ page with Connection, knowledge-base name, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
 <figcaption><strong>Confirm the policy connection.</strong> Inspect Connection, Knowledge sources, and Active for the intended base. Active is registration state; verify actual retrieval with <code>iq probe</code>. The free-retrieval banner does not make the whole lab free, and setup inspection does not require changing the billing plan. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/26-knowledge-base.png</code>)</span></span></figcaption>
 </figure>
 
@@ -304,8 +302,8 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </code></pre>
 <p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using <code>prompts/en/baseline.txt</code>, the verified policy tool, and strict four-field JSON output. Record <code>agent_name</code>, <code>version</code>, and <code>receipt</code>. The command reuses an identical v1 in the same owned workspace; it does not adopt an unrelated same-named Agent or create v3.</p>
 <figure class="portal-shot" id="book-index--portal-agent-configuration">
-<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Actual version-1 English Sol Agent Playground showing Model, Instructions, connected Knowledge, and empty Chat; Save is disabled and no message was sent." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Check version, instructions, and Knowledge.</strong> Locate Version above, Model and Instructions on the left, Knowledge below, and Chat on the right. The policy MCP connection appears under Knowledge. This is the existing English v1, whose displayed instruction hash matched the baseline source. Save was disabled and no chat was sent; use your own Agent name. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/27-agent-configuration.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Agent Playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/27-agent-configuration.png</code>)</span></span></figcaption>
 </figure>
 
 <p>In the portal, open <strong>Build → Agents → lab-en-iq → version 1</strong>. Use the command's actual Agent name. Send this one question in <strong>Test/Playground</strong>:</p>
@@ -327,7 +325,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p>Use <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong> unchanged: <strong>12 JSONL rows</strong>. JSONL contains one JSON object per line. Do not convert it to Excel, CSV, or a JSON array.</p>
 <pre><code class="language-bash">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
 </code></pre>
-<p>Record <code>rows = 12</code> and SHA-256. The historical English rehearsal used <code>contoso-eval-en-dev12</code> version <code>1</code>; its name, IDs, and scores are not new results from your environment.</p>
+<p>Record <code>rows = 12</code> and SHA-256. Use the same file and registered version for the baseline, optimization, and reevaluation.</p>
 <table>
 <thead>
 <tr>
@@ -359,8 +357,8 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p>Open <strong>Foundry New experience → Build → Evaluations → Create → Create new evaluation</strong>. Select target type <strong>Agent → <code>lab-en-iq</code></strong>, pin the baseline explicitly to <strong>v1</strong>, and confirm one checked target. <strong>Pin currently latest</strong> is safe only while latest really is v1; selecting it can clear the checkbox.</p>
 <p>Choose <strong>Individual turns</strong> and <strong>One time</strong>. In a new project, select <strong>Upload new dataset → Browse</strong>, then the repository's <code>data/en/optimizer/dev.jsonl</code>. Name it <strong><code>lab-en-dev12</code></strong>, use first version <strong><code>1</code></strong>, and wait for upload/registration to finish. If already registered, use <strong>Existing dataset</strong> and select that same name/version. The preview may show five rows; the dataset still has 12.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-dataset">
-<img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Illustrative Foundry Existing dataset selection and five-row preview, not the current run result" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Find the dataset controls.</strong> Select the current operator-provided registration. The preview is not proof of the total row count. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/15-evaluation-dataset.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Foundry evaluation dataset selection and preview of query, context, and ground_truth columns." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Select the English dataset.</strong> Confirm the registration name/version and the query, context, and ground_truth columns. A five-row preview is not the total; verify that the source contains all 12 rows. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/15-evaluation-dataset.png</code>)</span></span></figcaption>
 </figure>
 
 <p><strong>Completion criteria:</strong> The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. <a href="#book-data-guide--schema">Data contract</a>.</p>
@@ -425,10 +423,10 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tr>
 </tbody>
 </table>
-<p>Sol's actual Agent/tool invocation was verified. Model catalog visibility alone is insufficient, and the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimizer support list</a> is role-specific. Catalog evaluator version links do not prove that a private service rubric version is pinned; preserve the actual definition and disclose that limit.</p>
+<p>Agent, Judge, and Optimizer support can differ by role. Check the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimizer support list</a> and select the deployment prepared for each role.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-criteria">
-<img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Illustrative Relevance and TaskAdherence configuration with separate Judge selection" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Read each metric's own scale.</strong> Keep Relevance threshold 4, binary TaskAdherence pass 1, and the current Luna Judge. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/16-evaluation-criteria.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Evaluation Criteria settings for Relevance, TaskAdherence, and the Judge deployment." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence pass 1. Select the Judge deployment named by your <code>JUDGE_DEPLOYMENT</code> setting. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/16-evaluation-criteria.png</code>)</span></span></figcaption>
 </figure>
 
 <p><strong>Completion criteria:</strong> The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.</p>
@@ -441,11 +439,11 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p><strong>How · where:</strong> Review and submit once in Foundry, inspect all 12 items, and use read-only terminal lookup to record the actual evaluation and run IDs.</p>
 </div>
 
-<p>Review <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>. Name the new evaluation <strong><code>lab-en-learning-loop</code></strong> and, if a run-name field is available, name the baseline <strong><code>baseline-v1</code></strong>. In a prepared class, use the operator's names. When only reading the recorded rehearsal, open its existing completed run rather than submitting another.</p>
+<p>Review <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>. Name the new evaluation <strong><code>lab-en-learning-loop</code></strong> and, if a run-name field is available, name the baseline <strong><code>baseline-v1</code></strong>. In a prepared class, use the operator's names. If the baseline run already completed, use its results rather than submitting it again.</p>
 <p>For a new authorized class, <strong>Review → Submit</strong> once. Keep the actual evaluation ID and run ID. Wait for completion and account for all 12 cases, including errors or missing results. A configured draft, HTTP creation receipt or successful model smoke is not a completed evaluation.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-review">
-<img src="../web/assets/portal/en/17-evaluation-review.png" alt="Illustrative Foundry evaluation Review page; use the current Sol target and own run identifiers" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Review before Submit.</strong> This picture illustrates the controls, not the current Sol run. Confirm the actual pinned version and saved evaluation contract. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/17-evaluation-review.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/17-evaluation-review.png" alt="Foundry evaluation Review page for checking Agent, version, dataset, and evaluator settings." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Review before Submit.</strong> Confirm Agent version 1, the same dev12, query-only input, both evaluators, and the Judge. Submit once within the approved scope, then inspect the run status. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/17-evaluation-review.png</code>)</span></span></figcaption>
 </figure>
 
 <p>Open <strong>Evaluations → your evaluation name → Evaluation runs → baseline run</strong>. If Running, refresh that run and wait. If it remains unfinished after 30 minutes, record the state/error and notify the facilitator. Stopping your wait does not cancel the remote job.</p>
@@ -467,14 +465,14 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <p>Read summary counts and <strong>Detailed metrics result</strong>, especially <strong><code>Relevance.reason</code></strong> and <strong><code>TaskAdherence.reason</code></strong>. <code>conversation_id → User view</code> opens the actual question/answer, not an inline Judge-reason panel.</p>
 <p>Select a failing or lowest-score case and a good case. Connect <strong>question → actual response → score/reason → policy and parsed reference answer</strong>. If no failure exists, say so; never weaken the baseline to produce one.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation">
-<img src="../web/assets/portal/en/18-evaluation-results.png" alt="Illustrative evaluation summary and detailed-metric controls; current values are in the latest v2 report" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Find scores and reasons.</strong> This earlier UI image is not current verification. Read the current run IDs and full case evidence in the latest report. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/18-evaluation-results.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/18-evaluation-results.png" alt="Foundry evaluation summary and per-question detailed metrics." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read per-question scores and reasons.</strong> Check pass, fail, and error counts, then open Detailed metrics result for Relevance.reason and TaskAdherence.reason. Inspect individual cases, not only averages. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/18-evaluation-results.png</code>)</span></span></figcaption>
 </figure>
 
 <p>Relevance 4/5 is not 80% accuracy. TaskAdherence 1 means Pass, not a low five-point score. Missing values are not zeros or successful rows. Generic evaluators do not certify every business rule.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-case">
-<img src="../web/assets/portal/en/19-evaluation-case.png" alt="Illustrative conversation_id User view showing a question and JSON answer, not Judge reasons" width="1440" height="340" loading="lazy">
-<figcaption><strong>Read the response separately.</strong> Return to Detailed metrics result for the reasons and compare the source policy. Do not copy this older answer as current evidence. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/19-evaluation-case.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/19-evaluation-case.png" alt="User view showing the question and the Agent&#x27;s JSON response." width="1440" height="340" loading="lazy">
+<figcaption><strong>Compare the response with policy.</strong> Read the question and JSON answer in User view, then check policy dates, conditions, and citations. Return to Detailed metrics result for the reasons; an incorrect response is not a reference answer. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/19-evaluation-case.png</code>)</span></span></figcaption>
 </figure>
 
 <p>Watch for wrong date boundaries, unnecessary assumptions, numeric retrieval IDs instead of document citations, incorrect human routing, invented actions and unsupported certainty. A truthful statement of uncertainty must not be replaced with a fabricated fact to satisfy a Judge.</p>
@@ -562,32 +560,31 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 </tbody>
 </table>
 <figure class="portal-shot" id="book-index--portal-optimizer-target">
-<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Illustrative instruction-only Agent Optimizer target controls, not the current Sol job configuration" width="1210" height="968" loading="lazy">
-<figcaption><strong>Separate the model roles.</strong> Use the current operator-provided Sol target, Luna Judge and supported generator; this capture only locates the controls. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/07-optimizer-target.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
+<figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/07-optimizer-target.png</code>)</span></span></figcaption>
 </figure>
 
 <p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.</p>
 <figure class="portal-shot" id="book-index--portal-optimizer-data">
-<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Illustrative Agent Optimizer dataset selection using the existing English dev12 registration" width="1210" height="968" loading="lazy">
-<figcaption><strong>Reuse the data.</strong> Same registered version and all 12 cases; synthetic regeneration or a changed upload would change the experiment. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/08-optimizer-dataset.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
+<figcaption><strong>Reuse the same English data.</strong> Select the dev12 registration/version used for the baseline and include all 12 cases. Editing or regenerating the file changes the comparison conditions. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/08-optimizer-dataset.png</code>)</span></span></figcaption>
 </figure>
 
 <p>In <strong>Review</strong>, confirm the Agent/version, dataset, evaluators, and estimated cost, then <strong>Submit</strong> once within the approved scope. An estimate is not a billing cap. Open the job in <strong>Optimization runs</strong>, wait at most 60 minutes, and retain its actual state. Reuse the same job ID when resuming. Optimization includes multiple internal calls.</p>
 <p>Inspect original/candidate scores and <strong>View changes</strong>. The internal <strong>0–1 ranking</strong> is not the separate managed Evaluation mean or pass percentage. Keep model, tools, reasoning and output schema unchanged; an empty function-tool export does not authorize removal of the MCP policy connection.</p>
-<p><strong>Current run:</strong> the managed Optimizer retained the strong v1 baseline. Its generated candidates were not automatically promoted. The operator used the observed failures to refine the instructions and verified that reviewed draft separately. The current v2 source is therefore <strong>operator-reviewed after Agent Optimizer</strong>, not the service's automatically recommended candidate.</p>
 <figure class="portal-shot" id="book-index--portal-optimizer-results">
-<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Illustrative Optimizer result controls; the latest job results are reported separately" width="1440" height="1000" loading="lazy">
-<figcaption><strong>Read the candidate, not just the ranking.</strong> This image is an older UI example. The current report identifies the actual job and selected candidate. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/09-optimizer-results.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and record why. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/09-optimizer-results.png</code>)</span></span></figcaption>
 </figure>
 
 <figure class="portal-shot" id="book-index--portal-optimizer-diff">
-<img src="../web/assets/portal/en/10-optimizer-changes.png" alt="Illustrative View changes dialog for comparing instructions; not the current Sol candidate text" width="1038" height="622" loading="lazy">
-<figcaption><strong>Review the actual current diff.</strong> Reject invented policy, unsupported certainty or configuration changes. Longer instructions are not automatically better. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/10-optimizer-changes.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/10-optimizer-changes.png" alt="View changes dialog comparing baseline and candidate instructions." width="1038" height="622" loading="lazy">
+<figcaption><strong>Read the instruction changes.</strong> Use View changes to identify which response behaviors change. Reject invented policy, unsupported certainty, and non-instruction configuration changes; assess content and effect rather than length. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/10-optimizer-changes.png</code>)</span></span></figcaption>
 </figure>
 
-<p><strong>Bring the candidate into the next step.</strong> Select it in the result and copy the complete revised instructions from <strong>View changes</strong>. Save them as UTF-8 plain text in <code>.lab/lab-en/candidate.txt</code>. Do not include diff <code>+</code>/<code>-</code> markers, UI explanations, or scores. If you edit the instructions, record “operator-reviewed after Agent Optimizer” and the reasons in <code>notes.md</code>. The repository's <code>prompts/en/candidate.txt</code> is an authored example, not the output of your new service run.</p>
-<p><strong>Do not continually create v3, v4 and later releases.</strong> This guide uses the next step's CLI to create one v2 for comparison, so <strong>do not use both Promote candidate and the CLI creation command</strong>. Experienced operators can validate explicit drafts before promotion, but that is not a hidden prerequisite for this path. Creating a version is separate from publishing it or approving activation.</p>
-<p class="share-checkpoint" id="book-index--share-optimizer"><strong>Discuss:</strong> Which instruction behavior changed, what should improve, and what could regress? Identify the actual candidate rather than copying an old screenshot.</p>
+<p><strong>Bring the candidate into the next step.</strong> Select it in the result and copy the complete revised instructions from <strong>View changes</strong>. Save them as UTF-8 plain text in <code>.lab/lab-en/candidate.txt</code>. Do not include diff <code>+</code>/<code>-</code> markers, UI explanations, or scores. Record any manual edits and their reasons in <code>notes.md</code>. Use this saved file in the next step, not the repository's <code>prompts/en/candidate.txt</code>.</p>
+<p><strong>Do not continually create v3, v4 and later releases.</strong> Use the next step's CLI to create one v2 for comparison, so <strong>do not use both Promote candidate and the CLI creation command</strong>. Creating a version is separate from publishing it or approving activation.</p>
+<p class="share-checkpoint" id="book-index--share-optimizer"><strong>Discuss:</strong> Present the reviewed candidate and explain the changed behaviors, expected improvements, and possible regressions.</p>
 
 <p><strong>Completion criteria:</strong> Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.</p>
 <p class="step-next no-print"><a href="#book-index--decision" data-next-step>Next: 09. Reevaluate and compare v1/v2 →</a></p>
@@ -604,7 +601,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
 </code></pre>
 <p>Confirm <code>agent_name: lab-en-iq</code> and <code>version: "2"</code>. If a different v2 already exists or the model deployment changed, stop and preserve the original records. A new version alone does not demonstrate improvement.</p>
-<p>Use the <strong>same Foundry evaluation definition</strong>. The portal's Add run previously failed with <strong><code>Unable to create data source configuration from item schema</code></strong>. This official Azure AI Projects/OpenAI Evals helper adds a real managed run to the existing definition; it is not local scoring.</p>
+<p>Add the candidate run to the <strong>same Foundry evaluation definition</strong>. The Azure AI Projects/OpenAI Evals helper below reuses the baseline dataset and evaluators to run the managed evaluation.</p>
 <table>
 <thead>
 <tr>
@@ -635,14 +632,14 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <pre><code class="language-bash">python scripts/add_foundry_eval_run.py --endpoint &quot;YOUR_PROJECT_ENDPOINT&quot; --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
 </code></pre>
 <p>Confirm <code>status: completed</code> and all 12 cases. If the default 30-minute wait expires, the command returns exit code 2 with Still running. If the receipt contains a run ID, repeat the <strong>identical command and <code>--out</code> path</strong> to collect that run. For an unknown submission without a run ID or an existing remote name, follow <a href="#book-troubleshooting--evaluation">duplicate-submission recovery</a>. Do not delete the receipt or rename the run to resubmit.</p>
-<p>The helper verifies the remote thresholds, Judge, mappings, and every output item's actual version and system instructions. Historical rehearsal responses and scores cannot substitute for your new run.</p>
+<p>The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions.</p>
 <p>In <strong>Evaluation runs</strong>, select both rows and <strong>Compare runs</strong>. Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-comparison">
-<img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Illustrative Compare runs layout; current v1/v2 values and statistical result are in the latest report" width="1440" height="520" loading="lazy">
-<figcaption><strong>Confirm the comparison direction.</strong> This capture locates the Baseline control; it is not the current Sol measurement. Use the latest report's exact two run IDs. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/20-evaluation-comparison.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Compare runs view showing baseline and candidate scores, means, and statistical results." width="1440" height="520" loading="lazy">
+<figcaption><strong>Confirm the comparison direction and results.</strong> Select v1 as Baseline, then compare scores, pass counts, and statistical results. Inconclusive means a difference was not established; it is not evidence of equivalence. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/20-evaluation-comparison.png</code>)</span></span></figcaption>
 </figure>
 
-<p>The current <a href="#book-verification--status">v2 verification</a> publishes all 12 case responses, scores and reasons alongside the v1 control. Require no decline in all-criteria passes or either metric's pass count/mean, and at least one strict measured improvement. Check factual truth, routing and response format too. Report latency, tokens and the native statistical conclusion separately.</p>
+<p>Compare responses, scores, and reasons for all 12 cases side by side. Require no decline in all-criteria passes or either metric's pass count/mean, and at least one strict measured improvement. Check factual truth, routing, and response format too, and record latency, tokens, and statistical results.</p>
 <p class="share-checkpoint" id="book-index--share-optimized"><strong>Explain the result:</strong> Identify the actual gain, unchanged criteria, any regression, and the remaining uncertainty. Observed improvement is not a guarantee that every future stochastic run will improve.</p>
 
 <p>In <code>notes.md</code>, record v1/v2 pass counts and means per metric, errors, latency/tokens, statistical results, and your decision side by side. If improvement criteria are not met, <strong>retain v1 or hold the decision</strong>. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.</p>
@@ -654,7 +651,7 @@ python -m lab --config .lab/lab-en/.env iq probe --confirm
 <div class="lab-concept" data-learning-frame="cleanup">
 <p><strong>What:</strong> Preserve results, then remove your lab resources or hand them to an approved retention owner.</p>
 <p><strong>Why:</strong> Search and logs can remain after the browser closes. Deleting the wrong shared group can also remove someone else's resources.</p>
-<p><strong>How · where:</strong> Verify exact targets, ownership, and authorization in Azure Portal and the terminal, then verify absence after deletion. The pictured confirmation dialog is unsubmitted.</p>
+<p><strong>How · where:</strong> Verify exact targets, ownership, and authorization in Azure Portal and the terminal, then verify absence after deletion.</p>
 </div>
 
 <p><strong>Closing a browser, deleting an Agent, or running <code>cleanup</code> does not by itself stop all resource-group charges.</strong></p>
@@ -706,8 +703,8 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <li><strong>CLI:</strong> Run the command below and review the target again at the confirmation prompt. Do not append <code>--yes</code> to bypass confirmation.</li>
 </ol>
 <figure class="portal-shot" id="book-index--portal-delete-review">
-<img src="../web/assets/portal/en/28-delete-review.png" alt="Actual pre-deletion review for the English lab group showing the resource inventory, empty name-confirmation field, and disabled Delete button." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Compare the group and every resource above, then locate Enter resource group name to confirm deletion below. “Resources being deleted” describes the proposed list, not completed deletion. During capture, the field remained empty, Delete stayed disabled, and the pane was closed with Cancel. Execute deletion only after authorization. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/28-delete-review.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/28-delete-review.png" alt="Resource-group deletion review with the target inventory, group-name confirmation field, and Delete and Cancel buttons." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Verify the group name and every resource. Only after authorization, enter the group name and proceed with Delete. Use Cancel if the target is wrong or deletion is not approved. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/28-delete-review.png</code>)</span></span></figcaption>
 </figure>
 
 <pre><code class="language-bash">az group delete --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
@@ -717,7 +714,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </code></pre>
 <p>Authentication or network errors are not <code>false</code> and do not prove deletion. If <code>true</code>, inspect deletion progress. For <strong>Locks</strong>, permissions, or dependencies in other groups, follow <a href="#book-troubleshooting--cleanup">deletion troubleshooting</a>. Do not remove organizational locks without authorization.</p>
 <p>Afterward, open <strong>Cost Management → Cost analysis</strong> for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.</p>
-<p><strong>Final completion criteria:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="#book-admin--cleanup">operator cleanup worksheet</a> and <a href="#book-troubleshooting--verification">execution issue record</a> for the remaining boundaries.</p>
+<p><strong>Final completion criteria:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="#book-admin--cleanup">operator cleanup worksheet</a> and <a href="#book-troubleshooting--cleanup">deletion troubleshooting</a>.</p>
 </section>
 <section id="book-facilitator" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 1 · Facilitator guide">
 <p class="book-part-label">Appendix 1 · Facilitator guide</p>
@@ -925,10 +922,10 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </tbody>
 </table>
 <p>Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.</p>
-<p>New examples use <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. Historical <code>contoso-eval-en-sol</code> and <code>lab-...-dea3cec5</code> deployment names are references, not fixed names to use in new environments.</p>
+<p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the handoff.</p>
 <figure class="portal-shot" id="book-admin--portal-resource-group">
-<img src="../web/assets/portal/en/00-resource-group.png" alt="Earlier resource-group UI capture used only to locate the isolated lab, not current verification" width="1600" height="1000" loading="lazy">
-<figcaption><strong>Resource-group orientation only.</strong> This earlier portal picture is not the current v2 result. Verify the actual project and current state from the operator handoff. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/00-resource-group.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/00-resource-group.png" alt="Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
+<figcaption><strong>Check the isolated resource group.</strong> Open the group named in the handoff and confirm its subscription, region, and resource inventory. Verify that the Foundry project and supporting resources belong to this lab. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/00-resource-group.png</code>)</span></span></figcaption>
 </figure>
 
 <h2 id="book-admin--prepare">Verify model roles and actual deployments</h2>
@@ -964,10 +961,10 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </tbody>
 </table>
 <p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
-<p>Historical Sol measurements verified actual Agent and <code>knowledge_base_retrieve</code> calls, not just a catalog entry. Repeat the <a href="#book-index--agent">real response check in 03</a> for a new environment. Optimizer has a separate <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>; Agent/Judge availability does not establish generator support.</p>
+<p>Use the <a href="#book-index--agent">real response check in 03</a> to verify Agent and <code>knowledge_base_retrieve</code> calls. Optimizer has a separate <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>; Agent/Judge availability does not establish generator support.</p>
 <figure class="portal-shot" id="book-admin--portal-models">
-<img src="../web/assets/portal/en/02-model-deployments.png" alt="Earlier model-deployment list showing where to inspect names and versions, not the current Sol deployment" width="1271" height="820" loading="lazy">
-<figcaption><strong>Locate model/version fields.</strong> The picture predates the Sol deployment. Use the role table and current recorded API observations, not this older list, as runtime evidence. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/02-model-deployments.png</code>)</span></span></figcaption>
+<img src="../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployment list showing deployment names, models, versions, and readiness." width="1271" height="820" loading="lazy">
+<figcaption><strong>Check model, version, and status.</strong> Map each deployment to the Agent, Judge, Optimizer, and embedding roles. Deployment names must match <code>.env</code>; verify actual calls to the prepared deployments as well. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/02-model-deployments.png</code>)</span></span></figcaption>
 </figure>
 
 <h2 id="book-admin--bootstrap">Prepare an executable Agent</h2>
@@ -1934,7 +1931,7 @@ python -m unittest discover -s tests -q
 <p><a href="#book-index--start">Dataset step</a> · <a href="#book-admin--handoff">Operator handoff</a> · <span class="book-file-link">Korean data guide<span class="book-file-label"> (file: <code>docs/ko/data-guide.html</code>)</span></span></p>
 <h2 id="book-data-guide--start">One unchanged dataset for the comparison</h2>
 <p>Use <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong>, exactly <strong>12 JSONL records</strong>, for Foundry Evaluation, Agent Optimizer, and reevaluation. In a new project, follow <a href="#book-index--start">04</a> to register <code>lab-en-dev12</code> version <code>1</code>. In a prepared project, reuse its operator-confirmed registration.</p>
-<p>Keep its exact bytes and SHA-256, all questions and references, and language fixed. The current Agent is <strong><code>contoso-eval-en-sol</code></strong>, with released instruction variants v1/v2 on the same <code>gpt-6-sol</code> model. The original Korean corpus is separate and has not been newly executed as part of this English measurement.</p>
+<p>Keep its exact bytes, SHA-256, questions, references, and language fixed throughout the comparison. Keep Korean and English data separate rather than mixing them in one comparison.</p>
 <h2 id="book-data-guide--scope">Purpose and limits</h2>
 <p>Contoso Atlas Cloud is fictional. Its policies, inquiries and reference answers are synthetic—not private customer data or the terms of Microsoft, Azure or a real provider.</p>
 <p>The purpose is <strong>evaluation against your own business tasks and criteria</strong>, not a public benchmark alone. Representative tasks expose policy-date boundaries, ambiguity, unsupported certainty and action claims. A 12-case development set demonstrates the learning loop; it does not certify production or independent generalization.</p>
@@ -2005,10 +2002,10 @@ python -m unittest discover -s tests -q
 <p>Leave the custom prompt override unset. Use <code>query → query</code> if a field-mapping screen appears. Service mappings are <strong>Relevance <code>response={{sample.output_text}}</code></strong> and <strong>TaskAdherence <code>response={{sample.output_items}}</code></strong>. These are not extra JSONL columns.</p>
 <p>Keep <strong>Relevance 1–5 / threshold 4</strong>, <strong>TaskAdherence binary 0/1 / pass 1</strong>, and the same Luna Judge. Selecting two evaluators does not mean both consume every reference field or certify every business rule.</p>
 <h2 id="book-data-guide--compare">Compare complete evidence</h2>
-<p>The <a href="#book-verification">latest report</a> publishes the current v2 and its frozen same-model v1 control, including all 12 synthetic questions, actual answers, evaluator scores and reasons. Older raw runs are retained for audit, not mixed into the current comparison.</p>
+<p>Compare the questions, responses, evaluator scores, and reasons for all 12 cases across same-model v1 and v2. Record your actual run IDs and dataset hash to identify the comparison.</p>
 <p>The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, <strong>not a replacement local Judge</strong>.</p>
 <p>Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Operators may use separate drafts after verifying support.</p>
-<p>Public evaluation evidence excludes authentication, signed URLs and private account metadata. The synthetic responses and failure reasons themselves may be shared. Publish failures as faithfully as successes.</p>
+<p>Before sharing results, remove credentials, signed URLs, and private account details. Keep every case, including errors and missing results.</p>
 <p><code>cleanup</code> does not remove every registered dataset. Follow <a href="#book-index--cleanup">10</a> to retain or delete registrations/evaluation records according to dedicated or shared-project ownership.</p>
 </section>
   </main>

@@ -14,11 +14,11 @@ Use this reference for participant steps **02 provisioning authorization, 03 Age
 
 Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.
 
-New examples use **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. Historical `contoso-eval-en-sol` and `lab-...-dea3cec5` deployment names are references, not fixed names to use in new environments.
+Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the handoff.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../../web/assets/portal/en/00-resource-group.png" alt="Earlier resource-group UI capture used only to locate the isolated lab, not current verification" width="1600" height="1000" loading="lazy">
-<figcaption><strong>Resource-group orientation only.</strong> This earlier portal picture is not the current v2 result. Verify the actual project and current state from the operator handoff. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../../web/assets/portal/en/00-resource-group.png" alt="Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
+<figcaption><strong>Check the isolated resource group.</strong> Open the group named in the handoff and confirm its subscription, region, and resource inventory. Verify that the Foundry project and supporting resources belong to this lab. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 ## Verify model roles and actual deployments {#prepare}
@@ -32,11 +32,11 @@ New examples use **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. His
 
 Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
 
-Historical Sol measurements verified actual Agent and `knowledge_base_retrieve` calls, not just a catalog entry. Repeat the [real response check in 03](handbook.md#agent) for a new environment. Optimizer has a separate [supported-model list](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models); Agent/Judge availability does not establish generator support.
+Use the [real response check in 03](handbook.md#agent) to verify Agent and `knowledge_base_retrieve` calls. Optimizer has a separate [supported-model list](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models); Agent/Judge availability does not establish generator support.
 
 <figure class="portal-shot" id="portal-models">
-<img src="../../web/assets/portal/en/02-model-deployments.png" alt="Earlier model-deployment list showing where to inspect names and versions, not the current Sol deployment" width="1271" height="820" loading="lazy">
-<figcaption><strong>Locate model/version fields.</strong> The picture predates the Sol deployment. Use the role table and current recorded API observations, not this older list, as runtime evidence. <a href="../../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployment list showing deployment names, models, versions, and readiness." width="1271" height="820" loading="lazy">
+<figcaption><strong>Check model, version, and status.</strong> Map each deployment to the Agent, Judge, Optimizer, and embedding roles. Deployment names must match <code>.env</code>; verify actual calls to the prepared deployments as well. <a href="../../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 ## Prepare an executable Agent {#bootstrap}

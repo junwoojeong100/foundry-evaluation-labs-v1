@@ -140,22 +140,30 @@ class PortalFigureParser(HTMLParser):
 
 
 class ArticleTextParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, *, target_tag="article", target_id="guide-start"):
         super().__init__(convert_charrefs=True)
+        self.target_tag = target_tag
+        self.target_id = target_id
+        self.depth = 0
         self.in_article = False
         self.text = []
         self.alt = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        if tag == "article" and attrs.get("id") == "guide-start":
+        if tag == self.target_tag and attrs.get("id") == self.target_id:
             self.in_article = True
+            self.depth = 1
+        elif self.in_article and tag == self.target_tag:
+            self.depth += 1
         if self.in_article and tag == "img":
             self.alt.append(attrs.get("alt", ""))
 
     def handle_endtag(self, tag):
-        if tag == "article":
-            self.in_article = False
+        if self.in_article and tag == self.target_tag:
+            self.depth -= 1
+            if self.depth == 0:
+                self.in_article = False
 
     def handle_data(self, data):
         if self.in_article:
@@ -535,6 +543,42 @@ class DocumentationTests(unittest.TestCase):
                 "model weights" if language == "en" else "모델 가중치",
             ):
                 self.assertIn(term, intro)
+
+    def test_learner_content_omits_production_history_in_web_and_print(self):
+        production_notes = re.compile(
+            r"Playwright|Headless|촬영|캡처|리허설|현재 실행|최신 보고서|"
+            r"rehearsal|historical|during capture|capture account|masked|cropped|"
+            r"latest (?:v2 )?report|current (?:run|report):",
+            re.IGNORECASE,
+        )
+        for language in ("en", "ko"):
+            book = (SITE / ("ko/print.html" if language == "ko" else "print.html")).read_text()
+            for document in documents_for(language):
+                figures = PortalFigureParser()
+                figures.feed((SITE / document.output).read_text())
+                for figure in figures.figures:
+                    description = figure["caption"] + " ".join(image["alt"] for image in figure["images"])
+                    self.assertNotRegex(description, production_notes, (language, document.key, figure["id"]))
+                if document.key not in {"index", "data-guide"}:
+                    continue
+                page = ArticleTextParser()
+                page.feed((SITE / document.output).read_text())
+                print_section = ArticleTextParser(target_tag="section", target_id=f"book-{document.key}")
+                print_section.feed(book)
+                for edition, parsed in (("web", page), ("print", print_section)):
+                    with self.subTest(language=language, document=document.key, edition=edition):
+                        visible = "".join(parsed.text + parsed.alt)
+                        self.assertGreater(len(visible), 500)
+                        self.assertNotRegex(visible, production_notes)
+                source = (ROOT / document.source).read_text()
+                self.assertNotIn("portal-screenshots-note", source)
+                self.assertNotIn("verification.md", source)
+
+    def test_provenance_remains_in_maintainer_references_not_learner_copy(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            self.assertIn("Playwright Headless", (folder / "troubleshooting.md").read_text())
+            self.assertIn("captures.json", (folder / "verification.md").read_text())
 
     def test_onboarding_capture_provenance_keeps_cloud_changes_and_deletion_unsubmitted(self):
         for language in ("en", "ko"):

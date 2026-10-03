@@ -6,7 +6,7 @@
 
 Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Foundry Evaluation, Agent Optimizer, and reevaluation. In a new project, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. In a prepared project, reuse its operator-confirmed registration.
 
-Keep its exact bytes and SHA-256, all questions and references, and language fixed. The current Agent is **`contoso-eval-en-sol`**, with released instruction variants v1/v2 on the same `gpt-6-sol` model. The original Korean corpus is separate and has not been newly executed as part of this English measurement.
+Keep its exact bytes, SHA-256, questions, references, and language fixed throughout the comparison. Keep Korean and English data separate rather than mixing them in one comparison.
 
 ## Purpose and limits {#scope}
 
@@ -57,12 +57,12 @@ Keep **Relevance 1–5 / threshold 4**, **TaskAdherence binary 0/1 / pass 1**, a
 
 ## Compare complete evidence {#compare}
 
-The [latest report](../guide/en/verification.md) publishes the current v2 and its frozen same-model v1 control, including all 12 synthetic questions, actual answers, evaluator scores and reasons. Older raw runs are retained for audit, not mixed into the current comparison.
+Compare the questions, responses, evaluator scores, and reasons for all 12 cases across same-model v1 and v2. Record your actual run IDs and dataset hash to identify the comparison.
 
 The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, **not a replacement local Judge**.
 
 Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Operators may use separate drafts after verifying support.
 
-Public evaluation evidence excludes authentication, signed URLs and private account metadata. The synthetic responses and failure reasons themselves may be shared. Publish failures as faithfully as successes.
+Before sharing results, remove credentials, signed URLs, and private account details. Keep every case, including errors and missing results.
 
 `cleanup` does not remove every registered dataset. Follow [10](../guide/en/handbook.md#cleanup) to retain or delete registrations/evaluation records according to dedicated or shared-project ownership.
