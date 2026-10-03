@@ -64,7 +64,8 @@
 </li>
 <li><a href="#optimizer">Agent Optimizer and result interpretation</a></li>
 <li><a href="#cleanup">Deletion and ongoing costs</a></li>
-<li><a href="#verification">Reproduction commands and verification scope</a></li>
+<li><a href="#portal-captures">Portal illustrations and learning structure</a></li>
+<li><a href="#verification">Checks from the preceding ten-step revision</a></li>
 </ul>
 </div>
 
@@ -436,7 +437,103 @@
 </tbody>
 </table>
 <p>Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">Azure resource-group deletion documentation</a>. Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.</p>
-<h2 id="verification">Reproduction commands and verification scope</h2>
+<h2 id="portal-captures">Portal illustrations and learning structure</h2>
+<p>On 2026-10-03, after the user completed login, <strong>Playwright Headless</strong> captured 14 new image files. The temporary login browser and authenticated headless context were closed afterward; authentication state was not exported to a file. Only opaque privacy masks and cropping were applied, without replacing statuses, failure history, or instructions.</p>
+<table>
+<thead>
+<tr>
+<th>Step illustrated</th>
+<th>New views and what to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01 Environment/access</td>
+<td>Two shared views: subscription Essentials and Check access. Distinguish status, role, and scope.</td>
+</tr>
+<tr>
+<td>02 Provisioning checks</td>
+<td>Three views per language: resource inventory, existing-project selection, and project endpoint. Selection is not additional creation.</td>
+</tr>
+<tr>
+<td>03 Policy/Agent</td>
+<td>Two views per language: Knowledge connection and pinned v1 configuration. Active/disabled Save are not retrieval or evaluation success.</td>
+</tr>
+<tr>
+<td>10 Cleanup</td>
+<td>One unsubmitted deletion review per language. Inspect proposed resources, empty confirmation, and disabled Delete; both panes were closed with Cancel.</td>
+</tr>
+</tbody>
+</table>
+<p>Each complete edition uses its previous 12 plus eight added views, totaling 20. The two administrative views are shared rather than duplicated, so there are 14 new files. Korean and English Agent/knowledge views were captured separately in their corresponding existing projects.</p>
+<table>
+<thead>
+<tr>
+<th>Observed difference or issue</th>
+<th>Resolution in the guide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The supplied reference <code>.htm</code> URL returned 404</td>
+<td>Verified the same repository's actual <code>index.ko.html</code>. Used only the goal/concept/preparation/execution/completion/troubleshooting structure, not its data or scoring.</td>
+</tr>
+<tr>
+<td>Portal status is Active; CLI status is Enabled</td>
+<td>Documented the equivalent states in 01 and the caption rather than requiring identical wording.</td>
+</tr>
+<tr>
+<td>Current IAM uses Check access instead of View my access</td>
+<td>Captured active assignments and Scope; documented both UI labels.</td>
+</tr>
+<tr>
+<td>The New Foundry toggle did not immediately become checked</td>
+<td>The existing-project selection dialog and Let's go were required first; the guide now shows that actual step.</td>
+</tr>
+<tr>
+<td>Inventory/deletion content uses embedded React frames</td>
+<td>Masked subscription/identity values inside the iframe as well as the outer page, then inspected the images.</td>
+</tr>
+<tr>
+<td>The deletion pane says “resources being deleted”</td>
+<td>Clarified that this is the proposed list. Confirmation/button state and actual resource absence require separate checks.</td>
+</tr>
+<tr>
+<td>Knowledge shows a free-retrieval banner</td>
+<td>Clarified that the whole lab is not free and no plan upgrade is required for inspection. No plan change was made.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Observed before/after result:</strong> Resource IDs, per-Agent version lists, and evaluation/run ID lists were compared through read-only requests.</p>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Resources before/after</th>
+<th>Agents/versions before/after</th>
+<th>Evaluations/runs before/after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Existing Korean lab</td>
+<td>5 / 5</td>
+<td>Agents 3 / 3; versions 4 / 4</td>
+<td>Evaluations 2 / 2; runs 7 / 7</td>
+</tr>
+<tr>
+<td>Existing English lab</td>
+<td>6 / 6</td>
+<td>Agents 6 / 6; versions 10 / 10</td>
+<td>Evaluations 6 / 6; runs 23 / 23</td>
+</tr>
+</tbody>
+</table>
+<p>No resources, Agent versions, evaluations, or Optimizer jobs were created or deleted; no chat or retrieval question was submitted. The displayed English v1 instruction hash matched the baseline source. The Korean image preserves remote v1 instructions from before the prose revision; it is not a new execution.</p>
+<p>Hashes, dimensions, redactions, and states are in the <a href="../web/assets/portal/captures.json">Korean manifest</a>, <a href="../web/assets/portal/en/captures.json">English manifest</a>, and <a href="../web/assets/portal/shared/captures.json">shared administrative manifest</a>. Earlier images, evaluation data, and measured JSON remain unchanged.</p>
+<p><strong>Illustrated-edition checks:</strong> All 582 automated checks passed. Both languages were inspected at 1440px desktop and 390px mobile with four overview cards, ten step explanations, 18 participant figures, and two operator-reference figures. New-figure language switching, progress/theme persistence, full-size image opening, and JavaScript-disabled navigation worked without page-level horizontal overflow or page errors.</p>
+<h2 id="verification">Checks from the preceding ten-step revision</h2>
+<p>The 579 checks and PDFs with 12 images each below describe the <strong>ten-step revision completed before the additional captures</strong>. The later Portal/structure work is documented above and in the capture manifests. Earlier numbers are not relabeled as verification of new files.</p>
 <p><strong>Actual read-only observation:</strong> On 2026-10-03, the existing approved environment's CLI identity matched all three expected values and its subscription was Enabled. <code>native-evals</code> retrieved completed v1/v2 runs with 12 cases each, plus a separate draft run, from <code>contoso-en-sol-learning-loop</code>. The v1 11/12 and v2 12/12 counts matched the published report. No new evaluation, optimization, Agent creation, or deletion request was sent.</p>
 <p><strong>Local reproduction commands:</strong> Run in the virtual environment; these create no Azure resources.</p>
 <p>During automated verification, <code>--help</code> correctly exited through <code>SystemExit(0)</code>, and macOS temporary paths exposed the <code>/var</code> symlink. The test harness now recognizes successful help exits and resolves its temporary directory to a physical path. Bootstrap's symlink protection was not weakened, and no user files were moved.</p>

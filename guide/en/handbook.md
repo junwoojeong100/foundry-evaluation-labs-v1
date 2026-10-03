@@ -4,6 +4,15 @@
 
 **Prepare Azure, evaluate and improve an Agent you create, and delete the resources when you finish.** Start at 01 if this is your first visit. If you received a prepared environment, still confirm your identity, permissions, and handoff details first.
 
+Microsoft Foundry brings model deployment, Agent versioning, and evaluation into a project-based development environment. This lab builds a fictional **Contoso Atlas Cloud support Agent** and compares its responses using the same policies and 12 questions. Here, learning means **reading evaluation results and improving instructions**, not retraining model weights.
+
+<div class="hero-summary" aria-label="Lab purpose and outcomes">
+<div><strong>WHAT YOU BUILD</strong><span>A policy-grounded support Agent and a comparison record containing actual responses and evaluator reasons.</span></div>
+<div><strong>WHY IT MATTERS</strong><span>Explain improvement using matched conditions, scores, evidence, and failures rather than one convincing answer.</span></div>
+<div><strong>HOW YOU PROCEED</strong><span>Prepare → evaluate v1 → analyze weaknesses → improve instructions → reevaluate → clean up.</span></div>
+<div><strong>WHAT YOU KEEP</strong><span>Actual run IDs, dataset hashes, an accept/retain/hold decision, and deletion or retention-handoff evidence.</span></div>
+</div>
+
 <ol class="learning-path" role="list" aria-label="Lab steps">
 <li><a href="#setup"><strong>01</strong> Check your account, computer, and access</a></li>
 <li><a href="#resources"><strong>02</strong> Create the Foundry environment</a></li>
@@ -19,6 +28,14 @@
 
 Use **your own representative tasks and business criteria**, not a public benchmark alone. Synthetic Contoso policies demonstrate **evaluate → learn → improve → reevaluate** without publishing private customer data.
 
+| Where you work | What you do there |
+|---|---|
+| [Azure Portal](https://portal.azure.com) | Verify identity, subscription, permissions, actual resources, and deletion scope. |
+| Local terminal | Prepare files and the virtual environment, then run authorized setup and ID-lookup commands. |
+| [Microsoft Foundry](https://ai.azure.com) | Inspect the project, Agent, and policy tool; run evaluations and Optimizer; read comparisons. |
+
+**How to read a step:** Start with its **what, why, and how** panel. Follow the commands or numbered actions, and find the controls named in each screenshot caption. Check the final **completion criteria** before continuing. Opening a screen or marking a section as read does not complete a live operation.
+
 **How to follow this guide:** Steps 01–03 prepare the environment; 04–09 use the Foundry portal for evaluation and improvement. Unless stated otherwise, run commands from the repository's top-level folder. Replace `YOUR_...` placeholders with your own values. Names in illustrative output and historical screenshots are not your resource names.
 
 | Before you start | Guidance |
@@ -31,20 +48,34 @@ Use **your own representative tasks and business criteria**, not a public benchm
 
 **Version meaning:** v1/v2 are complete Foundry Agent versions. Keep the model, tools, and output format fixed; change only instructions. Do not weaken v1 or promise an improvement before measuring it. In a new lab, v2 is initially a comparison candidate; creating it is not acceptance or production approval.
 
-<p class="output-notice" id="portal-screenshots-note"><strong>How to read the pictures:</strong> These real English portal captures illustrate control locations from an earlier UI session. Their model names, versions and scores are not the current Sol verification. The <a href="verification.md">latest v2 report</a> is the authoritative measured comparison and includes every actual question, response, score and reason. Korean guide text does not mean a Korean run was executed.</p>
+<p class="output-notice" id="portal-screenshots-note"><strong>How to read the pictures:</strong> These are real Portal captures made with Playwright Headless. Steps 01–03 and 10 were illustrated on 2026-10-03: two subscription/access views are shared administrative controls; six additional views use the existing English lab. Controls are English. Identifying information is masked, not statuses, instructions, or scores. No creation, saving, chat, or final deletion was submitted. Compare names with your own environment. Neither earlier evaluation pictures nor new captures replace the <a href="verification.md">measured quality report</a>.</p>
 
 ## 01. Check your account, computer, and access {#setup}
 
 <a id="environment"></a><a id="sdk-prerequisites"></a>
 
-**Goal:** Confirm your Azure subscription and local execution environment. This step does not create Azure resources.
+<div class="lab-concept" data-learning-frame="setup">
+<p><strong>What:</strong> Confirm the Azure subscription, access, and local execution environment.</p>
+<p><strong>Why:</strong> Different browser and CLI identities can cause access failures or create resources in the wrong environment.</p>
+<p><strong>How · where:</strong> Check subscription/access in Azure Portal, then compare tools, login, and language settings in the terminal. No Azure resources are created yet.</p>
+</div>
 
 ### Confirm your Azure account and subscription {#setup-account}
 
 1. Sign in to the [Azure portal](https://portal.azure.com). If you do not have an account, follow the [Azure account instructions](https://azure.microsoft.com/pricing/purchase-options/azure-account) to obtain your own or an organization-provided account. For an organization account, first request access to the approved subscription.
-2. Search for **Subscriptions** in the top search box and open the intended subscription. Confirm **Enabled** and record its **Subscription ID** and **Directory/Tenant ID**. If it is missing, check the directory and subscription filters under your account.
-3. Open **Access control (IAM) → View my access**. The automated setup requires both resource creation and role-assignment permissions. Contributor alone does not grant role-assignment authority. See [required access and administrator requests](admin-setup.md#rbac).
+2. Search for **Subscriptions** in the top search box and open the intended subscription. Confirm portal status **Active** and record its **Subscription ID** and **Directory/Tenant ID**. The CLI describes the same usable subscription as **Enabled**. If it is missing, check directory and subscription filters under your account.
+3. Open **Access control (IAM) → Check access** and inspect your assignments. Older UI versions may label this **View my access**. Automated setup requires both resource creation and role-assignment permissions. Contributor alone does not grant role-assignment authority. See [required access and administrator requests](admin-setup.md#rbac).
 4. Agree on a budget, end time, and cleanup owner. Do not create resources without subscription access and cost authorization. Do not grant new subscription-wide Owner access or disable organizational security controls as a shortcut.
+
+<figure class="portal-shot" id="portal-subscription-overview" data-capture-scope="shared">
+<img src="../../web/assets/portal/shared/21-subscription-overview.png" alt="Actual Azure subscription Overview showing Essentials, Subscription ID, Directory, Status, and My role; identity and billing details are masked or cropped." width="1440" height="347" loading="lazy">
+<figcaption><strong>Check the subscription and status.</strong> Find Subscription ID, Directory, Status, and My role under Essentials. Portal <strong>Active</strong> and CLI <strong>Enabled</strong> describe the same usable state. This administrative view is shared between the two guide languages. <a href="../../web/assets/portal/shared/21-subscription-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-check-access" data-capture-scope="shared">
+<img src="../../web/assets/portal/shared/22-check-access.png" alt="Actual Azure Portal Access control IAM and Check access page showing active role and scope, with user identity masked." width="1440" height="850" loading="lazy">
+<figcaption><strong>Read the role and its scope together.</strong> Find Access control (IAM) on the left, Check access at the top, and active assignments below. Owner was already assigned to the capture account; the picture is not a recommendation to grant participants that role. <a href="../../web/assets/portal/shared/22-check-access.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
 
 ### Install tools and download the lab {#setup-local}
 
@@ -116,7 +147,7 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-en/artifacts"
 
 Repeat virtual-environment activation and these two settings in each new terminal. Never change `LAB_LANGUAGE` while reusing another language's run folder. The generated `.env` is configuration, not a shell or PowerShell script; do not execute or `source` it.
 
-**Completion signal:** The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see [environment troubleshooting](troubleshooting.md#environment).
+**Completion criteria:** The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see [environment troubleshooting](troubleshooting.md#environment).
 
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Foundry environment →</a></p>
 
@@ -124,13 +155,18 @@ Repeat virtual-environment activation and these two settings in each new termina
 
 <a id="first-infrastructure-failure"></a>
 
-**Goal:** Create a Foundry project, model deployments, policy search, and monitoring within a dedicated resource group. For a prepared environment, skip creation and compare the handoff with the actual portal resources.
+<div class="lab-concept" data-learning-frame="resources">
+<p><strong>What:</strong> Prepare a Foundry project, models, Search, and monitoring in a dedicated resource group.</p>
+<p><strong>Why:</strong> The group bounds cost and cleanup; the project organizes Agents and evaluations. An empty project alone does not provide policy retrieval.</p>
+<p><strong>How · where:</strong> Plan, authorize, and provision from the terminal, then compare both portals with the outputs. Reuse a prepared environment instead of creating duplicates.</p>
+</div>
 
 ```text
 Azure subscription
 └─ Dedicated lab resource group
-   ├─ Foundry resource → project → Agent, evaluations, data
-   │                    └─ Four role-specific model deployments
+   ├─ Foundry resource
+   │  ├─ Four role-specific model deployments
+   │  └─ Project → Agent, evaluations, data
    ├─ Azure AI Search → read-only Contoso policy retrieval
    └─ Application Insights + Log Analytics → monitoring and logs
 ```
@@ -184,15 +220,30 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 The first command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second `apply` in another terminal. Confirm **APPLIED**, a generated `.lab/lab-en/.env`, and `status` showing `phase: succeeded` with the expected resources present. After a timeout, inspect `status` first and follow the [resume procedure](troubleshooting.md#provisioning).
 
 1. In [Azure Portal](https://portal.azure.com) → **Resource groups**, search for `names.resource_group` from `config.json`. Confirm the subscription, region, and complete resource list.
-2. Open [Foundry](https://ai.azure.com) with **New Foundry** enabled. Select the project matching `names.project` from the upper-left project selector. Do not use a Classic hub-based project.
+2. Open [Foundry](https://ai.azure.com) with **New Foundry** enabled. If **Select a project to continue** appears, choose `names.project` and select **Let's go**. Read and **Close** the welcome tour if shown. If already in New Foundry, use the upper-left project selector. Do not use a Classic hub-based project.
 3. In the project's **Overview**, find its endpoint. It must match `AZURE_AI_PROJECT_ENDPOINT` in `.env`, in the form `https://account.services.ai.azure.com/api/projects/project`.
 4. In **Models + endpoints** or **Build → Models**, locate the deployments matching `.env` values `MODEL_DEPLOYMENT`, `JUDGE_DEPLOYMENT`, `OPTIMIZER_DEPLOYMENT`, and `EMBEDDING_DEPLOYMENT`. See [portal orientation](admin-setup.md#prepare) if labels differ.
+
+<figure class="portal-shot" id="portal-created-resources">
+<img src="../../web/assets/portal/en/23-resource-group.png" alt="Actual Overview of the existing English lab resource group, including Foundry, project, Search, monitoring resources, and preserved earlier deployment failures." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Compare the plan with actual resources.</strong> Check the group name and Location, then identify Foundry, Foundry project, Search, Application Insights, and Log Analytics. Earlier Failed deployment history remains visible. This existing environment is not presented as a new bootstrap success. <a href="../../web/assets/portal/en/23-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-select-project" data-capture-layout="dialog">
+<img src="../../web/assets/portal/en/24-select-project.png" alt="Actual New Foundry entry dialog with the existing English project selected; this selects a project rather than creating one." width="640" height="474" loading="lazy">
+<figcaption><strong>Select the project you prepared.</strong> Compare its name with <code>names.project</code> and open it with Let's go. This selects an existing project; it does not create another. After bootstrap, do not use Create a new project to duplicate the environment. <a href="../../web/assets/portal/en/24-select-project.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-project-endpoint">
+<img src="../../web/assets/portal/en/25-project-overview.png" alt="Existing English Foundry project Home showing the selected project, New Foundry, View deployments, and two endpoint fields with identifying values masked." width="1440" height="492" loading="lazy">
+<figcaption><strong>Check the project and endpoint.</strong> First confirm the upper-left project name. The value to copy and compare is <strong>Project endpoint</strong>, not Azure OpenAI endpoint. Open the model list through View deployments. Read masked values in your own portal. <a href="../../web/assets/portal/en/25-project-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
 
 ```bash
 python -m lab --config .lab/lab-en/.env preflight
 ```
 
-**Completion signal:** Runtime preflight reports `PASS`; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.
+**Completion criteria:** Runtime preflight reports `PASS`; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.
 
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
 
@@ -200,7 +251,11 @@ python -m lab --config .lab/lab-en/.env preflight
 
 <a id="model-smoke"></a><a id="iq"></a>
 
-**Goal:** Prepare a read-only synthetic-policy tool and a pinned v1 Agent. These operations can transmit synthetic data and incur model charges. Run each once within the authorization from 02.
+<div class="lab-concept" data-learning-frame="agent">
+<p><strong>What:</strong> Connect a read-only synthetic-policy tool to the pinned v1 baseline Agent.</p>
+<p><strong>Why:</strong> Recalling a policy is not the same as retrieving it. Retrieval under your user identity does not establish access for the Agent's managed identity.</p>
+<p><strong>How · where:</strong> Prepare model, retrieval, and Agent from the terminal; inspect instructions, tools, and an actual response in Foundry. Transmit data and make calls once within the approved scope.</p>
+</div>
 
 ### Verify the model and policy retrieval {#agent-knowledge}
 
@@ -214,6 +269,13 @@ The first command obtains a real model response. The second prepares the [eight 
 
 Confirm smoke `status: completed`, knowledge setup `uploaded_documents: 8`, and retrieval **`status: retrieval_verified`** with nonempty references. `created_not_retrieval_tested` means creation only, not successful retrieval. If Search is not ready, preserve the records and follow [retrieval troubleshooting](troubleshooting.md#knowledge).
 
+In the portal, open **Build → Knowledge → Knowledge bases** and inspect Connection, the created knowledge base, and Knowledge sources. One knowledge-base row does not mean there is only one policy document.
+
+<figure class="portal-shot" id="portal-policy-connection">
+<img src="../../web/assets/portal/en/26-knowledge-base.png" alt="Actual Knowledge Foundry IQ page in the English lab with the Connection, knowledge-base row, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
+<figcaption><strong>Confirm the policy connection.</strong> Inspect Connection, Knowledge sources, and Active for the intended base. Active is registration state; verify actual retrieval with <code>iq probe</code>. The free-retrieval banner does not make the whole lab free, and setup inspection does not require changing the billing plan. <a href="../../web/assets/portal/en/26-knowledge-base.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 ### Create v1 with the fixed comparison configuration {#agent-create}
 
 ```bash
@@ -222,13 +284,18 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 
 This creates **`lab-en-iq` version `1`** using `prompts/en/baseline.txt`, the verified policy tool, and strict four-field JSON output. Record `agent_name`, `version`, and `receipt`. The command reuses an identical v1 in the same owned workspace; it does not adopt an unrelated same-named Agent or create v3.
 
+<figure class="portal-shot" id="portal-agent-configuration">
+<img src="../../web/assets/portal/en/27-agent-configuration.png" alt="Actual version-1 English Sol Agent Playground showing Model, Instructions, connected Knowledge, and empty Chat; Save is disabled and no message was sent." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Check version, instructions, and Knowledge.</strong> Locate Version above, Model and Instructions on the left, Knowledge below, and Chat on the right. The policy MCP connection appears under Knowledge. This is the existing English v1, whose displayed instruction hash matched the baseline source. Save was disabled and no chat was sent; use your own Agent name. <a href="../../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 In the portal, open **Build → Agents → lab-en-iq → version 1**. Use the command's actual Agent name. Send this one question in **Test/Playground**:
 
 > I first purchased a monthly subscription in September 2026. What are the refund application conditions?
 
 Check for `answer`, `citations`, `route`, and `needs_human`. Inspect the execution details for a real **`knowledge_base_retrieve` call and response**. Compare `ATLAS-*` policy IDs with the answer's evidence. Direct retrieval can succeed while the Agent fails because its managed identity has different access.
 
-**Completion signal:** Your pinned v1 answers a real question and uses the policy tool. Connection success or valid JSON alone is not measured quality. Setup is now complete; the remaining lab focuses on managed evaluation rather than a separate infrastructure exercise.
+**Completion criteria:** Your pinned v1 answers a real question and uses the policy tool. Connection success or valid JSON alone is not measured quality. Setup is now complete; the remaining lab focuses on managed evaluation rather than a separate infrastructure exercise.
 
 <p class="step-next no-print"><a href="#start" data-next-step>Next: 04. Register the dataset →</a></p>
 
@@ -236,7 +303,13 @@ Check for `answer`, `citations`, `route`, and `needs_human`. Inspect the executi
 
 <a id="demo"></a><a id="understand"></a><a id="data"></a>
 
-**Goal:** Register **[data/en/optimizer/dev.jsonl](../../data/en/optimizer/dev.jsonl)** unchanged: **12 JSONL rows**. JSONL contains one JSON object per line. Do not convert it to Excel, CSV, or a JSON array.
+<div class="lab-concept" data-learning-frame="start">
+<p><strong>What:</strong> Register the English dev12 file once so both versions receive the same questions.</p>
+<p><strong>Why:</strong> Changing questions or reference answers obscures the instruction change. Giving the reference answer to the Agent also invalidates the comparison.</p>
+<p><strong>How · where:</strong> Check count/hash in the terminal, then register the original file or reuse its exact version in the Foundry evaluation wizard.</p>
+</div>
+
+Use **[data/en/optimizer/dev.jsonl](../../data/en/optimizer/dev.jsonl)** unchanged: **12 JSONL rows**. JSONL contains one JSON object per line. Do not convert it to Excel, CSV, or a JSON array.
 
 ```bash
 python -c "import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())"
@@ -263,13 +336,19 @@ Choose **Individual turns** and **One time**. In a new project, select **Upload 
 <figcaption><strong>Find the dataset controls.</strong> Select the current operator-provided registration. The preview is not proof of the total row count. <a href="../../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-**Completion signal:** The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. [Data contract](../../data/README.en.md#schema).
+**Completion criteria:** The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. [Data contract](../../data/README.en.md#schema).
 
 <p class="step-next no-print"><a href="#prepare" data-next-step>Next: 05. Select evaluation criteria →</a></p>
 
 ## 05. Select evaluation criteria {#prepare}
 
 <a id="calibration"></a>
+
+<div class="lab-concept" data-learning-frame="prepare">
+<p><strong>What:</strong> Select Relevance, TaskAdherence, and the actual Judge deployment.</p>
+<p><strong>Why:</strong> Defining scales, pass rules, and mappings beforehand prevents moving the criteria after seeing results. These two evaluators use different scales.</p>
+<p><strong>How · where:</strong> Open each evaluator's settings in Foundry Criteria and confirm the threshold and Judge. Send only query to the Agent.</p>
+</div>
 
 In **Configure agents**, leave the custom prompt override unset. Input is **`{{item.query}}` only**; never append `context` or `ground_truth`. If field mapping appears, use query → query.
 
@@ -297,11 +376,17 @@ Sol's actual Agent/tool invocation was verified. Model catalog visibility alone 
 <figcaption><strong>Read each metric's own scale.</strong> Keep Relevance threshold 4, binary TaskAdherence pass 1, and the current Luna Judge. <a href="../../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-**Completion signal:** The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.
+**Completion criteria:** The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.
 
 <p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run Foundry Evaluation →</a></p>
 
 ## 06. Run Foundry Evaluation {#baseline}
+
+<div class="lab-concept" data-learning-frame="baseline">
+<p><strong>What:</strong> Generate real responses from pinned v1 and collect managed scores and reasons.</p>
+<p><strong>Why:</strong> A candidate needs a recorded starting point for comparison. Completed means processing ended, not that every response was correct.</p>
+<p><strong>How · where:</strong> Review and submit once in Foundry, inspect all 12 items, and use read-only terminal lookup to record the actual evaluation and run IDs.</p>
+</div>
 
 Review **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. Name the new evaluation **`lab-en-learning-loop`** and, if a run-name field is available, name the baseline **`baseline-v1`**. In a prepared class, use the operator's names. When only reading the recorded rehearsal, open its existing completed run rather than submitting another.
 
@@ -322,13 +407,19 @@ python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 
 Record `evaluation_id` and the `run_id` whose **`agent_version` is `"1"` and `status` is `completed`**. Evaluation IDs use `eval_...`; run IDs use `evalrun_...`. They are not interchangeable. If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. This command submits nothing.
 
-**Completion signal:** The real Foundry run is Completed and exposes 12 output items. Record failed/error counts in `result_counts` too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.
+**Completion criteria:** The real Foundry run is Completed and exposes 12 output items. Record failed/error counts in `result_counts` too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.
 
 <p class="step-next no-print"><a href="#analyze" data-next-step>Next: 07. Read scores and reasons →</a></p>
 
 ## 07. Read scores and reasons {#analyze}
 
 <a id="score-rubric"></a><a id="worked-evaluation"></a>
+
+<div class="lab-concept" data-learning-frame="analyze">
+<p><strong>What:</strong> Connect actual responses and evaluator reasons to policy evidence.</p>
+<p><strong>Why:</strong> An average can hide a date, citation, or routing failure. Explain the defect before deciding which instruction to change.</p>
+<p><strong>How · where:</strong> Read Foundry detailed metrics, User view, and the source policy together; record a hypothesis and behaviors to preserve in notes.md.</p>
+</div>
 
 Read summary counts and **Detailed metrics result**, especially **`Relevance.reason`** and **`TaskAdherence.reason`**. `conversation_id → User view` opens the actual question/answer, not an inline Judge-reason panel.
 
@@ -360,13 +451,19 @@ Create `.lab/lab-en/notes.md` in your editor and fill in this worksheet with you
 
 <p class="share-checkpoint" id="share-baseline"><strong>Discuss:</strong> State the run ID, each metric's scale/pass count, a concrete problematic answer and the instruction behavior you want to improve.</p>
 
-**Completion signal:** You can explain a real weakness and a supported improvement hypothesis, not just an average.
+**Completion criteria:** You can explain a real weakness and a supported improvement hypothesis, not just an average.
 
 <p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
 
 ## 08. Improve instructions with Agent Optimizer {#optimize}
 
 <a id="tune"></a>
+
+<div class="lab-concept" data-learning-frame="optimize">
+<p><strong>What:</strong> Generate instruction candidates with Agent Optimizer and review the changes.</p>
+<p><strong>Why:</strong> Candidate generation does not guarantee improvement. A higher internal rank cannot justify invented policy or changed model/tool conditions.</p>
+<p><strong>How · where:</strong> Run Instruction only in Foundry and inspect View changes. Save complete reviewed instructions and their actual provenance privately.</p>
+</div>
 
 Open **Build → Agents → lab-en-iq → Optimize Preview/Optimize → Agent**, not Cost. For a new job, select **Create an optimization run** or **Create optimization run**. If preview access or model support differs in your subscription, see [Optimizer troubleshooting](troubleshooting.md#optimizer).
 
@@ -414,7 +511,7 @@ Inspect original/candidate scores and **View changes**. The internal **0–1 ran
 
 <p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Which instruction behavior changed, what should improve, and what could regress? Identify the actual candidate rather than copying an old screenshot.</p>
 
-**Completion signal:** Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.
+**Completion criteria:** Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.
 
 <p class="step-next no-print"><a href="#decision" data-next-step>Next: 09. Reevaluate and compare v1/v2 →</a></p>
 
@@ -422,7 +519,13 @@ Inspect original/candidate scores and **View changes**. The internal **0–1 ran
 
 <a id="review"></a><a id="operate"></a>
 
-**Goal:** Evaluate changed instructions while keeping the model, tools, dataset, evaluators, and Judge fixed. First create v2 of the same Agent once from your reviewed file. This preserves v1 and does not publish to production.
+<div class="lab-concept" data-learning-frame="decision">
+<p><strong>What:</strong> Reevaluate changed instructions under the same definition and record retain v1, accept v2, or hold.</p>
+<p><strong>Why:</strong> A v2 label is not improvement evidence. Consider actual errors, latency/tokens, and statistical uncertainty alongside quality.</p>
+<p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case in Foundry Compare runs. Do not publish to production.</p>
+</div>
+
+Keep the model, tools, dataset, evaluators, and Judge fixed. Create v2 of the same Agent once from your reviewed file and preserve v1.
 
 ```bash
 python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
@@ -462,7 +565,7 @@ The current [v2 verification](verification.md#status) publishes all 12 case resp
 
 In `notes.md`, record v1/v2 pass counts and means per metric, errors, latency/tokens, statistical results, and your decision side by side. If improvement criteria are not met, **retain v1 or hold the decision**. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.
 
-**Completion signal:** Record the two actual run IDs, complete same-criteria comparison, and the reasons for accepting, retaining, or holding. Do not accumulate release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.
+**Completion criteria:** Record the two actual run IDs, complete same-criteria comparison, and the reasons for accepting, retaining, or holding. Do not accumulate release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.
 
 <p class="step-next no-print"><a href="#cleanup" data-next-step>Next: 10. Save results and delete resources →</a></p>
 
@@ -470,7 +573,13 @@ In `notes.md`, record v1/v2 pass counts and means per metric, errors, latency/to
 
 <a id="troubleshooting"></a><a id="sources"></a>
 
-**Goal:** Preserve necessary evidence and remove unused lab resources. **Closing a browser, deleting an Agent, or running `cleanup` does not by itself stop all resource-group charges.**
+<div class="lab-concept" data-learning-frame="cleanup">
+<p><strong>What:</strong> Preserve results, then remove your lab resources or hand them to an approved retention owner.</p>
+<p><strong>Why:</strong> Search and logs can remain after the browser closes. Deleting the wrong shared group can also remove someone else's resources.</p>
+<p><strong>How · where:</strong> Verify exact targets, ownership, and authorization in Azure Portal and the terminal, then verify absence after deletion. The pictured confirmation dialog is unsubmitted.</p>
+</div>
+
+**Closing a browser, deleting an Agent, or running `cleanup` does not by itself stop all resource-group charges.**
 
 ### Preserve records before deletion {#cleanup-records}
 
@@ -515,6 +624,11 @@ az resource list --subscription "YOUR_SUBSCRIPTION_ID" --resource-group "YOUR_LA
 1. **Portal:** Azure Portal → Resource groups → exact group → **Delete resource group**. Read the deletion inventory, type the requested group name, and confirm.
 2. **CLI:** Run the command below and review the target again at the confirmation prompt. Do not append `--yes` to bypass confirmation.
 
+<figure class="portal-shot" id="portal-delete-review">
+<img src="../../web/assets/portal/en/28-delete-review.png" alt="Actual pre-deletion review for the English lab group showing the resource inventory, empty name-confirmation field, and disabled Delete button." width="1440" height="1000" loading="lazy">
+<figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Compare the group and every resource above, then locate Enter resource group name to confirm deletion below. “Resources being deleted” describes the proposed list, not completed deletion. During capture, the field remained empty, Delete stayed disabled, and the pane was closed with Cancel. Execute deletion only after authorization. <a href="../../web/assets/portal/en/28-delete-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 ```bash
 az group delete --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GROUP"
 ```
@@ -529,4 +643,4 @@ Authentication or network errors are not `false` and do not prove deletion. If `
 
 Afterward, open **Cost Management → Cost analysis** for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.
 
-**Final completion signal:** Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete `.lab` first and lose ownership evidence. See the [operator cleanup worksheet](admin-setup.md#cleanup) and [execution issue record](troubleshooting.md#verification) for the remaining boundaries.
+**Final completion criteria:** Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete `.lab` first and lose ownership evidence. See the [operator cleanup worksheet](admin-setup.md#cleanup) and [execution issue record](troubleshooting.md#verification) for the remaining boundaries.

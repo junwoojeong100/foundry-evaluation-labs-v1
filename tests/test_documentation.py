@@ -28,6 +28,12 @@ SUBSTEPS = {
     "agent": ["agent-knowledge", "agent-create"],
     "cleanup": ["cleanup-records", "cleanup-scope", "cleanup-delete"],
 }
+ONBOARDING_IMAGES = {
+    "23-resource-group.png", "24-select-project.png", "25-project-overview.png",
+    "26-knowledge-base.png", "27-agent-configuration.png", "28-delete-review.png",
+}
+SHARED_IMAGES = {"21-subscription-overview.png", "22-check-access.png"}
+SHARED_CAPTURES = ROOT / "web/assets/portal/shared"
 
 
 class LinkParser(HTMLParser):
@@ -57,6 +63,8 @@ class LearningPathParser(LinkParser):
         self.overview_links = []
         self.next_links = []
         self.sharing_checkpoints = []
+        self.learning_frames = []
+        self.step_figures = []
         self.in_article = False
         self.in_toc = False
         self.in_overview = False
@@ -74,6 +82,10 @@ class LearningPathParser(LinkParser):
             self.chapters.append(attrs.get("id"))
         if self.in_article and tag == "h3":
             self.subchapters.append(attrs.get("id"))
+        if self.in_article and "data-learning-frame" in attrs:
+            self.learning_frames.append((attrs["data-learning-frame"], self.chapters[-1] if self.chapters else None))
+        if self.in_article and tag == "figure" and "portal-shot" in attrs.get("class", "").split():
+            self.step_figures.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
         if self.in_article and tag == "p" and "share-checkpoint" in attrs.get("class", "").split():
             self.sharing_checkpoints.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
         if tag == "a":
@@ -103,7 +115,10 @@ class PortalFigureParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "figure" and "portal-shot" in attrs.get("class", "").split():
-            self.current = {"id": attrs.get("id"), "images": [], "links": [], "caption": ""}
+            self.current = {
+                "id": attrs.get("id"), "images": [], "links": [], "caption": "",
+                "capture_scope": attrs.get("data-capture-scope"),
+            }
         if self.current is not None:
             if tag == "img":
                 self.current["images"].append(attrs)
@@ -387,12 +402,20 @@ class DocumentationTests(unittest.TestCase):
 
     def test_actual_screenshot_provenance_dimensions_and_redactions_match(self):
         hashes = {}
-        for language in ("en", "ko"):
-            directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
+        directories = {
+            "en": ROOT / "web/assets/portal/en",
+            "ko": ROOT / "web/assets/portal",
+            "not_applicable": SHARED_CAPTURES,
+        }
+        for language, directory in directories.items():
             manifest = json.loads((directory / "captures.json").read_text())
             self.assertTrue(manifest["headless_verified"])
             self.assertEqual(manifest["data_language"], language)
             self.assertEqual(manifest["ui_language"], "en-US")
+            if language == "not_applicable":
+                self.assertEqual(set(manifest["intended_guide_languages"]), {"en", "ko"})
+                self.assertFalse(manifest["new_paid_runs_submitted"])
+                self.assertFalse(manifest["cloud_configuration_changed"])
             captures = {item["file"]: item for item in manifest["screenshots"]}
             self.assertEqual(len(captures), len(manifest["screenshots"]))
             self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
@@ -408,6 +431,7 @@ class DocumentationTests(unittest.TestCase):
                     self.assertTrue(record["redactions"])
                     self.assertNotIn("?", record["route"])
         self.assertTrue(hashes["en"].isdisjoint(hashes["ko"]))
+        self.assertTrue(hashes["not_applicable"].isdisjoint(hashes["en"] | hashes["ko"]))
 
     def test_screenshots_use_the_document_language_in_sources_pages_and_print(self):
         required = {
@@ -426,10 +450,15 @@ class DocumentationTests(unittest.TestCase):
                 "19-evaluation-case.png", "20-evaluation-comparison.png",
             },
         }
+        for images in required.values():
+            images.update(ONBOARDING_IMAGES | SHARED_IMAGES)
+        shared = json.loads((SHARED_CAPTURES / "captures.json").read_text())
+        shared_records = {item["file"]: item for item in shared["screenshots"]}
+        self.assertEqual(set(shared_records), SHARED_IMAGES)
         for language, prefix in (("en", ""), ("ko", "ko/")):
             directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
             manifest = json.loads((directory / "captures.json").read_text())
-            captures = {item["file"]: item for item in manifest["screenshots"]}
+            captures = {**shared_records, **{item["file"]: item for item in manifest["screenshots"]}}
 
             def inspect(path, *, full_size_links=True):
                 text = path.read_text()
@@ -441,7 +470,10 @@ class DocumentationTests(unittest.TestCase):
                         continue
                     target = (path.parent / unquote(url.path)).resolve()
                     if target.is_relative_to(ROOT / "web/assets/portal"):
-                        self.assertEqual(target.parent, directory, (path, value))
+                        allowed = {directory, SHARED_CAPTURES}
+                        if target.name == "captures.json":
+                            allowed.update({ROOT / "web/assets/portal", ROOT / "web/assets/portal/en"})
+                        self.assertIn(target.parent, allowed, (path, value))
                 page = PortalFigureParser()
                 page.feed(text)
                 for figure in page.figures:
@@ -450,7 +482,12 @@ class DocumentationTests(unittest.TestCase):
                         self.assertEqual(len(figure["images"]), 1)
                         image = figure["images"][0]
                         image_path = (path.parent / image["src"]).resolve()
-                        self.assertEqual(image_path.parent, directory)
+                        self.assertIn(image_path.parent, {directory, SHARED_CAPTURES})
+                        if image_path.parent == SHARED_CAPTURES:
+                            self.assertIn(image_path.name, SHARED_IMAGES)
+                            self.assertEqual(figure["capture_scope"], "shared")
+                        else:
+                            self.assertNotEqual(figure["capture_scope"], "shared")
                         self.assertIn(image_path.name, captures)
                         record = captures[image_path.name]
                         self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
@@ -477,6 +514,75 @@ class DocumentationTests(unittest.TestCase):
             book = inspect(SITE / prefix / "print.html", full_size_links=False)
             self.assertEqual({figure["id"] for figure in book}, book_ids)
             self.assertCountEqual([Path(figure["images"][0]["src"]).name for figure in book], used)
+
+    def test_every_step_explains_what_why_how_and_new_steps_have_real_images(self):
+        expected_figures = {
+            "setup": ["portal-subscription-overview", "portal-check-access"],
+            "resources": ["portal-created-resources", "portal-select-project", "portal-project-endpoint"],
+            "agent": ["portal-policy-connection", "portal-agent-configuration"],
+            "cleanup": ["portal-delete-review"],
+        }
+        for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
+            page = LearningPathParser()
+            page.feed((SITE / filename).read_text())
+            self.assertEqual(page.learning_frames, [(step, step) for step in STEPS])
+            for step, identifiers in expected_figures.items():
+                self.assertEqual([identifier for identifier, chapter in page.step_figures if chapter == step], identifiers)
+            intro = self.source(language).split("## 01.", 1)[0]
+            for term in (
+                "hero-summary", "Contoso Atlas Cloud", "12", "Azure Portal", "Microsoft Foundry",
+                "WHY IT MATTERS" if language == "en" else "중요한 이유",
+                "model weights" if language == "en" else "모델 가중치",
+            ):
+                self.assertIn(term, intro)
+
+    def test_onboarding_capture_provenance_keeps_cloud_changes_and_deletion_unsubmitted(self):
+        for language in ("en", "ko"):
+            directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
+            text = (directory / "captures.json").read_text()
+            manifest = json.loads(text)
+            observation = manifest["onboarding_capture_verification"]
+            self.assertTrue(observation["headless_user_agent_verified"])
+            self.assertEqual(observation["language_specific_new_screenshots"], 6)
+            self.assertEqual(observation["shared_administrative_screenshots"], 2)
+            for count in ("resource_count", "agent_count", "agent_version_count", "evaluation_count", "evaluation_run_count"):
+                self.assertEqual(observation[count + "_before"], observation[count + "_after"])
+            self.assertTrue(observation["resource_ids_agent_versions_and_run_ids_unchanged"])
+            for flag in (
+                "new_paid_runs_submitted", "agent_save_or_chat_submitted",
+                "resource_creation_or_deletion_submitted", "authentication_state_exported_to_disk",
+            ):
+                self.assertFalse(observation[flag])
+            self.assertTrue(observation["temporary_login_browser_closed"])
+            self.assertTrue(observation["authenticated_headless_context_closed"])
+            captures = {item["file"]: item for item in manifest["screenshots"]}
+            for filename in ONBOARDING_IMAGES:
+                self.assertEqual(captures[filename]["capture_session_date"], "2026-10-03")
+            deletion = captures["28-delete-review.png"]
+            self.assertTrue(deletion["confirmation_empty"])
+            self.assertTrue(deletion["final_delete_disabled"])
+            self.assertFalse(deletion["deletion_submitted"])
+            agent = captures["27-agent-configuration.png"]
+            self.assertEqual(agent["agent_version"], "1")
+            self.assertTrue(agent["save_disabled"])
+            self.assertFalse(agent["chat_submitted"])
+            self.assertNotRegex(text, r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|/Users/|Bearer |sig=")
+        english = json.loads((ROOT / "web/assets/portal/en/captures.json").read_text())
+        agent = next(item for item in english["screenshots"] if item["file"] == "27-agent-configuration.png")
+        self.assertEqual(agent["instructions_sha256"], hashlib.sha256((ROOT / "prompts/en/baseline.txt").read_bytes()).hexdigest())
+
+    def test_reference_format_is_attributed_without_changing_the_lab_contract(self):
+        reference = "https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html"
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            self.assertIn(reference, (folder / "verification.md").read_text())
+            source = self.source(language)
+            self.assertIn("Active", source)
+            self.assertIn("Enabled", source)
+            self.assertIn("Check access", source)
+            self.assertIn("View my access", source)
+            self.assertIn("Select a project to continue", source)
+            self.assertIn("Let's go", source)
 
     def test_every_english_screenshot_has_a_korean_counterpart_with_the_same_anchor(self):
         english = {document.key: document for document in documents_for("en")}

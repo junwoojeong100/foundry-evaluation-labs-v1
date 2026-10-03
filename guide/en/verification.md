@@ -96,6 +96,10 @@ The [capture manifest](../../web/assets/portal/en/captures.json) and [NOTICE](..
 
 Official references: [Agent evaluation](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent) · [Agent Optimizer](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent) · [Optimization-model roles](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models) · [Evaluator definitions](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators).
 
+**Presentation reference:** The [Microsoft Foundry Labs v1.5 guide](https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html) informed the arrangement of goals, concept maps, preparation, execution, success criteria, and troubleshooting. Only presentation structure was used, not its data, instructions, scoring approach, or measured results. This repository retains its ten-step path, managed evaluation contract, and fixed v1/v2 comparison.
+
+**Additional captures on 2026-10-03:** Steps 01–03 and 10 now include two shared administrative views and six environment-specific views per language: 14 new files, with 20 screenshots in each complete edition. Resource IDs, Agent versions, and evaluation/run IDs matched before and after; deletion fields remained empty and both review panes were closed with Cancel. See [capture scope and resolutions](troubleshooting.md#portal-captures).
+
 Contoso data is synthetic. Earlier design attribution remains at the [archived source commit][source-workshop]; it is not another current verification report.
 
 ## Recheck local deliverables {#update}

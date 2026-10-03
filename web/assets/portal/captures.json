@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "captured_date": "2026-10-01",
+  "captured_date": "2026-10-03",
   "date_timezone": "Asia/Seoul",
   "portal_origin": "https://ai.azure.com",
   "tool": "playwright-headless.browser_run_code_unsafe",
@@ -11,6 +11,31 @@
   "scope": "Existing dedicated Korean-data Contoso lab only. Portal controls are English; Korean questions and instructions are not translated English-run images. Route templates omit tenant, subscription and resource identifiers.",
   "new_paid_runs_submitted": false,
   "cloud_configuration_changed": false,
+  "onboarding_capture_verification": {
+    "captured_date": "2026-10-03",
+    "headless_user_agent_verified": true,
+    "language_specific_new_screenshots": 6,
+    "shared_administrative_screenshots": 2,
+    "resource_count_before": 5,
+    "resource_count_after": 5,
+    "agent_count_before": 3,
+    "agent_count_after": 3,
+    "agent_version_count_before": 4,
+    "agent_version_count_after": 4,
+    "evaluation_count_before": 2,
+    "evaluation_count_after": 2,
+    "evaluation_run_count_before": 7,
+    "evaluation_run_count_after": 7,
+    "resource_ids_agent_versions_and_run_ids_unchanged": true,
+    "new_paid_runs_submitted": false,
+    "agent_save_or_chat_submitted": false,
+    "resource_creation_or_deletion_submitted": false,
+    "delete_confirmation_empty": true,
+    "final_delete_button_disabled": true,
+    "authentication_state_exported_to_disk": false,
+    "temporary_login_browser_closed": true,
+    "authenticated_headless_context_closed": true
+  },
   "additional_capture_verification": {
     "captured_date": "2026-10-01",
     "headless_user_agent_verified": true,
@@ -24,6 +49,68 @@
   },
   "edits": "Crop and opaque privacy masks only; no status, score or content replacement.",
   "screenshots": [
+    {
+      "file": "23-resource-group.png",
+      "capture_session_date": "2026-10-03",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{korean-lab-resource-group}/overview",
+      "state": "existing-Korean-lab-inventory; five resources; earlier failed deployment history preserved; not a new bootstrap execution",
+      "redactions": ["profile", "subscription-name", "subscription-id-in-embedded-React-frame", "tenant-identifiers"],
+      "width": 1440, "height": 1000,
+      "sha256": "f2973ef31cdf647a5b8a25c2cf271ff810efe902e7e04942f61ea7b20630faaf"
+    },
+    {
+      "file": "24-select-project.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/new-experience/project-selection",
+      "state": "existing-Korean-project-selected-before-navigation; not a create-project form",
+      "redactions": ["dialog-only-account-header-and-unrelated-projects-excluded"],
+      "width": 640, "height": 474,
+      "sha256": "94c5e6a6f33a0a6f18957f225e2b64b3769e9f992ee3dd60e351dab190f37591"
+    },
+    {
+      "file": "25-project-overview.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/home",
+      "state": "existing-Korean-project; project selector and endpoint controls; model catalog excluded for focus",
+      "redactions": ["profile", "welcome-name", "API-key-field", "project-endpoint", "openai-endpoint"],
+      "width": 1440, "height": 492,
+      "sha256": "2c5784072653190d82db8e68c164cc17cb4a47dd51168b12cf7703083173b1f8"
+    },
+    {
+      "file": "26-knowledge-base.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/build/knowledge",
+      "state": "existing-Korean-policy-knowledge-base-Active; connection and source inspected; no retrieval query or plan change",
+      "redactions": ["profile"],
+      "width": 1440, "height": 374,
+      "sha256": "4f7144eae7895dc3e7a42c3b577db1f23fdc82d0a669f3f998be0a2cfa7d4606"
+    },
+    {
+      "file": "27-agent-configuration.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/build/agents/{korean-iq-agent}/build",
+      "state": "existing-Korean-v1-with-policy-Knowledge; original remote instructions predate the prose revision; no configuration change or chat",
+      "agent_version": "1",
+      "save_disabled": true,
+      "chat_submitted": false,
+      "redactions": ["profile"],
+      "width": 1440, "height": 1000,
+      "sha256": "dfde43e4eb3468a3456b9eee3d3ff9bbbbd4f51b12cf257b7ff798feadd0ac7a"
+    },
+    {
+      "file": "28-delete-review.png",
+      "capture_session_date": "2026-10-03",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{korean-lab-resource-group}/delete-review",
+      "state": "unsubmitted-delete-review; five proposed resources; closed with Cancel; group still exists",
+      "confirmation_empty": true,
+      "final_delete_disabled": true,
+      "deletion_submitted": false,
+      "redactions": ["profile", "subscription-name-and-id", "subscription-column-in-embedded-delete-frame", "tenant-identifiers"],
+      "width": 1440, "height": 1000,
+      "sha256": "d39117cb6323acd08ed3f68ba0a7ceaff87dc987ebbe3dd3ad39e35014815548"
+    },
     {
       "file": "01-project-overview.png",
       "capture_session_date": "2026-09-30",

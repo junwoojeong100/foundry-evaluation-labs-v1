@@ -110,6 +110,8 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 [현재 Foundry RBAC 안내](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry)를 기준으로 권한을 확인합니다. **Foundry User/Owner/Account Owner/Project Manager**는 이전 **Azure AI User/Owner/Account Owner/Project Manager** 이름으로 보일 수 있습니다.
 
+포털의 **Access control (IAM) → Check access**에서 활성 할당과 Scope를 확인합니다. 이전 UI의 View my access와 위치가 다를 수 있습니다. [01의 실제 구독·권한 그림](handbook.md#portal-check-access)은 기존 권한을 읽는 예시이며 역할 추가 안내가 아닙니다.
+
 | 작업 주체 | 확인할 범위 |
 |---|---|
 | 새 환경 생성 운영자 | 이 bootstrap은 구독에서 리소스 그룹·배포·각 리소스 생성과 `Microsoft.Authorization/roleAssignments/write` 유효 권한을 확인합니다. 기존 승인된 프로비저닝 담당자가 수행합니다. |

@@ -116,7 +116,45 @@ Original responses, scores, reasons, and actual run IDs are in the [latest quali
 
 Follow the [Azure resource-group deletion documentation](https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group). Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.
 
-## Reproduction commands and verification scope {#verification}
+## Portal illustrations and learning structure {#portal-captures}
+
+On 2026-10-03, after the user completed login, **Playwright Headless** captured 14 new image files. The temporary login browser and authenticated headless context were closed afterward; authentication state was not exported to a file. Only opaque privacy masks and cropping were applied, without replacing statuses, failure history, or instructions.
+
+| Step illustrated | New views and what to inspect |
+|---|---|
+| 01 Environment/access | Two shared views: subscription Essentials and Check access. Distinguish status, role, and scope. |
+| 02 Provisioning checks | Three views per language: resource inventory, existing-project selection, and project endpoint. Selection is not additional creation. |
+| 03 Policy/Agent | Two views per language: Knowledge connection and pinned v1 configuration. Active/disabled Save are not retrieval or evaluation success. |
+| 10 Cleanup | One unsubmitted deletion review per language. Inspect proposed resources, empty confirmation, and disabled Delete; both panes were closed with Cancel. |
+
+Each complete edition uses its previous 12 plus eight added views, totaling 20. The two administrative views are shared rather than duplicated, so there are 14 new files. Korean and English Agent/knowledge views were captured separately in their corresponding existing projects.
+
+| Observed difference or issue | Resolution in the guide |
+|---|---|
+| The supplied reference `.htm` URL returned 404 | Verified the same repository's actual `index.ko.html`. Used only the goal/concept/preparation/execution/completion/troubleshooting structure, not its data or scoring. |
+| Portal status is Active; CLI status is Enabled | Documented the equivalent states in 01 and the caption rather than requiring identical wording. |
+| Current IAM uses Check access instead of View my access | Captured active assignments and Scope; documented both UI labels. |
+| The New Foundry toggle did not immediately become checked | The existing-project selection dialog and Let's go were required first; the guide now shows that actual step. |
+| Inventory/deletion content uses embedded React frames | Masked subscription/identity values inside the iframe as well as the outer page, then inspected the images. |
+| The deletion pane says “resources being deleted” | Clarified that this is the proposed list. Confirmation/button state and actual resource absence require separate checks. |
+| Knowledge shows a free-retrieval banner | Clarified that the whole lab is not free and no plan upgrade is required for inspection. No plan change was made. |
+
+**Observed before/after result:** Resource IDs, per-Agent version lists, and evaluation/run ID lists were compared through read-only requests.
+
+| Environment | Resources before/after | Agents/versions before/after | Evaluations/runs before/after |
+|---|---|---|---|
+| Existing Korean lab | 5 / 5 | Agents 3 / 3; versions 4 / 4 | Evaluations 2 / 2; runs 7 / 7 |
+| Existing English lab | 6 / 6 | Agents 6 / 6; versions 10 / 10 | Evaluations 6 / 6; runs 23 / 23 |
+
+No resources, Agent versions, evaluations, or Optimizer jobs were created or deleted; no chat or retrieval question was submitted. The displayed English v1 instruction hash matched the baseline source. The Korean image preserves remote v1 instructions from before the prose revision; it is not a new execution.
+
+Hashes, dimensions, redactions, and states are in the [Korean manifest](../../web/assets/portal/captures.json), [English manifest](../../web/assets/portal/en/captures.json), and [shared administrative manifest](../../web/assets/portal/shared/captures.json). Earlier images, evaluation data, and measured JSON remain unchanged.
+
+**Illustrated-edition checks:** All 582 automated checks passed. Both languages were inspected at 1440px desktop and 390px mobile with four overview cards, ten step explanations, 18 participant figures, and two operator-reference figures. New-figure language switching, progress/theme persistence, full-size image opening, and JavaScript-disabled navigation worked without page-level horizontal overflow or page errors.
+
+## Checks from the preceding ten-step revision {#verification}
+
+The 579 checks and PDFs with 12 images each below describe the **ten-step revision completed before the additional captures**. The later Portal/structure work is documented above and in the capture manifests. Earlier numbers are not relabeled as verification of new files.
 
 **Actual read-only observation:** On 2026-10-03, the existing approved environment's CLI identity matched all three expected values and its subscription was Enabled. `native-evals` retrieved completed v1/v2 runs with 12 cases each, plus a separate draft run, from `contoso-en-sol-learning-loop`. The v1 11/12 and v2 12/12 counts matched the published report. No new evaluation, optimization, Agent creation, or deletion request was sent.
 

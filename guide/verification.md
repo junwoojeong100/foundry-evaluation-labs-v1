@@ -96,6 +96,10 @@ v1 run은 **`evalrun_077d41ff8a534b9caee64f9d6c2a339d`**, 최종 정식 v2 run�
 
 공식 문서: [Agent 평가](https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent) · [Agent Optimizer](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent) · [최적화 모델 역할](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models) · [평가기 정의](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators).
 
+**안내 형식 참고:** [Microsoft Foundry 실습 가이드 v1.5](https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html)의 목표·개념 지도·준비·실행·성공 기준·문제 해결 구성을 참고했습니다. 설명 순서와 역할만 참고하며, 그 가이드의 데이터·지침·채점 방식·실측 결과를 가져오지 않았습니다. 이 저장소의 10단계, 관리형 평가 계약과 고정 v1/v2 비교는 유지합니다.
+
+**2026-10-03 추가 촬영:** 01–03·10에 공통 관리 화면 2개와 언어별 환경 화면 6개씩을 보완했습니다. 총 14개 신규 파일이며 각 언어의 전체 가이드는 20개 화면을 사용합니다. 두 환경의 리소스·Agent 버전·평가/run ID는 촬영 전후 같았고 삭제 확인란은 비워 둔 채 Cancel로 닫았습니다. [촬영 범위와 문제 해결 기록](troubleshooting.md#portal-captures)을 참조합니다.
+
 Contoso 데이터는 합성입니다. 이전 설계 출처는 [보관된 소스 커밋][source-workshop]으로 남기며 또 다른 현재 검증 기록은 아닙니다.
 
 ## 로컬 산출물 재확인 {#update}

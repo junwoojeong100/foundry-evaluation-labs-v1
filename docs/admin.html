@@ -316,6 +316,7 @@
 <p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. The operator monitors actual usage and cancels jobs or removes resources when required.</p>
 <h2 id="rbac">Verify permissions and provider registration</h2>
 <p>Follow the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. <strong>Foundry User/Owner/Account Owner/Project Manager</strong> may still appear under their former <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> names.</p>
+<p>Use <strong>Access control (IAM) → Check access</strong> to inspect active assignments and Scope. Older UI versions may use View my access. The <a href="index.html#portal-check-access">actual subscription/access illustration in 01</a> demonstrates inspection of existing access, not adding roles.</p>
 <table>
 <thead>
 <tr>

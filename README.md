@@ -10,6 +10,8 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 
 Start at 01 for first-time setup. The guide includes Windows PowerShell and macOS/Linux installation/venv commands, where to find input values, authorization fields, actual Agent creation and evaluation-ID lookup, and completion checks. Prepared environments use a handoff rather than duplicate creation.
 
+The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
+
 **[Execution issues and resolutions](guide/en/troubleshooting.md)** distinguish this revision's read-only checks from historical paid measurements. The results below are not a new Korean execution.
 
 ## One current Sol v1/v2 comparison
@@ -60,7 +62,7 @@ English is the default. Language switching preserves the corresponding section, 
 
 Portal pictures are labeled **UI illustrations from earlier captures**, not current Sol measurements. The latest report and its actual run IDs are the measurement source.
 
-Screenshot sets stay language-specific: English guides use `web/assets/portal/en/`; Korean guides use Korean-lab captures directly in `web/assets/portal/`. Both sets have English portal controls; the lab data and instructions determine the capture language. Each guide includes 12 matching screenshots. The five previously missing Korean evaluation views were captured with Playwright Headless from unsubmitted settings and existing completed runs, without new paid evaluations. The 13 original Korean captures remain unchanged.
+Screenshot sets stay language-specific: English uses `web/assets/portal/en/` and Korean uses its lab captures in `web/assets/portal/`. Only language-neutral subscription/access controls share `web/assets/portal/shared/`. Each complete language edition contains **12 previous + 6 new language-specific + 2 shared = 20 screenshots**. The 14 new files were captured on 2026-10-03 with Playwright Headless, using existing resources and empty deletion-confirmation forms without creating, saving, chatting, or confirming deletion. Earlier pictures and measured output remain unchanged.
 
 ## Execution boundaries
 

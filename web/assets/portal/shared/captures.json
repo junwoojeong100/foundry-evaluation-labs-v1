@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "captured_date": "2026-10-03",
+  "date_timezone": "Asia/Seoul",
+  "portal_origin": "https://portal.azure.com",
+  "tool": "playwright-headless.browser_run_code_unsafe",
+  "headless_verified": true,
+  "ui_language": "en-US",
+  "data_language": "not_applicable",
+  "intended_guide_languages": ["en", "ko"],
+  "scope": "Shared subscription administration controls for the two existing labs, not language-specific questions, instructions, or evaluation evidence.",
+  "new_paid_runs_submitted": false,
+  "cloud_configuration_changed": false,
+  "authentication_state_exported_to_disk": false,
+  "edits": "Opaque privacy masks and cropping only. No status or role was replaced. Billing details are outside the subscription screenshot.",
+  "screenshots": [
+    {
+      "file": "21-subscription-overview.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/subscriptions/{lab-subscription}/overview",
+      "state": "existing-subscription-Active; Essentials and My role controls; no subscription setting changed",
+      "redactions": ["account-menu", "subscription-name", "subscription-id", "directory-and-parent-management-group-identifiers", "secure-score", "billing-sections-excluded-by-crop"],
+      "width": 1440,
+      "height": 347,
+      "sha256": "fe856c848fd9e23b7b2227fe70f575211af930767f2d5d5512c836184bcccf76"
+    },
+    {
+      "file": "22-check-access.png",
+      "capture_session_date": "2026-10-03",
+      "route": "/subscriptions/{lab-subscription}/users",
+      "state": "existing-Check-access-view; active role and inherited scope inspected; no role assignment created or changed",
+      "redactions": ["account-menu", "subscription-name", "user-sign-in-name", "membership-display-name"],
+      "width": 1440,
+      "height": 850,
+      "sha256": "731a63412fe9ddab4ede2354cf956043a4fd85efc61db8d6c7e4948a4c9467c5"
+    }
+  ]
+}

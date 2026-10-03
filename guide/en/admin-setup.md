@@ -110,6 +110,8 @@ Validate with `preflight --approval ...` and read `approval_reason` on failure. 
 
 Follow the [current Foundry RBAC guidance](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry). **Foundry User/Owner/Account Owner/Project Manager** may still appear under their former **Azure AI User/Owner/Account Owner/Project Manager** names.
 
+Use **Access control (IAM) → Check access** to inspect active assignments and Scope. Older UI versions may use View my access. The [actual subscription/access illustration in 01](handbook.md#portal-check-access) demonstrates inspection of existing access, not adding roles.
+
 | Identity or task | Required scope to verify |
 |---|---|
 | New-environment operator | This bootstrap checks effective subscription permissions for group/deployment/resource writes and `Microsoft.Authorization/roleAssignments/write`. An already-authorized provisioning operator performs it. |

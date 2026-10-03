@@ -135,6 +135,14 @@
 <p class="eyebrow">CONTOSO ATLAS CLOUD · 하나의 실습 경로</p>
 
 <p><strong>Azure 환경을 준비하고, 직접 만든 Agent를 평가·개선한 뒤, 사용한 리소스를 삭제하는 실습입니다.</strong> 처음 사용하는 경우 01부터 진행합니다. 이미 준비된 환경을 받은 경우에도 계정·권한과 인수 정보를 먼저 확인합니다.</p>
+<p>Microsoft Foundry는 모델 배포, Agent 버전 관리와 평가를 한 프로젝트에서 다루는 개발 플랫폼입니다. 이 실습에서는 가상의 <strong>Contoso Atlas Cloud 고객지원 Agent</strong>를 만들고, 같은 정책과 질문 12개로 응답을 비교합니다. 여기서 학습은 <strong>평가 결과를 읽고 지침을 개선하는 과정</strong>이며 모델 가중치를 다시 학습시키는 과정은 아닙니다.</p>
+<div class="hero-summary" aria-label="실습의 목적과 결과">
+<div><strong>실습 목표</strong><span>정책을 검색하는 고객지원 Agent와 실제 응답·평가 이유를 담은 비교 기록을 만듭니다.</span></div>
+<div><strong>중요한 이유</strong><span>그럴듯한 답변 하나만으로 품질을 판단하지 않고, 같은 조건의 점수·근거·실패로 개선 여부를 설명합니다.</span></div>
+<div><strong>진행 방식</strong><span>환경 준비 → v1 평가 → 약점 분석 → 지침 개선 → 같은 기준의 재평가 → 정리 순서로 진행합니다.</span></div>
+<div><strong>완료 산출물</strong><span>실제 실행 ID, 데이터 해시, 개선·유지·보류 이유와 리소스 삭제 또는 보존 인계 기록이 남습니다.</span></div>
+</div>
+
 <ol class="learning-path" role="list" aria-label="실습 순서">
 <li><a href="#setup"><strong>01</strong> 계정·PC·권한 확인</a></li>
 <li><a href="#resources"><strong>02</strong> Foundry 환경 생성</a></li>
@@ -149,6 +157,29 @@
 </ol>
 
 <p>공개 벤치마크만 보는 대신 <strong>대표적인 자사 과제와 업무 기준</strong>으로 평가합니다. 합성 Contoso 정책을 사용해 고객 원본 데이터를 공개하지 않고 <strong>평가 → 학습 → 개선 → 재평가</strong>를 경험합니다.</p>
+<table>
+<thead>
+<tr>
+<th>실행 위치</th>
+<th>여기에서 하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://portal.azure.com">Azure Portal</a></td>
+<td>계정·구독·권한, 실제 리소스 목록과 삭제 범위를 확인합니다.</td>
+</tr>
+<tr>
+<td>로컬 터미널</td>
+<td>실습 파일·가상환경을 준비하고 승인된 생성 명령과 ID 조회 명령을 실행합니다.</td>
+</tr>
+<tr>
+<td><a href="https://ai.azure.com">Microsoft Foundry</a></td>
+<td>프로젝트·Agent·정책 도구를 확인하고 평가·Optimizer·비교 결과를 읽습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>가이드 읽는 순서:</strong> 각 단계의 <strong>하는 일·이유·방법</strong>을 먼저 읽고, 명령이나 번호 순서대로 진행합니다. 그림에서는 캡션에 적힌 메뉴·필드를 찾습니다. 마지막 <strong>완료 기준</strong>을 확인한 뒤 다음 단계로 이동하며, 화면을 열었거나 읽음 표시를 했다는 이유만으로 실행 완료로 판단하지 않습니다.</p>
 <p><strong>진행 방식입니다.</strong> 01–03에서 실습 기반을 만들고, 04–09는 Foundry 포털에서 평가·개선을 진행합니다. 명령은 별도 표시가 없으면 저장소의 최상위 폴더에서 실행합니다. <code>YOUR_...</code>는 자신의 값으로 교체하는 자리표시자입니다. 예시 출력이나 과거 화면의 이름을 자신의 리소스로 사용하지 않습니다.</p>
 <table>
 <thead>
@@ -181,18 +212,33 @@
 </tbody>
 </table>
 <p><strong>버전 의미:</strong> v1/v2는 Foundry Agent 전체 구성 버전입니다. 같은 모델·도구·출력 형식을 유지하고 지침만 바꿉니다. v1을 약화하거나 측정 전에 개선을 보장하지 않습니다. 새 실습의 v2는 먼저 비교할 후보이며 생성 자체가 채택이나 운영 승인은 아닙니다.</p>
-<p class="output-notice" id="portal-screenshots-note"><strong>화면 읽는 방법:</strong> 한국어 데이터·지침을 사용한 실습의 실제 캡처입니다. 누락됐던 평가 화면 5개는 2026-10-01에 기존 한국어 프로젝트에서 Playwright Headless로 촬영했습니다. 설정 화면은 미제출 상태이며 결과 화면은 이전 완료 실행입니다. 포털 메뉴는 원래 영문이고, 화면의 모델·버전·점수는 현재 Sol 검증이 아닙니다. 실제 질문·응답·점수·이유 전체와 현재 비교는 <a href="verification.html">최신 v2 보고서</a>를 기준으로 읽습니다. 재촬영이 새로운 한국어 Sol 실측 완료를 뜻하지 않습니다.</p>
+<p class="output-notice" id="portal-screenshots-note"><strong>화면 읽는 방법:</strong> 실제 Portal 화면을 Playwright Headless로 촬영했습니다. 01–03·10의 그림은 2026-10-03에 보완했습니다. 구독·권한 화면 2개는 두 언어에 공통인 관리 화면이며, 나머지 추가 화면 6개는 기존 한국어 실습 환경입니다. 메뉴는 영문입니다. 식별 정보는 가렸지만 상태·지침·점수는 바꾸지 않았습니다. 생성·저장·채팅·최종 삭제는 실행하지 않았으며, 그림의 이름은 본인의 이름으로 대조합니다. 이전 평가 화면과 새 촬영 모두 <a href="verification.html">실제 품질 보고서</a>를 대신하지 않습니다.</p>
 
 <h2 id="setup">01. 계정·PC·권한을 확인합니다</h2>
 <p><a id="environment"></a><a id="sdk-prerequisites"></a></p>
-<p><strong>목표:</strong> 사용할 Azure 구독과 로컬 실행 환경을 확인합니다. 이 단계에서는 Azure 리소스를 생성하지 않습니다.</p>
+<div class="lab-concept" data-learning-frame="setup">
+<p><strong>이 단계에서 하는 일:</strong> 사용할 Azure 구독·권한과 로컬 실행 환경을 확인합니다.</p>
+<p><strong>중요한 이유:</strong> 브라우저와 CLI가 다른 계정이나 구독을 사용하면 권한 오류가 나거나 잘못된 환경에 자원을 만들 수 있습니다.</p>
+<p><strong>진행 방법·위치:</strong> Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구·로그인·언어 설정을 대조합니다. 아직 Azure 리소스는 생성하지 않습니다.</p>
+</div>
+
 <h3 id="setup-account">Azure 계정과 구독을 확인합니다</h3>
 <ol>
 <li><a href="https://portal.azure.com">Azure Portal</a>에 로그인합니다. 계정이 없으면 <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Azure 계정 안내</a>를 따라 본인 또는 조직의 계정을 준비합니다. 조직 계정은 관리자의 구독 접근 승인을 먼저 받습니다.</li>
-<li>상단 검색창에 <strong>Subscriptions</strong>를 입력하고 사용할 구독을 엽니다. 상태가 <strong>Enabled</strong>인지 확인하고 <strong>Subscription ID</strong>와 <strong>Directory/Tenant ID</strong>를 기록합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.</li>
-<li><strong>Access control (IAM) → View my access</strong>에서 본인의 권한을 확인합니다. 자동 생성 경로에는 리소스 생성과 역할 할당 권한이 모두 필요합니다. Contributor만으로 역할 할당까지 가능하다고 가정하지 않습니다. <a href="admin.html#rbac">필요 권한과 관리자 요청 방법</a>을 확인합니다.</li>
+<li>상단 검색창에 <strong>Subscriptions</strong>를 입력하고 사용할 구독을 엽니다. 포털 상태가 <strong>Active</strong>인지 확인하고 <strong>Subscription ID</strong>와 <strong>Directory/Tenant ID</strong>를 기록합니다. 같은 정상 구독은 CLI에서 <strong>Enabled</strong>로 표시합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.</li>
+<li><strong>Access control (IAM) → Check access</strong>에서 본인의 할당을 확인합니다. 이전 UI에서는 <strong>View my access</strong>로 표시할 수 있습니다. 자동 생성 경로에는 리소스 생성과 역할 할당 권한이 모두 필요합니다. Contributor만으로 역할 할당까지 가능하다고 가정하지 않습니다. <a href="admin.html#rbac">필요 권한과 관리자 요청 방법</a>을 확인합니다.</li>
 <li>실습 비용 한도, 사용 종료 시각, 리소스 삭제 담당자를 정합니다. 권한·구독·비용 승인이 없으면 생성 명령을 실행하지 않습니다. 구독 전체 Owner를 새로 부여하거나 조직 보안 정책을 해제하는 방식으로 해결하지 않습니다.</li>
 </ol>
+<figure class="portal-shot" id="portal-subscription-overview" data-capture-scope="shared">
+<img src="../../web/assets/portal/shared/21-subscription-overview.png" alt="Azure 구독 Overview의 Essentials 화면입니다. Subscription ID·Directory·Status·My role 위치를 보여 주며 식별 정보와 비용은 가렸습니다." width="1440" height="347" loading="lazy">
+<figcaption><strong>구독과 상태를 확인합니다.</strong> Essentials에서 Subscription ID, Directory, Status, My role을 찾습니다. 포털의 <strong>Active</strong>와 CLI의 <strong>Enabled</strong>는 같은 정상 사용 상태를 서로 다르게 표시한 것입니다. 두 언어에서 사용하는 공통 관리 화면입니다. <a href="../../web/assets/portal/shared/21-subscription-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-check-access" data-capture-scope="shared">
+<img src="../../web/assets/portal/shared/22-check-access.png" alt="Azure Portal의 Access control IAM과 Check access 화면입니다. 실제 활성 역할과 Scope를 확인하며 사용자 식별 정보는 가렸습니다." width="1440" height="850" loading="lazy">
+<figcaption><strong>역할 이름과 Scope를 함께 읽습니다.</strong> 왼쪽 Access control (IAM), 위쪽 Check access, 아래쪽 활성 할당을 순서대로 확인합니다. 화면의 Owner는 촬영 계정에 이미 있던 권한이며 참가자에게 새로 부여하라는 안내가 아닙니다. <a href="../../web/assets/portal/shared/22-check-access.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 <h3 id="setup-local">도구와 실습 파일을 준비합니다</h3>
 <p><a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>를 설치합니다. 이 안내는 일반 Python 터미널이 아니라 <strong>macOS/Linux 터미널 또는 Windows PowerShell</strong>에서 진행합니다. 설치 뒤 새 터미널을 엽니다.</p>
 <pre><code class="language-bash">git --version
@@ -240,11 +286,17 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifac
 
 <h2 id="resources">02. Foundry 환경을 생성합니다</h2>
 <p><a id="first-infrastructure-failure"></a></p>
-<p><strong>목표:</strong> 전용 리소스 그룹 안에 Foundry 프로젝트, 모델 배포, 정책 검색과 모니터링 기반을 생성합니다. 이미 준비된 환경은 아래의 생성 명령을 건너뛰고 인수표와 포털의 실제 리소스를 대조합니다.</p>
+<div class="lab-concept" data-learning-frame="resources">
+<p><strong>이 단계에서 하는 일:</strong> 전용 리소스 그룹 안에 Foundry 프로젝트·모델·Search·모니터링 기반을 준비합니다.</p>
+<p><strong>중요한 이유:</strong> 리소스 그룹은 비용과 정리 범위를 묶고, 프로젝트는 Agent·평가를 구분합니다. 빈 프로젝트 하나만으로 정책 검색까지 준비되지는 않습니다.</p>
+<p><strong>진행 방법·위치:</strong> 터미널에서 계획·승인·생성을 순서대로 수행한 뒤 두 포털에서 결과를 대조합니다. 준비된 환경은 새로 만들지 않고 인수 정보만 확인합니다.</p>
+</div>
+
 <pre><code class="language-text">Azure 구독
 └─ 전용 실습 리소스 그룹
-   ├─ Foundry 리소스 → 프로젝트 → Agent·평가·데이터
-   │                  └─ 역할별 모델 배포 4개
+   ├─ Foundry 리소스
+   │  ├─ 역할별 모델 배포 4개
+   │  └─ 프로젝트 → Agent·평가·데이터
    ├─ Azure AI Search → 읽기 전용 Contoso 정책 검색
    └─ Application Insights + Log Analytics → 관측·로그
 </code></pre>
@@ -297,10 +349,25 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 <p>첫 명령은 리소스·모델·연결·리소스 범위 역할을 실제로 생성합니다. 시간이 걸릴 수 있으므로 다른 창에서 같은 <code>apply</code>를 실행하지 않습니다. <code>apply</code>의 <strong>APPLIED</strong>, <code>.lab/lab-ko/.env</code> 생성, <code>status</code>의 <code>phase: succeeded</code>와 대상 리소스의 존재를 확인합니다. 대기 초과이면 <code>status</code>부터 확인하며 <a href="troubleshooting.html#provisioning">재개 절차</a>를 따릅니다.</p>
 <ol>
 <li><a href="https://portal.azure.com">Azure Portal</a> → <strong>Resource groups</strong>에서 <code>config.json</code>의 <code>names.resource_group</code>을 검색합니다. 구독·지역·리소스 목록을 확인합니다.</li>
-<li><a href="https://ai.azure.com">Foundry</a>를 열고 <strong>New Foundry</strong>를 사용합니다. 좌측 상단 프로젝트 선택에서 <code>names.project</code>와 같은 프로젝트를 엽니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.</li>
+<li><a href="https://ai.azure.com">Foundry</a>를 열고 <strong>New Foundry</strong>를 사용합니다. <strong>Select a project to continue</strong>가 나타나면 <code>names.project</code>와 같은 프로젝트를 선택하고 <strong>Let's go</strong>를 누릅니다. 환영 안내가 나타나면 읽고 <strong>Close</strong>로 닫습니다. 이미 New Foundry라면 좌측 상단 프로젝트 선택을 사용합니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.</li>
 <li>프로젝트의 <strong>Overview</strong>에서 endpoint를 확인합니다. <code>.env</code>의 <code>AZURE_AI_PROJECT_ENDPOINT</code>와 같은 <code>https://계정명.services.ai.azure.com/api/projects/프로젝트명</code> 형식이어야 합니다.</li>
 <li><strong>Models + endpoints</strong> 또는 <strong>Build → Models</strong>에서 <code>.env</code>의 <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, <code>EMBEDDING_DEPLOYMENT</code>에 대응하는 실제 배포를 확인합니다. 메뉴 명칭이 달라지면 <a href="admin.html#prepare">화면 위치 안내</a>를 참고합니다.</li>
 </ol>
+<figure class="portal-shot" id="portal-created-resources">
+<img src="../../web/assets/portal/23-resource-group.png" alt="기존 한국어 실습 리소스 그룹의 실제 Overview입니다. Foundry·프로젝트·Search·관측 리소스와 과거 배포 실패 이력을 그대로 보여 줍니다." width="1440" height="1000" loading="lazy">
+<figcaption><strong>생성 계획과 실제 자원을 대조합니다.</strong> 그룹 이름·Location을 확인하고 Resources에서 Foundry, Foundry project, Search, Application Insights, Log Analytics를 찾습니다. 이 기존 환경의 과거 Failed 이력도 그대로 남겼으며, 새 bootstrap 성공 화면으로 표시하지 않습니다. <a href="../../web/assets/portal/23-resource-group.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-select-project" data-capture-layout="dialog">
+<img src="../../web/assets/portal/24-select-project.png" alt="New Foundry 전환 시 기존 한국어 프로젝트를 선택한 실제 대화상자입니다. 프로젝트를 생성하는 화면이 아닙니다." width="640" height="474" loading="lazy">
+<figcaption><strong>만든 프로젝트를 선택합니다.</strong> 이름을 계획의 <code>names.project</code>와 대조하고 Let's go로 엽니다. 이 화면은 기존 프로젝트 선택이며 추가 생성이 아닙니다. 이미 bootstrap을 완료했다면 Create a new project로 중복 생성하지 않습니다. <a href="../../web/assets/portal/24-select-project.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+<figure class="portal-shot" id="portal-project-endpoint">
+<img src="../../web/assets/portal/25-project-overview.png" alt="기존 한국어 Foundry 프로젝트 Home입니다. 현재 프로젝트·New Foundry·View deployments와 두 endpoint의 위치를 보여 주며 식별 값은 가렸습니다." width="1440" height="492" loading="lazy">
+<figcaption><strong>프로젝트와 endpoint를 확인합니다.</strong> 좌측 상단 프로젝트 이름을 먼저 확인합니다. 복사·대조할 값은 아래의 <strong>Project endpoint</strong>이며 Azure OpenAI endpoint와 다릅니다. 모델 목록은 View deployments로 엽니다. 가림 영역은 본인 포털에서 직접 확인합니다. <a href="../../web/assets/portal/25-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env preflight
 </code></pre>
 <p><strong>완료 기준:</strong> 런타임 preflight가 <code>PASS</code>이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.</p>
@@ -308,7 +375,12 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 
 <h2 id="agent">03. 정책을 연결하고 Agent를 생성합니다</h2>
 <p><a id="model-smoke"></a><a id="iq"></a></p>
-<p><strong>목표:</strong> 합성 정책을 검색할 수 있는 읽기 전용 도구와 고정된 v1 Agent를 준비합니다. 이 단계부터 합성 데이터 전송과 모델 호출 비용이 발생할 수 있습니다. 02의 승인 범위 안에서 한 번씩 진행합니다.</p>
+<div class="lab-concept" data-learning-frame="agent">
+<p><strong>이 단계에서 하는 일:</strong> 합성 정책을 검색하는 읽기 전용 도구와 비교 기준인 v1 Agent를 연결합니다.</p>
+<p><strong>중요한 이유:</strong> 모델이 기억으로 답하는 것과 실제 정책을 검색해 답하는 것은 다릅니다. 검색이 사용자 권한으로 성공해도 Agent의 관리 ID 권한은 별도로 확인해야 합니다.</p>
+<p><strong>진행 방법·위치:</strong> 터미널에서 모델·검색·Agent를 준비하고 Foundry에서 지침·도구와 실제 응답을 확인합니다. 데이터 전송·호출은 승인된 범위에서 한 번씩 수행합니다.</p>
+</div>
+
 <h3 id="agent-knowledge">모델과 정책 검색을 확인합니다</h3>
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
 python -m lab --config .lab/lab-ko/.env iq prepare --confirm
@@ -316,10 +388,21 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 </code></pre>
 <p>첫 명령은 실제 모델 응답을 확인합니다. 두 번째는 <a href="../../data/knowledge/documents.json">합성 정책 8개</a>를 embedding·검색 인덱스·knowledge base·프로젝트 MCP 연결로 준비합니다. 세 번째는 실제 검색을 수행합니다.</p>
 <p><code>smoke</code>의 <code>status: completed</code>, 지식 준비의 <code>uploaded_documents: 8</code>, 검색의 <strong><code>status: retrieval_verified</code></strong>와 비어 있지 않은 출처를 확인합니다. 생성만 성공한 <code>created_not_retrieval_tested</code>는 검색 성공이 아닙니다. Search가 준비되는 동안 오류가 발생하면 기록을 지우지 않고 <a href="troubleshooting.html#knowledge">검색 오류 해결</a>을 확인합니다.</p>
+<p>포털에서도 <strong>Build → Knowledge → Knowledge bases</strong>를 열고 Connection과 생성된 지식 베이스·Knowledge sources를 확인합니다. 목록의 지식 베이스 한 개가 정책 문서 한 개를 뜻하지는 않습니다.</p>
+<figure class="portal-shot" id="portal-policy-connection">
+<img src="../../web/assets/portal/26-knowledge-base.png" alt="한국어 실습 프로젝트의 Knowledge Foundry IQ 화면입니다. 실제 Connection·지식 베이스·Knowledge sources·Active 상태를 보여 줍니다." width="1440" height="374" loading="lazy">
+<figcaption><strong>정책 연결이 있는지 확인합니다.</strong> Connection 선택과 해당 지식 베이스의 Knowledge sources·Active를 확인합니다. Active는 등록 상태이며 실제 검색 성공은 <code>iq probe</code>로 확인합니다. 무료 검색 배너는 전체 실습이 무료라는 뜻이 아니며, 준비 확인을 위해 요금제 변경 버튼을 누르지 않습니다. <a href="../../web/assets/portal/26-knowledge-base.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 <h3 id="agent-create">같은 조건으로 평가할 v1을 만듭니다</h3>
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </code></pre>
 <p>이 명령은 <code>prompts/baseline.txt</code>, 방금 확인한 정책 도구, 엄격한 네 필드 JSON 형식으로 <strong><code>lab-ko-iq</code> 버전 <code>1</code></strong>을 만듭니다. 출력의 <code>agent_name</code>, <code>version</code>, <code>receipt</code>를 기록합니다. 같은 소유 환경·동일 구성이면 기존 v1을 재사용하며, 이름만 같은 다른 Agent를 인수하거나 v3를 만들지 않습니다.</p>
+<figure class="portal-shot" id="portal-agent-configuration">
+<img src="../../web/assets/portal/27-agent-configuration.png" alt="기존 한국어 Agent 버전 1의 실제 Playground입니다. Model·Instructions·Knowledge와 빈 Chat을 보여 주며 저장·채팅은 실행하지 않았습니다." width="1440" height="1000" loading="lazy">
+<figcaption><strong>버전·지침·Knowledge를 확인합니다.</strong> 위쪽 Version, 왼쪽 Model·Instructions, 아래쪽 Knowledge, 오른쪽 Chat 순서로 찾습니다. 정책 MCP 연결은 Knowledge에 표시됩니다. 이 그림은 이전 한국어 Agent의 설정 위치 예시이며 예전 모델·지침을 새 실습에 복사하지 않습니다. 촬영 시 Save는 비활성 상태였고 채팅을 보내지 않았습니다. <a href="../../web/assets/portal/27-agent-configuration.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 <p>포털에서 <strong>Build → Agents → lab-ko-iq → 버전 1</strong>을 엽니다. 표시 이름은 명령 출력이 기준입니다. <strong>Test/Playground</strong>에서 다음 질문을 한 번 보냅니다.</p>
 <blockquote>
 <p>2026년 9월에 처음 월 구독을 결제했습니다. 환불 신청 조건이 궁금합니다.</p>
@@ -330,7 +413,13 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 
 <h2 id="start">04. 데이터셋을 등록합니다</h2>
 <p><a id="demo"></a><a id="understand"></a><a id="data"></a></p>
-<p><strong>목표:</strong> <strong><a href="../../data/optimizer/dev.jsonl">data/optimizer/dev.jsonl</a></strong>의 <strong>JSONL 12행</strong>을 변경 없이 등록합니다. JSONL은 한 줄에 JSON 객체 하나가 있는 파일입니다. Excel·CSV·JSON 배열로 변환하지 않습니다.</p>
+<div class="lab-concept" data-learning-frame="start">
+<p><strong>이 단계에서 하는 일:</strong> 같은 질문으로 비교할 수 있도록 한국어 dev12 파일을 한 번 등록합니다.</p>
+<p><strong>중요한 이유:</strong> 질문이나 참고 답변이 달라지면 지침 변경의 효과를 분리할 수 없습니다. 참고 답변을 Agent에게 미리 주어도 공정한 비교가 아닙니다.</p>
+<p><strong>진행 방법·위치:</strong> 터미널에서 행 수·해시를 확인하고 Foundry 평가 마법사에서 원본 파일을 등록하거나 같은 버전을 재사용합니다.</p>
+</div>
+
+<p><strong><a href="../../data/optimizer/dev.jsonl">data/optimizer/dev.jsonl</a></strong>의 <strong>JSONL 12행</strong>을 변경 없이 사용합니다. JSONL은 한 줄에 JSON 객체 하나가 있는 파일입니다. Excel·CSV·JSON 배열로 변환하지 않습니다.</p>
 <pre><code class="language-bash">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
 </code></pre>
 <p><code>rows = 12</code>와 SHA-256 값을 기록합니다. 실제 최신 영어 실행은 별도 <code>data/en/optimizer/dev.jsonl</code>과 등록 <code>contoso-eval-en-dev12</code> 버전 <code>1</code>을 사용했습니다. 그 이름·ID·점수를 새 한국어 실행에 복사하지 않습니다.</p>
@@ -369,11 +458,17 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 <figcaption><strong>한국어 데이터셋을 선택합니다.</strong> 기존 한국어 등록을 선택한 미제출 화면입니다. 자신의 운영자가 지정한 등록·버전과 원본을 대조하며, 5행 미리 보기를 전체 데이터셋 건수로 해석하지 않습니다. <a href="../../web/assets/portal/15-evaluation-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<p><strong>완료 신호:</strong> 명시적 v1과 변경 없는 12행 데이터셋을 선택하고 건수·버전·해시를 기록했습니다. <a href="data-guide.html#schema">데이터 계약</a>.</p>
+<p><strong>완료 기준:</strong> 명시적 v1과 변경 없는 12행 데이터셋을 선택하고 건수·버전·해시를 기록했습니다. <a href="data-guide.html#schema">데이터 계약</a>.</p>
 <p class="step-next no-print"><a href="#prepare" data-next-step>다음: 05. 평가 기준 선택 →</a></p>
 
 <h2 id="prepare">05. 평가 기준을 선택합니다</h2>
 <p><a id="calibration"></a></p>
+<div class="lab-concept" data-learning-frame="prepare">
+<p><strong>이 단계에서 하는 일:</strong> Relevance·TaskAdherence와 실제 Judge 배포를 선택합니다.</p>
+<p><strong>중요한 이유:</strong> 점수의 척도·통과 기준·입력 매핑을 먼저 정해야 결과를 본 뒤 기준을 바꾸는 일을 피할 수 있습니다. 두 평가기는 척도가 서로 다릅니다.</p>
+<p><strong>진행 방법·위치:</strong> Foundry의 Criteria에서 평가기별 설정을 열고 임계값과 Judge를 확인합니다. Agent에는 query만 전달합니다.</p>
+</div>
+
 <p><strong>Configure agents</strong>의 custom prompt override는 비워 둡니다. 입력은 <strong><code>{{item.query}}</code>만</strong>이며 context·ground_truth를 붙이지 않습니다. 필드 매핑 화면이 나타나면 query → query를 사용합니다.</p>
 <p>관리형 평가자는 정확히 두 개만 남깁니다.</p>
 <table>
@@ -431,10 +526,16 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 <figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> 한국어 프로젝트의 미제출 설정에서 Relevance 4·TaskAdherence 1을 각각 확인했습니다. 화면의 이전 Judge 배포를 현재 Luna 배포로 오인하지 말고 자신의 운영자 인수 정보를 사용합니다. <a href="../../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<p><strong>완료 신호:</strong> 두 평가기 척도·임계값·매핑·실제 Judge를 기록했습니다. 오래된 로컬 환경 기본값이 아니라 저장된 원격 정의가 Judge를 결정합니다.</p>
+<p><strong>완료 기준:</strong> 두 평가기 척도·임계값·매핑·실제 Judge를 기록했습니다. 오래된 로컬 환경 기본값이 아니라 저장된 원격 정의가 Judge를 결정합니다.</p>
 <p class="step-next no-print"><a href="#baseline" data-next-step>다음: 06. Foundry Evaluation 실행 →</a></p>
 
 <h2 id="baseline">06. Foundry Evaluation을 실행합니다</h2>
+<div class="lab-concept" data-learning-frame="baseline">
+<p><strong>이 단계에서 하는 일:</strong> 고정된 v1의 실제 답변을 생성하고 관리형 평가 점수·이유를 수집합니다.</p>
+<p><strong>중요한 이유:</strong> 이후 후보와 비교할 출발점이 필요합니다. Completed는 처리가 끝났다는 뜻이지 모든 답변이 정확하다는 뜻은 아닙니다.</p>
+<p><strong>진행 방법·위치:</strong> Foundry에서 검토 후 한 번 제출하고 전체 12건을 확인합니다. 터미널의 읽기 전용 조회로 실제 evaluation ID와 run ID를 기록합니다.</p>
+</div>
+
 <p><strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 검토합니다. 새 평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>, 기준선 run 이름을 지정할 수 있으면 <strong><code>baseline-v1</code></strong>로 입력합니다. 준비된 수업은 운영자가 지정한 이름을 사용합니다. 기록된 리허설만 읽는 경우 기존 완료 run을 열고 다시 제출하지 않습니다.</p>
 <p>새 승인 수업은 <strong>Review → Submit</strong>으로 한 번 제출하고 실제 evaluation ID·run ID를 기록합니다. 완료를 기다리고 오류·누락까지 전체 12건을 확인합니다. 초안 구성·HTTP 생성 응답·모델 연결 확인이 평가 완료를 뜻하지 않습니다.</p>
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -447,11 +548,17 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 </code></pre>
 <p>출력의 <code>evaluation_id</code>와 <strong><code>agent_version: "1"</code>, <code>status: completed</code>인 run의 <code>run_id</code></strong>를 기록합니다. evaluation ID는 <code>eval_...</code>, run ID는 <code>evalrun_...</code> 형태이며 둘은 다릅니다. 같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 이 명령은 새 평가를 제출하지 않습니다.</p>
-<p><strong>완료 신호:</strong> 실제 Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 기록합니다. 실패·부분 실행을 그대로 보존하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.</p>
+<p><strong>완료 기준:</strong> 실제 Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 기록합니다. 실패·부분 실행을 그대로 보존하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.</p>
 <p class="step-next no-print"><a href="#analyze" data-next-step>다음: 07. 점수와 이유 읽기 →</a></p>
 
 <h2 id="analyze">07. 점수와 이유를 읽습니다</h2>
 <p><a id="score-rubric"></a><a id="worked-evaluation"></a></p>
+<div class="lab-concept" data-learning-frame="analyze">
+<p><strong>이 단계에서 하는 일:</strong> 점수 뒤의 실제 답변과 평가 이유를 정책 근거에 연결합니다.</p>
+<p><strong>중요한 이유:</strong> 평균만 보면 특정 날짜·인용·분류 오류가 가려집니다. 무엇이 잘못됐는지 설명해야 바꿀 지침도 정할 수 있습니다.</p>
+<p><strong>진행 방법·위치:</strong> Foundry의 상세 지표·User view와 원본 정책을 나란히 읽고 notes.md에 개선 가설과 유지할 행동을 기록합니다.</p>
+</div>
+
 <p>요약과 <strong>Detailed metrics result</strong>의 <strong><code>Relevance.reason</code></strong>, <strong><code>TaskAdherence.reason</code></strong>을 읽습니다. <code>conversation_id → User view</code>는 실제 질문·응답이며 인라인 Judge 이유 패널이 아닙니다.</p>
 <p>실패 또는 최저점 사례와 잘한 사례를 골라 <strong>질문 → 실제 응답 → 점수·이유 → 정책·참고 답변</strong>을 연결합니다. 실패가 없으면 그 사실을 말하며 사례를 만들려고 기준선을 약화하지 않습니다.</p>
 <figure class="portal-shot" id="portal-evaluation">
@@ -499,11 +606,17 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 </table>
 <p class="share-checkpoint" id="share-baseline"><strong>공유:</strong> 실제 run ID·지표별 척도·통과 건수와 문제 응답을 제시하고 어떤 지침 행동을 개선할지 설명합니다.</p>
 
-<p><strong>완료 신호:</strong> 평균만이 아니라 실제 약점과 근거 있는 개선 가설을 설명할 수 있습니다.</p>
+<p><strong>완료 기준:</strong> 평균만이 아니라 실제 약점과 근거 있는 개선 가설을 설명할 수 있습니다.</p>
 <p class="step-next no-print"><a href="#optimize" data-next-step>다음: 08. Agent Optimizer로 지침 개선 →</a></p>
 
 <h2 id="optimize">08. Agent Optimizer로 지침을 개선합니다</h2>
 <p><a id="tune"></a></p>
+<div class="lab-concept" data-learning-frame="optimize">
+<p><strong>이 단계에서 하는 일:</strong> Agent Optimizer로 지침 개선 후보를 만들고 변경 내용을 검토합니다.</p>
+<p><strong>중요한 이유:</strong> 후보 생성은 개선을 보장하지 않습니다. 내부 순위가 높아도 정책을 꾸미거나 도구·모델 조건을 바꿨다면 그대로 채택할 수 없습니다.</p>
+<p><strong>진행 방법·위치:</strong> Foundry에서 Instruction only로 실행하고 View changes를 읽습니다. 검토한 지침 전체와 실제 출처를 비공개 파일에 보관합니다.</p>
+</div>
+
 <p><strong>Build → Agents → lab-ko-iq → Optimize Preview/Optimize → Agent</strong>를 엽니다. Cost가 아닙니다. 새 작업에서는 <strong>Create an optimization run</strong> 또는 <strong>Create optimization run</strong>을 선택합니다. Preview 제공 여부와 모델 지원이 구독별로 다르면 <a href="troubleshooting.html#optimizer">Optimizer 오류 해결</a>을 확인합니다.</p>
 <table>
 <thead>
@@ -571,12 +684,18 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 <p><strong>v3·v4 등 정식 버전을 계속 만들지 않습니다.</strong> 이 안내는 다음 단계의 CLI로 v2를 한 번 생성하여 비교하므로 <strong>Promote candidate와 CLI 생성을 둘 다 실행하지 않습니다.</strong> 숙련된 운영자는 별도 초안을 검증한 뒤 승격할 수 있지만 기본 실습의 필수 절차는 아닙니다. 새 버전 생성과 운영용 게시·활성화 승인은 다릅니다.</p>
 <p class="share-checkpoint" id="share-optimizer"><strong>공유:</strong> 달라진 지침 행동과 개선·회귀 가능성을 설명합니다. 이전 그림이 아니라 실제 현재 후보를 제시합니다.</p>
 
-<p><strong>완료 신호:</strong> 실제 job/candidate ID, 검토한 지침 파일과 변경 이유를 기록합니다. 유지할 후보가 없으면 “v1 유지·개선 미관측”으로 기록하고 10으로 이동합니다. 개선을 만들기 위해 같은 작업을 반복하지 않습니다.</p>
+<p><strong>완료 기준:</strong> 실제 job/candidate ID, 검토한 지침 파일과 변경 이유를 기록합니다. 유지할 후보가 없으면 “v1 유지·개선 미관측”으로 기록하고 10으로 이동합니다. 개선을 만들기 위해 같은 작업을 반복하지 않습니다.</p>
 <p class="step-next no-print"><a href="#decision" data-next-step>다음: 09. 재평가·v1/v2 비교 →</a></p>
 
 <h2 id="decision">09. 재평가하고 v1/v2를 비교합니다</h2>
 <p><a id="review"></a><a id="operate"></a></p>
-<p><strong>목표:</strong> 모델·도구·데이터·평가기·Judge를 유지한 채 지침만 다른 후보를 평가합니다. 먼저 검토한 파일로 같은 Agent의 v2를 한 번 생성합니다. v1은 보존하며 이 명령은 운영에 게시하지 않습니다.</p>
+<div class="lab-concept" data-learning-frame="decision">
+<p><strong>이 단계에서 하는 일:</strong> 지침만 다른 후보를 같은 정의로 재평가하고 v1 유지·v2 채택·판단 보류 중 하나를 기록합니다.</p>
+<p><strong>중요한 이유:</strong> 버전 이름이 v2라는 사실은 개선 근거가 아닙니다. 품질뿐 아니라 실제 오류, 지연·토큰 증가와 통계적 불확실성도 함께 봐야 합니다.</p>
+<p><strong>진행 방법·위치:</strong> 터미널에서 명시적 v2와 같은 평가 정의의 run을 준비한 뒤 Foundry의 Compare runs에서 전체 사례를 비교합니다. 운영에는 게시하지 않습니다.</p>
+</div>
+
+<p>모델·도구·데이터·평가기·Judge를 유지한 채 검토한 파일로 같은 Agent의 v2를 한 번 생성합니다. v1은 보존합니다.</p>
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/lab-ko/candidate.txt --confirm
 </code></pre>
 <p><code>agent_name: lab-ko-iq</code>, <code>version: "2"</code>를 확인합니다. 다른 내용의 v2가 이미 있거나 모델 배포가 바뀌었으면 중단하고 기존 기록을 보존합니다. 새 버전이 있다는 사실만으로 개선이 입증되지 않습니다.</p>
@@ -622,12 +741,18 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 <p class="share-checkpoint" id="share-optimized"><strong>결과 설명:</strong> 실제 개선, 같은 평가 기준, 회귀와 남은 불확실성을 설명합니다. 관측된 개선이 향후 모든 확률적 실행의 개선을 보장하지는 않습니다.</p>
 
 <p><code>notes.md</code>에 v1/v2의 지표별 통과 건수·평균, 오류, 지연·토큰, 통계 결과와 최종 판단을 나란히 기록합니다. 개선 조건을 만족하지 않으면 <strong>v1 유지 또는 판단 보류</strong>로 기록합니다. 범용 평가가 통과했어도 실제 정책 오류가 있으면 채택하지 않습니다.</p>
-<p><strong>완료 신호:</strong> 실제 두 run ID와 같은 조건의 전체 비교, 채택·유지·보류 이유를 기록합니다. 정식 버전을 누적하지 않습니다. 운영 승인·독립적 일반화는 별개이며 dev12 실습으로 부여되지 않습니다.</p>
+<p><strong>완료 기준:</strong> 실제 두 run ID와 같은 조건의 전체 비교, 채택·유지·보류 이유를 기록합니다. 정식 버전을 누적하지 않습니다. 운영 승인·독립적 일반화는 별개이며 dev12 실습으로 부여되지 않습니다.</p>
 <p class="step-next no-print"><a href="#cleanup" data-next-step>다음: 10. 결과 보관·리소스 삭제 →</a></p>
 
 <h2 id="cleanup">10. 결과를 보관하고 리소스를 삭제합니다</h2>
 <p><a id="troubleshooting"></a><a id="sources"></a></p>
-<p><strong>목표:</strong> 필요한 근거를 보관하고 더 이상 필요하지 않은 실습 자원을 제거합니다. <strong>브라우저 종료·Agent 삭제·<code>cleanup</code> 실행만으로 리소스 그룹 전체의 과금이 멈추지는 않습니다.</strong></p>
+<div class="lab-concept" data-learning-frame="cleanup">
+<p><strong>이 단계에서 하는 일:</strong> 결과를 보관한 뒤 자신의 실습 자원을 삭제하거나 승인된 보존 담당자에게 인계합니다.</p>
+<p><strong>중요한 이유:</strong> 브라우저를 닫아도 Search·로그 등은 남을 수 있습니다. 반대로 공유 그룹을 잘못 삭제하면 다른 사람의 자원도 잃을 수 있습니다.</p>
+<p><strong>진행 방법·위치:</strong> Azure Portal과 터미널에서 정확한 대상·소유권·승인을 확인하고 삭제 후 부재를 검증합니다. 사진의 삭제 확인 창은 제출하지 않은 예시입니다.</p>
+</div>
+
+<p><strong>브라우저 종료·Agent 삭제·<code>cleanup</code> 실행만으로 리소스 그룹 전체의 과금이 멈추지는 않습니다.</strong></p>
 <h3 id="cleanup-records">삭제 전에 기록을 보관합니다</h3>
 <ol>
 <li><code>notes.md</code>에 실제 프로젝트·Agent·데이터셋 버전·해시, 평가/run/job ID와 최종 판단을 남깁니다.</li>
@@ -675,6 +800,11 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <li><strong>포털 방법:</strong> Azure Portal → Resource groups → 정확한 그룹 → <strong>Delete resource group</strong>을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.</li>
 <li><strong>CLI 방법:</strong> 다음 명령을 실행하고 확인 질문에서 이름·범위를 다시 확인한 뒤 동의합니다. <code>--yes</code>를 붙여 확인을 생략하지 않습니다.</li>
 </ol>
+<figure class="portal-shot" id="portal-delete-review">
+<img src="../../web/assets/portal/28-delete-review.png" alt="한국어 실습 그룹의 실제 삭제 전 확인 창입니다. 삭제 예정 자원과 빈 확인 이름 입력란을 보여 주며 Delete는 비활성 상태입니다." width="1440" height="1000" loading="lazy">
+<figcaption><strong>삭제 예정 목록과 확인란을 먼저 읽습니다.</strong> 위쪽 그룹 이름·전체 자원 목록을 대조하고 아래쪽 Enter resource group name to confirm deletion을 확인합니다. 그림의 “resources being deleted”는 예정 목록이며 삭제 완료가 아닙니다. 촬영에서는 입력란을 비우고 Delete 비활성 상태를 확인한 뒤 Cancel로 닫았습니다. 실제 삭제는 승인 후에만 진행합니다. <a href="../../web/assets/portal/28-delete-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 <pre><code class="language-bash">az group delete --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
 </code></pre>
 <p>삭제 요청 수락은 완료가 아닙니다. 포털 알림과 그룹 상태를 확인하고 다음 명령이 성공적으로 <strong><code>false</code></strong>를 출력하는지 확인합니다.</p>

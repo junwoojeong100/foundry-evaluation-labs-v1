@@ -192,6 +192,7 @@ summary { cursor: pointer; }
 .guide-content .lab-concept p:first-child { margin-top: 0; }
 .guide-content .lab-concept p:last-child { margin-bottom: 0; }
 .guide-content .portal-shot { margin: 2rem 0; padding: 0.75rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
+.guide-content .portal-shot[data-capture-layout="dialog"] { max-width: 42rem; margin-inline: auto; }
 .guide-content .portal-shot img { width: 100%; height: auto; margin: 0; border: 1px solid var(--line); border-radius: 0.35rem; background: #fff; }
 .portal-shot figcaption { margin: 0.85rem 0.25rem 0.25rem; color: var(--body-ink); font-size: 0.84rem; line-height: 1.85; }
 .portal-shot figcaption a { display: inline-block; padding: 0.25rem 0; }
@@ -446,7 +447,7 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .guide-content th { background: #eaeef2 !important; font-size: 8pt; }
   .guide-content td code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
   .guide-content img, .diagram-frame img { min-width: 0; max-width: 100%; width: auto; height: auto; margin: 4mm auto; break-inside: avoid-page; }
-  .guide-content .lab-concept { margin: 4mm 0; padding: 3mm 4mm; border-color: #aaa; border-radius: 0; background: #fff; font-size: 9pt; line-height: 1.65; break-inside: auto; }
+  .guide-content .lab-concept { margin: 4mm 0; padding: 3mm 4mm; border-color: #aaa; border-radius: 0; background: #fff; font-size: 9pt; line-height: 1.65; break-inside: avoid-page; }
   .guide-content .portal-shot { margin: 5mm 0; padding: 2mm; border: 1px solid #aaa; border-radius: 0; background: #fff; break-inside: avoid-page; page-break-inside: avoid; }
   .guide-content .portal-shot img { width: auto; max-width: 100%; max-height: 112mm; margin: 0 auto; border: 0; border-radius: 0; object-fit: contain; }
   .portal-shot figcaption { margin: 2mm 1mm 0; color: #222; font-size: 8pt; line-height: 1.55; }

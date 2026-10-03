@@ -18,7 +18,9 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
         normalized = " ".join(" ".join(texts).split())
         local_links = []
         outside = []
+        large_images = set()
         for number, page in enumerate(document, start=1):
+            large_images.update(image[0] for image in page.get_images(full=True) if image[2] >= 600 and image[3] >= 300)
             for link in page.get_links():
                 uri = link.get("uri")
                 if uri:
@@ -36,10 +38,11 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
         required = (
             "Foundry Evaluation", "Agent Optimizer", "Relevance", "TaskAdherence", "gpt-6-luna",
             "native-agent", "native-evals", "az group exists", "BLOCKED_AWAITING_APPROVAL",
+            "Check access", "Project endpoint",
         ) + (
-            ("평가기", "데이터셋", "검증", "리소스", "삭제", "승인")
+            ("평가기", "데이터셋", "검증", "리소스", "삭제", "승인", "중요한 이유", "실습 목표")
             if language == "ko" else
-            ("dataset", "evaluation", "Compare", "delete resources", "authorization")
+            ("dataset", "evaluation", "Compare", "delete resources", "authorization", "WHY IT MATTERS", "WHAT YOU BUILD")
         )
         missing = [term for term in required if term not in normalized]
         almost_empty = [i + 1 for i, text in enumerate(texts) if len(text.strip()) < 80]
@@ -56,12 +59,15 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
             "almost_empty_pages": almost_empty,
             "local_machine_links": local_links,
             "out_of_page_text": outside,
+            "large_embedded_images": len(large_images),
+            "minimum_portal_images": 20,
             "removed_sft_content_present": bool(re.search(r"\bSFT\b|Supervised Fine.Tuning", normalized, re.I)),
         }
         result["status"] = "PASS" if (
             result["pages"] > 0
             and result["korean_characters" if language == "ko" else "latin_characters"] > 1000
             and not missing and not almost_empty and not local_links and not outside
+            and len(large_images) >= result["minimum_portal_images"]
             and not result["removed_sft_content_present"]
         ) else "FAIL"
         return result
