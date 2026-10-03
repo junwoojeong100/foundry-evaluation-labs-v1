@@ -76,7 +76,7 @@ LIMITATIONS = [
     "critical 최소 표본 수와 행별 judge 하한은 워크숍 교육용 정책이며 Microsoft 공식 평가 기준이 아닙니다.",
     "20개 단일 held-out test는 의도적으로 작습니다. 반복 실험·독립 검토·더 큰 표본이 필요합니다.",
     "라우팅 Wilson 95% 구간은 독립 Bernoulli 표본 가정입니다. 그룹 상관·다중 비교·데이터 편향은 반영하지 않습니다.",
-    "지연 p50/p95는 관측값의 type-7 선형 보간입니다. 작은 표본의 p95를 운영 SLO로 해석하지 마세요.",
+    "지연 p50/p95는 관측값의 type-7 선형 보간입니다. 작은 표본의 p95를 운영 SLO로 해석하지 않습니다.",
     "토큰은 API에서 관측된 수만 합산합니다. 누락은 0이 아니며 가격·USD 비용을 추정하지 않습니다.",
 ]
 
@@ -1171,7 +1171,7 @@ def write_report(summary: dict, path: Path, *, gates: dict | None = None) -> Non
         f"- {localize('프롬프트 SHA256', 'Prompt SHA256')}: `{metadata['prompt_sha256']}`",
         f"- {localize('지식 SHA256', 'Knowledge SHA256')}: `{metadata['knowledge_sha256']}`",
         f"- {localize('교육용 게이트', 'Workshop gate')}: **{gate['outcome']}** ({'config/gates.json' if gates is None else 'frozen gates snapshot'})",
-        localize("- 운영 배포 승인: **아니오**. 비교·회귀 판정은 별도 compare 결과를 확인하세요.", "- Operational deployment approval: **not granted**. Read separate comparison results for paired/regression decisions."),
+        localize("- 운영 배포 승인: **아니오**입니다. 비교·회귀 판정은 별도 compare 결과를 확인해야 합니다.", "- Operational deployment approval: **not granted**. Read separate comparison results for paired/regression decisions."),
         "", localize("## 판정률과 실패", "## Pass rates and failures"), "",
         localize("| 지표 | 관측값 |", "| Metric | Observed value |"), "|---|---:|",
     ]

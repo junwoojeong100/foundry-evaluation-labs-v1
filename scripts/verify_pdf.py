@@ -33,10 +33,13 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
                             x0 < -1 or y0 < -1 or x1 > page.rect.width + 1 or y1 > page.rect.height + 1
                         ):
                             outside.append({"page": number, "text": span["text"][:80], "bbox": span["bbox"]})
-        required = ("Foundry Evaluation", "Agent Optimizer", "Relevance", "TaskAdherence", "gpt-6-luna") + (
-            ("평가기", "데이터셋", "검증")
+        required = (
+            "Foundry Evaluation", "Agent Optimizer", "Relevance", "TaskAdherence", "gpt-6-luna",
+            "native-agent", "native-evals", "az group exists", "BLOCKED_AWAITING_APPROVAL",
+        ) + (
+            ("평가기", "데이터셋", "검증", "리소스", "삭제", "승인")
             if language == "ko" else
-            ("dataset", "evaluation", "Compare")
+            ("dataset", "evaluation", "Compare", "delete resources", "authorization")
         )
         missing = [term for term in required if term not in normalized]
         almost_empty = [i + 1 for i, text in enumerate(texts) if len(text.strip()) < 80]

@@ -20,8 +20,8 @@
     <header class="book-cover">
       <p class="eyebrow">MICROSOFT FOUNDRY · PRINT EDITION</p>
       <h1>Foundry Learning Loop Lab · Complete Print Edition</h1>
-      <p>Follow the six participant steps for Foundry Evaluation, Agent Optimizer, and same-criteria comparison. Operator, facilitator, data, and verification references are included but are not extra labs. Cross-document links stay within this book; file references use package paths.</p>
-      <p class="book-date">As of <time datetime="2026-10-01">2026-10-01</time></p>
+      <p>Follow ten steps from Azure account checks and resource creation through Foundry Evaluation, Agent Optimizer, comparison, and verified cleanup. Operator, facilitator, issue-resolution, data, and verification references support the same path. Cross-document links stay within this book; file references use package paths.</p>
+      <p class="book-date">As of <time datetime="2026-10-03">2026-10-03</time></p>
     </header>
     <nav class="book-toc" aria-labelledby="book-toc-title">
       <h2 id="book-toc-title">Included documents</h2>
@@ -29,8 +29,9 @@
 <li><a href="#book-index">Participant guide</a></li>
 <li><a href="#book-facilitator">Appendix 1 · Facilitator guide</a></li>
 <li><a href="#book-admin">Appendix 2 · Operator setup</a></li>
-<li><a href="#book-verification">Appendix 3 · Verification and sources</a></li>
-<li><a href="#book-data-guide">Appendix 4 · Data guide</a></li>
+<li><a href="#book-troubleshooting">Appendix 3 · Execution issues and resolutions</a></li>
+<li><a href="#book-verification">Appendix 4 · Verification and sources</a></li>
+<li><a href="#book-data-guide">Appendix 5 · Data guide</a></li>
 </ol>
     </nav>
     <section id="book-index" class="book-section guide-content" lang="en" aria-label="Participant guide">
@@ -38,24 +39,206 @@
 <h1 id="book-index--좋은-에이전트는-평가에서-시작된다-v1">Great agents start with evaluation · v1</h1>
 <p class="eyebrow">CONTOSO ATLAS CLOUD · ONE LEARNING PATH</p>
 
-<p><strong>Evaluate your business cases, improve instructions with Agent Optimizer, and verify a better v2 using the same criteria.</strong></p>
+<p><strong>Prepare Azure, evaluate and improve an Agent you create, and delete the resources when you finish.</strong> Start at 01 if this is your first visit. If you received a prepared environment, still confirm your identity, permissions, and handoff details first.</p>
 <ol class="learning-path" role="list" aria-label="Lab steps">
-<li><a href="#book-index--start"><strong>01</strong> Prepare the dataset</a></li>
-<li><a href="#book-index--prepare"><strong>02</strong> Select evaluation criteria</a></li>
-<li><a href="#book-index--baseline"><strong>03</strong> Run Foundry Evaluation</a></li>
-<li><a href="#book-index--analyze"><strong>04</strong> Read scores and reasons</a></li>
-<li><a href="#book-index--optimize"><strong>05</strong> Improve instructions with Agent Optimizer</a></li>
-<li><a href="#book-index--decision"><strong>06</strong> Reevaluate and compare v1/v2</a></li>
+<li><a href="#book-index--setup"><strong>01</strong> Check your account, computer, and access</a></li>
+<li><a href="#book-index--resources"><strong>02</strong> Create the Foundry environment</a></li>
+<li><a href="#book-index--agent"><strong>03</strong> Connect policies and create the Agent</a></li>
+<li><a href="#book-index--start"><strong>04</strong> Register the dataset</a></li>
+<li><a href="#book-index--prepare"><strong>05</strong> Select evaluation criteria</a></li>
+<li><a href="#book-index--baseline"><strong>06</strong> Run Foundry Evaluation</a></li>
+<li><a href="#book-index--analyze"><strong>07</strong> Read scores and reasons</a></li>
+<li><a href="#book-index--optimize"><strong>08</strong> Improve instructions with Agent Optimizer</a></li>
+<li><a href="#book-index--decision"><strong>09</strong> Reevaluate and compare v1/v2</a></li>
+<li><a href="#book-index--cleanup"><strong>10</strong> Save results and delete resources</a></li>
 </ol>
 
 <p>Use <strong>your own representative tasks and business criteria</strong>, not a public benchmark alone. Synthetic Contoso policies demonstrate <strong>evaluate → learn → improve → reevaluate</strong> without publishing private customer data.</p>
-<p>The <a href="#book-admin--handoff">operator</a> prepares the isolated project, Agent, policy tool, deployments and cost authorization before class. Infrastructure, Judge calibration and additional governance are not extra participant exercises.</p>
-<p><strong>Version meaning:</strong> v1/v2 are complete Foundry Agent versions. Here both use <code>gpt-6-sol</code>; only instructions change. Do not weaken v1 or promise an improvement before measuring it. Develop candidates as drafts and keep released versions at <strong>v1 and v2</strong>.</p>
+<p><strong>How to follow this guide:</strong> Steps 01–03 prepare the environment; 04–09 use the Foundry portal for evaluation and improvement. Unless stated otherwise, run commands from the repository's top-level folder. Replace <code>YOUR_...</code> placeholders with your own values. Names in illustrative output and historical screenshots are not your resource names.</p>
+<table>
+<thead>
+<tr>
+<th>Before you start</th>
+<th>Guidance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time</td>
+<td>Allow half a day for first-time setup. Permission and quota approval waits are separate.</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Model, evaluation, and optimization calls, Search hosting, and logs can incur charges. A free subscription does not guarantee access to every model.</td>
+</tr>
+<tr>
+<td>Access</td>
+<td>Use a dedicated lab environment you are authorized to create and clean up. An operator can perform only the privileged steps and supply the handoff.</td>
+</tr>
+<tr>
+<td>Prepared environment</td>
+<td>Obtain every value in the <a href="#book-admin--handoff">operator handoff</a>, verify the completion criteria in 02–03, and continue at 04 without creating duplicate resources.</td>
+</tr>
+<tr>
+<td>Finish</td>
+<td>Complete the deletion checks or approved retention handoff in 10, not just the evaluation report.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Version meaning:</strong> v1/v2 are complete Foundry Agent versions. Keep the model, tools, and output format fixed; change only instructions. Do not weaken v1 or promise an improvement before measuring it. In a new lab, v2 is initially a comparison candidate; creating it is not acceptance or production approval.</p>
 <p class="output-notice" id="book-index--portal-screenshots-note"><strong>How to read the pictures:</strong> These real English portal captures illustrate control locations from an earlier UI session. Their model names, versions and scores are not the current Sol verification. The <a href="#book-verification">latest v2 report</a> is the authoritative measured comparison and includes every actual question, response, score and reason. Korean guide text does not mean a Korean run was executed.</p>
 
-<h2 id="book-index--start">01. Prepare the dataset</h2>
+<h2 id="book-index--setup">01. Check your account, computer, and access</h2>
+<p><a id="book-index--environment"></a><a id="book-index--sdk-prerequisites"></a></p>
+<p><strong>Goal:</strong> Confirm your Azure subscription and local execution environment. This step does not create Azure resources.</p>
+<h3 id="book-index--setup-account">Confirm your Azure account and subscription</h3>
+<ol>
+<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a>. If you do not have an account, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Azure account instructions</a> to obtain your own or an organization-provided account. For an organization account, first request access to the approved subscription.</li>
+<li>Search for <strong>Subscriptions</strong> in the top search box and open the intended subscription. Confirm <strong>Enabled</strong> and record its <strong>Subscription ID</strong> and <strong>Directory/Tenant ID</strong>. If it is missing, check the directory and subscription filters under your account.</li>
+<li>Open <strong>Access control (IAM) → View my access</strong>. The automated setup requires both resource creation and role-assignment permissions. Contributor alone does not grant role-assignment authority. See <a href="#book-admin--rbac">required access and administrator requests</a>.</li>
+<li>Agree on a budget, end time, and cleanup owner. Do not create resources without subscription access and cost authorization. Do not grant new subscription-wide Owner access or disable organizational security controls as a shortcut.</li>
+</ol>
+<h3 id="book-index--setup-local">Install tools and download the lab</h3>
+<p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>. Use a <strong>macOS/Linux terminal or Windows PowerShell</strong>, not the interactive Python prompt. Open a new terminal after installation.</p>
+<pre><code class="language-bash">git --version
+az version
+git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+cd foundry-evaluation-labs-v1
+</code></pre>
+<p>If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub <strong>Code → Download ZIP</strong>, extract the archive first and open the folder containing <code>pyproject.toml</code> and <code>requirements.lock</code>. Downloading only an HTML file omits the code, data, and images.</p>
+<p><strong>On macOS/Linux, run:</strong></p>
+<pre><code class="language-bash">python3 --version
+python3 -m venv .venv
+source .venv/bin/activate
+</code></pre>
+<p><strong>In Windows PowerShell, run:</strong></p>
+<pre><code class="language-powershell">py -3 --version
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+</code></pre>
+<p>If PowerShell policy blocks activation, do not change organizational policy. Replace <code>python</code> in subsequent commands with <code>.\.venv\Scripts\python.exe</code>. If <code>.venv</code> already exists, confirm that it belongs to this lab rather than overwriting another task's environment.</p>
+<p><strong>After preparing the virtual environment, run these shared commands:</strong></p>
+<pre><code class="language-bash">python -m pip install -r requirements.lock
+python -m lab --help
+python scripts/build_datasets.py --language en --check
+</code></pre>
+<p>Confirm that the command list appears and the dataset check succeeds. For <code>ModuleNotFoundError</code>, use <code>python -m pip --version</code> to check that Python and pip belong to <code>.venv</code>. Do not install packages into an unrelated system interpreter.</p>
+<h3 id="book-index--setup-login">Pin the CLI identity and lab language</h3>
+<pre><code class="language-bash">az login
+az account list --query &quot;[].{name:name,id:id,state:state}&quot; -o table
+az account set --subscription &quot;YOUR_SUBSCRIPTION_ID&quot;
+az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
+</code></pre>
+<p>Replace <code>YOUR_SUBSCRIPTION_ID</code> with the ID you recorded. Compare the final <code>user</code>, <code>tenant</code>, and <code>subscription</code> with the portal, and record them for the plan. Browser and CLI sign-ins are separate. If the wrong directory is selected, use <code>az login --tenant "YOUR_TENANT_ID"</code> for the approved directory.</p>
+<p>Use <strong><code>lab-en</code></strong> as this English lab's environment name. If that local plan already exists, resume its original records rather than creating it again. For a separate class, choose a new name such as <code>lab-en-02</code> and change every subsequent path and prefix consistently.</p>
+<p><strong>On macOS/Linux, set:</strong></p>
+<pre><code class="language-bash">export LAB_LANGUAGE=en
+export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-en/artifacts&quot;
+</code></pre>
+<p><strong>In Windows PowerShell, set:</strong></p>
+<pre><code class="language-powershell">$env:LAB_LANGUAGE = &quot;en&quot;
+$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifacts&quot;
+</code></pre>
+<p>Repeat virtual-environment activation and these two settings in each new terminal. Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder. The generated <code>.env</code> is configuration, not a shell or PowerShell script; do not execute or <code>source</code> it.</p>
+<p><strong>Completion signal:</strong> The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see <a href="#book-troubleshooting--environment">environment troubleshooting</a>.</p>
+<p class="step-next no-print"><a href="#book-index--resources" data-next-step>Next: 02. Create the Foundry environment →</a></p>
+
+<h2 id="book-index--resources">02. Create the Foundry environment</h2>
+<p><a id="book-index--first-infrastructure-failure"></a></p>
+<p><strong>Goal:</strong> Create a Foundry project, model deployments, policy search, and monitoring within a dedicated resource group. For a prepared environment, skip creation and compare the handoff with the actual portal resources.</p>
+<pre><code class="language-text">Azure subscription
+└─ Dedicated lab resource group
+   ├─ Foundry resource → project → Agent, evaluations, data
+   │                    └─ Four role-specific model deployments
+   ├─ Azure AI Search → read-only Contoso policy retrieval
+   └─ Application Insights + Log Analytics → monitoring and logs
+</code></pre>
+<p>A project is the workspace containing Agents and evaluations. A model name identifies the product; a <strong>deployment name identifies the model instance your environment calls</strong>. The project endpoint and Azure OpenAI endpoint are not interchangeable.</p>
+<h3 id="book-index--resources-plan">Create a local provisioning plan</h3>
+<p>Insert the three identity values from 01. This command creates only a plan and unapproved authorization example under <code>.lab/lab-en/</code>; it makes no Azure calls.</p>
+<pre><code class="language-bash">python -m lab bootstrap plan --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --tenant &quot;YOUR_TENANT_ID&quot; --expected-user &quot;YOUR_SIGN_IN_NAME&quot; --environment lab-en --location northcentralus
+</code></pre>
+<p>Confirm <code>plan_status: CREATED_LOCAL_ONLY</code>, <code>mutations_performed: false</code>, and <code>config_path</code>. <code>BLOCKED_AWAITING_APPROVAL</code> means that spending is not yet authorized, not that Azure provisioning failed or completed.</p>
+<table>
+<thead>
+<tr>
+<th>Generated file</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.lab/lab-en/config.json</code></td>
+<td>Identity, generated resource names, and exact model/version/capacity selections. Do not edit this hashed plan.</td>
+</tr>
+<tr>
+<td><code>.lab/lab-en/approval.example.json</code></td>
+<td>The initially unapproved cost and change scope.</td>
+</tr>
+<tr>
+<td><code>.lab/lab-en/manifest.json</code></td>
+<td>Provisioning, ownership, and interruption records. Preserve this file.</td>
+</tr>
+<tr>
+<td><code>.lab/lab-en/.env</code></td>
+<td>Not present yet. Successful provisioning creates this runtime configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-small</code>. Check the exact versions, SKUs, and capacity units in the <a href="#book-admin--prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
+<h3 id="book-index--resources-approval">Check readiness and obtain cost authorization</h3>
+<pre><code class="language-bash">python -m lab bootstrap preflight --config .lab/lab-en/config.json
+</code></pre>
+<p>Look for <code>readiness_status: READY</code>. If access, provider registration, model version, quota, or capacity is blocked, read <code>reason</code> and follow <a href="#book-troubleshooting--provisioning">provisioning troubleshooting</a>. Without an approval file, the overall status can still await approval even when readiness is READY. Do not keep creating new environments or switching regions.</p>
+<p>The actual budget owner opens <code>.lab/lab-en/approval.example.json</code> in an editor and uses <strong>Save As</strong> to create <code>.lab/lab-en/approval.json</code>. Keep the original <code>scope_sha256</code>, <code>models</code>, and <code>retention_days</code>. Complete <strong>every field in the <a href="#book-admin--approval">approval worksheet</a></strong> according to the real authorization, including approver, currently valid timestamps, currency/budget, wait/hosting bounds, and resource/RBAC/global-processing consent.</p>
+<p>Changing only <code>approved</code> to <code>true</code> is insufficient. The budget value is not an Azure spending cutoff, and a documentation example is not spending authorization.</p>
+<pre><code class="language-bash">python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+</code></pre>
+<p><strong>Proceed only when both <code>readiness_status: READY</code> and <code>status: READY_FOR_APPROVED_APPLY</code> are present.</strong></p>
+<h3 id="book-index--resources-create">Provision and confirm the resources in the portal</h3>
+<pre><code class="language-bash">python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+</code></pre>
+<p>The first command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second <code>apply</code> in another terminal. Confirm <strong>APPLIED</strong>, a generated <code>.lab/lab-en/.env</code>, and <code>status</code> showing <code>phase: succeeded</code> with the expected resources present. After a timeout, inspect <code>status</code> first and follow the <a href="#book-troubleshooting--provisioning">resume procedure</a>.</p>
+<ol>
+<li>In <a href="https://portal.azure.com">Azure Portal</a> → <strong>Resource groups</strong>, search for <code>names.resource_group</code> from <code>config.json</code>. Confirm the subscription, region, and complete resource list.</li>
+<li>Open <a href="https://ai.azure.com">Foundry</a> with <strong>New Foundry</strong> enabled. Select the project matching <code>names.project</code> from the upper-left project selector. Do not use a Classic hub-based project.</li>
+<li>In the project's <strong>Overview</strong>, find its endpoint. It must match <code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code>, in the form <code>https://account.services.ai.azure.com/api/projects/project</code>.</li>
+<li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, locate the deployments matching <code>.env</code> values <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, and <code>EMBEDDING_DEPLOYMENT</code>. See <a href="#book-admin--prepare">portal orientation</a> if labels differ.</li>
+</ol>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env preflight
+</code></pre>
+<p><strong>Completion signal:</strong> Runtime preflight reports <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
+<p class="step-next no-print"><a href="#book-index--agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
+
+<h2 id="book-index--agent">03. Connect policies and create the Agent</h2>
+<p><a id="book-index--model-smoke"></a><a id="book-index--iq"></a></p>
+<p><strong>Goal:</strong> Prepare a read-only synthetic-policy tool and a pinned v1 Agent. These operations can transmit synthetic data and incur model charges. Run each once within the authorization from 02.</p>
+<h3 id="book-index--agent-knowledge">Verify the model and policy retrieval</h3>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
+python -m lab --config .lab/lab-en/.env iq prepare --confirm
+python -m lab --config .lab/lab-en/.env iq probe --confirm
+</code></pre>
+<p>The first command obtains a real model response. The second prepares the <span class="book-file-link">eight synthetic policies<span class="book-file-label"> (file: <code>data/en/knowledge/documents.json</code>)</span></span>, embeddings, search index, knowledge base, and project MCP connection. The third performs actual retrieval.</p>
+<p>Confirm smoke <code>status: completed</code>, knowledge setup <code>uploaded_documents: 8</code>, and retrieval <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only, not successful retrieval. If Search is not ready, preserve the records and follow <a href="#book-troubleshooting--knowledge">retrieval troubleshooting</a>.</p>
+<h3 id="book-index--agent-create">Create v1 with the fixed comparison configuration</h3>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
+</code></pre>
+<p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using <code>prompts/en/baseline.txt</code>, the verified policy tool, and strict four-field JSON output. Record <code>agent_name</code>, <code>version</code>, and <code>receipt</code>. The command reuses an identical v1 in the same owned workspace; it does not adopt an unrelated same-named Agent or create v3.</p>
+<p>In the portal, open <strong>Build → Agents → lab-en-iq → version 1</strong>. Use the command's actual Agent name. Send this one question in <strong>Test/Playground</strong>:</p>
+<blockquote>
+<p>I first purchased a monthly subscription in September 2026. What are the refund application conditions?</p>
+</blockquote>
+<p>Check for <code>answer</code>, <code>citations</code>, <code>route</code>, and <code>needs_human</code>. Inspect the execution details for a real <strong><code>knowledge_base_retrieve</code> call and response</strong>. Compare <code>ATLAS-*</code> policy IDs with the answer's evidence. Direct retrieval can succeed while the Agent fails because its managed identity has different access.</p>
+<p><strong>Completion signal:</strong> Your pinned v1 answers a real question and uses the policy tool. Connection success or valid JSON alone is not measured quality. Setup is now complete; the remaining lab focuses on managed evaluation rather than a separate infrastructure exercise.</p>
+<p class="step-next no-print"><a href="#book-index--start" data-next-step>Next: 04. Register the dataset →</a></p>
+
+<h2 id="book-index--start">04. Register the dataset</h2>
 <p><a id="book-index--demo"></a><a id="book-index--understand"></a><a id="book-index--data"></a></p>
-<p>Use <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong> unchanged: <strong>12 JSONL rows</strong>, not a JSON array. The existing registration is <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>. Do not reupload it in the prepared project.</p>
+<p><strong>Goal:</strong> Register <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong> unchanged: <strong>12 JSONL rows</strong>. JSONL contains one JSON object per line. Do not convert it to Excel, CSV, or a JSON array.</p>
+<pre><code class="language-bash">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
+</code></pre>
+<p>Record <code>rows = 12</code> and SHA-256. The historical English rehearsal used <code>contoso-eval-en-dev12</code> version <code>1</code>; its name, IDs, and scores are not new results from your environment.</p>
 <table>
 <thead>
 <tr>
@@ -84,18 +267,18 @@
 </table>
 <p>Record all 12 rows, the registration/version and file SHA-256. Keep the bytes identical through baseline, optimization and reevaluation. The source has other reserved subsets; they are not part of this workshop.</p>
 <p>The Agent returns exactly <code>answer</code>, <code>citations</code>, <code>route</code>, <code>needs_human</code>. <code>answer</code> is English, citations are supporting policy IDs, route is <code>answer/clarify/escalate/refuse</code>, and the Boolean <code>needs_human</code> is true only for <code>escalate</code>. The Agent cannot actually submit, refund, delete or grant access.</p>
-<p>Open <strong>Foundry New experience → Build → Evaluations → Create → Create new evaluation</strong>. For the prepared English target select <strong>Agent → <code>contoso-eval-en-sol</code></strong>, pin the baseline explicitly to <strong>v1</strong>, and confirm one checked target. <strong>Pin currently latest</strong> is safe only while latest really is v1; selecting it can clear the checkbox.</p>
-<p>Choose <strong>Individual turns</strong>, <strong>One time</strong>, and <strong>Existing dataset</strong>. Select the registered dev12. In a fresh authorized project only, use Upload new dataset for the exact file. The preview may show five rows; the dataset still has 12.</p>
+<p>Open <strong>Foundry New experience → Build → Evaluations → Create → Create new evaluation</strong>. Select target type <strong>Agent → <code>lab-en-iq</code></strong>, pin the baseline explicitly to <strong>v1</strong>, and confirm one checked target. <strong>Pin currently latest</strong> is safe only while latest really is v1; selecting it can clear the checkbox.</p>
+<p>Choose <strong>Individual turns</strong> and <strong>One time</strong>. In a new project, select <strong>Upload new dataset → Browse</strong>, then the repository's <code>data/en/optimizer/dev.jsonl</code>. Name it <strong><code>lab-en-dev12</code></strong>, use first version <strong><code>1</code></strong>, and wait for upload/registration to finish. If already registered, use <strong>Existing dataset</strong> and select that same name/version. The preview may show five rows; the dataset still has 12.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-dataset">
 <img src="../web/assets/portal/en/15-evaluation-dataset.png" alt="Illustrative Foundry Existing dataset selection and five-row preview, not the current run result" width="1440" height="1000" loading="lazy">
 <figcaption><strong>Find the dataset controls.</strong> Select the current operator-provided registration. The preview is not proof of the total row count. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/15-evaluation-dataset.png</code>)</span></span></figcaption>
 </figure>
 
 <p><strong>Completion signal:</strong> The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. <a href="#book-data-guide--schema">Data contract</a>.</p>
-<p class="step-next no-print"><a href="#book-index--prepare" data-next-step>Next: 02. Select evaluation criteria →</a></p>
+<p class="step-next no-print"><a href="#book-index--prepare" data-next-step>Next: 05. Select evaluation criteria →</a></p>
 
-<h2 id="book-index--prepare">02. Select evaluation criteria</h2>
-<p><a id="book-index--environment"></a><a id="book-index--calibration"></a><a id="book-index--model-smoke"></a><a id="book-index--first-infrastructure-failure"></a></p>
+<h2 id="book-index--prepare">05. Select evaluation criteria</h2>
+<p><a id="book-index--calibration"></a></p>
 <p>In <strong>Configure agents</strong>, leave the custom prompt override unset. Input is <strong><code>{{item.query}}</code> only</strong>; never append <code>context</code> or <code>ground_truth</code>. If field mapping appears, use query → query.</p>
 <p>Retain exactly these two managed evaluators:</p>
 <table>
@@ -119,7 +302,8 @@
 </tr>
 </tbody>
 </table>
-<p>Choose the explicit Judge deployment and preserve service-generated mappings: Relevance <code>response={{sample.output_text}}</code>; TaskAdherence <code>response={{sample.output_items}}</code>. Read the definition's Raw JSON rather than substituting old UI bindings.</p>
+<p>In <strong>Criteria → Add evaluators</strong>, select the two evaluators. Open each row's settings, enter its threshold, and select <strong>Apply</strong>. For <strong>Evaluation model/Judge</strong>, select the deployment named by <code>JUDGE_DEPLOYMENT</code> in your <code>.env</code>, not the Agent or Optimizer deployment.</p>
+<p>Preserve service-generated mappings: Relevance <code>response={{sample.output_text}}</code>; TaskAdherence <code>response={{sample.output_items}}</code>. Read the definition's Raw JSON rather than substituting old UI bindings.</p>
 <table>
 <thead>
 <tr>
@@ -132,17 +316,17 @@
 <tr>
 <td>Agent</td>
 <td><strong>gpt-6-sol / 2026-09-22</strong></td>
-<td><code>lab-agent-sol-dea3cec5</code></td>
+<td>Your <code>MODEL_DEPLOYMENT</code> value</td>
 </tr>
 <tr>
 <td>Evaluation Judge</td>
 <td><strong>gpt-6-luna / 2026-09-22</strong></td>
-<td><code>lab-judge-luna-dea3cec5</code></td>
+<td>Your <code>JUDGE_DEPLOYMENT</code> value</td>
 </tr>
 <tr>
 <td>Optimizer generator</td>
 <td><strong>gpt-5.5 / 2026-04-24</strong></td>
-<td><code>lab-planner-dea3cec5</code></td>
+<td>Your <code>OPTIMIZER_DEPLOYMENT</code> value</td>
 </tr>
 </tbody>
 </table>
@@ -153,21 +337,26 @@
 </figure>
 
 <p><strong>Completion signal:</strong> The two evaluator scales, thresholds, mappings and actual Judge deployment are recorded. The saved remote definition, not a stale local environment default, determines the Judge.</p>
-<p class="step-next no-print"><a href="#book-index--baseline" data-next-step>Next: 03. Run Foundry Evaluation →</a></p>
+<p class="step-next no-print"><a href="#book-index--baseline" data-next-step>Next: 06. Run Foundry Evaluation →</a></p>
 
-<h2 id="book-index--baseline">03. Run Foundry Evaluation</h2>
-<p>Review <strong>v1 + original dev12 + query-only input + two evaluators + Luna Judge</strong>. The current prepared comparison is <strong><code>contoso-en-sol-learning-loop</code></strong>. Use the existing completed baseline when following the recorded rehearsal, not a second submission.</p>
+<h2 id="book-index--baseline">06. Run Foundry Evaluation</h2>
+<p>Review <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>. Name the new evaluation <strong><code>lab-en-learning-loop</code></strong> and, if a run-name field is available, name the baseline <strong><code>baseline-v1</code></strong>. In a prepared class, use the operator's names. When only reading the recorded rehearsal, open its existing completed run rather than submitting another.</p>
 <p>For a new authorized class, <strong>Review → Submit</strong> once. Keep the actual evaluation ID and run ID. Wait for completion and account for all 12 cases, including errors or missing results. A configured draft, HTTP creation receipt or successful model smoke is not a completed evaluation.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-review">
 <img src="../web/assets/portal/en/17-evaluation-review.png" alt="Illustrative Foundry evaluation Review page; use the current Sol target and own run identifiers" width="1440" height="1000" loading="lazy">
 <figcaption><strong>Review before Submit.</strong> This picture illustrates the controls, not the current Sol run. Confirm the actual pinned version and saved evaluation contract. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/17-evaluation-review.png</code>)</span></span></figcaption>
 </figure>
 
-<p><strong>Completion signal:</strong> The real Foundry run is Completed and exposes 12 output items. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.</p>
-<p class="step-next no-print"><a href="#book-index--analyze" data-next-step>Next: 04. Read scores and reasons →</a></p>
+<p>Open <strong>Evaluations → your evaluation name → Evaluation runs → baseline run</strong>. If Running, refresh that run and wait. If it remains unfinished after 30 minutes, record the state/error and notify the facilitator. Stopping your wait does not cancel the remote job.</p>
+<p>Use this <strong>read-only command</strong> to retrieve actual evaluation and run IDs. If you chose a different name, use that exact name with <code>--name</code>.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
+</code></pre>
+<p>Record <code>evaluation_id</code> and the <code>run_id</code> whose <strong><code>agent_version</code> is <code>"1"</code> and <code>status</code> is <code>completed</code></strong>. Evaluation IDs use <code>eval_...</code>; run IDs use <code>evalrun_...</code>. They are not interchangeable. If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. This command submits nothing.</p>
+<p><strong>Completion signal:</strong> The real Foundry run is Completed and exposes 12 output items. Record failed/error counts in <code>result_counts</code> too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.</p>
+<p class="step-next no-print"><a href="#book-index--analyze" data-next-step>Next: 07. Read scores and reasons →</a></p>
 
-<h2 id="book-index--analyze">04. Read scores and reasons</h2>
-<p><a id="book-index--iq"></a><a id="book-index--score-rubric"></a><a id="book-index--worked-evaluation"></a></p>
+<h2 id="book-index--analyze">07. Read scores and reasons</h2>
+<p><a id="book-index--score-rubric"></a><a id="book-index--worked-evaluation"></a></p>
 <p>Read summary counts and <strong>Detailed metrics result</strong>, especially <strong><code>Relevance.reason</code></strong> and <strong><code>TaskAdherence.reason</code></strong>. <code>conversation_id → User view</code> opens the actual question/answer, not an inline Judge-reason panel.</p>
 <p>Select a failing or lowest-score case and a good case. Connect <strong>question → actual response → score/reason → policy and parsed reference answer</strong>. If no failure exists, say so; never weaken the baseline to produce one.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation">
@@ -182,14 +371,45 @@
 </figure>
 
 <p>Watch for wrong date boundaries, unnecessary assumptions, numeric retrieval IDs instead of document citations, incorrect human routing, invented actions and unsupported certainty. A truthful statement of uncertainty must not be replaced with a fabricated fact to satisfy a Judge.</p>
+<p>Create <code>.lab/lab-en/notes.md</code> in your editor and fill in this worksheet with your own results. Retain full responses and reasons separately; use the worksheet for identifiable runs/cases and concise observations.</p>
+<table>
+<thead>
+<tr>
+<th>Record</th>
+<th>What to write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline</td>
+<td>Actual evaluation ID, run ID, Agent version, and dataset hash</td>
+</tr>
+<tr>
+<td>Results</td>
+<td>Per-metric pass/fail/error counts across all 12 cases</td>
+</tr>
+<tr>
+<td>Problem case</td>
+<td>Question, problematic sentence in the actual response, evaluator reason, and policy ID</td>
+</tr>
+<tr>
+<td>Improvement hypothesis</td>
+<td>For a date-boundary mistake, require checking effective dates and inclusive boundaries; do not embed the answer</td>
+</tr>
+<tr>
+<td>Behaviors to preserve</td>
+<td>Correct citations, honest uncertainty, and action boundaries already working well</td>
+</tr>
+</tbody>
+</table>
 <p class="share-checkpoint" id="book-index--share-baseline"><strong>Discuss:</strong> State the run ID, each metric's scale/pass count, a concrete problematic answer and the instruction behavior you want to improve.</p>
 
 <p><strong>Completion signal:</strong> You can explain a real weakness and a supported improvement hypothesis, not just an average.</p>
-<p class="step-next no-print"><a href="#book-index--optimize" data-next-step>Next: 05. Improve instructions with Agent Optimizer →</a></p>
+<p class="step-next no-print"><a href="#book-index--optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
 
-<h2 id="book-index--optimize">05. Improve instructions with Agent Optimizer</h2>
+<h2 id="book-index--optimize">08. Improve instructions with Agent Optimizer</h2>
 <p><a id="book-index--tune"></a></p>
-<p>Open <strong>Build → Agents → <code>contoso-eval-en-sol</code> → Optimize Preview → Agent</strong>, not Cost. For a fresh job use <strong>Create an optimization run</strong>.</p>
+<p>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize → Agent</strong>, not Cost. For a new job, select <strong>Create an optimization run</strong> or <strong>Create optimization run</strong>. If preview access or model support differs in your subscription, see <a href="#book-troubleshooting--optimizer">Optimizer troubleshooting</a>.</p>
 <table>
 <thead>
 <tr>
@@ -212,11 +432,11 @@
 </tr>
 <tr>
 <td>Optimization model</td>
-<td><code>lab-planner-dea3cec5</code> / gpt-5.5</td>
+<td>Your <code>OPTIMIZER_DEPLOYMENT</code> / gpt-5.5</td>
 </tr>
 <tr>
 <td>Evaluation model</td>
-<td><code>lab-judge-luna-dea3cec5</code> / gpt-6-luna</td>
+<td>Your <code>JUDGE_DEPLOYMENT</code> / gpt-6-luna</td>
 </tr>
 <tr>
 <td>Dataset</td>
@@ -239,7 +459,7 @@
 <figcaption><strong>Reuse the data.</strong> Same registered version and all 12 cases; synthetic regeneration or a changed upload would change the experiment. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/08-optimizer-dataset.png</code>)</span></span></figcaption>
 </figure>
 
-<p>Submit once within the approved cost scope; wait at most 60 minutes and then retain the actual state. Reuse the existing job ID on a resumed class. Optimization includes multiple internal calls.</p>
+<p>In <strong>Review</strong>, confirm the Agent/version, dataset, evaluators, and estimated cost, then <strong>Submit</strong> once within the approved scope. An estimate is not a billing cap. Open the job in <strong>Optimization runs</strong>, wait at most 60 minutes, and retain its actual state. Reuse the same job ID when resuming. Optimization includes multiple internal calls.</p>
 <p>Inspect original/candidate scores and <strong>View changes</strong>. The internal <strong>0–1 ranking</strong> is not the separate managed Evaluation mean or pass percentage. Keep model, tools, reasoning and output schema unchanged; an empty function-tool export does not authorize removal of the MCP policy connection.</p>
 <p><strong>Current run:</strong> the managed Optimizer retained the strong v1 baseline. Its generated candidates were not automatically promoted. The operator used the observed failures to refine the instructions and verified that reviewed draft separately. The current v2 source is therefore <strong>operator-reviewed after Agent Optimizer</strong>, not the service's automatically recommended candidate.</p>
 <figure class="portal-shot" id="book-index--portal-optimizer-results">
@@ -252,25 +472,51 @@
 <figcaption><strong>Review the actual current diff.</strong> Reject invented policy, unsupported certainty or configuration changes. Longer instructions are not automatically better. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/10-optimizer-changes.png</code>)</span></span></figcaption>
 </figure>
 
-<p><strong>Do not continually create v3, v4 and later releases.</strong> The operator tests the candidate as an explicitly pinned draft. <strong>Promote/create v2 only after the real same-criteria check demonstrates improvement without quality regressions.</strong> Promotion is not permission to publish to production or change production traffic.</p>
+<p><strong>Bring the candidate into the next step.</strong> Select it in the result and copy the complete revised instructions from <strong>View changes</strong>. Save them as UTF-8 plain text in <code>.lab/lab-en/candidate.txt</code>. Do not include diff <code>+</code>/<code>-</code> markers, UI explanations, or scores. If you edit the instructions, record “operator-reviewed after Agent Optimizer” and the reasons in <code>notes.md</code>. The repository's <code>prompts/en/candidate.txt</code> is an authored example, not the output of your new service run.</p>
+<p><strong>Do not continually create v3, v4 and later releases.</strong> This guide uses the next step's CLI to create one v2 for comparison, so <strong>do not use both Promote candidate and the CLI creation command</strong>. Experienced operators can validate explicit drafts before promotion, but that is not a hidden prerequisite for this path. Creating a version is separate from publishing it or approving activation.</p>
 <p class="share-checkpoint" id="book-index--share-optimizer"><strong>Discuss:</strong> Which instruction behavior changed, what should improve, and what could regress? Identify the actual candidate rather than copying an old screenshot.</p>
 
-<p><strong>Completion signal:</strong> A real managed Optimizer result and reviewed candidate exist. Independent reevaluation is still required.</p>
-<p class="step-next no-print"><a href="#book-index--decision" data-next-step>Next: 06. Reevaluate and compare v1/v2 →</a></p>
+<p><strong>Completion signal:</strong> Record real job/candidate IDs, the reviewed instruction file, and change reasons. If no candidate is worth retaining, record “keep v1; no improvement observed” and continue at 10. Do not repeatedly run the same job to manufacture improvement.</p>
+<p class="step-next no-print"><a href="#book-index--decision" data-next-step>Next: 09. Reevaluate and compare v1/v2 →</a></p>
 
-<h2 id="book-index--decision">06. Reevaluate and compare v1/v2</h2>
-<p><a id="book-index--review"></a><a id="book-index--operate"></a><a id="book-index--cleanup"></a></p>
-<p>Use the <strong>same Foundry evaluation definition</strong>, same dev12 and Luna Judge. In this portal, Add run previously failed with <strong><code>Unable to create data source configuration from item schema</code></strong>. The official Azure AI Projects/OpenAI Evals helper submits a real managed run; it is not local scoring.</p>
-<p>With the operator's prepared venv and verified <code>az login</code>, replace these four placeholders with <strong>your own</strong> project and baseline IDs:</p>
-<pre><code class="language-bash">export AZURE_AI_PROJECT_ENDPOINT=&quot;OPERATOR_PROJECT_ENDPOINT&quot;
-export AZURE_SUBSCRIPTION_ID=&quot;OPERATOR_SUBSCRIPTION_ID&quot;
-export FOUNDRY_EVALUATION_ID=&quot;YOUR_EVALUATION_ID&quot;
-export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
+<h2 id="book-index--decision">09. Reevaluate and compare v1/v2</h2>
+<p><a id="book-index--review"></a><a id="book-index--operate"></a></p>
+<p><strong>Goal:</strong> Evaluate changed instructions while keeping the model, tools, dataset, evaluators, and Judge fixed. First create v2 of the same Agent once from your reviewed file. This preserves v1 and does not publish to production.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
 </code></pre>
-<p>The operator may validate an explicit draft before releasing v2. Once v2 is released, use:</p>
-<pre><code class="language-bash">python scripts/add_foundry_eval_run.py --endpoint &quot;$AZURE_AI_PROJECT_ENDPOINT&quot; --subscription &quot;$AZURE_SUBSCRIPTION_ID&quot; --evaluation &quot;$FOUNDRY_EVALUATION_ID&quot; --baseline &quot;$FOUNDRY_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/foundry-evaluations/candidate-v2.json
+<p>Confirm <code>agent_name: lab-en-iq</code> and <code>version: "2"</code>. If a different v2 already exists or the model deployment changed, stop and preserve the original records. A new version alone does not demonstrate improvement.</p>
+<p>Use the <strong>same Foundry evaluation definition</strong>. The portal's Add run previously failed with <strong><code>Unable to create data source configuration from item schema</code></strong>. This official Azure AI Projects/OpenAI Evals helper adds a real managed run to the existing definition; it is not local scoring.</p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Where to find your value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>YOUR_PROJECT_ENDPOINT</code></td>
+<td><code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.lab/lab-en/.env</code></td>
+</tr>
+<tr>
+<td><code>YOUR_SUBSCRIPTION_ID</code></td>
+<td>The subscription ID from 01, also <code>AZURE_SUBSCRIPTION_ID</code> in that <code>.env</code></td>
+</tr>
+<tr>
+<td><code>YOUR_EVALUATION_ID</code></td>
+<td>The selected <code>evaluation_id</code> from the <code>native-evals</code> output in 06</td>
+</tr>
+<tr>
+<td><code>YOUR_BASELINE_RUN_ID</code></td>
+<td>That evaluation's completed version-1 <code>run_id</code>, not an Optimizer job ID</td>
+</tr>
+</tbody>
+</table>
+<p>Replace all four values and execute this single-line command. Submitting a new run incurs charges.</p>
+<pre><code class="language-bash">python scripts/add_foundry_eval_run.py --endpoint &quot;YOUR_PROJECT_ENDPOINT&quot; --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
 </code></pre>
-<p>The receipt protects against duplicates. Repeat the identical command/path only to collect the same run. The helper also blocks an existing remote name, verifies remote thresholds/Judge/mappings, and confirms the actual version and system instructions in every result row.</p>
+<p>Confirm <code>status: completed</code> and all 12 cases. If the default 30-minute wait expires, the command returns exit code 2 with Still running. If the receipt contains a run ID, repeat the <strong>identical command and <code>--out</code> path</strong> to collect that run. For an unknown submission without a run ID or an existing remote name, follow <a href="#book-troubleshooting--evaluation">duplicate-submission recovery</a>. Do not delete the receipt or rename the run to resubmit.</p>
+<p>The helper verifies the remote thresholds, Judge, mappings, and every output item's actual version and system instructions. Historical rehearsal responses and scores cannot substitute for your new run.</p>
 <p>In <strong>Evaluation runs</strong>, select both rows and <strong>Compare runs</strong>. Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
 <figure class="portal-shot" id="book-index--portal-evaluation-comparison">
 <img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Illustrative Compare runs layout; current v1/v2 values and statistical result are in the latest report" width="1440" height="520" loading="lazy">
@@ -280,20 +526,80 @@ export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
 <p>The current <a href="#book-verification--status">v2 verification</a> publishes all 12 case responses, scores and reasons alongside the v1 control. Require no decline in all-criteria passes or either metric's pass count/mean, and at least one strict measured improvement. Check factual truth, routing and response format too. Report latency, tokens and the native statistical conclusion separately.</p>
 <p class="share-checkpoint" id="book-index--share-optimized"><strong>Explain the result:</strong> Identify the actual gain, unchanged criteria, any regression, and the remaining uncertainty. Observed improvement is not a guarantee that every future stochastic run will improve.</p>
 
-<p><strong>Completion signal:</strong> The latest v2 has a complete, honest same-model comparison. There is one current report, not accumulating release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.</p>
+<p>In <code>notes.md</code>, record v1/v2 pass counts and means per metric, errors, latency/tokens, statistical results, and your decision side by side. If improvement criteria are not met, <strong>retain v1 or hold the decision</strong>. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.</p>
+<p><strong>Completion signal:</strong> Record the two actual run IDs, complete same-criteria comparison, and the reasons for accepting, retaining, or holding. Do not accumulate release numbers. Production approval and independent generalization are separate and are not granted by this dev12 exercise.</p>
+<p class="step-next no-print"><a href="#book-index--cleanup" data-next-step>Next: 10. Save results and delete resources →</a></p>
+
+<h2 id="book-index--cleanup">10. Save results and delete resources</h2>
 <p><a id="book-index--troubleshooting"></a><a id="book-index--sources"></a></p>
-<p><strong>Finish:</strong> Give the operator the actual run/job IDs, data hash and measured decision. Preserve raw receipts locally; publish synthetic answers and evaluator reasons without credentials, cookies, signed URLs or private account details. <a href="#book-facilitator--resume">Facilitator recovery</a> · <a href="#book-data-guide">Data contract</a>.</p>
+<p><strong>Goal:</strong> Preserve necessary evidence and remove unused lab resources. <strong>Closing a browser, deleting an Agent, or running <code>cleanup</code> does not by itself stop all resource-group charges.</strong></p>
+<h3 id="book-index--cleanup-records">Preserve records before deletion</h3>
+<ol>
+<li>Record the actual project, Agent, dataset version/hash, evaluation/run/job IDs, and decision in <code>notes.md</code>.</li>
+<li>Use <strong>Download/Export</strong> where offered in the evaluation and Optimizer views. If unavailable, retain existing receipts and detailed results; do not claim an export you could not obtain.</li>
+<li>Retain <code>.lab/lab-en/</code> plans, manifest, approvals, and run records in an organization-approved private location. Do not commit raw credentials, cookies, signed URLs, or account details. Public records should contain only the necessary synthetic cases, scores, and reasons.</li>
+<li>Inspect Evaluations and Optimization runs for active jobs. Use <strong>Cancel</strong> where supported and verify the terminal state. Hand unresolved active jobs to the cleanup owner.</li>
+</ol>
+<h3 id="book-index--cleanup-scope">Distinguish dedicated and shared environments</h3>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Cleanup scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dedicated resource group created for you in 02</td>
+<td>Follow the group-deletion procedure below. Reconfirm that no unrelated resources are present and deletion is authorized.</td>
+</tr>
+<tr>
+<td>Operator-provided shared project</td>
+<td><strong>Do not delete the resource group, Foundry resource, shared models, or Search service.</strong> Remove only assigned objects and hand remaining resources to the operator.</td>
+</tr>
+<tr>
+<td>Setup or execution stopped partway through</td>
+<td>Compare <code>config.json</code>, the manifest, and actual Azure resources. Failure does not mean nothing was created.</td>
+</tr>
+</tbody>
+</table>
+<p>For shared resources with local ownership records, first inspect this <strong>plan-only</strong> command:</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env cleanup
+</code></pre>
+<p>Read <code>mode: LOCAL_PLAN_ONLY</code>, <code>actions</code>, <code>never_deleted</code>, and <code>manual_follow_up</code>. Verify names, project, and ownership. Run the following only after obtaining authorization for exactly those deletions. If your environment name differs, use its matching prefix.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env cleanup --confirm-prefix lab-en
+</code></pre>
+<p>Confirm <code>OWNED_OBJECTS_ABSENT</code>. This removes recorded Agent versions, search objects, and connections, but <strong>not resource groups, model deployments, Search hosting, logs, or RBAC</strong>. It does not automatically remove every portal-created dataset, evaluation, Optimizer job, Playground conversation, or model-smoke response. Delete authorized items individually in their owning view; if no delete action is offered, hand retention or project cleanup to the operator.</p>
+<h3 id="book-index--cleanup-delete">Delete a dedicated group and verify its absence</h3>
+<p>Replace <code>YOUR_LAB_RESOURCE_GROUP</code> with <strong><code>names.resource_group</code></strong> from <code>config.json</code>. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.</p>
+<pre><code class="language-bash">az group show --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;{name:name,location:location,tags:tags}&quot; -o json
+az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-group &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;[].{name:name,type:type}&quot; -o table
+</code></pre>
+<p><strong>Resource-group deletion is irreversible and removes the group's Foundry resources, model deployments, Search, and monitoring together.</strong> After saving evidence and receiving approval for that exact group, choose one method:</p>
+<ol>
+<li><strong>Portal:</strong> Azure Portal → Resource groups → exact group → <strong>Delete resource group</strong>. Read the deletion inventory, type the requested group name, and confirm.</li>
+<li><strong>CLI:</strong> Run the command below and review the target again at the confirmation prompt. Do not append <code>--yes</code> to bypass confirmation.</li>
+</ol>
+<pre><code class="language-bash">az group delete --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
+</code></pre>
+<p>An accepted request is not completed deletion. Check portal notifications and group status, then verify that this command successfully prints <strong><code>false</code></strong>:</p>
+<pre><code class="language-bash">az group exists --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot;
+</code></pre>
+<p>Authentication or network errors are not <code>false</code> and do not prove deletion. If <code>true</code>, inspect deletion progress. For <strong>Locks</strong>, permissions, or dependencies in other groups, follow <a href="#book-troubleshooting--cleanup">deletion troubleshooting</a>. Do not remove organizational locks without authorization.</p>
+<p>Afterward, open <strong>Cost Management → Cost analysis</strong> for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.</p>
+<p><strong>Final completion signal:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="#book-admin--cleanup">operator cleanup worksheet</a> and <a href="#book-troubleshooting--verification">execution issue record</a> for the remaining boundaries.</p>
 </section>
 <section id="book-facilitator" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 1 · Facilitator guide">
 <p class="book-part-label">Appendix 1 · Facilitator guide</p>
 <h1 id="book-facilitator--facilitator-guide">Facilitator guide · improve the measured result</h1>
-<p><a href="#book-index--start">Six participant steps</a> · <a href="#book-admin--handoff">Operator handoff</a> · <a href="#book-verification">Latest v2 verification</a></p>
+<p><a href="#book-index--setup">Ten participant steps</a> · <a href="#book-admin--handoff">Operator handoff</a> · <a href="#book-troubleshooting">Execution issues</a> · <a href="#book-verification">Latest v2 verification</a></p>
 <p>Teach <strong>evaluate → learn → improve → reevaluate</strong> using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
 <h2 id="book-facilitator--prepare">Before class</h2>
-<p>The operator provides <strong><code>contoso-eval-en-sol</code></strong>, Sol model deployment, the existing read-only policy tool, the registered English dev12, a Luna Judge and a supported <code>gpt-5.5</code> Optimizer deployment. Verify model roles and identity using the <a href="#book-admin--prepare">operator guide</a>.</p>
-<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning and strict output schema match; only instructions differ. V1 already has useful grounding, routing, date and uncertainty safeguards. Candidate development uses drafts, not an ever-growing sequence of released versions.</p>
+<p>Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete <a href="#book-admin--handoff">handoff</a> and verified project, Agent, retrieval, and dataset registration.</p>
+<p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. Do not assume the historical <code>contoso-eval-en-sol</code> already exists in a new project. Verify <a href="#book-admin--prepare">model roles and identity</a>, and reserve time for cleanup in 10.</p>
+<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.</p>
 <p>Keep English and Korean data/Agents separate. The Korean guide explains the procedure; the current published measurements are <strong>English-data results only</strong>.</p>
-<h2 id="book-facilitator--checkpoints">Keep exactly six participant steps</h2>
+<h2 id="book-facilitator--checkpoints">Verify completion across all ten steps</h2>
 <table>
 <thead>
 <tr>
@@ -304,34 +610,54 @@ export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
 </thead>
 <tbody>
 <tr>
-<td>01 Dataset</td>
-<td>Inspect the unchanged three-column JSONL and existing registration</td>
-<td>All 12 rows, version and SHA-256</td>
+<td>01 Environment</td>
+<td>Check account, subscription, permissions, Python, CLI, and language variables</td>
+<td>Matching identity and successful local commands</td>
 </tr>
 <tr>
-<td>02 Criteria</td>
-<td>Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1; Luna Judge</td>
-<td>Saved remote definition and query-only Agent input</td>
+<td>02 Provisioning</td>
+<td>Plan, authorize, preflight, apply, and inspect status</td>
+<td>APPLIED, generated <code>.env</code>, and runtime preflight PASS</td>
 </tr>
 <tr>
-<td>03 Baseline</td>
-<td>Run actual Foundry Evaluation against pinned Sol v1</td>
-<td>Completed run ID and all output items</td>
+<td>03 Agent setup</td>
+<td>Verify model/retrieval and create <code>native-agent</code> v1</td>
+<td>Actual JSON response and Agent tool call</td>
 </tr>
 <tr>
-<td>04 Analysis</td>
-<td>Read actual answers, metric scores, reasons and source policy</td>
-<td>A concrete improvement hypothesis, including failures</td>
+<td>04 Dataset</td>
+<td>Register or reuse unchanged three-column JSONL</td>
+<td>All 12 rows, registration/version, and SHA-256</td>
 </tr>
 <tr>
-<td>05 Optimization</td>
-<td>Actual instruction-only Agent Optimizer; inspect the candidate diff</td>
-<td>Real job/candidate IDs, unchanged non-instruction configuration</td>
+<td>05 Criteria</td>
+<td>Relevance 4, TaskAdherence 1, and the actual Judge</td>
+<td>Saved remote definition and query-only input</td>
 </tr>
 <tr>
-<td>06 Reevaluation</td>
-<td>Same definition/data/Judge, explicitly pinned candidate; Compare runs</td>
-<td>Matched item-level evidence, improvement checks and honest decision</td>
+<td>06 Baseline</td>
+<td>Foundry Evaluation against pinned v1</td>
+<td>Completed actual run ID and all 12 items</td>
+</tr>
+<tr>
+<td>07 Analysis</td>
+<td>Read actual answers, scores, reasons, and policies</td>
+<td>Concrete improvement hypothesis, including failures</td>
+</tr>
+<tr>
+<td>08 Optimization</td>
+<td>Instruction-only optimization and candidate-diff review</td>
+<td>Job/candidate IDs, reviewed file, and provenance</td>
+</tr>
+<tr>
+<td>09 Reevaluation</td>
+<td>Evaluate same-criteria v2 and open Compare runs</td>
+<td>Complete paired evidence and retain/accept/hold decision</td>
+</tr>
+<tr>
+<td>10 Cleanup</td>
+<td>Preserve evidence, inspect scope, authorize, and delete</td>
+<td>Dedicated-group absence or a shared-resource retention handoff</td>
 </tr>
 </tbody>
 </table>
@@ -398,6 +724,7 @@ export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
 </tbody>
 </table>
 <p>Relevance maps to <code>{{sample.output_text}}</code>; TaskAdherence maps to <code>{{sample.output_items}}</code>. Do not overwrite service-generated bindings or feed <code>ground_truth</code> into the Agent. The actual remote Judge overrides any stale local default.</p>
+<p>After a timeout, identify <strong>which existing job ID to resume</strong> first. Use the <a href="#book-troubleshooting">issue record</a> to prevent deletion/recreation or paid retries “until it succeeds.” Do not mark a blocked step completed.</p>
 <h2 id="book-facilitator--misconceptions">Correct common misconceptions</h2>
 <table>
 <thead>
@@ -437,71 +764,96 @@ export FOUNDRY_BASELINE_RUN_ID=&quot;YOUR_BASELINE_RUN_ID&quot;
 <p><a id="book-facilitator--next-loop"></a></p>
 <p>Publish <strong>the latest v2 verification and its frozen v1 control</strong>, not a sequence of obsolete current-version reports. Keep earlier raw receipts for audit without relabeling them as this pair.</p>
 <p>Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.</p>
+<p><strong>Before ending class, perform <a href="#book-index--cleanup">the cleanup checks in 10</a> together.</strong> Confirm dedicated-group deletion or a named owner and deadline for retained shared resources. Hand off actual outcomes and issue records privately; do not delete ownership records first.</p>
 </section>
 <section id="book-admin" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 2 · Operator setup">
 <p class="book-part-label">Appendix 2 · Operator setup</p>
-<h1 id="book-admin--operator-guide">Operator prerequisites · the fixed Sol v1/v2 pair</h1>
-<p><a href="#book-index--start">Participant guide</a> · <a href="#book-facilitator--prepare">Facilitator</a> · <a href="#book-verification">Latest v2 verification</a></p>
-<p>Prepare the environment before class. The participant exercise is <strong>dataset → evaluators → Foundry Evaluation → case analysis → Agent Optimizer → reevaluation</strong>, not infrastructure construction.</p>
-<h2 id="book-admin--start">Use the existing isolated project</h2>
-<p>Use the operator-owned North Central US project, its existing policy connection, and the approved synthetic Contoso data. Confirm the actual account, tenant and subscription for the CLI, SDK and portal separately. Do not recreate resources, reuse production traffic or broaden shared permissions because a client is signed in as the wrong identity.</p>
-<p>The English target is <strong><code>contoso-eval-en-sol</code></strong>. The original English and Korean source corpora remain separate. A Korean guide is not proof of a new Korean service run.</p>
+<h1 id="book-admin--operator-guide">Operator setup, authorization, and cleanup</h1>
+<p><a href="#book-index--setup">Ten steps from the beginning</a> · <a href="#book-facilitator--prepare">Facilitator</a> · <a href="#book-troubleshooting">Execution issues</a> · <a href="#book-verification">Latest v2 verification</a></p>
+<p>Use this reference for participant steps <strong>02 provisioning authorization, 03 Agent setup, and 10 deletion</strong>. Participants preparing their own environments can use it too. Supply actual values and completion evidence rather than leaving prerequisites implicit.</p>
+<h2 id="book-admin--start">Distinguish new and prepared environments</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No project exists</td>
+<td>Start with <a href="#book-index--setup">01 account setup</a> and use the authorized <code>bootstrap plan → preflight → apply → status</code> path.</td>
+</tr>
+<tr>
+<td>The operator already prepared this lab</td>
+<td>Supply actual project, Agent, data, and access through the <a href="#book-admin--handoff">handoff</a>; participants do not duplicate creation.</td>
+</tr>
+<tr>
+<td>Only an existing shared project is available</td>
+<td>Bootstrap does not silently adopt existing groups. Its owner must define the preparation/change scope and approve project-specific access.</td>
+</tr>
+</tbody>
+</table>
+<p>Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.</p>
+<p>New examples use <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. Historical <code>contoso-eval-en-sol</code> and <code>lab-...-dea3cec5</code> deployment names are references, not fixed names to use in new environments.</p>
 <figure class="portal-shot" id="book-admin--portal-resource-group">
 <img src="../web/assets/portal/en/00-resource-group.png" alt="Earlier resource-group UI capture used only to locate the isolated lab, not current verification" width="1600" height="1000" loading="lazy">
 <figcaption><strong>Resource-group orientation only.</strong> This earlier portal picture is not the current v2 result. Verify the actual project and current state from the operator handoff. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/00-resource-group.png</code>)</span></span></figcaption>
 </figure>
 
-<h2 id="book-admin--prepare">Verify the three model roles</h2>
+<h2 id="book-admin--prepare">Verify model roles and actual deployments</h2>
 <table>
 <thead>
 <tr>
 <th>Role</th>
-<th>Actual deployment</th>
-<th>Model/version</th>
+<th>Configuration key</th>
+<th>Default model/version</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Agent</td>
-<td><code>lab-agent-sol-dea3cec5</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong></td>
+<td><code>MODEL_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
 </tr>
 <tr>
 <td>Managed Evaluation Judge</td>
-<td><code>lab-judge-luna-dea3cec5</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong></td>
+<td><code>JUDGE_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
 </tr>
 <tr>
-<td>Agent Optimizer instruction generator</td>
-<td><code>lab-planner-dea3cec5</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong></td>
+<td>Optimizer/search planner</td>
+<td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared GlobalStandard 20 deployment</td>
+</tr>
+<tr>
+<td>Policy embeddings</td>
+<td><code>EMBEDDING_DEPLOYMENT</code></td>
+<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, GlobalStandard 10</td>
 </tr>
 </tbody>
 </table>
-<p>Sol was verified through an actual pinned Foundry prompt-agent invocation and successful <code>knowledge_base_retrieve</code> call, not just a model catalog entry. The generated response used the four-field JSON contract. Both versions keep the same model, read-only tools, reasoning setting and structured-output schema.</p>
-<p>The Optimizer model is a separate role with its own <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>. Do not assume that a model usable as an Agent or Judge is automatically an allowed optimization model.</p>
+<p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
+<p>Historical Sol measurements verified actual Agent and <code>knowledge_base_retrieve</code> calls, not just a catalog entry. Repeat the <a href="#book-index--agent">real response check in 03</a> for a new environment. Optimizer has a separate <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>; Agent/Judge availability does not establish generator support.</p>
 <figure class="portal-shot" id="book-admin--portal-models">
 <img src="../web/assets/portal/en/02-model-deployments.png" alt="Earlier model-deployment list showing where to inspect names and versions, not the current Sol deployment" width="1271" height="820" loading="lazy">
 <figcaption><strong>Locate model/version fields.</strong> The picture predates the Sol deployment. Use the role table and current recorded API observations, not this older list, as runtime evidence. <span class="book-file-link">View full-size image<span class="book-file-label"> (file: <code>web/assets/portal/en/02-model-deployments.png</code>)</span></span></figcaption>
 </figure>
 
-<h2 id="book-admin--bootstrap">Prepare a strong v1, then a controlled v2</h2>
-<p>Use <strong><code>prompts/en/baseline.txt</code></strong> for the English baseline. It covers policy evidence, dates, routing, uncertainty and action boundaries. V1 must not be weakened to manufacture an apparent improvement.</p>
-<p><strong>V1 and v2 are complete Foundry Agent versions</strong>, not just document revision labels. In this comparison only their instructions differ. Changing the model, tools, reasoning or output schema requires a new matched experiment, not reuse of old-model scores.</p>
-<p>Released versions are immutable. <code>ensure_fixed_release</code> in <code>lab/agents.py</code> permits only <strong>1 and 2</strong>, reuses a matching existing release, blocks mismatches and never silently creates v3. For development, use explicitly pinned <strong><code>draft-…</code></strong> versions. Draft support was verified in this subscription; verify it elsewhere because unsupported draft creation can fall back to a regular release.</p>
-<p><code>native_response_format()</code> projects the shared response schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency are still checked after generation; a valid JSON shape alone is not policy correctness.</p>
-<p>Keep the English registered dataset <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, all 12 rows from <code>data/en/optimizer/dev.jsonl</code>, with the original SHA-256. The Agent receives <strong><code>query</code> only</strong>; reference columns are not injected into generation.</p>
-<p><a id="book-admin--sdk-prerequisites"></a></p>
-<p>Provide Python 3.11–3.14, Azure CLI, the checked-out source and <code>requirements.lock</code>. Use a separate prepared environment, not an unrelated user's environment:</p>
-<pre><code class="language-bash">source .venv/bin/activate
-python -m pip install -r requirements.lock
-az login
-az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&quot; -o json
+<h2 id="book-admin--bootstrap">Prepare an executable Agent</h2>
+<p>First complete Python installation, virtual-environment creation, login, and language variables using the <a href="#book-index--setup-local">copyable commands in 01</a>. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <code>iq prepare → iq probe</code> succeeds, create a policy-connected v1:</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>
-<p>Check those values against the approved project. The operator supplies its endpoint, subscription, current evaluation ID and completed baseline run ID. Do not copy historical rehearsal IDs or use an Optimizer job ID as an evaluation ID.</p>
-<p>The reevaluation helper clones the baseline data source and validates the <strong>remote</strong> evaluator contract. A stale local <code>JUDGE_DEPLOYMENT</code> must not replace the actual Judge in the evaluation definition.</p>
-<h2 id="book-admin--scope">Freeze the comparison and spending scope</h2>
-<p><a id="book-admin--approval"></a></p>
+<p><code>native-agent</code> uses <code>ensure_fixed_release</code> to allow only <strong>1 and 2</strong>, comparing local workspace ownership with remote metadata. It reuses matching configurations, rejects a different v2, and never creates v3. It also retains a model-deployment snapshot and rejects drift. Receipts <code>agents/native-v1.json</code>, <code>agents/native-v2.json</code>, and <code>agents/native-model.json</code> belong to that environment's artifacts folder.</p>
+<p><code>native_response_format()</code> projects the common schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency still require post-generation checks. Valid JSON does not establish policy correctness.</p>
+<p><a id="book-admin--sdk-prerequisites"></a></p>
+<p><strong>Creating v2 is not completing evaluation.</strong> The default path creates one unpublished v2 from reviewed instructions, runs the same managed evaluation, and then decides whether to accept it. Experienced operators may first test <code>draft-…</code> versions as in the historical rehearsal, but must verify subscription support. Draft validation is not an unstated prerequisite for the default path.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
+</code></pre>
+<p>Do not combine portal Promote and CLI creation. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.</p>
+<p>Retrieve IDs with <code>native-evals --name lab-en-learning-loop</code>. The reevaluation helper copies the baseline data source and checks the <strong>remote</strong> contract. Do not replace the remote definition with a stale local <code>JUDGE_DEPLOYMENT</code>.</p>
+<h2 id="book-admin--scope">Freeze the comparison conditions</h2>
 <table>
 <thead>
 <tr>
@@ -512,7 +864,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <tbody>
 <tr>
 <td>Data</td>
-<td>Same English dev12 bytes, registration/version, questions and references</td>
+<td>Same selected-language dev12 bytes, registration/version, questions and references</td>
 </tr>
 <tr>
 <td>Relevance</td>
@@ -545,18 +897,589 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 </tbody>
 </table>
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
-<h2 id="book-admin--rbac">Verify least-privilege access</h2>
-<p>Use the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. Participants need only the authorized project operations. Role-assignment authority is separate from model or evaluation access.</p>
-<p>Keep the policy tool read-only. Do not assign subscription-wide Owner, disable network restrictions, change organization policy or transfer tokens between users as a shortcut.</p>
+<h2 id="book-admin--approval">Complete the actual authorization file</h2>
+<p>Open <code>approval.example.json</code> and <strong>Save As approval.json</strong>. This worksheet explains fields; it is not an approved request. Keep the actual organizational authorization private. Use double quotes for JSON strings, but not for numbers, true, false, or null.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>How to complete it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema_version</code>, <code>scope_sha256</code>, <code>models</code>, <code>retention_days</code></td>
+<td>Preserve generated values. Editing the model array or plan invalidates existing authorization.</td>
+</tr>
+<tr>
+<td><code>approved</code></td>
+<td>Set <code>true</code> only after actual approval.</td>
+</tr>
+<tr>
+<td><code>approved_by</code></td>
+<td>The operator sign-in name matching <code>expected_user</code> in <code>config.json</code>.</td>
+</tr>
+<tr>
+<td><code>approved_at</code>, <code>expires_at</code></td>
+<td>Actual authorization start/end in timezone-aware ISO 8601, such as <code>2026-10-03T09:00:00+09:00</code>. Do not reuse the example date. The current time must fall within the interval.</td>
+</tr>
+<tr>
+<td><code>currency</code>, <code>budget_amount</code>, <code>budget_policy</code></td>
+<td>Approved three-letter currency and positive numeric budget. Keep policy <code>BOUNDED</code>; the budget owner determines the amount.</td>
+</tr>
+<tr>
+<td><code>acknowledge_no_monetary_cap</code></td>
+<td>Keep <code>false</code>. Unlimited spending is not the default lab policy.</td>
+</tr>
+<tr>
+<td><code>max_hosting_hours</code></td>
+<td>Approved positive integer hours. If 8, the approval interval must also be no longer than 8 hours.</td>
+</tr>
+<tr>
+<td><code>max_wait_seconds</code></td>
+<td>Positive integer wait limit, for example 3600. Ending the wait does not cancel a remote job.</td>
+</tr>
+<tr>
+<td><code>max_calls</code>, <code>max_candidates</code></td>
+<td>Approved call/candidate limits. The candidate example is 2; consider internal Agent, Judge, and search calls when setting the call limit.</td>
+</tr>
+<tr>
+<td><code>allow_global_inference</code></td>
+<td><code>true</code> only when GlobalStandard processing is authorized; it is not NCUS-only processing.</td>
+</tr>
+<tr>
+<td><code>allow_resource_creation</code>, <code>allow_rbac_assignments</code></td>
+<td>Each is <code>true</code> only when this plan's resources and resource-scoped role assignments are authorized.</td>
+</tr>
+<tr>
+<td><code>acknowledge_continuous_hosting</code>, <code>acknowledge_unknown_cost</code></td>
+<td>Each is <code>true</code> only after acknowledging continuing hosting charges and an unconfirmed final cost.</td>
+</tr>
+<tr>
+<td><code>allow_training</code>, <code>allow_global_training</code></td>
+<td><code>false</code> for this path.</td>
+</tr>
+<tr>
+<td><code>max_epochs</code>, <code>max_training_jobs</code></td>
+<td><code>0</code> for this path.</td>
+</tr>
+<tr>
+<td><code>accept_deprecated_models</code></td>
+<td>Default <code>false</code>; do not change it without reviewing a service deprecation notice.</td>
+</tr>
+</tbody>
+</table>
+<p>Validate with <code>preflight --approval ...</code> and read <code>approval_reason</code> on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another class, an automatic retry, or deletion.</p>
+<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. The operator monitors actual usage and cancels jobs or removes resources when required.</p>
+<h2 id="book-admin--rbac">Verify permissions and provider registration</h2>
+<p>Follow the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. <strong>Foundry User/Owner/Account Owner/Project Manager</strong> may still appear under their former <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> names.</p>
+<table>
+<thead>
+<tr>
+<th>Identity or task</th>
+<th>Required scope to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New-environment operator</td>
+<td>This bootstrap checks effective subscription permissions for group/deployment/resource writes and <code>Microsoft.Authorization/roleAssignments/write</code>. An already-authorized provisioning operator performs it.</td>
+</tr>
+<tr>
+<td>Portal participant</td>
+<td>Agent/evaluation operations in the assigned project; an administrator reviews the required project-scoped roles, such as Foundry User.</td>
+</tr>
+<tr>
+<td>Policy-setup operator</td>
+<td>Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on this Search service.</td>
+</tr>
+<tr>
+<td>Project managed identity</td>
+<td>Search Index Data Reader on this Search service, model invocation, and telemetry submission to the assigned monitoring resource.</td>
+</tr>
+<tr>
+<td>Search managed identity</td>
+<td>Model invocation on the assigned Foundry resource.</td>
+</tr>
+<tr>
+<td>Log reader</td>
+<td>Read access to the assigned Application Insights/Log Analytics resources, not subscription-wide log access by default.</td>
+</tr>
+</tbody>
+</table>
+<p>In Azure Portal → <strong>Subscriptions → selected subscription → Resource providers</strong>, verify <strong>Registered</strong> for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>. An authorized subscription administrator registers missing providers through organizational procedures. Bootstrap never auto-registers providers or expands permissions.</p>
+<p>Allow registration/role propagation, then rerun the same preflight. For continuing <code>403</code>, compare identity, role scope, and network access. Do not grant new subscription-wide Owner, disable network or organizational policies, or transfer tokens as a shortcut.</p>
 <h2 id="book-admin--cost">Costs and operational boundaries</h2>
-<p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Quota is not free usage, and GlobalStandard is not an NCUS-only processing guarantee. Record measured tokens and actual billing separately; unknown billing is not zero.</p>
-<p>Name the cost/cleanup owner. Do not publish to production or activate a candidate merely because an Optimizer ranking increased. Keep the baseline active unless the measured decision and authorized operational review justify a change. Closing a browser does not stop resource charges.</p>
-<h2 id="book-admin--handoff">Hand off the current pair</h2>
-<p>Give participants the current Agent/version IDs, deployment-role map, dev12 hash, exact evaluator settings, SDK context, approval scope and <a href="#book-verification">latest verification record</a>. The English report publishes actual responses, scores and reasons for every case.</p>
+<p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.</p>
+<p>In Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure organizational budget alerts where needed, but do not present them as enforced caps. Record the cost/cleanup owner and end time in the handoff.</p>
+<h2 id="book-admin--handoff">Hand off actual values without gaps</h2>
+<p>Copy this table into the private class record and fill it with actual values. “The environment is ready” is not a sufficient handoff.</p>
+<table>
+<thead>
+<tr>
+<th>Required item</th>
+<th>Actual values or evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity</td>
+<td>User, tenant ID, and subscription ID; never passwords or tokens</td>
+</tr>
+<tr>
+<td>Responsibilities</td>
+<td>Who performs provisioning, SDK operations, portal exercises, cost monitoring, and cleanup</td>
+</tr>
+<tr>
+<td>Local paths</td>
+<td>Environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code></td>
+</tr>
+<tr>
+<td>Azure environment</td>
+<td>Resource group, Foundry account/project, project endpoint, and Search service</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>Actual names, product/version, SKU, and capacity for all four deployments</td>
+</tr>
+<tr>
+<td>Policy search</td>
+<td>Source/language, eight uploaded documents, knowledge-base/connection names, and <code>retrieval_verified</code></td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>Actual name, pinned v1, strict output, and a successful real Agent tool call</td>
+</tr>
+<tr>
+<td>Dataset</td>
+<td>JSONL path, 12 rows, SHA-256, registration name, and version</td>
+</tr>
+<tr>
+<td>Evaluation</td>
+<td>Relevance 4, TaskAdherence 1, Judge deployment, and query-only input; add actual evaluation/v1-run IDs after the first run</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>Scope hash, expiry, budget, candidate limit, and retention</td>
+</tr>
+<tr>
+<td>Finish</td>
+<td>Exact deletable group/objects, deletion approver, planned time, and shared-resource retention</td>
+</tr>
+</tbody>
+</table>
+<p>Historical results are separate in the <a href="#book-verification">verification record</a>. Keep English and Korean source data separate; do not relabel English measurements as a Korean execution.</p>
 <p>Raw service files can contain account metadata, tokens or signed URLs. Keep those local; <strong>the synthetic evaluation results themselves are not secret</strong>. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.</p>
+<h2 id="book-admin--cleanup">Verify deletion and retention</h2>
+<p>Use <a href="#book-index--cleanup">step 10</a> as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Deletion or handoff check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active evaluation/Optimizer jobs</td>
+<td>Cancellation availability, actual terminal state, and unresolved job IDs</td>
+</tr>
+<tr>
+<td>Locally owned objects</td>
+<td>Exact <code>cleanup</code> plan and verified absence afterward</td>
+</tr>
+<tr>
+<td>Portal-created objects</td>
+<td>Individually inspect datasets, evaluations, conversations, Optimizer records, and empty Agent entries</td>
+</tr>
+<tr>
+<td>Dedicated resource group</td>
+<td>Review all inventory, obtain authorization, delete, and verify a successful <code>az group exists</code> returns <code>false</code></td>
+</tr>
+<tr>
+<td>Shared/external resources</td>
+<td>Retained item, reason, owner, and retention end date</td>
+</tr>
+<tr>
+<td>Billing/soft delete</td>
+<td>Delayed charges, prior usage, and separate service retention/purge policy</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Keep outcomes and failures privately for the required period; do not delete <code>.lab</code> first</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="book-verification" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 3 · Verification and sources">
-<p class="book-part-label">Appendix 3 · Verification and sources</p>
+<section id="book-troubleshooting" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 3 · Execution issues and resolutions">
+<p class="book-part-label">Appendix 3 · Execution issues and resolutions</p>
+<h1 id="book-troubleshooting--issue-guide">Execution issues and resolutions</h1>
+<p><a href="#book-index--setup">Guide from the beginning</a> · <a href="#book-admin--approval">Operator authorization and handoff</a> · <a href="#book-verification">Actual quality measurements</a></p>
+<p><strong>Start with the blocked step, then follow symptom, cause, resolution, and verification.</strong> Historical Azure measurements, this revision's read-only observations, and local checks are distinct. Documenting a resolution does not establish that a new cloud execution succeeded.</p>
+<h2 id="book-troubleshooting--start">Scope and how to use this record</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence category</th>
+<th>Source and limitation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Earlier service execution</td>
+<td>The rehearsal recorded by the existing guides, portal captures, and <code>evidence/latest.json</code>, as of 2026-10-01. Published quality measurements use English data.</td>
+</tr>
+<tr>
+<td>Read-only observations on 2026-10-03</td>
+<td>The existing lab's CLI user, tenant, and subscription matched. <code>native-evals</code> retrieved v1, v2, and a draft run from that same evaluation.</td>
+</tr>
+<tr>
+<td>Documentation/code changes on 2026-10-03</td>
+<td>Added first-time setup, native Agent creation commands, ID lookup, cleanup boundaries, and formal Korean prose. The <a href="#book-troubleshooting--verification">final section</a> describes verification scope.</td>
+</tr>
+<tr>
+<td>Not performed in this revision</td>
+<td>New Azure resource creation, role changes, data uploads, paid evaluations, Optimizer reruns, and actual cloud deletion. Existing measurements are not relabeled as a new Korean run.</td>
+</tr>
+</tbody>
+</table>
+<p>For a new issue, record <strong>time, step, command, error code, target ID, change, and recheck result</strong> in private <code>notes.md</code>. Before publication, remove subscription/account identifiers, tokens, cookies, and signed URLs. Preserve failed responses and unfavorable evaluation outcomes.</p>
+<h2 id="book-troubleshooting--environment">Environment, login, and local files</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause and resolution</th>
+<th>Ready-to-continue check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The guide starts with an already-prepared project and Agent</td>
+<td>The earlier participant guide had only six evaluation steps; operator setup assumed existing infrastructure. New <a href="#book-index--setup">01–03</a> connect account, installation, provisioning, retrieval, and Agent preparation.</td>
+<td>Confirm your own project, Agent, and actual tool response; passing link checks is not environment readiness.</td>
+</tr>
+<tr>
+<td><code>.venv/bin/activate</code> or <code>Activate.ps1</code> is missing</td>
+<td>Create the virtual environment from the repository folder first. Windows and macOS/Linux activation paths differ. Follow the <a href="#book-index--setup-local">installation sequence</a>.</td>
+<td>The venv's <code>python -m pip --version</code> and <code>python -m lab --help</code> succeed.</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError</code></td>
+<td>Wrong interpreter or missing locked dependencies. Run <code>python -m pip install -r requirements.lock</code> using the venv Python.</td>
+<td>Run dataset checks and the intended command with that same Python.</td>
+</tr>
+<tr>
+<td>PowerShell policy blocks activation</td>
+<td>Use <code>.\.venv\Scripts\python.exe</code> without changing organizational policy.</td>
+<td>The interpreter runs without a policy change.</td>
+</tr>
+<tr>
+<td>Portal access works but CLI shows a different account</td>
+<td>Browser and CLI authentication are separate. Compare directory/subscription filters and the user, tenant, and subscription from <code>az account show</code>.</td>
+<td>All three approved values match; no ambient identity fallback.</td>
+</tr>
+<tr>
+<td><code>AzureCliCredential</code> fails when given both tenant and subscription</td>
+<td>The corresponding Azure CLI argument combination is incompatible. <code>lab/auth.py</code> first validates the tenant, then supplies only the subscription to the credential.</td>
+<td>The same verified identity/subscription is used; tenant validation remains intact.</td>
+</tr>
+<tr>
+<td>Korean runs use English artifacts, or vice versa</td>
+<td>Set <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> before Python starts. Reading <code>.env</code> cannot change an artifacts path already selected at import time.</td>
+<td>Language-specific folder and workspace metadata agree; original artifacts remain untouched.</td>
+</tr>
+</tbody>
+</table>
+<p>The first two gaps were confirmed by reviewing the previous guide sources. Authentication argument and language constraints are verified implementation/regression-test facts, not newly induced authentication failures or paid calls.</p>
+<h2 id="book-troubleshooting--provisioning">Provisioning, authorization, and quota</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan returns <code>BLOCKED_AWAITING_APPROVAL</code></td>
+<td>The local plan exists, but spending is not approved. Distinguish <code>plan_status</code> from <code>mutations_performed</code>.</td>
+<td>Confirm <code>CREATED_LOCAL_ONLY</code> and <code>false</code>, then complete the <a href="#book-admin--approval">approval worksheet</a>.</td>
+</tr>
+<tr>
+<td>Approval fails despite <code>approved: true</code></td>
+<td>Possible hash/model mismatch, wrong approver, invalid timezone/date interval, or missing budget/consent. Read <code>approval_reason</code>; correct only genuinely authorized fields.</td>
+<td>Both readiness READY and approval READY_FOR_APPROVED_APPLY are present.</td>
+</tr>
+<tr>
+<td>A provider is not Registered</td>
+<td>An authorized subscription administrator registers it through organizational procedures. Bootstrap does not register it automatically.</td>
+<td>All four providers are registered; rerun the same preflight.</td>
+</tr>
+<tr>
+<td>Contributor access fails on role assignments</td>
+<td>Resource creation and role-assignment authority are separate. Use an already-authorized provisioning operator.</td>
+<td>Effective required access is confirmed; do not grant new subscription-wide Owner as a workaround.</td>
+</tr>
+<tr>
+<td>Model/SKU/version/region capacity or quota is blocked</td>
+<td>Compare the role-specific plan with preflight <code>reason</code>. If substitution is needed, verify support for each role and obtain a new plan/authorization.</td>
+<td>Verify catalog, quota, capacity, and then actual Agent/tool execution.</td>
+</tr>
+<tr>
+<td>Apply times out or has an unknown result</td>
+<td>Preserve config, manifest, and deployment ID. Inspect <code>bootstrap status</code> and the group's <strong>Deployments</strong> in Azure Portal.</td>
+<td>Wait if active; do not create another environment or resubmit while the outcome remains unresolved.</td>
+</tr>
+<tr>
+<td>Environment already exists</td>
+<td>This protects an existing plan from overwrite. Use its original config with status.</td>
+<td>Resume that lab; only a separate authorized lab receives a new scope.</td>
+</tr>
+<tr>
+<td>Old recovery command names do not exist</td>
+<td>Actual CLI names are <code>repair-dependencies</code> and <code>repair-trace-routing</code>. The outdated infrastructure documentation names were corrected.</td>
+<td>Check <code>python -m lab.bootstrap --help</code>. These are not general retries; matching failure evidence and separate authorization are required.</td>
+</tr>
+</tbody>
+</table>
+<p><code>--retry</code> applies only to a verified <strong>terminal failure</strong> of the owned deployment, within an explicit retry allowance. It is not permission to repeat an unknown POST. <code>APPLIED</code> establishes infrastructure creation, not model quality, production approval, or successful trace ingestion.</p>
+<h2 id="book-troubleshooting--knowledge">Policy retrieval and Agent setup</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A model appears in the catalog but the Agent fails</td>
+<td>Deployment success and Agent runtime support differ. Record the real API error, model/version, and tool path.</td>
+<td>Complete the <a href="#book-index--agent">smoke and actual Agent call in 03</a>.</td>
+</tr>
+<tr>
+<td>Setup remains <code>created_not_retrieval_tested</code></td>
+<td>Only creation is complete. Run <code>iq probe</code> and inspect response, references, and activity.</td>
+<td><code>retrieval_verified</code> with actual sources.</td>
+</tr>
+<tr>
+<td>Direct retrieval succeeds but Agent tool returns 403</td>
+<td>Direct retrieval uses the CLI user; the Agent connection uses the project managed identity. Check Search/model permissions and the connection audience for that identity.</td>
+<td>A successful <code>knowledge_base_retrieve</code> response inside an Agent execution.</td>
+</tr>
+<tr>
+<td>English/Korean search behaves inconsistently</td>
+<td><code>lab/knowledge.py</code> uses the selected <code>en.microsoft</code> or <code>ko.microsoft</code> analyzer. Preserve the original language, index, and document hash.</td>
+<td>Distinguish language regression checks from live retrieval; renaming an existing index does not isolate it.</td>
+</tr>
+<tr>
+<td>Agent setup is described only by a function name, with no executable entry point</td>
+<td>This revision connects <code>native-agent --version 1/2</code> to existing <code>ensure_fixed_release</code>, including policy MCP, strict JSON, ownership, and model snapshots.</td>
+<td>Local regression checks cover the command; a fresh environment still requires actual creation and tool-response verification.</td>
+</tr>
+<tr>
+<td>Existing v2 has different instructions or the model changed</td>
+<td>The fixed-comparison guard stops the operation. Preserve records instead of overwriting v2 or creating v3.</td>
+<td>Compare owned Agent, model, tools, output settings, and intended instructions.</td>
+</tr>
+<tr>
+<td><code>PublicNetworkAccess=Disabled</code> or private-network timeout</td>
+<td>Use the approved VNet, VPN, or organizational execution environment. Do not disable firewalls/private endpoints.</td>
+<td>Have the network owner verify DNS/connectivity, then recheck the same endpoint.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="book-troubleshooting--evaluation">Foundry evaluation and safe resumption</h2>
+<h3 id="book-troubleshooting--evaluation-add-run">The portal Add run action returned an item-schema error</h3>
+<p><strong>Previously observed message:</strong></p>
+<pre><code class="language-text">Unable to create data source configuration from item schema
+</code></pre>
+<p>In that session, portal Add run could not reconstruct the existing Agent-targeted data source. This is not evidence of a service-wide outage or identical behavior in every subscription.</p>
+<p><strong>Resolution:</strong> Use <a href="#book-index--decision"><code>scripts/add_foundry_eval_run.py</code> in 09</a> to copy the completed baseline's remote data source and change only the explicit candidate version. It submits a real run under the same managed evaluation definition. A local Judge, changed JSONL, or different criteria is not a substitute.</p>
+<p><strong>Verification:</strong> Confirm evaluation ID, original dataset registration, Relevance 4, TaskAdherence 1, Judge/mappings, and actual version/instructions for all 12 output items. Existing completed v1/v2 runs were also confirmed in this revision's read-only lookup. No new paid run was submitted to reproduce the portal error.</p>
+<h3 id="book-troubleshooting--evaluation-resume">Prevent wrong IDs and duplicate submissions</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluation/run IDs are difficult to find</td>
+<td>Use <code>native-evals --name</code>. Select the <code>eval_...</code> evaluation and completed version-1 <code>evalrun_...</code> baseline.</td>
+</tr>
+<tr>
+<td>Several evaluations share a name</td>
+<td>Compare portal time, Agent, dataset, and runs. Do not choose by name alone.</td>
+</tr>
+<tr>
+<td>Helper exits with Still running</td>
+<td>If the receipt has a run ID, repeat the same command and output path to collect that run.</td>
+</tr>
+<tr>
+<td>Receipt exists without a run ID</td>
+<td>Acceptance is unknown. Preserve it and inspect the portal/service. Do not delete the receipt, rename the run, or automatically resubmit.</td>
+</tr>
+<tr>
+<td>A remote run already uses that name</td>
+<td>Open it or restore its original receipt instead of forcing a duplicate through a new name.</td>
+</tr>
+<tr>
+<td>Selecting v1 clears the target checkbox</td>
+<td>Reselect the Agent after pinning v1; confirm exactly one target.</td>
+</tr>
+<tr>
+<td>Dataset preview has five rows</td>
+<td>This can be a preview limit. Compare the source's 12 rows, registered version, and actual result count.</td>
+</tr>
+<tr>
+<td>TaskAdherence 1 looks like a low score</td>
+<td>It is binary 0/1; 1 means Pass. Do not apply Relevance's 1–5 scale.</td>
+</tr>
+<tr>
+<td>Reasons are not shown in the conversation view</td>
+<td><code>conversation_id → User view</code> shows the question/answer. Use <strong>Detailed metrics result</strong> for <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</td>
+</tr>
+<tr>
+<td>Output items or metrics are missing</td>
+<td>Preserve failures/missing values and the 12-case denominator. Never invent zeros or passes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="book-troubleshooting--optimizer">Agent Optimizer and result interpretation</h2>
+<table>
+<thead>
+<tr>
+<th>Observation or symptom</th>
+<th>Resolution and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An earlier UI showed <strong>No custom evaluators available</strong></td>
+<td>Use <strong>Custom only OFF</strong> or <strong>View built-in evaluators</strong>. A filter issue does not require creating a different custom evaluator.</td>
+</tr>
+<tr>
+<td>Optimize is missing or a model cannot be selected</td>
+<td>Check New Foundry, prompt-Agent type, project access, preview availability, and role-specific model support. Record tenant availability rather than claiming success when unavailable.</td>
+</tr>
+<tr>
+<td>Candidate changed the model or tool descriptions</td>
+<td>Check <strong>Choose targets → Instruction only</strong> and disable model comparison. Different non-instruction settings invalidate an instruction-only comparison.</td>
+</tr>
+<tr>
+<td>The actual Optimizer retained v1</td>
+<td>The execution in <code>evidence/latest.json</code> selected the strong baseline. Do not hide this or relabel it as automatic candidate promotion.</td>
+</tr>
+<tr>
+<td>An operator further edited the instructions</td>
+<td>Record “operator-reviewed after Agent Optimizer” and perform a separate same-criteria managed evaluation. The published historical v2 follows this pattern.</td>
+</tr>
+<tr>
+<td>Optimizer ranking improved but reevaluation differs</td>
+<td>Its internal 0–1 ranking is not the separate evaluation mean/pass rate. Review full responses, policy errors, and regressions.</td>
+</tr>
+<tr>
+<td>Means improved but statistics are Inconclusive</td>
+<td>The historical Relevance result is 4.8333 → 4.9167; service PairedTTest is Inconclusive. This does not establish significance or equivalence.</td>
+</tr>
+<tr>
+<td>Latency/tokens increased alongside quality</td>
+<td>Historical v2 p95 increased 10.97 → 42.97 seconds; Agent tokens increased 46,167 → 55,858. Report the tradeoff with the quality result.</td>
+</tr>
+</tbody>
+</table>
+<p>Original responses, scores, reasons, and actual run IDs are in the <a href="#book-verification--status">latest quality report</a>. Twelve reused synthetic development cases do not establish independent generalization or production safety.</p>
+<h2 id="book-troubleshooting--cleanup">Deletion and ongoing costs</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Resolution and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The earlier guide ended at result handoff</td>
+<td><a href="#book-index--cleanup">Step 10</a> now provides dedicated/shared paths, inventory checks, authorization, group deletion, and absence verification.</td>
+</tr>
+<tr>
+<td>Search charges remain after cleanup succeeds</td>
+<td><code>cleanup</code> removes owned objects, not Search hosting, models, groups, or logs. Confirm dedicated-group deletion or an operator retention plan.</td>
+</tr>
+<tr>
+<td>Missing workspace or <code>.env</code> prevents cleanup</td>
+<td>Use the interrupted setup's config/manifest and actual Azure inventory. Do not fabricate local ownership records.</td>
+</tr>
+<tr>
+<td>Group deletion fails due to locks, permissions, or dependencies</td>
+<td>Inspect <strong>Locks</strong>, <strong>Activity log</strong>, and the failed deletion in Azure Portal. Ask the lock owner for scoped action; do not remove it unilaterally.</td>
+</tr>
+<tr>
+<td>Deletion is accepted but the group remains</td>
+<td>Inspect asynchronous progress. Only a successful <code>az group exists</code> returning <code>false</code> proves group absence.</td>
+</tr>
+<tr>
+<td>Cost analysis still shows charges after deletion</td>
+<td>Prior usage and aggregation delay can remain. Check date range, resources, and any external retained services.</td>
+</tr>
+<tr>
+<td>Soft-deleted items remain</td>
+<td>Follow service-specific retention policy. An authorized owner decides whether separate permanent deletion/purge is necessary.</td>
+</tr>
+</tbody>
+</table>
+<p>Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">Azure resource-group deletion documentation</a>. Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.</p>
+<h2 id="book-troubleshooting--verification">Reproduction commands and verification scope</h2>
+<p><strong>Actual read-only observation:</strong> On 2026-10-03, the existing approved environment's CLI identity matched all three expected values and its subscription was Enabled. <code>native-evals</code> retrieved completed v1/v2 runs with 12 cases each, plus a separate draft run, from <code>contoso-en-sol-learning-loop</code>. The v1 11/12 and v2 12/12 counts matched the published report. No new evaluation, optimization, Agent creation, or deletion request was sent.</p>
+<p><strong>Local reproduction commands:</strong> Run in the virtual environment; these create no Azure resources.</p>
+<p>During automated verification, <code>--help</code> correctly exited through <code>SystemExit(0)</code>, and macOS temporary paths exposed the <code>/var</code> symlink. The test harness now recognizes successful help exits and resolves its temporary directory to a physical path. Bootstrap's symlink protection was not weakened, and no user files were moved.</p>
+<table>
+<thead>
+<tr>
+<th>Check performed in this revision</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local execution</td>
+<td>Executed both guides' local plans, unapproved-apply refusal, and row-count/hash commands. All 579 automated checks passed.</td>
+</tr>
+<tr>
+<td>Browser</td>
+<td>Verified both languages at 1440px desktop and 390px mobile. Ten-step navigation, language switching, progress/theme persistence, and JavaScript-disabled navigation worked, with no page-level horizontal overflow or page errors.</td>
+</tr>
+<tr>
+<td>Print/PDF</td>
+<td>Both complete editions include 12 language-matched portal images. Required content, local-machine links, out-of-page text, and nearly empty-page checks passed.</td>
+</tr>
+<tr>
+<td>Platform scope</td>
+<td>Actual execution used macOS. Windows PowerShell commands are provided separately, not represented as tested on Windows.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash">python scripts/build_datasets.py --language ko --check
+python scripts/build_datasets.py --language en --check
+python scripts/build_guide.py --check
+python -m unittest discover -s tests -q
+</code></pre>
+<p>The first direct PDF-check invocation reported <code>ModuleNotFoundError: pymupdf</code>. After reconfirming the import and version in the selected virtual environment, both files passed through the module entry point below. The initial import failure's cause was not established; it is not labeled a defective package. If the PDF dependency is genuinely missing, install <code>requirements-verification.lock</code> in the maintenance environment only.</p>
+<pre><code class="language-bash">python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko --out .lab/verification/pdf-ko.json
+python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-EN.pdf --language en --out .lab/verification/pdf-en.json
+</code></pre>
+<p>Checks cover the two HTML editions' ten-step sequence, reciprocal anchors, links, command arguments, fixed-Agent ownership/configuration invariants, read-only ID lookup, and duplicate-submission guards. Local mocks do not establish a fresh Azure creation, paid execution, or deletion. A new lab must still satisfy each step's real completion criteria.</p>
+<p>Formalizing authored Korean instructions changes the baseline prompt, system messages in supporting generated data, and corresponding manifest hashes. <strong>Policies, questions, reference answers, evaluation dev12, and historical measured output remain unchanged.</strong> Use the original run's instruction snapshot when reproducing an earlier execution; do not overwrite historical hashes with the revised prompt hash.</p>
+<p>Official references: <a href="https://learn.microsoft.com/azure/foundry/how-to/create-projects">project creation</a>, <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">Foundry RBAC</a>, <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a>, and <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">resource-group deletion</a>.</p>
+</section>
+<section id="book-verification" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 4 · Verification and sources">
+<p class="book-part-label">Appendix 4 · Verification and sources</p>
 <h1 id="book-verification--latest-v2-verification-gpt-6-sol">Latest v2 verification · gpt-6-sol</h1>
 <p><strong>V2 improved the measured quality result over the same-model v1:</strong> all-criteria passes increased <strong>11/12 → 12/12</strong>, mean Relevance <strong>4.8333 → 4.9167</strong>, and TaskAdherence remained <strong>12/12</strong>. This page reports only the current Sol pair, not historical experiments.</p>
 <p><strong>Important limit:</strong> p95 latency increased <strong>10.97 → 42.97 seconds</strong>, and the native statistical comparison is <strong>Inconclusive</strong>. The measured quality gain does not establish production readiness, statistical significance or guaranteed improvement on future runs.</p>
@@ -768,26 +1691,27 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <p>Official references: <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">Agent evaluation</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimization-model roles</a> · <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">Evaluator definitions</a>.</p>
 <p>Contoso data is synthetic. Earlier design attribution remains at the <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">archived source commit</a>; it is not another current verification report.</p>
 <h2 id="book-verification--update">Recheck local deliverables</h2>
+<p><strong>The documentation revision date is not a new service measurement date.</strong> Setup/cleanup improvements and read-only checks on 2026-10-03 are recorded in <a href="#book-troubleshooting--verification">execution issues</a>. Existing service scores, responses, and evaluator reasons here and in <code>evidence/latest.json</code> are not rewritten for a documentation update.</p>
 <pre><code class="language-bash">python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 </code></pre>
-<p>These commands check files and tests without submitting another Azure evaluation. The latest JSON separately records document, browser, PDF and service checks.</p>
+<p>These commands check files and tests without submitting another Azure evaluation. Historical document/browser/PDF checks in the JSON refer to the deliverables of that time, not the newly generated files. The issue record distinguishes this revision's verification scope.</p>
 </section>
-<section id="book-data-guide" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 4 · Data guide">
-<p class="book-part-label">Appendix 4 · Data guide</p>
+<section id="book-data-guide" class="book-section guide-content book-appendix" lang="en" aria-label="Appendix 5 · Data guide">
+<p class="book-part-label">Appendix 5 · Data guide</p>
 <h1 id="book-data-guide--data-guide">Synthetic English evaluation data</h1>
 <p><a href="#book-index--start">Dataset step</a> · <a href="#book-admin--handoff">Operator handoff</a> · <span class="book-file-link">Korean data guide<span class="book-file-label"> (file: <code>docs/ko/data-guide.html</code>)</span></span></p>
 <h2 id="book-data-guide--start">One unchanged dataset for the comparison</h2>
-<p>Use <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong>, exactly <strong>12 JSONL records</strong>, for Foundry Evaluation, Agent Optimizer and reevaluation. The existing registered dataset is <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>. Reuse that registration rather than uploading a duplicate.</p>
+<p>Use <strong><span class="book-file-link">data/en/optimizer/dev.jsonl<span class="book-file-label"> (file: <code>data/en/optimizer/dev.jsonl</code>)</span></span></strong>, exactly <strong>12 JSONL records</strong>, for Foundry Evaluation, Agent Optimizer, and reevaluation. In a new project, follow <a href="#book-index--start">04</a> to register <code>lab-en-dev12</code> version <code>1</code>. In a prepared project, reuse its operator-confirmed registration.</p>
 <p>Keep its exact bytes and SHA-256, all questions and references, and language fixed. The current Agent is <strong><code>contoso-eval-en-sol</code></strong>, with released instruction variants v1/v2 on the same <code>gpt-6-sol</code> model. The original Korean corpus is separate and has not been newly executed as part of this English measurement.</p>
 <h2 id="book-data-guide--scope">Purpose and limits</h2>
 <p>Contoso Atlas Cloud is fictional. Its policies, inquiries and reference answers are synthetic—not private customer data or the terms of Microsoft, Azure or a real provider.</p>
 <p>The purpose is <strong>evaluation against your own business tasks and criteria</strong>, not a public benchmark alone. Representative tasks expose policy-date boundaries, ambiguity, unsupported certainty and action claims. A 12-case development set demonstrates the learning loop; it does not certify production or independent generalization.</p>
 <h2 id="book-data-guide--composition">Preserve the original source corpus</h2>
 <p><span class="book-file-link">data/en/cases.jsonl<span class="book-file-label"> (file: <code>data/en/cases.jsonl</code>)</span></span> contains 100 cases: <code>train</code> 56, <code>validation</code> 12, <code>dev</code> 12 and <code>test</code> 20. Only dev12 is used in this workshop. Other source subsets remain available but are not additional participant exercises.</p>
-<p>Do not select only easy rows, duplicate questions, merge subsets or replace references after seeing results. <span class="book-file-link">The eight policy documents<span class="book-file-label"> (file: <code>data/en/knowledge/documents.json</code>)</span></span> retain stable <code>ATLAS-*</code> IDs and effective dates. Policy access is prepared by the operator; participants do not build a separate knowledge system.</p>
+<p>Do not select only easy rows, duplicate questions, merge subsets, or replace references after seeing results. <span class="book-file-link">The eight policy documents<span class="book-file-label"> (file: <code>data/en/knowledge/documents.json</code>)</span></span> retain stable <code>ATLAS-*</code> IDs and effective dates. The participant or authorized operator prepares policy access with the <a href="#book-index--agent">commands in 03</a>.</p>
 <h2 id="book-data-guide--schema">Upload and response schema</h2>
 <p>Each JSONL line has exactly three columns:</p>
 <table>
@@ -854,8 +1778,9 @@ python -m unittest discover -s tests -q
 <h2 id="book-data-guide--compare">Compare complete evidence</h2>
 <p>The <a href="#book-verification">latest report</a> publishes the current v2 and its frozen same-model v1 control, including all 12 synthetic questions, actual answers, evaluator scores and reasons. Older raw runs are retained for audit, not mixed into the current comparison.</p>
 <p>The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, <strong>not a replacement local Judge</strong>.</p>
-<p>Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the candidate instructions and preserve model/tools/reasoning/schema. Use drafts during development; do not continually increment the released workshop versions beyond v1/v2.</p>
+<p>Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Operators may use separate drafts after verifying support.</p>
 <p>Public evaluation evidence excludes authentication, signed URLs and private account metadata. The synthetic responses and failure reasons themselves may be shared. Publish failures as faithfully as successes.</p>
+<p><code>cleanup</code> does not remove every registered dataset. Follow <a href="#book-index--cleanup">10</a> to retain or delete registrations/evaluation records according to dedicated or shared-project ownership.</p>
 </section>
   </main>
 </body>

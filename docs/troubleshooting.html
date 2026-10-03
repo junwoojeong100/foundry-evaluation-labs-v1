@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <title>Execution issues and resolutions · Foundry Lab Guide</title>
+  <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
+  <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script src="../web/theme.js"></script>
+  <link rel="stylesheet" href="../web/styles.css">
+  <script src="../web/app.js" defer></script>
+</head>
+<body data-document-id="troubleshooting.html" data-progress-revision="">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="Open contents" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a class="brand" href="index.html" aria-label="Microsoft Foundry lab guide home">
+        <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <span class="brand-text"><strong>Foundry</strong><span>Evaluation and improvement labs</span></span>
+      </a>
+      <span class="header-context">English · Offline-ready</span>
+      <nav class="language-switcher" aria-label="Guide language"><a href="troubleshooting.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
+<a href="ko/troubleshooting.html" lang="ko" hreflang="ko" data-language-link>한국어</a></nav>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
+        <button class="toolbar-button" type="button" data-print-one title="Print the current chapter only" hidden>Print section</button>
+        <button class="toolbar-button" type="button" data-print-all title="Print this document or save it as a PDF" hidden>Save PDF</button>
+        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-EN.pdf">Save PDF</a></noscript>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+
+  <div class="workspace">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="Document navigation">
+      <div class="sidebar-inner">
+        <div class="sidebar-heading">
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">In this reference guide</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="Close contents" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
+          <div class="toc">
+<ul>
+<li><a href="#start">Scope and how to use this record</a></li>
+<li><a href="#environment">Environment, login, and local files</a></li>
+<li><a href="#provisioning">Provisioning, authorization, and quota</a></li>
+<li><a href="#knowledge">Policy retrieval and Agent setup</a></li>
+<li><a href="#evaluation">Foundry evaluation and safe resumption</a><ul>
+<li><a href="#evaluation-add-run">The portal Add run action returned an item-schema error</a></li>
+<li><a href="#evaluation-resume">Prevent wrong IDs and duplicate submissions</a></li>
+</ul>
+</li>
+<li><a href="#optimizer">Agent Optimizer and result interpretation</a></li>
+<li><a href="#cleanup">Deletion and ongoing costs</a></li>
+<li><a href="#verification">Reproduction commands and verification scope</a></li>
+</ul>
+</div>
+
+        </nav>
+        <details class="related-documents">
+          <summary>Reference guides and appendices</summary>
+          <nav aria-label="Lab documents"><ul>
+<li><a href="index.html">Participant guide</a></li>
+<li><a href="facilitator.html">Facilitator guide</a></li>
+<li><a href="admin.html">Operator setup</a></li>
+<li><a href="troubleshooting.html" aria-current="page">Execution issues and resolutions</a></li>
+<li><a href="verification.html">Verification and sources</a></li>
+<li><a href="data-guide.html">Data guide</a></li>
+<li><a href="print.html">Print edition with appendices</a></li></ul></nav>
+        </details>
+
+        <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
+          <div class="panel-heading"><h2 id="progress-title">My reading progress</h2><span class="local-badge">Local</span></div>
+          <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
+          <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
+          <details class="progress-details">
+            <summary>Mark each chapter as read</summary>
+            <div id="progress-checklist" class="progress-checklist"></div>
+          </details>
+          <div class="progress-bottom"><span>Only the chapters you check are recorded.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">Reset</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">Reading progress for this document is saved only in this browser.</p>
+        </section>
+
+        <details class="keyboard-help" data-keyboard-help hidden>
+          <summary>Keyboard shortcuts</summary>
+          <dl>
+            <div><dt><kbd>Esc</kbd></dt><dd>Close the mobile contents or confirmation dialog</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>Move to the next link or button</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
+          </dl>
+        </details>
+        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
+      </div>
+    </aside>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
+
+    <main id="main-content" class="main-content" tabindex="-1">
+<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
+      <div class="reading-toolbar no-print">
+        <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
+        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
+      </div>
+      <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Execution issues and resolutions">
+        <h1 id="issue-guide">Execution issues and resolutions</h1>
+<p><a href="index.html#setup">Guide from the beginning</a> · <a href="admin.html#approval">Operator authorization and handoff</a> · <a href="verification.html">Actual quality measurements</a></p>
+<p><strong>Start with the blocked step, then follow symptom, cause, resolution, and verification.</strong> Historical Azure measurements, this revision's read-only observations, and local checks are distinct. Documenting a resolution does not establish that a new cloud execution succeeded.</p>
+<h2 id="start">Scope and how to use this record</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence category</th>
+<th>Source and limitation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Earlier service execution</td>
+<td>The rehearsal recorded by the existing guides, portal captures, and <code>evidence/latest.json</code>, as of 2026-10-01. Published quality measurements use English data.</td>
+</tr>
+<tr>
+<td>Read-only observations on 2026-10-03</td>
+<td>The existing lab's CLI user, tenant, and subscription matched. <code>native-evals</code> retrieved v1, v2, and a draft run from that same evaluation.</td>
+</tr>
+<tr>
+<td>Documentation/code changes on 2026-10-03</td>
+<td>Added first-time setup, native Agent creation commands, ID lookup, cleanup boundaries, and formal Korean prose. The <a href="#verification">final section</a> describes verification scope.</td>
+</tr>
+<tr>
+<td>Not performed in this revision</td>
+<td>New Azure resource creation, role changes, data uploads, paid evaluations, Optimizer reruns, and actual cloud deletion. Existing measurements are not relabeled as a new Korean run.</td>
+</tr>
+</tbody>
+</table>
+<p>For a new issue, record <strong>time, step, command, error code, target ID, change, and recheck result</strong> in private <code>notes.md</code>. Before publication, remove subscription/account identifiers, tokens, cookies, and signed URLs. Preserve failed responses and unfavorable evaluation outcomes.</p>
+<h2 id="environment">Environment, login, and local files</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause and resolution</th>
+<th>Ready-to-continue check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The guide starts with an already-prepared project and Agent</td>
+<td>The earlier participant guide had only six evaluation steps; operator setup assumed existing infrastructure. New <a href="index.html#setup">01–03</a> connect account, installation, provisioning, retrieval, and Agent preparation.</td>
+<td>Confirm your own project, Agent, and actual tool response; passing link checks is not environment readiness.</td>
+</tr>
+<tr>
+<td><code>.venv/bin/activate</code> or <code>Activate.ps1</code> is missing</td>
+<td>Create the virtual environment from the repository folder first. Windows and macOS/Linux activation paths differ. Follow the <a href="index.html#setup-local">installation sequence</a>.</td>
+<td>The venv's <code>python -m pip --version</code> and <code>python -m lab --help</code> succeed.</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError</code></td>
+<td>Wrong interpreter or missing locked dependencies. Run <code>python -m pip install -r requirements.lock</code> using the venv Python.</td>
+<td>Run dataset checks and the intended command with that same Python.</td>
+</tr>
+<tr>
+<td>PowerShell policy blocks activation</td>
+<td>Use <code>.\.venv\Scripts\python.exe</code> without changing organizational policy.</td>
+<td>The interpreter runs without a policy change.</td>
+</tr>
+<tr>
+<td>Portal access works but CLI shows a different account</td>
+<td>Browser and CLI authentication are separate. Compare directory/subscription filters and the user, tenant, and subscription from <code>az account show</code>.</td>
+<td>All three approved values match; no ambient identity fallback.</td>
+</tr>
+<tr>
+<td><code>AzureCliCredential</code> fails when given both tenant and subscription</td>
+<td>The corresponding Azure CLI argument combination is incompatible. <code>lab/auth.py</code> first validates the tenant, then supplies only the subscription to the credential.</td>
+<td>The same verified identity/subscription is used; tenant validation remains intact.</td>
+</tr>
+<tr>
+<td>Korean runs use English artifacts, or vice versa</td>
+<td>Set <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> before Python starts. Reading <code>.env</code> cannot change an artifacts path already selected at import time.</td>
+<td>Language-specific folder and workspace metadata agree; original artifacts remain untouched.</td>
+</tr>
+</tbody>
+</table>
+<p>The first two gaps were confirmed by reviewing the previous guide sources. Authentication argument and language constraints are verified implementation/regression-test facts, not newly induced authentication failures or paid calls.</p>
+<h2 id="provisioning">Provisioning, authorization, and quota</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan returns <code>BLOCKED_AWAITING_APPROVAL</code></td>
+<td>The local plan exists, but spending is not approved. Distinguish <code>plan_status</code> from <code>mutations_performed</code>.</td>
+<td>Confirm <code>CREATED_LOCAL_ONLY</code> and <code>false</code>, then complete the <a href="admin.html#approval">approval worksheet</a>.</td>
+</tr>
+<tr>
+<td>Approval fails despite <code>approved: true</code></td>
+<td>Possible hash/model mismatch, wrong approver, invalid timezone/date interval, or missing budget/consent. Read <code>approval_reason</code>; correct only genuinely authorized fields.</td>
+<td>Both readiness READY and approval READY_FOR_APPROVED_APPLY are present.</td>
+</tr>
+<tr>
+<td>A provider is not Registered</td>
+<td>An authorized subscription administrator registers it through organizational procedures. Bootstrap does not register it automatically.</td>
+<td>All four providers are registered; rerun the same preflight.</td>
+</tr>
+<tr>
+<td>Contributor access fails on role assignments</td>
+<td>Resource creation and role-assignment authority are separate. Use an already-authorized provisioning operator.</td>
+<td>Effective required access is confirmed; do not grant new subscription-wide Owner as a workaround.</td>
+</tr>
+<tr>
+<td>Model/SKU/version/region capacity or quota is blocked</td>
+<td>Compare the role-specific plan with preflight <code>reason</code>. If substitution is needed, verify support for each role and obtain a new plan/authorization.</td>
+<td>Verify catalog, quota, capacity, and then actual Agent/tool execution.</td>
+</tr>
+<tr>
+<td>Apply times out or has an unknown result</td>
+<td>Preserve config, manifest, and deployment ID. Inspect <code>bootstrap status</code> and the group's <strong>Deployments</strong> in Azure Portal.</td>
+<td>Wait if active; do not create another environment or resubmit while the outcome remains unresolved.</td>
+</tr>
+<tr>
+<td>Environment already exists</td>
+<td>This protects an existing plan from overwrite. Use its original config with status.</td>
+<td>Resume that lab; only a separate authorized lab receives a new scope.</td>
+</tr>
+<tr>
+<td>Old recovery command names do not exist</td>
+<td>Actual CLI names are <code>repair-dependencies</code> and <code>repair-trace-routing</code>. The outdated infrastructure documentation names were corrected.</td>
+<td>Check <code>python -m lab.bootstrap --help</code>. These are not general retries; matching failure evidence and separate authorization are required.</td>
+</tr>
+</tbody>
+</table>
+<p><code>--retry</code> applies only to a verified <strong>terminal failure</strong> of the owned deployment, within an explicit retry allowance. It is not permission to repeat an unknown POST. <code>APPLIED</code> establishes infrastructure creation, not model quality, production approval, or successful trace ingestion.</p>
+<h2 id="knowledge">Policy retrieval and Agent setup</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A model appears in the catalog but the Agent fails</td>
+<td>Deployment success and Agent runtime support differ. Record the real API error, model/version, and tool path.</td>
+<td>Complete the <a href="index.html#agent">smoke and actual Agent call in 03</a>.</td>
+</tr>
+<tr>
+<td>Setup remains <code>created_not_retrieval_tested</code></td>
+<td>Only creation is complete. Run <code>iq probe</code> and inspect response, references, and activity.</td>
+<td><code>retrieval_verified</code> with actual sources.</td>
+</tr>
+<tr>
+<td>Direct retrieval succeeds but Agent tool returns 403</td>
+<td>Direct retrieval uses the CLI user; the Agent connection uses the project managed identity. Check Search/model permissions and the connection audience for that identity.</td>
+<td>A successful <code>knowledge_base_retrieve</code> response inside an Agent execution.</td>
+</tr>
+<tr>
+<td>English/Korean search behaves inconsistently</td>
+<td><code>lab/knowledge.py</code> uses the selected <code>en.microsoft</code> or <code>ko.microsoft</code> analyzer. Preserve the original language, index, and document hash.</td>
+<td>Distinguish language regression checks from live retrieval; renaming an existing index does not isolate it.</td>
+</tr>
+<tr>
+<td>Agent setup is described only by a function name, with no executable entry point</td>
+<td>This revision connects <code>native-agent --version 1/2</code> to existing <code>ensure_fixed_release</code>, including policy MCP, strict JSON, ownership, and model snapshots.</td>
+<td>Local regression checks cover the command; a fresh environment still requires actual creation and tool-response verification.</td>
+</tr>
+<tr>
+<td>Existing v2 has different instructions or the model changed</td>
+<td>The fixed-comparison guard stops the operation. Preserve records instead of overwriting v2 or creating v3.</td>
+<td>Compare owned Agent, model, tools, output settings, and intended instructions.</td>
+</tr>
+<tr>
+<td><code>PublicNetworkAccess=Disabled</code> or private-network timeout</td>
+<td>Use the approved VNet, VPN, or organizational execution environment. Do not disable firewalls/private endpoints.</td>
+<td>Have the network owner verify DNS/connectivity, then recheck the same endpoint.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evaluation">Foundry evaluation and safe resumption</h2>
+<h3 id="evaluation-add-run">The portal Add run action returned an item-schema error</h3>
+<p><strong>Previously observed message:</strong></p>
+<pre><code class="language-text">Unable to create data source configuration from item schema
+</code></pre>
+<p>In that session, portal Add run could not reconstruct the existing Agent-targeted data source. This is not evidence of a service-wide outage or identical behavior in every subscription.</p>
+<p><strong>Resolution:</strong> Use <a href="index.html#decision"><code>scripts/add_foundry_eval_run.py</code> in 09</a> to copy the completed baseline's remote data source and change only the explicit candidate version. It submits a real run under the same managed evaluation definition. A local Judge, changed JSONL, or different criteria is not a substitute.</p>
+<p><strong>Verification:</strong> Confirm evaluation ID, original dataset registration, Relevance 4, TaskAdherence 1, Judge/mappings, and actual version/instructions for all 12 output items. Existing completed v1/v2 runs were also confirmed in this revision's read-only lookup. No new paid run was submitted to reproduce the portal error.</p>
+<h3 id="evaluation-resume">Prevent wrong IDs and duplicate submissions</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluation/run IDs are difficult to find</td>
+<td>Use <code>native-evals --name</code>. Select the <code>eval_...</code> evaluation and completed version-1 <code>evalrun_...</code> baseline.</td>
+</tr>
+<tr>
+<td>Several evaluations share a name</td>
+<td>Compare portal time, Agent, dataset, and runs. Do not choose by name alone.</td>
+</tr>
+<tr>
+<td>Helper exits with Still running</td>
+<td>If the receipt has a run ID, repeat the same command and output path to collect that run.</td>
+</tr>
+<tr>
+<td>Receipt exists without a run ID</td>
+<td>Acceptance is unknown. Preserve it and inspect the portal/service. Do not delete the receipt, rename the run, or automatically resubmit.</td>
+</tr>
+<tr>
+<td>A remote run already uses that name</td>
+<td>Open it or restore its original receipt instead of forcing a duplicate through a new name.</td>
+</tr>
+<tr>
+<td>Selecting v1 clears the target checkbox</td>
+<td>Reselect the Agent after pinning v1; confirm exactly one target.</td>
+</tr>
+<tr>
+<td>Dataset preview has five rows</td>
+<td>This can be a preview limit. Compare the source's 12 rows, registered version, and actual result count.</td>
+</tr>
+<tr>
+<td>TaskAdherence 1 looks like a low score</td>
+<td>It is binary 0/1; 1 means Pass. Do not apply Relevance's 1–5 scale.</td>
+</tr>
+<tr>
+<td>Reasons are not shown in the conversation view</td>
+<td><code>conversation_id → User view</code> shows the question/answer. Use <strong>Detailed metrics result</strong> for <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</td>
+</tr>
+<tr>
+<td>Output items or metrics are missing</td>
+<td>Preserve failures/missing values and the 12-case denominator. Never invent zeros or passes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="optimizer">Agent Optimizer and result interpretation</h2>
+<table>
+<thead>
+<tr>
+<th>Observation or symptom</th>
+<th>Resolution and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An earlier UI showed <strong>No custom evaluators available</strong></td>
+<td>Use <strong>Custom only OFF</strong> or <strong>View built-in evaluators</strong>. A filter issue does not require creating a different custom evaluator.</td>
+</tr>
+<tr>
+<td>Optimize is missing or a model cannot be selected</td>
+<td>Check New Foundry, prompt-Agent type, project access, preview availability, and role-specific model support. Record tenant availability rather than claiming success when unavailable.</td>
+</tr>
+<tr>
+<td>Candidate changed the model or tool descriptions</td>
+<td>Check <strong>Choose targets → Instruction only</strong> and disable model comparison. Different non-instruction settings invalidate an instruction-only comparison.</td>
+</tr>
+<tr>
+<td>The actual Optimizer retained v1</td>
+<td>The execution in <code>evidence/latest.json</code> selected the strong baseline. Do not hide this or relabel it as automatic candidate promotion.</td>
+</tr>
+<tr>
+<td>An operator further edited the instructions</td>
+<td>Record “operator-reviewed after Agent Optimizer” and perform a separate same-criteria managed evaluation. The published historical v2 follows this pattern.</td>
+</tr>
+<tr>
+<td>Optimizer ranking improved but reevaluation differs</td>
+<td>Its internal 0–1 ranking is not the separate evaluation mean/pass rate. Review full responses, policy errors, and regressions.</td>
+</tr>
+<tr>
+<td>Means improved but statistics are Inconclusive</td>
+<td>The historical Relevance result is 4.8333 → 4.9167; service PairedTTest is Inconclusive. This does not establish significance or equivalence.</td>
+</tr>
+<tr>
+<td>Latency/tokens increased alongside quality</td>
+<td>Historical v2 p95 increased 10.97 → 42.97 seconds; Agent tokens increased 46,167 → 55,858. Report the tradeoff with the quality result.</td>
+</tr>
+</tbody>
+</table>
+<p>Original responses, scores, reasons, and actual run IDs are in the <a href="verification.html#status">latest quality report</a>. Twelve reused synthetic development cases do not establish independent generalization or production safety.</p>
+<h2 id="cleanup">Deletion and ongoing costs</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Resolution and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The earlier guide ended at result handoff</td>
+<td><a href="index.html#cleanup">Step 10</a> now provides dedicated/shared paths, inventory checks, authorization, group deletion, and absence verification.</td>
+</tr>
+<tr>
+<td>Search charges remain after cleanup succeeds</td>
+<td><code>cleanup</code> removes owned objects, not Search hosting, models, groups, or logs. Confirm dedicated-group deletion or an operator retention plan.</td>
+</tr>
+<tr>
+<td>Missing workspace or <code>.env</code> prevents cleanup</td>
+<td>Use the interrupted setup's config/manifest and actual Azure inventory. Do not fabricate local ownership records.</td>
+</tr>
+<tr>
+<td>Group deletion fails due to locks, permissions, or dependencies</td>
+<td>Inspect <strong>Locks</strong>, <strong>Activity log</strong>, and the failed deletion in Azure Portal. Ask the lock owner for scoped action; do not remove it unilaterally.</td>
+</tr>
+<tr>
+<td>Deletion is accepted but the group remains</td>
+<td>Inspect asynchronous progress. Only a successful <code>az group exists</code> returning <code>false</code> proves group absence.</td>
+</tr>
+<tr>
+<td>Cost analysis still shows charges after deletion</td>
+<td>Prior usage and aggregation delay can remain. Check date range, resources, and any external retained services.</td>
+</tr>
+<tr>
+<td>Soft-deleted items remain</td>
+<td>Follow service-specific retention policy. An authorized owner decides whether separate permanent deletion/purge is necessary.</td>
+</tr>
+</tbody>
+</table>
+<p>Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">Azure resource-group deletion documentation</a>. Group deletion is irreversible; individual service recovery features do not guarantee resource-group recovery.</p>
+<h2 id="verification">Reproduction commands and verification scope</h2>
+<p><strong>Actual read-only observation:</strong> On 2026-10-03, the existing approved environment's CLI identity matched all three expected values and its subscription was Enabled. <code>native-evals</code> retrieved completed v1/v2 runs with 12 cases each, plus a separate draft run, from <code>contoso-en-sol-learning-loop</code>. The v1 11/12 and v2 12/12 counts matched the published report. No new evaluation, optimization, Agent creation, or deletion request was sent.</p>
+<p><strong>Local reproduction commands:</strong> Run in the virtual environment; these create no Azure resources.</p>
+<p>During automated verification, <code>--help</code> correctly exited through <code>SystemExit(0)</code>, and macOS temporary paths exposed the <code>/var</code> symlink. The test harness now recognizes successful help exits and resolves its temporary directory to a physical path. Bootstrap's symlink protection was not weakened, and no user files were moved.</p>
+<table>
+<thead>
+<tr>
+<th>Check performed in this revision</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local execution</td>
+<td>Executed both guides' local plans, unapproved-apply refusal, and row-count/hash commands. All 579 automated checks passed.</td>
+</tr>
+<tr>
+<td>Browser</td>
+<td>Verified both languages at 1440px desktop and 390px mobile. Ten-step navigation, language switching, progress/theme persistence, and JavaScript-disabled navigation worked, with no page-level horizontal overflow or page errors.</td>
+</tr>
+<tr>
+<td>Print/PDF</td>
+<td>Both complete editions include 12 language-matched portal images. Required content, local-machine links, out-of-page text, and nearly empty-page checks passed.</td>
+</tr>
+<tr>
+<td>Platform scope</td>
+<td>Actual execution used macOS. Windows PowerShell commands are provided separately, not represented as tested on Windows.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash">python scripts/build_datasets.py --language ko --check
+python scripts/build_datasets.py --language en --check
+python scripts/build_guide.py --check
+python -m unittest discover -s tests -q
+</code></pre>
+<p>The first direct PDF-check invocation reported <code>ModuleNotFoundError: pymupdf</code>. After reconfirming the import and version in the selected virtual environment, both files passed through the module entry point below. The initial import failure's cause was not established; it is not labeled a defective package. If the PDF dependency is genuinely missing, install <code>requirements-verification.lock</code> in the maintenance environment only.</p>
+<pre><code class="language-bash">python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko --out .lab/verification/pdf-ko.json
+python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-EN.pdf --language en --out .lab/verification/pdf-en.json
+</code></pre>
+<p>Checks cover the two HTML editions' ten-step sequence, reciprocal anchors, links, command arguments, fixed-Agent ownership/configuration invariants, read-only ID lookup, and duplicate-submission guards. Local mocks do not establish a fresh Azure creation, paid execution, or deletion. A new lab must still satisfy each step's real completion criteria.</p>
+<p>Formalizing authored Korean instructions changes the baseline prompt, system messages in supporting generated data, and corresponding manifest hashes. <strong>Policies, questions, reference answers, evaluation dev12, and historical measured output remain unchanged.</strong> Use the original run's instruction snapshot when reproducing an earlier execution; do not overwrite historical hashes with the revised prompt hash.</p>
+<p>Official references: <a href="https://learn.microsoft.com/azure/foundry/how-to/create-projects">project creation</a>, <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">Foundry RBAC</a>, <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a>, and <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">resource-group deletion</a>.</p>
+      </article>
+
+      <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>This records only whether you have read the current chapter, not a LIVE run or operational approval.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">Mark as read</button>
+      </section>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="Navigate between chapters" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← Previous chapter</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
+      </nav>
+      <footer class="document-footer">
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <p class="eyebrow">LEARNING RECORD</p>
+    <h2 id="reset-title">Reset reading progress for this document?</h2>
+    <p id="reset-description">This clears all chapters marked as read in this document, in both languages. Other documents, earlier guide revisions, content, and lab files are not changed.</p>
+    <form method="dialog" class="dialog-actions">
+      <button class="secondary-button" value="cancel" autofocus>Cancel</button>
+      <button class="danger-button" value="reset">Reset reading progress</button>
+    </form>
+  </dialog>
+  <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

@@ -57,7 +57,7 @@
     "data/tuning/sft-train.jsonl": {
       "purpose": "지도 미세조정용 messages",
       "rows": 56,
-      "sha256": "dee9fd3680f8b4fdd3c2f9087173cbf58b55bca37d976aa42ed37419a56b8040",
+      "sha256": "c708b14cb8057dd4805dcc67124b541eb9908fd94934ba29d9fac95e7e743548",
       "source_splits": [
         "train"
       ]
@@ -65,7 +65,7 @@
     "data/tuning/sft-validation.jsonl": {
       "purpose": "지도 미세조정용 messages",
       "rows": 12,
-      "sha256": "31dd31affa7e81e656e049497c2e00763a3cf6253f2bf7286d86d1b1029ad5d5",
+      "sha256": "97f12af2581afa3a2ba0bf3c67ea7c93ba9ca05233d8270c1d68e330930c6c47",
       "source_splits": [
         "validation"
       ]
@@ -90,8 +90,8 @@
   },
   "master_rows": 100,
   "provenance": {
-    "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답",
-    "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아님",
+    "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답입니다.",
+    "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아닙니다.",
     "network_or_model_calls": false,
     "optimizer_export": {
       "agent_input_columns": [
@@ -113,8 +113,8 @@
       "schema_reference": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites",
       "service": "Agent Optimizer"
     },
-    "paraphrase_review": "상황·판단 과제별 수동 분리; 식별자 검사만으로 의미 중복을 보증하지 않음",
-    "performance_metrics": "포함하지 않음; 실제 평가를 별도로 실행해야 함"
+    "paraphrase_review": "상황·판단 과제별로 수동 분리합니다. 식별자 검사만으로 의미 중복이 없음을 보증하지 않습니다.",
+    "performance_metrics": "포함하지 않습니다. 실제 평가를 별도로 실행해야 합니다."
   },
   "route_counts": {
     "dev": {
@@ -146,10 +146,10 @@
   "sources_sha256": {
     "data/cases.jsonl": "0a9ff15f638a19b01b3204b91dde50ec7c6a1ad04c8ff2f46c93eb734913734b",
     "data/knowledge/documents.json": "ece0354afaf28f1c0f42cfe926805c33d63eed5c478ee1b5899e0549bc63d004",
-    "prompts/baseline.txt": "4119e5248a12885ae1cae4e8b06d6bf2fdff16216caeb19995d7d455796ce806",
+    "prompts/baseline.txt": "d810f170c74dd1ed92c441f6fc313e6d02382a60156283dba25c0a84f7ab1185",
     "prompts/candidate.txt": "569111f702af439fadc362ce3ff652e5b6b9eeb6b2d36c559bbfdc46339f69e0",
     "prompts/rubric.txt": "7dae41b39c454ffda6a4ab27ced302d6c0c1d13cbc172564646cffb26e960b26",
-    "prompts/tuning-system.txt": "2444883642e190d27bcf4c4d893808618c0678760c0a33acf8bdf7453b0e2d2d"
+    "prompts/tuning-system.txt": "339a9e1d351819f74564f232caa1c3117a305aab03dfac646207ceabf597faa2"
   },
   "split_disjointness": {
     "pairs": [

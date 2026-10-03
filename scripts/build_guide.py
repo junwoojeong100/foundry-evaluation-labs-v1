@@ -25,7 +25,7 @@ from markdown import Markdown
 from markdown.extensions.toc import slugify_unicode
 from markdown.treeprocessors import Treeprocessor
 
-BUILD_DATE = "2026-10-01"
+BUILD_DATE = "2026-10-03"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIRECTORY = "docs"
 SITE_URL = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
@@ -51,11 +51,13 @@ DOCUMENTS = (
     Document("guide/en/handbook.md", "index.html", "Participant guide"),
     Document("guide/en/facilitator.md", "facilitator.html", "Facilitator guide"),
     Document("guide/en/admin-setup.md", "admin.html", "Operator setup"),
+    Document("guide/en/troubleshooting.md", "troubleshooting.html", "Execution issues and resolutions"),
     Document("guide/en/verification.md", "verification.html", "Verification and sources"),
     Document("data/README.en.md", "data-guide.html", "Data guide"),
     Document("guide/handbook.md", "ko/index.html", "참가자 실습 가이드", "ko"),
     Document("guide/facilitator.md", "ko/facilitator.html", "강사용 진행 가이드", "ko"),
     Document("guide/admin-setup.md", "ko/admin.html", "관리자 사전 준비", "ko"),
+    Document("guide/troubleshooting.md", "ko/troubleshooting.html", "실행 이슈·해결 기록", "ko"),
     Document("guide/verification.md", "ko/verification.html", "최신 검증·출처", "ko"),
     Document("data/README.md", "ko/data-guide.html", "데이터 설명", "ko"),
 )
@@ -296,7 +298,7 @@ def render_guide(
         "PDF_HREF": site_href(f"Foundry-Learning-Loop-Lab-{language.upper()}.pdf"),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(filename, quote=True),
-        "PROGRESS_REVISION": "" if auxiliary else "native-eval-optimizer-6",
+        "PROGRESS_REVISION": "" if auxiliary else "end-to-end-10",
         "CHAPTER_UNIT": chapter_unit,
         "CONTENTS_LABEL": text["REFERENCE_CONTENTS" if auxiliary else "MAIN_CONTENTS"],
         "SIDEBAR_NOTE": text["REFERENCE_NOTE" if auxiliary else "MAIN_NOTE"],
@@ -387,11 +389,11 @@ def check_or_write(pages: Mapping[Path, str], *, check: bool) -> int:
             try:
                 current = path.read_bytes()
             except FileNotFoundError:
-                print(f"생성 파일이 없습니다: {path}. 먼저 가이드를 빌드하세요.", file=sys.stderr)
+                print(f"생성 파일이 없습니다: {path}. 먼저 가이드를 빌드해야 합니다.", file=sys.stderr)
                 stale = True
                 continue
             if current != rendered.encode("utf-8"):
-                print(f"생성 파일이 최신이 아닙니다: {path}. 가이드를 다시 빌드하세요.", file=sys.stderr)
+                print(f"생성 파일이 최신이 아닙니다: {path}. 가이드를 다시 빌드해야 합니다.", file=sys.stderr)
                 stale = True
             else:
                 print(f"최신 상태 확인: {path}")
@@ -412,7 +414,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="파일을 쓰지 않고 모든 대상의 최신 상태 확인")
     args = parser.parse_args(argv)
     if (args.source is None) != (args.output is None):
-        parser.error("단일 문서는 --source와 --output을 함께 지정하세요.")
+        parser.error("단일 문서는 --source와 --output을 함께 지정해야 합니다.")
     try:
         if args.source is not None:
             output_dir = args.output.resolve().parent

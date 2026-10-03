@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 같은 업무 데이터의 개선 전후를 비교하는 한국어·영어 실습 가이드">
+  <meta name="description" content="Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.">
   <title>최신 v2 검증 · gpt-6-sol · Foundry 실습 가이드</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html">
   <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 6단계의 읽음 표시는 이전 장별 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화할까요?", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시. 실행 명령이나 실제 성공 기록이 아닙니다.", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사하세요.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "printError": "인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용하세요.", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 10단계의 읽음 표시는 이전 가이드 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화합니다. 본문과 실습 파일은 유지합니다.", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사합니다.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "printError": "인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용합니다.", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
   <script src="../../web/theme.js"></script>
   <link rel="stylesheet" href="../../web/styles.css">
   <script src="../../web/app.js" defer></script>
@@ -70,6 +70,7 @@
 <li><a href="index.html">참가자 실습 가이드</a></li>
 <li><a href="facilitator.html">강사용 진행 가이드</a></li>
 <li><a href="admin.html">관리자 사전 준비</a></li>
+<li><a href="troubleshooting.html">실행 이슈·해결 기록</a></li>
 <li><a href="verification.html" aria-current="page">최신 검증·출처</a></li>
 <li><a href="data-guide.html">데이터 설명</a></li>
 <li><a href="print.html">부록 포함 인쇄본</a></li></ul></nav>
@@ -95,7 +96,7 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">본문에서 연결한 준비·승인·문제 해결·정리에 사용하는 참고 자료입니다. 참가자 실습은 10단계입니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
@@ -104,7 +105,7 @@
 <a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-01">2026-10-01</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-03">2026-10-03</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
       <article id="guide-start" class="guide-content" lang="ko" aria-label="최신 v2 검증 · gpt-6-sol">
@@ -249,7 +250,7 @@
 </tr>
 </tbody>
 </table>
-<p>11번은 화면을 확인한 척하거나 기능 상태를 꾸미지 않고 개선했습니다. v2는 <strong>두 주장 모두 근거로 확정되지 않는다</strong>는 명시적 판단, 문서 부재와 기능 부재의 구분, 인증된 확인 경로를 제시했습니다.</p>
+<p>11번은 화면을 확인한 척하거나 기능 상태를 꾸미지 않고 개선했습니다. v2는 <strong>두 주장 모두 근거로 확정되지 않습니다</strong>라는 명시적 판단, 문서 부재와 기능 부재의 구분, 인증된 확인 경로를 제시했습니다.</p>
 <p>실제 v2 응답 일부입니다.</p>
 <blockquote>
 <p>Neither conclusion is established. You don’t see a GPU model selection menu, but I haven’t inspected your screen or the live service.</p>
@@ -319,12 +320,13 @@
 <p>공식 문서: <a href="https://learn.microsoft.com/azure/foundry/observability/how-to/evaluate-agent">Agent 평가</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">최적화 모델 역할</a> · <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators">평가기 정의</a>.</p>
 <p>Contoso 데이터는 합성입니다. 이전 설계 출처는 <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2">보관된 소스 커밋</a>으로 남기며 또 다른 현재 검증 기록은 아닙니다.</p>
 <h2 id="update">로컬 산출물 재확인</h2>
+<p><strong>문서 개정일과 서비스 측정일은 다릅니다.</strong> 2026-10-03의 환경 준비·삭제 안내와 읽기 전용 재확인은 <a href="troubleshooting.html#verification">실행 이슈 기록</a>에 정리합니다. 이 페이지와 <code>evidence/latest.json</code>의 기존 서비스 점수·응답·채점 이유는 문서 개정을 이유로 바꾸지 않습니다.</p>
 <pre><code class="language-bash">python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 </code></pre>
-<p>이 명령들은 파일·테스트를 검사하며 Azure 평가를 새로 제출하지 않습니다. 최신 JSON은 문서·브라우저·PDF 검사와 서비스 실측을 분리합니다.</p>
+<p>이 명령들은 파일·테스트를 검사하며 Azure 평가를 새로 제출하지 않습니다. 과거 JSON의 문서·브라우저·PDF 확인은 당시 산출물의 기록이며 새 파일의 검증으로 간주하지 않습니다. 이번 확인 범위는 실행 이슈 문서에서 구분합니다.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -336,7 +338,7 @@ python -m unittest discover -s tests -q
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
         <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="../Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>
@@ -344,7 +346,7 @@ python -m unittest discover -s tests -q
 
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
-    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
+    <h2 id="reset-title">이 문서의 학습 기록을 초기화합니다</h2>
     <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 한국어·영어 모두에서 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
     <form method="dialog" class="dialog-actions">
       <button class="secondary-button" value="cancel" autofocus>취소</button>

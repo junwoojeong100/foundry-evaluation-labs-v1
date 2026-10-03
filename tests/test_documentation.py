@@ -2,11 +2,16 @@
 
 import hashlib
 from html.parser import HTMLParser
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import re
 import shlex
 import struct
+import subprocess
+import sys
+from tempfile import TemporaryDirectory
 import unittest
 from urllib.parse import unquote, urlsplit
 
@@ -16,7 +21,13 @@ from scripts.package_lab import GUIDE_FILES, package_files
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "docs"
 PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "print.html", "ko/print.html")
-STEPS = ["start", "prepare", "baseline", "analyze", "optimize", "decision"]
+STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
+SUBSTEPS = {
+    "setup": ["setup-account", "setup-local", "setup-login"],
+    "resources": ["resources-plan", "resources-approval", "resources-create"],
+    "agent": ["agent-knowledge", "agent-create"],
+    "cleanup": ["cleanup-records", "cleanup-scope", "cleanup-delete"],
+}
 
 
 class LinkParser(HTMLParser):
@@ -210,19 +221,20 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bSFT\b|sft-appendix|sft\.html|Supervised Fine.Tuning")
         self.assertTrue(all(document.key != "sft" for document in DOCUMENTS))
 
-    def test_both_participant_guides_have_exactly_one_six_step_path(self):
+    def test_both_participant_guides_have_one_complete_ten_step_path(self):
         for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
             with self.subTest(language=language):
                 page = LearningPathParser()
                 page.feed((SITE / filename).read_text())
                 links = ["#" + step for step in STEPS]
                 self.assertEqual(page.chapters, STEPS)
-                self.assertEqual(page.subchapters, [])
-                self.assertEqual(page.toc_links, links)
+                self.assertEqual(page.subchapters, [item for values in SUBSTEPS.values() for item in values])
+                self.assertEqual(page.toc_links, [
+                    "#" + item for step in STEPS for item in [step, *SUBSTEPS.get(step, [])]
+                ])
                 self.assertEqual(page.overview_links, links)
                 self.assertEqual(page.next_links, links[1:])
-                self.assertIn('data-progress-revision="native-eval-optimizer-6"', (SITE / filename).read_text())
-                self.assertLess(len(self.source(language).splitlines()), 500)
+                self.assertIn('data-progress-revision="end-to-end-10"', (SITE / filename).read_text())
 
     def test_native_foundry_actions_not_a_custom_local_judge_are_the_core(self):
         for language in ("en", "ko"):
@@ -235,7 +247,17 @@ class DocumentationTests(unittest.TestCase):
                 ):
                     self.assertIn(required, source)
                 self.assertNotRegex(source, r"python(?:3)?\s+-m\s+lab\s+(?:judge|freeze|governance|tune-prepare|demo)\b")
-                self.assertNotIn("iq prepare", source)
+                for required in (
+                    "az login", "az account show", "bootstrap plan",
+                    "bootstrap preflight", "bootstrap apply", "bootstrap status",
+                    "LAB_LANGUAGE", "LAB_ARTIFACTS_DIR", "iq prepare", "iq probe",
+                    "native-agent --version 1", "native-agent --version 2",
+                    "native-evals --name", "az group delete", "az group exists",
+                    "OWNED_OBJECTS_ABSENT", "troubleshooting.md",
+                ):
+                    self.assertIn(required, source)
+                self.assertIn("python3 -m venv", source)
+                self.assertIn("py -3 -m venv", source)
                 self.assertIn("add_foundry_eval_run.py", source)
                 self.assertIn("{{item.query}}", source)
                 self.assertIn("--baseline", source)
@@ -319,6 +341,7 @@ class DocumentationTests(unittest.TestCase):
             en_page.feed((SITE / english[korean.key].output).read_text())
             ko_page.feed((SITE / korean.output).read_text())
             self.assertEqual(en_page.chapters, ko_page.chapters, korean.key)
+            self.assertEqual(en_page.subchapters, ko_page.subchapters, korean.key)
             for document in (korean, english[korean.key]):
                 path = SITE / document.output
                 rendered = path.read_text()
@@ -484,6 +507,105 @@ class DocumentationTests(unittest.TestCase):
                 for flag in ("--endpoint", "--subscription", "--evaluation", "--baseline", "--version", "--out"):
                     self.assertIn(flag, command)
                 self.assertEqual(command[command.index("--version") + 1], "2")
+
+    def test_all_documented_lab_commands_match_the_cli_parser(self):
+        from lab.cli import parser
+
+        for language in ("en", "ko"):
+            blocks = re.findall(r"```(?:bash|sh)\s*\n(.*?)```", self.source(language), re.DOTALL)
+            for block in blocks:
+                for line in block.replace("\\\n", " ").splitlines():
+                    command = shlex.split(line, comments=True)
+                    if command[:3] == ["python", "-m", "lab"]:
+                        with self.subTest(language=language, command=line):
+                            if "--help" in command:
+                                with redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as result:
+                                    parser().parse_args(command[3:])
+                                self.assertEqual(result.exception.code, 0)
+                            else:
+                                parser().parse_args(command[3:])
+
+    def test_documented_plans_execute_locally_and_unapproved_apply_is_blocked(self):
+        replacements = {
+            "YOUR_SUBSCRIPTION_ID": "00000000-0000-0000-0000-000000000001",
+            "YOUR_TENANT_ID": "00000000-0000-0000-0000-000000000002",
+            "YOUR_SIGN_IN_NAME": "operator@example.invalid",
+        }
+        for language in ("en", "ko"):
+            command = next(
+                line for line in self.source(language).splitlines()
+                if line.startswith("python -m lab bootstrap plan ")
+            )
+            with self.subTest(language=language), TemporaryDirectory() as directory:
+                arguments = [replacements.get(item, item) for item in shlex.split(command)[1:]]
+                created = subprocess.run(
+                    [sys.executable, *arguments, "--root", str(Path(directory).resolve())],
+                    cwd=ROOT, capture_output=True, text=True, timeout=30,
+                )
+                self.assertEqual(created.returncode, 0, created.stderr)
+                record = json.loads(created.stdout)
+                self.assertEqual(record["plan_status"], "CREATED_LOCAL_ONLY")
+                self.assertEqual(record["status"], "BLOCKED_AWAITING_APPROVAL")
+                self.assertFalse(record["mutations_performed"])
+                self.assertFalse(Path(record["env_path"]).exists())
+                blocked = subprocess.run(
+                    [sys.executable, "-m", "lab", "bootstrap", "apply", "--config", record["config_path"]],
+                    cwd=ROOT, capture_output=True, text=True, timeout=30,
+                )
+                self.assertEqual(blocked.returncode, 2, blocked.stderr)
+                refusal = json.loads(blocked.stdout)
+                self.assertEqual(refusal["status"], "BLOCKED_AWAITING_APPROVAL")
+                self.assertFalse(refusal["mutations_performed"])
+                self.assertFalse(Path(record["env_path"]).exists())
+
+    def test_copyable_dataset_commands_report_the_actual_count_and_hash(self):
+        for language in ("en", "ko"):
+            source = ROOT / ("data/en/optimizer/dev.jsonl" if language == "en" else "data/optimizer/dev.jsonl")
+            command = next(
+                line for line in self.source(language).splitlines()
+                if line.startswith('python -c "import hashlib,pathlib;')
+            )
+            result = subprocess.run(
+                [sys.executable, *shlex.split(command)[1:]], cwd=ROOT,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.splitlines(), [
+                "rows = 12", "sha256 = " + hashlib.sha256(source.read_bytes()).hexdigest(),
+            ])
+
+    def test_cleanup_is_explicit_scoped_and_not_an_unconditional_delete(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            cleanup = source.split("{#cleanup}", 1)[1]
+            for term in (
+                "az resource list", "az group show", "az group delete", "az group exists",
+                "YOUR_LAB_RESOURCE_GROUP", "YOUR_SUBSCRIPTION_ID",
+                "LOCAL_PLAN_ONLY", "--confirm-prefix", "false", "Locks",
+                "Cost Management", "soft-delete",
+            ):
+                self.assertIn(term, cleanup)
+            commands = re.findall(r"```bash\s*\n(.*?)```", cleanup, re.DOTALL)
+            for block in commands:
+                self.assertNotIn("--yes", block)
+                self.assertNotIn("purge", block)
+                self.assertNotIn("rm -rf", block)
+
+    def test_issue_records_are_bilingual_packaged_and_keep_measurement_boundaries(self):
+        for language in ("en", "ko"):
+            document = next(item for item in documents_for(language) if item.key == "troubleshooting")
+            source = (ROOT / document.source).read_text()
+            for required in (
+                "2026-10-03", "Unable to create data source configuration from item schema",
+                "native-evals", "native-agent", "receipt", "403", "Inconclusive",
+                "repair-dependencies", "repair-trace-routing",
+            ):
+                self.assertIn(required, source)
+            self.assertIn(document.output, (ROOT / "scripts/package_lab.py").read_text())
+        self.assertEqual(
+            json.loads((ROOT / "evidence/latest.json").read_text())["guide_reference_date"],
+            "2026-10-01",
+        )
 
 
 if __name__ == "__main__":

@@ -1,15 +1,17 @@
 # Isolated Foundry lab infrastructure
 
 This directory contains the reproducible infrastructure contract used to prepare
-an isolated lab environment. It is **operator preparation**, not an additional
-participant exercise. The workshop itself is
-**Foundry Evaluation → Agent Optimizer → same-criteria reevaluation**.
+an isolated lab environment. It supports steps **01–03** of the end-to-end
+participant guide. A participant with approved provisioning access can prepare
+their own environment; otherwise the owning operator performs these steps and
+hands off actual configuration values.
 
 Use the [operator guide](../guide/en/admin-setup.md) or
 [한국어 운영자 가이드](../guide/admin-setup.md) for the current prerequisites.
 The template also provisions the read-only knowledge and monitoring connections
-used by the prepared Contoso sample agent. Participants do not need to construct
-that supporting infrastructure during the evaluation lab.
+used by the Contoso sample agent. The participant guide connects this setup to
+**Foundry Evaluation → Agent Optimizer → same-criteria reevaluation → cleanup**.
+Creating only an empty portal project does not prepare this complete sample.
 
 ## What bootstrap does
 
@@ -111,13 +113,15 @@ fallback, rollback, or resource deletion is automatic.
   before retrying.
 - `--retry` is only for a verified terminal owned failure and a separately
   authorized retry allowance. It cannot resubmit an unknown outcome.
-- The documented `repair-plan` and `repair-observability-plan` commands preserve
+- The `repair-dependencies` and `repair-trace-routing` commands preserve
   failure receipts and require their own validated scope; they are not silent
   edits to a previously approved plan.
 - An `APPLIED` result confirms infrastructure, not model quality or production
   approval. Follow it with a real connectivity check and managed evaluation.
-- Delete only specifically authorized owned targets. Preserve shared models,
-  the project, and other lab evidence unless their deletion is also requested.
+- `python -m lab cleanup` removes only recorded objects, not the resource group
+  or continuing Search/model/log hosting. Follow participant
+  [step 10](../guide/en/handbook.md#cleanup) for authorized dedicated-group
+  deletion and an `az group exists` absence check. Preserve shared resources.
 
 Private `.env`, `.lab/`, approvals, credentials, raw responses, and signed
 download URLs must not enter the public site or distribution archive. The

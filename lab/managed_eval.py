@@ -86,6 +86,32 @@ def AIProjectClient(**kwargs):
     return factory(**kwargs)
 
 
+def list_native_evaluations(config: Config, name: str) -> dict:
+    """Read portal-created evaluation identities without submitting or saving runs."""
+    if not name.strip():
+        raise LabError("Specify the exact evaluation name shown in the Foundry portal.")
+    evaluations = []
+    with credential_for(config) as credential:
+        with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
+            with project.get_openai_client(max_retries=0, timeout=60) as client:
+                for evaluation in client.evals.list(limit=100):
+                    if evaluation.name != name:
+                        continue
+                    runs = []
+                    for run in client.evals.runs.list(eval_id=evaluation.id, limit=100):
+                        value = run.model_dump(mode="json", warnings=False)
+                        target = (value.get("data_source") or {}).get("target") or {}
+                        runs.append({
+                            "run_id": run.id, "name": run.name, "status": run.status,
+                            "agent_name": target.get("name"), "agent_version": target.get("version"),
+                            "result_counts": value.get("result_counts"),
+                        })
+                    evaluations.append({"evaluation_id": evaluation.id, "name": evaluation.name, "runs": runs})
+    if not evaluations:
+        raise LabError("No evaluation with that exact name exists in this project; check the portal name and project.")
+    return {"mode": "READ_ONLY", "evaluations": evaluations}
+
+
 def _canonical(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
@@ -152,7 +178,7 @@ def _load_source(config: Config, run_id: str) -> tuple[Path, dict, dict, dict]:
     if metadata.get("run_id") != run_id:
         raise LabError("metadata.run_id와 요청한 run-id가 다릅니다.")
     if metadata.get("project_endpoint") != config.project_endpoint:
-        raise LabError("캡처된 실행과 현재 Foundry 프로젝트가 다릅니다. 원래 설정으로 수집하세요.")
+        raise LabError("캡처된 실행과 현재 Foundry 프로젝트가 다릅니다. 원래 설정으로 수집해야 합니다.")
     if metadata.get("status") not in ("completed", "completed_with_errors"):
         raise LabError("완료된 캡처만 평가합니다. 부분 실행을 성공으로 처리하지 않습니다.")
     split = metadata.get("source_split")
@@ -300,7 +326,7 @@ def _judge_deployment(config: Config) -> dict:
         if (deployment := _object(item, "deployment")).get("name") == config.judge
     ]
     if len(matches) != 1:
-        raise LabError("JUDGE_DEPLOYMENT의 실제 배포를 유일하게 확인하지 못했습니다. 설정과 읽기 권한을 확인하세요.")
+        raise LabError("JUDGE_DEPLOYMENT의 실제 배포를 유일하게 확인하지 못했습니다. 설정과 읽기 권한을 확인해야 합니다.")
     deployment = matches[0]
     identifier = deployment.get("id")
     if identifier is not None:
@@ -414,8 +440,8 @@ def _recovery(directory: Path, state: dict) -> str:
     return (
         f"평가 제출 기록: {directory / LEDGER} "
         f"(eval_id={state.get('eval_id')}, run_id={state.get('run_id')}). "
-        "기록을 삭제하거나 재제출하지 마세요. Foundry에서 기존 실행을 확인한 뒤 "
-        "확인된 ID로 이 기록을 복구하고 evaluate collect를 실행하세요."
+        "기록을 삭제하거나 재제출하지 않습니다. Foundry에서 기존 실행을 확인한 뒤 "
+        "확인된 ID로 이 기록을 복구하고 evaluate collect를 실행해야 합니다."
     )
 
 
@@ -423,7 +449,7 @@ def _result(state: dict, run_id: str) -> dict:
     result = {key: state.get(key) for key in ("eval_id", "run_id", "report_url", "status", "collection_status")}
     if state.get("collection_status") != "collected" or state.get("status") != "completed":
         result["next_step"] = f"python -m lab evaluate collect --run-id {run_id}"
-        result["instruction"] = "아직 점수를 수집하지 않았습니다. 위 명령으로 상태를 다시 조회하세요."
+        result["instruction"] = "아직 점수를 수집하지 않았습니다. 위 명령으로 상태를 다시 조회해야 합니다."
     else:
         result["scored_rows"] = state["scored_rows"]
         result["unscored_capture_ids"] = state["unscored_capture_ids"]
@@ -462,7 +488,7 @@ def submit_evaluation(config: Config, run_id: str) -> dict:
     if metadata.get("freeze_id"):
         raise LabError("Frozen final tests require the calibrated versioned business/retrieval judges; use judge score, not built-in diagnostic evaluation.")
     if metadata.get(MANAGED_METADATA) is not None:
-        raise LabError("metadata에 기존 평가 기록이 있습니다. managed-eval.json을 복구하고 collect를 사용하세요.")
+        raise LabError("metadata에 기존 평가 기록이 있습니다. managed-eval.json을 복구하고 collect를 사용해야 합니다.")
     if metadata.get("judge") is not None or (directory / "judge-scores.json").exists():
         raise LabError("이미 judge 근거가 있습니다. 기존 평가를 덮어쓰거나 다시 제출하지 않습니다.")
     ensure_judge_unclaimed(directory)
@@ -498,7 +524,7 @@ def submit_evaluation(config: Config, run_id: str) -> dict:
                     state["status"] = "evaluation_created"
                     _save_state(directory, state)
                     save_json(directory / "managed-eval-definition.json", evaluation)
-                    _text(state["eval_id"], "evaluation.id; 제출 기록을 보존하고 Foundry에서 확인하세요")
+                    _text(state["eval_id"], "evaluation.id; 제출 기록을 보존하고 Foundry에서 확인해야 합니다")
                     state["status"] = "creating_run"
                     _save_state(directory, state)
                     run = _object(client.evals.runs.create(
@@ -524,7 +550,7 @@ def submit_evaluation(config: Config, run_id: str) -> dict:
                 state["run_id"] = run.get("id")
                 state["report_url"] = run.get("report_url")
                 _save_state(directory, state)
-                _text(state["run_id"], "run.id; 제출 기록을 보존하고 Foundry에서 확인하세요")
+                _text(state["run_id"], "run.id; 제출 기록을 보존하고 Foundry에서 확인해야 합니다")
                 _remember_run(directory, state, run)
     return _result(state, run_id)
 
@@ -552,7 +578,7 @@ def _parse_scores(items: list[dict], expected: dict, state: dict, contract: dict
         if sample is not None and not isinstance(sample, dict):
             raise LabError(f"{case_id}: sample 형식 오류입니다.")
         if item.get("status") not in ("pass", "fail", "completed") or item.get("error") or (sample or {}).get("error"):
-            raise LabError(f"{case_id}: 서비스 행 상태/오류를 확인하세요. 점수를 추정하지 않습니다.")
+            raise LabError(f"{case_id}: 서비스 행 상태/오류를 확인해야 합니다. 점수를 추정하지 않습니다.")
         results = item.get("results")
         if not isinstance(results, list):
             raise LabError(f"{case_id}: evaluator results 목록이 없습니다.")
@@ -619,12 +645,12 @@ def collect_evaluation(config: Config, run_id: str) -> dict:
     if state.get("project_endpoint") != config.project_endpoint:
         raise LabError("평가 제출 기록과 현재 프로젝트가 다릅니다.")
     if _canonical(state.get("source")) != _canonical(source):
-        raise LabError("제출 이후 캡처/정책/출처가 변경되었습니다. 원본 근거를 복구하세요.")
+        raise LabError("제출 이후 캡처/정책/출처가 변경되었습니다. 원본 근거를 복구해야 합니다.")
     contract = _read(directory / CONTRACT)
     if contract.get("contract_version") != "foundry-agent-retrieval-v4":
         raise LabError("Legacy policy-reference groundedness cannot be relabeled as retrieved-context groundedness. Preserve the original contract/results.")
     if state.get("judge_contract_sha256") != _digest(contract) or contract.get("model_deployment") != config.judge:
-        raise LabError("평가 제출 후 judge 계약/배포가 변경되었습니다. 원래 JUDGE_DEPLOYMENT/계약으로 수집하세요.")
+        raise LabError("평가 제출 후 judge 계약/배포가 변경되었습니다. 원래 JUDGE_DEPLOYMENT/계약으로 수집해야 합니다.")
     validate_judge_claim(
         directory, run_id, project_endpoint=config.project_endpoint,
         evaluation_path="managed-eval", contract=contract,
@@ -652,7 +678,7 @@ def collect_evaluation(config: Config, run_id: str) -> dict:
                         if key in counts and (type(counts[key]) is not int or counts[key] < 0):
                             raise LabError(f"서비스 result_counts.{key} 형식 오류입니다.")
                     if counts.get("errored", 0) != 0:
-                        raise LabError("서비스 evaluator 오류 행이 있습니다. report_url에서 원인을 확인하세요.")
+                        raise LabError("서비스 evaluator 오류 행이 있습니다. report_url에서 원인을 확인해야 합니다.")
                     if all(key in counts for key in ("passed", "failed", "errored")) and (
                         counts["passed"] + counts["failed"] + counts["errored"] != counts["total"]
                     ):

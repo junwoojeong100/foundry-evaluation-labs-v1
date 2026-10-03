@@ -33,6 +33,12 @@ def parser() -> argparse.ArgumentParser:
     create.add_argument("--prompt", type=Path)
     create.add_argument("--new-version", action="store_true")
     create.add_argument("--confirm", action="store_true")
+    native = commands.add_parser("native-agent", help="Create/reuse policy-connected strict-JSON v1 or instruction-only v2")
+    native.add_argument("--version", choices=("1", "2"), required=True)
+    native.add_argument("--prompt", type=Path, help="Reviewed instructions; required for v2")
+    native.add_argument("--confirm", action="store_true")
+    native_evals = commands.add_parser("native-evals", help="Read evaluation/run IDs by exact portal evaluation name; never submit")
+    native_evals.add_argument("--name", required=True)
     batch = commands.add_parser("run", help="Capture real agent responses; incurs usage charges")
     batch.add_argument("--stage", choices=("baseline", "iq", "optimized", "tuned"), required=True)
     batch.add_argument("--split", choices=("dev", "test"), required=True)
@@ -134,7 +140,7 @@ def parser() -> argparse.ArgumentParser:
 def require_confirmation(args: argparse.Namespace) -> None:
     if not args.confirm:
         raise LabError(text(
-            "클라우드 데이터 전송·비용·변경 단계입니다. 대상을 확인한 후 --confirm을 추가하세요.",
+            "클라우드 데이터 전송·비용·변경 단계입니다. 대상을 확인한 후 --confirm을 추가해야 합니다.",
             "This step can transfer data, incur costs, or change cloud resources. Verify the target and add --confirm.",
         ))
 
@@ -310,6 +316,21 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         }
         record = create_agent(config, args.stage, args.prompt or default_prompts[args.stage], new_version=args.new_version)
         print(json.dumps(record, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "native-agent":
+        from lab.agents import create_native_agent
+
+        require_confirmation(args)
+        if args.version == "2" and args.prompt is None:
+            raise LabError("Native Agent v2 requires --prompt with the reviewed candidate instructions.")
+        prompt = args.prompt if args.prompt is not None else content_path(ROOT, "prompts/baseline.txt")
+        record = create_native_agent(config, args.version, prompt)
+        print(json.dumps(record, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "native-evals":
+        from lab.managed_eval import list_native_evaluations
+
+        print(json.dumps(list_native_evaluations(config, args.name), ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":
         from lab.batch import run_batch

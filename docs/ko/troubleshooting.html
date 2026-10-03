@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.">
+  <title>실행 중 발견한 문제와 해결 기록 · Foundry 실습 가이드</title>
+  <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
+  <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
+  <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 10단계의 읽음 표시는 이전 가이드 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화합니다. 본문과 실습 파일은 유지합니다.", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사합니다.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "printError": "인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용합니다.", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
+  <script src="../../web/theme.js"></script>
+  <link rel="stylesheet" href="../../web/styles.css">
+  <script src="../../web/app.js" defer></script>
+</head>
+<body data-document-id="troubleshooting.html" data-progress-revision="">
+  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="학습 목차 열기" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+        <img class="brand-symbol" src="../../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+      </a>
+      <span class="header-context">한국어 · 오프라인 지원</span>
+      <nav class="language-switcher" aria-label="가이드 언어"><a href="../troubleshooting.html" lang="en" hreflang="en" data-language-link>English</a>
+<a href="troubleshooting.html" lang="ko" hreflang="ko" data-language-link aria-current="page">한국어</a></nav>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
+        <button class="toolbar-button" type="button" data-print-one title="현재 읽는 장만 인쇄" hidden>현재 인쇄</button>
+        <button class="toolbar-button" type="button" data-print-all title="현재 문서 전체 · 인쇄 창에서 PDF로 저장" hidden>전체 PDF</button>
+        <noscript><a class="toolbar-button" href="../Foundry-Learning-Loop-Lab-KO.pdf">전체 PDF</a></noscript>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+
+  <div class="workspace">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="문서 탐색">
+      <div class="sidebar-inner">
+        <div class="sidebar-heading">
+          <div><p class="eyebrow">CONTENTS</p><h2 id="contents-heading">참고 문서 목차</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="학습 목차 닫기" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
+          <div class="toc">
+<ul>
+<li><a href="#start">기록 범위와 사용 방법</a></li>
+<li><a href="#environment">환경·로그인·로컬 파일 문제를 해결합니다</a></li>
+<li><a href="#provisioning">생성·승인·할당량 문제를 해결합니다</a></li>
+<li><a href="#knowledge">정책 검색과 Agent 준비 문제를 해결합니다</a></li>
+<li><a href="#evaluation">Foundry 평가와 재개 문제를 해결합니다</a><ul>
+<li><a href="#evaluation-add-run">포털 Add run에서 item-schema 오류가 발생했습니다</a></li>
+<li><a href="#evaluation-resume">잘못된 ID와 중복 제출을 방지합니다</a></li>
+</ul>
+</li>
+<li><a href="#optimizer">Agent Optimizer와 결과 해석 문제를 해결합니다</a></li>
+<li><a href="#cleanup">삭제와 비용 종료 문제를 해결합니다</a></li>
+<li><a href="#verification">이번 점검의 재현 방법과 확인 범위입니다</a></li>
+</ul>
+</div>
+
+        </nav>
+        <details class="related-documents">
+          <summary>참고 자료 · 운영자/심화</summary>
+          <nav aria-label="실습 문서 모음"><ul>
+<li><a href="index.html">참가자 실습 가이드</a></li>
+<li><a href="facilitator.html">강사용 진행 가이드</a></li>
+<li><a href="admin.html">관리자 사전 준비</a></li>
+<li><a href="troubleshooting.html" aria-current="page">실행 이슈·해결 기록</a></li>
+<li><a href="verification.html">최신 검증·출처</a></li>
+<li><a href="data-guide.html">데이터 설명</a></li>
+<li><a href="print.html">부록 포함 인쇄본</a></li></ul></nav>
+        </details>
+
+        <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
+          <div class="panel-heading"><h2 id="progress-title">내 학습 기록</h2><span class="local-badge">로컬</span></div>
+          <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
+          <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
+          <details class="progress-details">
+            <summary>장별 읽음 표시</summary>
+            <div id="progress-checklist" class="progress-checklist"></div>
+          </details>
+          <div class="progress-bottom"><span>직접 체크한 장만 기록합니다.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">초기화</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.</p>
+        </section>
+
+        <details class="keyboard-help" data-keyboard-help hidden>
+          <summary>키보드 사용 안내</summary>
+          <dl>
+            <div><dt><kbd>Esc</kbd></dt><dd>모바일 목차·확인 창 닫기</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>다음 링크·버튼으로 이동</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
+          </dl>
+        </details>
+        <p class="sidebar-note">본문에서 연결한 준비·승인·문제 해결·정리에 사용하는 참고 자료입니다. 참가자 실습은 10단계입니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+      </div>
+    </aside>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
+
+    <main id="main-content" class="main-content" tabindex="-1">
+<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+      <div class="reading-toolbar no-print">
+        <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-03">2026-10-03</time></span>
+      </div>
+      <noscript><p class="noscript-note">본문·목차·언어 전환·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="ko" aria-label="실행 중 발견한 문제와 해결 기록">
+        <h1 id="issue-guide">실행 중 발견한 문제와 해결 기록</h1>
+<p><a href="index.html#setup">처음부터 진행하는 가이드</a> · <a href="admin.html#approval">운영자 승인·인수</a> · <a href="verification.html">실제 품질 측정</a></p>
+<p><strong>막힌 위치에서 증상·원인·해결·확인 순서로 읽는 문서입니다.</strong> 과거 Azure 실측, 이번 읽기 전용 확인, 로컬 검사를 구분합니다. 해결 방법을 작성했다는 사실만으로 새 클라우드 실행에 성공했다고 표시하지 않습니다.</p>
+<h2 id="start">기록 범위와 사용 방법</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>근거와 한계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이전 서비스 실행</td>
+<td>기존 가이드·포털 캡처와 <code>evidence/latest.json</code>에 기록된 2026-10-01 기준 리허설입니다. 공개 품질 수치는 영어 실행입니다.</td>
+</tr>
+<tr>
+<td>2026-10-03 읽기 전용 확인</td>
+<td>기존 실습의 CLI 사용자·테넌트·구독 일치를 확인했습니다. <code>native-evals</code>로 같은 평가의 v1·v2와 초안 run 상태를 조회했습니다.</td>
+</tr>
+<tr>
+<td>2026-10-03 문서·코드 개선</td>
+<td>처음 준비하는 경로, 네이티브 Agent 생성 명령, ID 조회, 삭제 경계와 국문 문체를 보완합니다. 검사 방법과 범위는 <a href="#verification">마지막 절</a>에 기록합니다.</td>
+</tr>
+<tr>
+<td>이번에 수행하지 않은 작업</td>
+<td>새 Azure 리소스 생성·역할 변경·데이터 업로드·유료 평가·Optimizer 재실행·실제 클라우드 삭제입니다. 기존 측정을 새 한국어 실행으로 표시하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p>새 문제가 발생하면 비공개 <code>notes.md</code>에 <strong>시각·단계·명령·오류 코드·대상 ID·수정 내용·재확인 결과</strong>를 기록합니다. 공개할 때는 구독·계정 식별자, 토큰, 쿠키, 서명된 URL을 제거합니다. 실패한 응답과 불리한 평가 결과는 숨기지 않습니다.</p>
+<h2 id="environment">환경·로그인·로컬 파일 문제를 해결합니다</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>원인과 해결</th>
+<th>다음 단계로 진행할 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>가이드가 이미 준비된 프로젝트·Agent부터 시작합니다.</td>
+<td>이전 참가자 가이드는 6단계 평가 경로만 있었고 관리자 준비도 기존 환경을 전제했습니다. 새 <a href="index.html#setup">01–03</a>에 계정·설치·생성·검색·Agent 준비를 연결했습니다.</td>
+<td>자신의 프로젝트·Agent·실제 도구 응답을 확인합니다. 문서 링크 검사 성공만으로 준비 완료라고 보지 않습니다.</td>
+</tr>
+<tr>
+<td><code>.venv/bin/activate</code> 또는 <code>Activate.ps1</code>이 없습니다.</td>
+<td>먼저 저장소 폴더에서 가상환경을 생성합니다. Windows와 macOS/Linux 활성화 경로가 다릅니다. <a href="index.html#setup-local">설치 순서</a>를 따릅니다.</td>
+<td>가상환경의 <code>python -m pip --version</code>과 <code>python -m lab --help</code>가 성공합니다.</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError</code>가 나옵니다.</td>
+<td>다른 Python을 사용하거나 잠금 의존성을 설치하지 않은 상태입니다. 가상환경의 Python으로 <code>python -m pip install -r requirements.lock</code>을 실행합니다.</td>
+<td>같은 Python으로 데이터 검사와 필요한 명령을 실행합니다.</td>
+</tr>
+<tr>
+<td>PowerShell 활성화가 정책으로 차단됩니다.</td>
+<td>정책을 임의로 변경하지 않고 <code>.\.venv\Scripts\python.exe</code>로 명령을 실행합니다.</td>
+<td>정책 변경 없이 해당 Python의 실행을 확인합니다.</td>
+</tr>
+<tr>
+<td>포털에는 구독이 있지만 CLI에서는 다른 계정이 나옵니다.</td>
+<td>브라우저와 CLI는 독립적으로 로그인합니다. 디렉터리·구독 필터와 <code>az account show</code>의 사용자·tenant·subscription을 대조합니다.</td>
+<td>승인한 세 값이 모두 일치합니다. 다른 신원으로 자동 전환하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>AzureCliCredential</code>에서 tenant와 subscription을 동시에 전달한 인증이 실패합니다.</td>
+<td>Azure CLI의 두 인자를 함께 쓰는 인증 경로가 호환되지 않습니다. <code>lab/auth.py</code>는 tenant 일치를 먼저 확인하고 credential에는 subscription만 전달합니다.</td>
+<td>신원 확인을 통과한 동일 구독으로 호출합니다. tenant 검증을 삭제하지 않습니다.</td>
+</tr>
+<tr>
+<td>한국어 실행이 영어 artifacts 또는 반대 경로에 기록됩니다.</td>
+<td><code>LAB_LANGUAGE</code>와 <code>LAB_ARTIFACTS_DIR</code>를 Python 시작 전에 설정해야 합니다. <code>.env</code>를 읽는 것만으로 이미 import된 artifacts 경로가 바뀌지 않습니다.</td>
+<td>언어별 폴더와 workspace의 언어가 일치합니다. 기존 기록을 덮어쓰지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p>첫 번째 두 항목은 이번 원문 점검에서 확인한 안내 누락입니다. 인증 인자와 언어 분리는 기존 구현·회귀 검사로 확인한 제약이며, 이번에 새로운 인증 실패나 새 유료 호출을 만들지는 않았습니다.</p>
+<h2 id="provisioning">생성·승인·할당량 문제를 해결합니다</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>조치</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>plan 결과가 <code>BLOCKED_AWAITING_APPROVAL</code>입니다.</td>
+<td>로컬 계획은 생성됐지만 지출은 미승인 상태입니다. <code>plan_status</code>와 <code>mutations_performed</code>를 구분합니다.</td>
+<td><code>CREATED_LOCAL_ONLY</code>·<code>false</code>를 확인하고 <a href="admin.html#approval">승인서 작성</a>을 진행합니다.</td>
+</tr>
+<tr>
+<td><code>approved: true</code>인데 승인 오류입니다.</td>
+<td>hash/model 불일치, 다른 승인자, 과거·미래·시간대 없는 시각, 누락된 예산·동의가 원인일 수 있습니다. <code>approval_reason</code>을 읽고 실제 승인 범위만 수정합니다.</td>
+<td>preflight의 readiness READY와 승인 READY_FOR_APPROVED_APPLY를 모두 확인합니다.</td>
+</tr>
+<tr>
+<td>Provider가 Registered가 아닙니다.</td>
+<td>구독 관리자가 해당 공급자를 조직 절차에 따라 등록합니다. bootstrap은 자동 등록하지 않습니다.</td>
+<td>네 공급자의 등록 완료 후 같은 preflight를 실행합니다.</td>
+</tr>
+<tr>
+<td>Contributor인데 role assignment에서 막힙니다.</td>
+<td>자원 생성과 역할 할당 권한은 별개입니다. 이미 승인된 프로비저닝 담당자가 실행하도록 합니다.</td>
+<td>필요한 유효 권한을 확인합니다. 구독 Owner를 새로 부여하는 우회는 사용하지 않습니다.</td>
+</tr>
+<tr>
+<td>모델/SKU/버전/지역 용량·할당량 오류입니다.</td>
+<td><code>config.json</code>의 역할별 요청과 preflight <code>reason</code>을 확인합니다. 지원되는 대체 모델이 필요하면 역할별 지원을 검토하고 새 계획·승인을 받습니다.</td>
+<td>카탈로그·quota·capacity 확인 후 실제 Agent와 도구 호출까지 확인합니다.</td>
+</tr>
+<tr>
+<td>apply가 시간 초과 또는 결과 불명입니다.</td>
+<td>원래 config·manifest·deployment ID를 보존하고 <code>bootstrap status</code>와 Azure Portal의 그룹 <strong>Deployments</strong>에서 상태를 읽습니다.</td>
+<td>진행 중이면 기다립니다. 실패·결과 불명이 해소되기 전 새 환경이나 재제출을 만들지 않습니다.</td>
+</tr>
+<tr>
+<td>이미 있는 환경이라고 나옵니다.</td>
+<td>기존 계획을 덮어쓰지 않는 보호 동작입니다. 원래 config로 status를 확인합니다.</td>
+<td>같은 실습은 원본으로 재개하고 별도 실습만 새로운 승인 범위로 만듭니다.</td>
+</tr>
+<tr>
+<td>기존 실패 복구 문서의 명령 이름이 맞지 않습니다.</td>
+<td>실제 CLI는 <code>repair-dependencies</code>, <code>repair-trace-routing</code>입니다. 이전 인프라 설명의 다른 명칭을 정정했습니다.</td>
+<td><code>python -m lab.bootstrap --help</code>와 대조합니다. 이 명령은 일반 재시도가 아니며 일치하는 실패 증거와 별도 승인 절차가 필요합니다.</td>
+</tr>
+</tbody>
+</table>
+<p><code>--retry</code>는 확인된 소유 배포의 <strong>종료된 실패</strong>와 명시적 재시도 승인 한도에만 사용합니다. unknown 상태의 POST를 다시 보내는 옵션이 아닙니다. <code>APPLIED</code>는 인프라 생성 완료이며 모델 품질·운영 승인·로그 수집 성공의 증거는 아닙니다.</p>
+<h2 id="knowledge">정책 검색과 Agent 준비 문제를 해결합니다</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>조치</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>카탈로그에는 있지만 실제 Agent가 실패합니다.</td>
+<td>배포 성공과 Agent 런타임 지원은 다릅니다. 실제 API 오류·모델·버전·도구 경로를 기록합니다.</td>
+<td><a href="index.html#agent">03의 smoke와 실제 Agent 호출</a>을 확인합니다.</td>
+</tr>
+<tr>
+<td><code>created_not_retrieval_tested</code>에서 멈춥니다.</td>
+<td>생성만 완료된 상태입니다. <code>iq probe</code>를 실행하고 응답·references·activity를 확인합니다.</td>
+<td><code>retrieval_verified</code>와 실제 출처를 확인합니다.</td>
+</tr>
+<tr>
+<td>직접 검색은 성공하지만 Agent 도구는 403입니다.</td>
+<td>직접 검색은 사용자 CLI 신원, Agent 연결은 프로젝트 관리 ID를 사용합니다. 프로젝트 ID의 Search 읽기·모델 호출 권한과 연결 audience를 확인합니다.</td>
+<td>Agent 실행 안에서 <code>knowledge_base_retrieve</code>의 성공 응답을 확인합니다.</td>
+</tr>
+<tr>
+<td>영어·한국어 검색 결과가 일관되지 않습니다.</td>
+<td><code>lab/knowledge.py</code>는 선택 언어의 <code>en.microsoft</code> 또는 <code>ko.microsoft</code> analyzer를 사용합니다. 원래 언어·인덱스·문서 hash를 유지합니다.</td>
+<td>언어별 회귀 검사와 실제 검색을 구분합니다. 이름만 바꾸어 기존 인덱스를 재사용하지 않습니다.</td>
+</tr>
+<tr>
+<td>Agent 생성 방법이 함수 이름만 있고 실행 명령이 없습니다.</td>
+<td>이번에 <code>native-agent --version 1/2</code>를 기존 <code>ensure_fixed_release</code>에 연결했습니다. 정책 MCP와 엄격한 JSON, 소유권·모델 snapshot도 함께 사용합니다.</td>
+<td>로컬 회귀 검사를 수행합니다. 신규 환경의 실제 생성·도구 응답은 실습자가 별도로 확인합니다.</td>
+</tr>
+<tr>
+<td>기존 v2와 지침이 다르거나 모델이 바뀌었습니다.</td>
+<td>고정 비교 보호 동작입니다. 다른 v2를 덮어쓰거나 v3를 만들지 않고 기록을 보존합니다.</td>
+<td>같은 소유 Agent·모델·도구·출력 설정과 의도한 지침을 대조합니다.</td>
+</tr>
+<tr>
+<td><code>PublicNetworkAccess=Disabled</code> 또는 사설망 연결 timeout입니다.</td>
+<td>승인된 VNet/VPN/조직 실행 환경을 사용합니다. 방화벽·private endpoint를 해제하지 않습니다.</td>
+<td>네트워크 소유자와 DNS·연결을 확인한 뒤 같은 endpoint로 재확인합니다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evaluation">Foundry 평가와 재개 문제를 해결합니다</h2>
+<h3 id="evaluation-add-run">포털 Add run에서 item-schema 오류가 발생했습니다</h3>
+<p><strong>이전 실습에서 관측한 메시지입니다.</strong></p>
+<pre><code class="language-text">Unable to create data source configuration from item schema
+</code></pre>
+<p>포털의 Add run이 기존 Agent 대상 data source를 다시 구성하지 못한 사례입니다. 서비스 전체 장애나 모든 구독의 동일 현상으로 일반화하지 않습니다.</p>
+<p><strong>해결:</strong> <a href="index.html#decision">09의 <code>scripts/add_foundry_eval_run.py</code></a>를 사용하여 완료된 기준선의 원격 data source를 복사하고 명시적 후보 버전만 바꿉니다. 같은 managed evaluation 정의에 실제 run을 제출합니다. 로컬 Judge, 수정된 JSONL, 새 평가 기준으로 대신하지 않습니다.</p>
+<p><strong>확인:</strong> 같은 evaluation ID, 원본 데이터 등록, Relevance 4·TaskAdherence 1, 같은 Judge·응답 매핑을 확인하고 전체 12건의 실제 버전·지침을 확인합니다. 이전 완료된 v1·v2 run은 이번 읽기 전용 조회에서도 확인했습니다. 이번에 오류를 재현하기 위해 새 유료 run을 제출하지는 않았습니다.</p>
+<h3 id="evaluation-resume">잘못된 ID와 중복 제출을 방지합니다</h3>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>해결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>evaluation ID·run ID를 어디서 찾는지 모릅니다.</td>
+<td><code>native-evals --name</code>으로 실제 목록을 조회합니다. evaluation은 <code>eval_...</code>, baseline run은 완료된 버전 1의 <code>evalrun_...</code>입니다.</td>
+</tr>
+<tr>
+<td>같은 evaluation 이름이 여러 개입니다.</td>
+<td>포털의 시각·Agent·데이터·run과 대조합니다. 이름만으로 임의 선택하지 않습니다.</td>
+</tr>
+<tr>
+<td>helper가 Still running으로 종료했습니다.</td>
+<td>receipt에 run ID가 있으면 같은 명령·동일 out 경로로 수집을 재개합니다.</td>
+</tr>
+<tr>
+<td>receipt가 있지만 run ID가 없습니다.</td>
+<td>제출 수락 여부가 불명입니다. 원본을 보존하고 포털·서비스 상태를 확인합니다. receipt 삭제·다른 run 이름·자동 재제출을 사용하지 않습니다.</td>
+</tr>
+<tr>
+<td>같은 이름의 원격 run이 이미 있습니다.</td>
+<td>기존 run을 열거나 원래 receipt를 복구합니다. 새 이름으로 중복 실행하지 않습니다.</td>
+</tr>
+<tr>
+<td>v1 선택 후 대상 체크가 사라집니다.</td>
+<td>명시적 v1을 고른 뒤 Agent 체크박스를 다시 선택하고 대상이 한 개인지 확인합니다.</td>
+</tr>
+<tr>
+<td>데이터 미리 보기가 5행입니다.</td>
+<td>미리 보기 제한일 수 있습니다. 원본 12행·등록 버전·실제 결과 전체 건수를 대조합니다.</td>
+</tr>
+<tr>
+<td>TaskAdherence 1이 낮은 점수처럼 보입니다.</td>
+<td>이 평가기는 이진 0/1이며 1은 통과입니다. Relevance의 1–5 척도와 섞지 않습니다.</td>
+</tr>
+<tr>
+<td>화면에서 이유가 보이지 않습니다.</td>
+<td><code>conversation_id → User view</code>는 질문·답변입니다. 이유는 <strong>Detailed metrics result</strong>의 <code>Relevance.reason</code>·<code>TaskAdherence.reason</code>에서 읽습니다.</td>
+</tr>
+<tr>
+<td>결과 행이나 점수가 빠졌습니다.</td>
+<td>실패·누락을 그대로 기록하고 분모 12를 줄이지 않습니다. 점수를 0 또는 성공으로 만들어 넣지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="optimizer">Agent Optimizer와 결과 해석 문제를 해결합니다</h2>
+<table>
+<thead>
+<tr>
+<th>관측 또는 증상</th>
+<th>해결과 확인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이전 UI에서 <strong>No custom evaluators available</strong>이 보였습니다.</td>
+<td><strong>Custom only OFF</strong> 또는 <strong>View built-in evaluators</strong>를 사용했습니다. 필터를 해결하기 위해 다른 custom evaluator를 만들 필요는 없습니다.</td>
+</tr>
+<tr>
+<td>Optimize가 없거나 지정 모델이 선택되지 않습니다.</td>
+<td>New Foundry, prompt Agent, 프로젝트 권한, Preview 제공 여부, 역할별 지원 모델을 확인합니다. 공개 문서와 테넌트 지원이 다르면 제공 상태를 기록하고 중단합니다.</td>
+</tr>
+<tr>
+<td>후보가 모델·도구 설명도 바꿨습니다.</td>
+<td><strong>Choose targets → Instruction only</strong>와 모델 비교 끄기를 확인합니다. 지침 외 설정이 다르면 같은 조건의 비교로 표시하지 않습니다.</td>
+</tr>
+<tr>
+<td>실제 Optimizer가 기존 v1을 유지했습니다.</td>
+<td><code>evidence/latest.json</code>의 기존 실행은 강한 기준선을 선택했습니다. 이를 실패로 숨기거나 자동 후보 승격으로 바꾸어 기록하지 않습니다.</td>
+</tr>
+<tr>
+<td>지침을 사람이 추가로 수정했습니다.</td>
+<td>“Optimizer 이후 운영자 검토”로 출처를 기록하고 같은 관리형 평가를 별도로 수행합니다. 기존 공개 v2도 이 경우입니다.</td>
+</tr>
+<tr>
+<td>순위는 올랐지만 재평가 결과가 다릅니다.</td>
+<td>Optimizer 내부 0–1 순위와 별도 평가 평균·통과율은 다릅니다. 전체 응답·정책 오류·회귀를 함께 확인합니다.</td>
+</tr>
+<tr>
+<td>평균은 좋아졌지만 통계가 Inconclusive입니다.</td>
+<td>기존 비교는 Relevance 4.8333 → 4.9167이며 서비스 PairedTTest는 Inconclusive입니다. 유의성이나 동등성으로 바꾸어 해석하지 않습니다.</td>
+</tr>
+<tr>
+<td>품질과 함께 지연·토큰도 증가했습니다.</td>
+<td>기존 v2의 p95는 10.97 → 42.97초, Agent 토큰은 46,167 → 55,858입니다. 개선 판단에서 이 상충 관계를 함께 보고합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>원본 점수·응답·채점 이유와 실제 실행 ID는 <a href="verification.html#status">최신 품질 보고서</a>에 있습니다. 개발에 재사용한 합성 12건은 독립적 일반화나 운영 안전을 입증하지 않습니다.</p>
+<h2 id="cleanup">삭제와 비용 종료 문제를 해결합니다</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>해결과 확인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이전 가이드가 결과 인계에서 끝났습니다.</td>
+<td><a href="index.html#cleanup">10의 실제 삭제 절차</a>에 전용/공유 환경 분기, 대상 확인, 승인, 그룹 삭제와 부재 확인을 추가했습니다.</td>
+</tr>
+<tr>
+<td>cleanup 성공 뒤에도 Search 비용이 남습니다.</td>
+<td><code>cleanup</code>은 소유 객체만 정리하며 Search 서비스·모델·그룹·로그는 남깁니다. 전용 그룹 전체 삭제 또는 운영자의 보존 계획을 확인합니다.</td>
+</tr>
+<tr>
+<td>workspace 또는 <code>.env</code>가 없어 cleanup을 실행할 수 없습니다.</td>
+<td>실패한 setup의 config·manifest와 Azure 인벤토리로 대상부터 확인합니다. 로컬 상태를 만들어 소유권을 꾸미지 않습니다.</td>
+</tr>
+<tr>
+<td>그룹 삭제가 Locks/권한/종속성 때문에 실패합니다.</td>
+<td>Azure Portal의 <strong>Locks</strong>, <strong>Activity log</strong>, 실패한 삭제 작업을 확인합니다. 잠금 소유자에게 해당 범위 조치를 요청하고 임의 해제하지 않습니다.</td>
+</tr>
+<tr>
+<td>삭제 요청은 수락됐지만 그룹이 남아 있습니다.</td>
+<td>비동기 진행을 확인합니다. 성공한 <code>az group exists</code>가 <code>false</code>인 경우에만 그룹 부재로 기록합니다.</td>
+</tr>
+<tr>
+<td>그룹은 없어졌지만 비용 화면에 금액이 있습니다.</td>
+<td>과거 사용 요금과 집계 지연은 정상적으로 남을 수 있습니다. 기간·리소스·잔여 외부 자원을 확인합니다.</td>
+</tr>
+<tr>
+<td>soft-delete 보존 항목이 있습니다.</td>
+<td>서비스별 보존 정책을 확인합니다. 영구 삭제/purge가 필요한지 담당자가 판단하고 별도로 승인합니다.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">Azure 리소스 그룹 삭제 문서</a>를 기준으로 확인합니다. 그룹 삭제는 되돌릴 수 없으며 일부 개별 서비스의 복구 기능이 그룹 복구를 보장하지 않습니다.</p>
+<h2 id="verification">이번 점검의 재현 방법과 확인 범위입니다</h2>
+<p><strong>실제 확인한 읽기 전용 결과입니다.</strong> 2026-10-03에 기존 승인 환경의 CLI 신원 세 값과 Enabled 상태를 확인했습니다. <code>native-evals</code>는 기존 <code>contoso-en-sol-learning-loop</code>에서 v1·v2 각각 12건의 completed 결과와 별도 초안 run을 조회했습니다. 공개 보고서의 v1 11/12, v2 12/12와 일치했습니다. 새 평가·최적화·Agent·삭제 요청은 보내지 않았습니다.</p>
+<p><strong>로컬 재현 명령입니다.</strong> 가상환경에서 실행하며 새 Azure 자원을 만들지 않습니다.</p>
+<p>이번 자동 검사에서는 <code>--help</code>가 정상 종료 코드 0의 <code>SystemExit</code>를 반환하는 점과 macOS 임시 경로의 <code>/var</code> 심볼릭 링크를 확인했습니다. 검사 코드는 정상 도움말 종료를 구분하고 임시 디렉터리를 실제 경로로 변환하도록 수정했습니다. bootstrap의 심볼릭 링크 차단을 해제하거나 사용자 파일을 이동하지 않았습니다.</p>
+<table>
+<thead>
+<tr>
+<th>이번에 수행한 확인</th>
+<th>확인 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>로컬 실행</td>
+<td>양쪽 가이드의 계획 생성·미승인 apply 차단·행 수/해시 명령을 실행했습니다. 전체 자동 검사 579개가 통과했습니다.</td>
+</tr>
+<tr>
+<td>브라우저</td>
+<td>두 언어를 1440px 데스크톱과 390px 모바일에서 확인했습니다. 10단계 탐색·언어 전환·읽음 기록·테마 유지와 JavaScript 없는 탐색이 동작했습니다. 화면 전체 가로 넘침과 페이지 오류는 없었습니다.</td>
+</tr>
+<tr>
+<td>인쇄본·PDF</td>
+<td>두 언어의 통합본에 각각 언어에 맞는 포털 그림 12개를 포함했습니다. 필수 본문·로컬 경로 링크·페이지 밖 텍스트·거의 빈 페이지 검사를 통과했습니다.</td>
+</tr>
+<tr>
+<td>플랫폼 범위</td>
+<td>실제 실행 환경은 macOS입니다. Windows PowerShell 명령은 별도로 제공하지만 Windows에서 실행 완료했다고 주장하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash">python scripts/build_datasets.py --language ko --check
+python scripts/build_datasets.py --language en --check
+python scripts/build_guide.py --check
+python -m unittest discover -s tests -q
+</code></pre>
+<p>PDF 검사 첫 직접 실행에서 <code>ModuleNotFoundError: pymupdf</code>를 관측했습니다. 선택한 가상환경에서 import와 버전을 다시 확인하고 다음 모듈 진입점으로 두 파일을 정상 검사했습니다. import 실패의 원인을 확정하지 않았으므로 패키지 불량으로 단정하지 않습니다. PDF 검사 패키지가 실제로 없다면 유지보수 환경에만 <code>requirements-verification.lock</code>을 설치합니다.</p>
+<pre><code class="language-bash">python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko --out .lab/verification/pdf-ko.json
+python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-EN.pdf --language en --out .lab/verification/pdf-en.json
+</code></pre>
+<p>검사는 양쪽 HTML의 10단계·대응 앵커·링크·명령 인자, 고정 Agent의 소유권·구성 불변성, 읽기 전용 ID 조회와 중복 제출 보호를 확인합니다. 로컬 mock은 새로운 Azure 생성·과금·삭제 성공의 증거가 아닙니다. 신규 실습은 본문 각 단계의 실제 완료 기준까지 직접 확인합니다.</p>
+<p>한국어 작성 지침의 문체도 정리하므로 기준선 지침·보조 생성 자료의 시스템 메시지와 관련 manifest 해시가 갱신됩니다. <strong>정책·질문·참고 답변·평가용 dev12와 과거 실측 원문은 그대로 보존합니다.</strong> 이전 실행을 재현할 때는 그 실행의 지침 snapshot을 사용하며 새 지침의 해시를 과거 기록에 덮어쓰지 않습니다.</p>
+<p>공식 참고 자료는 <a href="https://learn.microsoft.com/azure/foundry/how-to/create-projects">프로젝트 생성</a>, <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">Foundry RBAC</a>, <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent">Agent Optimizer</a>, <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group">리소스 그룹 삭제</a>입니다.</p>
+      </article>
+
+      <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>현재 장의 읽음 여부만 기록합니다. LIVE 실행이나 운영 승인을 뜻하지 않습니다.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">읽음 표시</button>
+      </section>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="장 이동" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← 이전 장</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
+      </nav>
+      <footer class="document-footer">
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="../Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <p class="eyebrow">LEARNING RECORD</p>
+    <h2 id="reset-title">이 문서의 학습 기록을 초기화합니다</h2>
+    <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 한국어·영어 모두에서 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
+    <form method="dialog" class="dialog-actions">
+      <button class="secondary-button" value="cancel" autofocus>취소</button>
+      <button class="danger-button" value="reset">읽음 표시 초기화</button>
+    </form>
+  </dialog>
+  <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

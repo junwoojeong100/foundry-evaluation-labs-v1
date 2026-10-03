@@ -2,11 +2,15 @@
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
-**Microsoft Foundry 관리형 Evaluation과 Agent Optimizer**로 자사 대표 업무의 Agent 응답을 개선합니다.
+**Azure를 처음 확인하는 단계부터 리소스 삭제까지 10단계로 진행합니다.** Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
 
-> 데이터셋 → 평가기 → Foundry Evaluation → 실제 점수·이유 → 지침 개선 → 같은 기준으로 재평가
+> 계정·PC·권한 확인 → Foundry 생성 → 정책·Agent 준비 → 데이터셋 → 평가기 → 평가 → 분석 → 최적화 → 재평가 → 삭제 확인
 
 Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 운영 인증이 아니라 **평가 → 학습 → 개선 → 재평가**를 익힙니다.
+
+처음 시작하는 경우 가이드 01부터 진행합니다. Windows PowerShell과 macOS/Linux의 설치·가상환경 명령, 입력값을 찾는 위치, 비용 승인서, 실제 Agent 생성·평가 ID 조회와 완료 기준을 제공합니다. 준비된 환경은 인수표를 확인하고 중복 생성을 건너뜁니다.
+
+문제·해결·확인 범위는 **[실행 이슈 기록](guide/troubleshooting.md)**에 정리합니다. 이번 문서 점검의 읽기 전용 조회와 과거 유료 실측을 구분하며, 아래 수치는 신규 한국어 실행 결과가 아닙니다.
 
 ## 현재 Sol v1/v2 비교 하나
 
@@ -48,6 +52,7 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 | 진행·복구 | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Facilitator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
 | 데이터 계약 | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |
 | 최신 v2 근거 | [검증](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) | [Verification](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) |
+| 실행 문제·해결 | [이슈 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) | [Issues](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) |
 | 통합 인쇄본 | [열기](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) | [Print](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) |
 | PDF | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) |
 
@@ -59,11 +64,13 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 
 ## 실행 경계
 
-운영자가 격리 프로젝트와 읽기 전용 정책 연결을 준비합니다. 별도 지식 구축·Judge 교정·governance는 추가 필수 실습이 아닙니다. Agent는 안내하며 환불·티켓 제출·삭제·권한 부여를 실제 수행하지 않습니다.
+참가자 또는 승인된 운영자가 01–03에서 격리 프로젝트와 읽기 전용 정책 연결을 준비합니다. 별도 Judge 교정·governance는 필수 실습이 아닙니다. Agent는 안내하며 환불·티켓 제출·삭제·권한 부여를 실제 수행하지 않습니다.
 
 지원 범위는 역할별로 다릅니다. 실제 Agent·도구 호출과 [지원 Optimizer 모델](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인하고 비교 도중 모델을 바꾸지 않습니다.
 
 운영용 게시는 실습에 포함하지 않습니다. 브라우저 종료로 과금이 멈추지 않습니다. 실제 실패를 보존하며 같은 후보를 유리한 점수가 나올 때까지 반복하지 않습니다.
+
+10에서는 결과 보관 후 삭제 대상·소유권·승인을 확인합니다. `cleanup`은 기록된 객체만 정리하며 Search·모델·그룹을 전부 삭제하지 않습니다. 전용 그룹은 별도 삭제와 `az group exists`의 `false`까지 확인하고 공유 자원은 담당자에게 인계합니다.
 
 ## 산출물 유지보수
 
@@ -79,6 +86,8 @@ python -m unittest discover -s tests -q
 
 영어 원문은 `guide/en/*.md`·`data/README.en.md`, 한국어는 `guide/*.md`·`data/README.md`입니다. HTML은 `docs/`와 `docs/ko/`에 생성합니다. 대응 절 ID·별도 언어 원본을 유지합니다.
 
-통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성하고 `requirements-verification.lock` 환경의 `scripts/verify_pdf.py`로 검사합니다. ZIP은 `python scripts/package_lab.py`로 다시 만들고 `evidence/latest.json`에는 실제 수행한 검증과 서비스 결과만 기록합니다.
+한국어 문서·안내·오류 메시지는 ‘합니다·입니다’ 문체를 사용합니다. 과거 실측 응답·채점 이유와 평가 데이터의 원문 인용은 문체 정리를 위해 바꾸지 않습니다.
+
+통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성하고 `requirements-verification.lock` 환경에서 `python -m scripts.verify_pdf`로 검사합니다. ZIP은 `python scripts/package_lab.py`로 다시 만듭니다. `evidence/latest.json`의 기존 서비스 실측은 보존하고, 이번 문서·브라우저·PDF 확인은 `guide/troubleshooting.md`에 기록합니다. 새 서비스 결과는 실제 실행한 경우에만 갱신합니다.
 
 GitHub Pages는 **main 브랜치 루트**와 `.nojekyll`을 사용합니다. 루트 index.html·기존 docs/english.html은 쿼리와 절 링크를 유지하며 영어로 연결합니다.

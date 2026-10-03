@@ -100,6 +100,8 @@ Contoso data is synthetic. Earlier design attribution remains at the [archived s
 
 ## Recheck local deliverables {#update}
 
+**The documentation revision date is not a new service measurement date.** Setup/cleanup improvements and read-only checks on 2026-10-03 are recorded in [execution issues](troubleshooting.md#verification). Existing service scores, responses, and evaluator reasons here and in `evidence/latest.json` are not rewritten for a documentation update.
+
 ```bash
 python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
@@ -107,6 +109,6 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 ```
 
-These commands check files and tests without submitting another Azure evaluation. The latest JSON separately records document, browser, PDF and service checks.
+These commands check files and tests without submitting another Azure evaluation. Historical document/browser/PDF checks in the JSON refer to the deliverables of that time, not the newly generated files. The issue record distinguishes this revision's verification scope.
 
 [source-workshop]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2

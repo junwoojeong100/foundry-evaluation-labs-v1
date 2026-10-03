@@ -4,7 +4,7 @@
 
 ## 비교에는 변경 없는 데이터셋 하나 {#start}
 
-한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 운영자가 확인한 별도 한국어 등록을 재사용하고 중복 업로드하지 않습니다.
+한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 새 프로젝트는 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 준비된 프로젝트에서는 운영자가 확인한 등록을 재사용합니다.
 
 현재 실제 실행·공개한 데이터는 **영어 `data/en/optimizer/dev.jsonl`**, 등록 **`contoso-eval-en-dev12` 버전 `1`**입니다. Agent **`contoso-eval-en-sol`**의 v1/v2는 같은 `gpt-6-sol` 모델을 사용합니다. 한국어 원본은 보존하며 이번 영어 측정을 한국어 새 실행으로 표시하지 않습니다.
 
@@ -18,7 +18,7 @@ Contoso Atlas Cloud의 정책·질문·참고 답변은 합성 자료입니다. 
 
 [data/cases.jsonl](cases.jsonl)은 100건이며 `train` 56, `validation` 12, `dev` 12, `test` 20으로 나뉩니다. 이번 워크숍은 dev12만 사용하며 나머지는 추가 필수 실습이 아닙니다.
 
-결과를 보고 쉬운 행만 선택하거나 중복·병합하거나 참고 답변을 바꾸지 않습니다. [정책 문서 8개](knowledge/documents.json)의 `ATLAS-*` ID와 발효일을 유지합니다. 정책 연결은 운영자 사전 준비이며 참가자가 별도 지식 시스템을 구축하지 않습니다.
+결과를 보고 쉬운 행만 선택하거나 중복·병합하거나 참고 답변을 바꾸지 않습니다. [정책 문서 8개](knowledge/documents.json)의 `ATLAS-*` ID와 발효일을 유지합니다. 정책 연결은 [03의 준비 명령](../guide/handbook.md#agent)으로 참가자 또는 승인된 운영자가 생성합니다.
 
 ## 업로드·응답 스키마 {#schema}
 
@@ -28,7 +28,7 @@ JSONL 한 행에는 정확히 세 열이 있습니다.
 |---|---|---|
 | `query` | 문자열 | Agent에 보내는 **유일한** 입력 |
 | `context` | 문자열 | 지원되는 평가기와 사례 검토용 정책 참고 자료 |
-| `ground_truth` | JSON **문자열** | 구조화 참고 답변이며 생성 프롬프트가 아님 |
+| `ground_truth` | JSON **문자열** | 구조화 참고 답변이며 생성 프롬프트가 아닙니다. |
 
 미리 채운 `response`는 없습니다. Foundry가 고정 Agent를 호출해 실제 응답을 얻습니다. JSON 배열로 바꾸거나 열 이름을 바꾸거나 참고 자료를 질문에 붙이거나 응답을 미리 만들지 않습니다.
 
@@ -36,7 +36,7 @@ JSONL 한 행에는 정확히 세 열이 있습니다.
 
 | 키 | 계약 |
 |---|---|
-| `answer` | 비어 있지 않은 한국어 문자열. 영어 실측은 영어 문자열 |
+| `answer` | 비어 있지 않은 한국어 문자열입니다. 영어 실측은 영어 문자열입니다. |
 | `citations` | 근거 정책 문서의 중복 없는 고정 ID |
 | `route` | `answer`, `clarify`, `escalate`, `refuse` |
 | `needs_human` | 불리언, route가 `escalate`일 때만 true |
@@ -61,6 +61,8 @@ custom prompt override는 비워 둡니다. 필드 매핑 화면이 나타나면
 
 helper는 질문·참고 자료와 실제 행별 Agent 버전·지시를 대조합니다. 오류·누락을 성공으로 바꾸거나 분모에서 빼지 않습니다. JSON·분류 검사는 부가 검증이며 **관리형 평가를 대신하는 로컬 Judge가 아닙니다**.
 
-Agent Optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침을 검토하고 모델·도구·추론·스키마를 유지합니다. 개발은 초안으로 진행하며 정식 워크숍 버전을 v1/v2 이상으로 계속 올리지 않습니다.
+Agent Optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침을 검토하고 모델·도구·추론·스키마를 유지합니다. 검토한 v2를 한 번 비교하며 정식 버전을 계속 올리지 않습니다. 별도 초안은 지원을 확인한 운영자가 사용할 수 있습니다.
 
 공개 근거에서는 인증 정보·서명된 URL·비공개 계정 메타데이터를 제외합니다. 합성 응답과 실패 이유 자체는 공유할 수 있습니다. 성공과 실패 모두 같은 기준으로 공개합니다.
+
+등록된 데이터셋은 `cleanup`만으로 모두 삭제되지 않습니다. 실습 후 [10의 보관·삭제 절차](../guide/handbook.md#cleanup)에서 등록·평가 기록과 전용/공유 프로젝트의 보존 범위를 확인합니다.

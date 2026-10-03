@@ -101,5 +101,5 @@ def run_demo(out: Path | None = None) -> dict:
                 json.dump(result, stream, ensure_ascii=False, indent=2, allow_nan=False)
                 stream.write("\n")
         except FileExistsError as exc:
-            raise LabError("DEMO 출력이 이미 있습니다. 기존 예제를 덮어쓰지 말고 새 경로를 지정하세요.") from exc
+            raise LabError("DEMO 출력이 이미 있습니다. 기존 예제를 덮어쓰지 않고 새 경로를 지정해야 합니다.") from exc
     return result

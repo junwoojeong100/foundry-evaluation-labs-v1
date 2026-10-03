@@ -73,7 +73,7 @@ class PrintBuildTests(unittest.TestCase):
 
     def test_book_is_deterministic_and_uses_fixed_reference_date(self) -> None:
         self.assertEqual(self.rendered, build_print.render_book(self.sources, self.template))
-        self.assertIn('datetime="2026-10-01"', self.rendered)
+        self.assertIn('datetime="2026-10-03"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         plain = {source: "# 제목\n\n## 시작 {#start}\n\n본문" for source in self.sources}
         self.assertNotRegex(build_print.render_book(plain, self.template), r"\{\{[A-Z_]+\}\}")

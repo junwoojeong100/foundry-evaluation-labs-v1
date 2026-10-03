@@ -53,7 +53,7 @@ v1 run은 **`evalrun_077d41ff8a534b9caee64f9d6c2a339d`**, 최종 정식 v2 run�
 | 11 미확인 기능의 잘못된 양자택일 | **3 → 4** | **1 → 1** |
 | 12 SLA 계산 입력 누락 | 5 → 5 | 1 → 1 |
 
-11번은 화면을 확인한 척하거나 기능 상태를 꾸미지 않고 개선했습니다. v2는 **두 주장 모두 근거로 확정되지 않는다**는 명시적 판단, 문서 부재와 기능 부재의 구분, 인증된 확인 경로를 제시했습니다.
+11번은 화면을 확인한 척하거나 기능 상태를 꾸미지 않고 개선했습니다. v2는 **두 주장 모두 근거로 확정되지 않습니다**라는 명시적 판단, 문서 부재와 기능 부재의 구분, 인증된 확인 경로를 제시했습니다.
 
 실제 v2 응답 일부입니다.
 
@@ -100,6 +100,8 @@ Contoso 데이터는 합성입니다. 이전 설계 출처는 [보관된 소스 
 
 ## 로컬 산출물 재확인 {#update}
 
+**문서 개정일과 서비스 측정일은 다릅니다.** 2026-10-03의 환경 준비·삭제 안내와 읽기 전용 재확인은 [실행 이슈 기록](troubleshooting.md#verification)에 정리합니다. 이 페이지와 `evidence/latest.json`의 기존 서비스 점수·응답·채점 이유는 문서 개정을 이유로 바꾸지 않습니다.
+
 ```bash
 python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
@@ -107,6 +109,6 @@ python scripts/build_guide.py --check
 python -m unittest discover -s tests -q
 ```
 
-이 명령들은 파일·테스트를 검사하며 Azure 평가를 새로 제출하지 않습니다. 최신 JSON은 문서·브라우저·PDF 검사와 서비스 실측을 분리합니다.
+이 명령들은 파일·테스트를 검사하며 Azure 평가를 새로 제출하지 않습니다. 과거 JSON의 문서·브라우저·PDF 확인은 당시 산출물의 기록이며 새 파일의 검증으로 간주하지 않습니다. 이번 확인 범위는 실행 이슈 문서에서 구분합니다.
 
 [source-workshop]: https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2

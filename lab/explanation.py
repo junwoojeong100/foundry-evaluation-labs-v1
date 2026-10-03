@@ -75,7 +75,7 @@ def _load(run_id: str) -> tuple[dict, dict, dict, dict, dict | None]:
         gates = frozen["gates"]
     evaluate_gates(summary, gates)
     if {key: value for key, value in summary["metadata"].items() if key != "sample_count"} != metadata:
-        raise LabError("summary와 현재 metadata가 다릅니다. 원본을 확인하고 로컬 score 결과를 확인하세요.")
+        raise LabError("summary와 현재 metadata가 다릅니다. 원본을 확인하고 로컬 score 결과를 확인해야 합니다.")
     dataset = dataset_for_metadata(metadata)
     if sha256_file(dataset) != metadata.get("dataset_sha256"):
         raise LabError("평가 당시 데이터와 현재 데이터가 다릅니다.")
@@ -147,7 +147,7 @@ def _context_excerpt(text: str) -> str:
     excerpt = _fence(text[:1200])
     if len(text) > 1200:
         excerpt += localize(
-            f"\n표시만 앞 1200자 발췌(전체 {len(text)}자)입니다. 판정 입력을 줄인 것이 아니며 원본 파일의 전체 문맥을 확인하세요.",
+            f"\n표시만 앞 1200자 발췌(전체 {len(text)}자)입니다. 판정 입력을 줄인 것이 아니며 원본 파일의 전체 문맥을 확인해야 합니다.",
             f"\nOnly the first 1,200 of {len(text)} characters are displayed. The evaluation input was not shortened; read the complete context in the original file.",
         )
     return excerpt
@@ -226,7 +226,7 @@ def format_explanation(summary: dict, cases: dict, captures: dict, gates: dict, 
             f"- Criteria: {'frozen gates' if frozen else 'current config/gates.json'}; final minimum sample: {gates['minimum_test_rows']}",
         ),
         localize(f"- 게이트 결과: **{gate['outcome']}** / 운영 승인: **not_granted**", f"- Gate outcome: **{gate['outcome']}** / operational approval: **not_granted**"),
-        f"- {localize('저장된 최종 판정', 'Recorded final verdict')}: **{_cell(recorded_verdict['quality_status']) if recorded_verdict else localize('이 설명에서 확정하지 않음', 'not finalized by this command')}**",
+        f"- {localize('저장된 최종 판정', 'Recorded final verdict')}: **{_cell(recorded_verdict['quality_status']) if recorded_verdict else localize('이 설명에서 확정하지 않습니다', 'not finalized by this command')}**",
         localize(
             "- 이 출력은 저장된 근거의 로컬 해석입니다. 실제 서비스 실행·신원·운영 승인을 새로 인증하지 않습니다.",
             "- This is a local interpretation of saved evidence, not new attestation of service execution, identity, or operational approval.",
@@ -269,7 +269,7 @@ def format_explanation(summary: dict, cases: dict, captures: dict, gates: dict, 
     else:
         lines.append(localize("이 저장 결과의 게이트는 통과했습니다. 동결된 최종 판정과 실제 사람의 운영 승인은 별도입니다.", "These saved results pass the gates. The frozen final verdict and actual human operational approval remain separate."))
     lines.extend([
-        "", localize("**진단 범위만의 HOLD와 품질·안전 실패를 구분하세요.** 범위 항목을 무시하고 전체 통과로 바꾸지 않습니다.", "**Distinguish diagnostic-scope HOLD from quality and safety failures.** Do not ignore scope checks and relabel the whole run as passed."),
+        "", localize("**진단 범위만의 HOLD와 품질·안전 실패를 구분합니다.** 범위 항목을 무시하고 전체 통과로 바꾸지 않습니다.", "**Distinguish diagnostic-scope HOLD from quality and safety failures.** Do not ignore scope checks and relabel the whole run as passed."),
         localize("기준선/IQ의 비중요 품질 미달은 개선할 대상입니다. 실행·채점 오류, 예상하지 못한 누락, 중요 실패, 교정 HOLD는 먼저 중단하고 원인을 확인합니다.", "Noncritical baseline/IQ gaps are improvement targets. First stop and investigate execution/scoring errors, unexpected missing values, critical failures, or calibration HOLD."),
         localize("개선 후보를 동결하거나 최종 시험으로 넘어갈지는 실제 사례 검토·교정 통과·승인 범위를 함께 확인해 결정합니다.", "Review actual cases, successful calibration, and authorization together before freezing a candidate or running the final test."),
     ])
@@ -310,7 +310,7 @@ def format_explanation(summary: dict, cases: dict, captures: dict, gates: dict, 
     else:
         lines.extend([
             "", localize("## 3. 비교 범위", "## 3. Comparison scope"), "",
-            localize("이 출력에는 전후 회귀 진단이 없습니다. 동일 데이터·사례·Judge인 비교에만 --baseline을 사용하세요.", "No before/after diagnostics are included. Use --baseline only for the same dataset, cases, and Judge."),
+            localize("이 출력에는 전후 회귀 진단이 없습니다. 동일 데이터·사례·Judge인 비교에만 --baseline을 사용합니다.", "No before/after diagnostics are included. Use --baseline only for the same dataset, cases, and Judge."),
             localize("기준선 3건과 IQ 12건, dev12와 fresh12의 전체 평균을 전후 개선율로 비교하지 않습니다.", "Do not compare overall means from baseline3 versus IQ12, or dev12 versus fresh12, as a before/after improvement rate."),
         ])
     lines.extend(["", localize("## 4. 전체 사례 점수와 대표 사례 해설", "## 4. All case scores and selected explanations"), "",
@@ -409,8 +409,8 @@ def format_explanation(summary: dict, cases: dict, captures: dict, gates: dict, 
         ))
     lines.extend([
         "", localize("## 5. 사람이 결정할 것", "## 5. Decisions for human review"), "",
-        localize("대표 사례의 실제 문장과 근거를 확인한 뒤 유지·개선·보류 이유를 기록하세요. 최종 holdout을 본 뒤 그 질문으로 지침을 튜닝하거나 같은 시험을 재추첨하지 않습니다.", "Review actual claims and evidence, then record why to retain, improve, or hold the candidate. Do not tune instructions to a viewed final holdout or draw the same test again."),
-        localize("이 명령은 지침·점수·게이트·승인 기록을 바꾸거나 작업을 제출하지 않습니다. 공유 전 원본 질문·응답에 민감정보가 없는지 확인하세요.", "This command changes no instructions, scores, gates, or approval records and submits no jobs. Check original questions/responses for sensitive information before sharing."),
+        localize("대표 사례의 실제 문장과 근거를 확인한 뒤 유지·개선·보류 이유를 기록합니다. 최종 holdout을 본 뒤 그 질문으로 지침을 튜닝하거나 같은 시험을 재추첨하지 않습니다.", "Review actual claims and evidence, then record why to retain, improve, or hold the candidate. Do not tune instructions to a viewed final holdout or draw the same test again."),
+        localize("이 명령은 지침·점수·게이트·승인 기록을 바꾸거나 작업을 제출하지 않습니다. 공유 전 원본 질문·응답에 민감정보가 없는지 확인해야 합니다.", "This command changes no instructions, scores, gates, or approval records and submits no jobs. Check original questions/responses for sensitive information before sharing."),
         localize("정책 참조·기대 route는 평가자용입니다. 생성 에이전트 입력으로 복사하지 않습니다. 문맥 발췌는 표시용이며 저장된 전체 평가 근거를 대체하지 않습니다.", "Policy references and expected routes are evaluator-only. Do not copy them into generation input. Display excerpts do not replace complete saved evaluation evidence."),
         localize("전체 근거: 같은 run의 summary.json, outputs.jsonl, judge-scores.json. 교정은 calibration 보고서, 최종 확정은 governance status에서 별도로 확인합니다.", "Full evidence: this run's summary.json, outputs.jsonl, and judge-scores.json. Check calibration reports and governance status separately for calibration and finalization."),
     ])

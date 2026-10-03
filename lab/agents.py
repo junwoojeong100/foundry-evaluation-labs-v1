@@ -35,7 +35,8 @@ def native_response_format() -> dict:
 
 
 def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, agent_name: str,
-                         version: str, definition: dict, receipt: Path) -> dict:
+                         version: str, definition: dict, receipt: Path,
+                         workspace_id: str | None = None) -> dict:
     if version not in {"1", "2"}:
         raise LabError("This workshop permits only released v1 and v2; use drafts for experiments.")
     if definition.get("kind") != "prompt" or not isinstance(definition.get("instructions"), str) or not definition["instructions"].strip():
@@ -46,6 +47,8 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
             json.dumps(definition, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest(),
     }
+    if workspace_id is not None:
+        intent["workspace_id"] = workspace_id
     previous = read_json(receipt) if receipt.exists() else None
     if previous is not None and previous["intent"] != intent:
         raise LabError("The fixed-version receipt belongs to a different definition or environment.")
@@ -54,6 +57,8 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
     except ResourceNotFoundError:
         existing = None
     if existing is not None:
+        if workspace_id is not None and (existing.get("metadata") or {}).get("workspace") != workspace_id:
+            raise LabError("The existing Agent version belongs to a different workspace; no changes were made.")
         if existing["definition"] != definition:
             raise LabError("The released version is immutable and differs from this source; no new version was created.")
         record = {"intent": intent, "status": "verified", "agent": existing}
@@ -74,6 +79,8 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
     if {item["version"] for item in releases} != ({"1"} if version == "2" else set()):
         raise LabError("Unexpected release history; refusing to create v3 or reset existing versions.")
     if version == "2":
+        if workspace_id is not None and (releases[0].get("metadata") or {}).get("workspace") != workspace_id:
+            raise LabError("The baseline Agent belongs to a different workspace; no changes were made.")
         baseline = releases[0]["definition"]
         if {key: value for key, value in baseline.items() if key != "instructions"} != {
             key: value for key, value in definition.items() if key != "instructions"
@@ -83,16 +90,66 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
             raise LabError("Identical instructions are not a new improvement candidate.")
     record = {"intent": intent, "status": "creating", "agent": None}
     write_once_json(receipt, record)
+    metadata = {"lab": "foundry-evaluation-optimizer", "release_policy": "fixed-v1-v2"}
+    if workspace_id is not None:
+        metadata["workspace"] = workspace_id
     created = project.agents.create_version(
         agent_name=agent_name, definition=PromptAgentDefinition(definition), draft=False,
-        metadata={"lab": "foundry-evaluation-optimizer", "release_policy": "fixed-v1-v2"},
+        metadata=metadata,
         description=f"Fixed workshop v{version}; separate managed evaluation is required.",
     ).as_dict()
     record.update(status="created", agent=created)
     save_json(receipt, record)
-    if created["version"] != version or created["definition"] != definition:
+    if (
+        created["version"] != version or created["definition"] != definition
+        or (workspace_id is not None and (created.get("metadata") or {}).get("workspace") != workspace_id)
+    ):
         raise LabError("The created version differs from the requested fixed version; receipt preserved.")
     return record
+
+
+def create_native_agent(config: Config, version: str, prompt: Path) -> dict:
+    """Connect the prepared policy tool to a fixed, strict-output workshop Agent."""
+    from lab.knowledge import knowledge_tool
+
+    if version not in {"1", "2"}:
+        raise LabError("The native workshop Agent permits only versions 1 and 2.")
+    if not prompt.is_file() or not prompt.read_text(encoding="utf-8").strip():
+        raise LabError(f"A nonempty instruction file is required: {prompt}")
+    state = workspace(config)
+    tool = knowledge_tool(config)
+    snapshot = model_snapshot(config, config.model)
+    snapshot_path = ARTIFACTS / "agents/native-model.json"
+    if snapshot_path.exists():
+        if read_json(snapshot_path) != snapshot:
+            raise LabError("The Agent model deployment changed after setup; preserve the original comparison.")
+    elif version == "2":
+        raise LabError("Create and verify native Agent v1 before preparing v2.")
+    else:
+        write_once_json(snapshot_path, snapshot)
+    definition = {
+        "kind": "prompt",
+        "model": config.model,
+        "instructions": prompt.read_text(encoding="utf-8"),
+        "tools": [tool.as_dict()],
+        "text": native_response_format(),
+    }
+    receipt = ARTIFACTS / "agents" / f"native-v{version}.json"
+    with credential_for(config) as credential:
+        with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
+            result = ensure_fixed_release(
+                project, project_endpoint=config.project_endpoint, agent_name=config.agent_name("iq"),
+                version=version, definition=definition, receipt=receipt,
+                workspace_id=state["workspace_id"],
+            )
+    created = {"kind": "agent_version", "name": config.agent_name("iq"), "version": version}
+    if created not in workspace(config)["created"]:
+        record_created(config, created)
+    return {
+        "status": result["status"], "agent_name": config.agent_name("iq"), "version": version,
+        "receipt": str(receipt), "model_snapshot": snapshot,
+        "evaluation_status": "NOT_RUN", "production_approval": "NOT_GRANTED",
+    }
 
 
 def smoke_model(config: Config, run_id: str) -> dict:
@@ -149,7 +206,7 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
     record_path = ARTIFACTS / "agents" / f"{stage}.json"
     if record_path.exists() and not new_version:
         raise LabError(
-            f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가하세요."
+            f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가해야 합니다."
         )
     if record_path.exists():
         prior = read_json(record_path)

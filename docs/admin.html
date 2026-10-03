@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
-  <title>Operator prerequisites · the fixed Sol v1/v2 pair · Foundry Lab Guide</title>
+  <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <title>Operator setup, authorization, and cleanup · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The six-step reading record is separate from earlier chapter records. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -53,13 +53,15 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">Use the existing isolated project</a></li>
-<li><a href="#prepare">Verify the three model roles</a></li>
-<li><a href="#bootstrap">Prepare a strong v1, then a controlled v2</a></li>
-<li><a href="#scope">Freeze the comparison and spending scope</a></li>
-<li><a href="#rbac">Verify least-privilege access</a></li>
+<li><a href="#start">Distinguish new and prepared environments</a></li>
+<li><a href="#prepare">Verify model roles and actual deployments</a></li>
+<li><a href="#bootstrap">Prepare an executable Agent</a></li>
+<li><a href="#scope">Freeze the comparison conditions</a></li>
+<li><a href="#approval">Complete the actual authorization file</a></li>
+<li><a href="#rbac">Verify permissions and provider registration</a></li>
 <li><a href="#cost">Costs and operational boundaries</a></li>
-<li><a href="#handoff">Hand off the current pair</a></li>
+<li><a href="#handoff">Hand off actual values without gaps</a></li>
+<li><a href="#cleanup">Verify deletion and retention</a></li>
 </ul>
 </div>
 
@@ -70,6 +72,7 @@
 <li><a href="index.html">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html" aria-current="page">Operator setup</a></li>
+<li><a href="troubleshooting.html">Execution issues and resolutions</a></li>
 <li><a href="verification.html">Verification and sources</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -95,7 +98,7 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">Read this reference only when needed. The participant lab ends after the six main steps. Theme and reading progress are saved only in this browser.</p>
+        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
@@ -104,72 +107,96 @@
 <a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
+        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Operator prerequisites · the fixed Sol v1/v2 pair">
-        <h1 id="operator-guide">Operator prerequisites · the fixed Sol v1/v2 pair</h1>
-<p><a href="index.html#start">Participant guide</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="verification.html">Latest v2 verification</a></p>
-<p>Prepare the environment before class. The participant exercise is <strong>dataset → evaluators → Foundry Evaluation → case analysis → Agent Optimizer → reevaluation</strong>, not infrastructure construction.</p>
-<h2 id="start">Use the existing isolated project</h2>
-<p>Use the operator-owned North Central US project, its existing policy connection, and the approved synthetic Contoso data. Confirm the actual account, tenant and subscription for the CLI, SDK and portal separately. Do not recreate resources, reuse production traffic or broaden shared permissions because a client is signed in as the wrong identity.</p>
-<p>The English target is <strong><code>contoso-eval-en-sol</code></strong>. The original English and Korean source corpora remain separate. A Korean guide is not proof of a new Korean service run.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Operator setup, authorization, and cleanup">
+        <h1 id="operator-guide">Operator setup, authorization, and cleanup</h1>
+<p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="troubleshooting.html">Execution issues</a> · <a href="verification.html">Latest v2 verification</a></p>
+<p>Use this reference for participant steps <strong>02 provisioning authorization, 03 Agent setup, and 10 deletion</strong>. Participants preparing their own environments can use it too. Supply actual values and completion evidence rather than leaving prerequisites implicit.</p>
+<h2 id="start">Distinguish new and prepared environments</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No project exists</td>
+<td>Start with <a href="index.html#setup">01 account setup</a> and use the authorized <code>bootstrap plan → preflight → apply → status</code> path.</td>
+</tr>
+<tr>
+<td>The operator already prepared this lab</td>
+<td>Supply actual project, Agent, data, and access through the <a href="#handoff">handoff</a>; participants do not duplicate creation.</td>
+</tr>
+<tr>
+<td>Only an existing shared project is available</td>
+<td>Bootstrap does not silently adopt existing groups. Its owner must define the preparation/change scope and approve project-specific access.</td>
+</tr>
+</tbody>
+</table>
+<p>Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.</p>
+<p>New examples use <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. Historical <code>contoso-eval-en-sol</code> and <code>lab-...-dea3cec5</code> deployment names are references, not fixed names to use in new environments.</p>
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/en/00-resource-group.png" alt="Earlier resource-group UI capture used only to locate the isolated lab, not current verification" width="1600" height="1000" loading="lazy">
 <figcaption><strong>Resource-group orientation only.</strong> This earlier portal picture is not the current v2 result. Verify the actual project and current state from the operator handoff. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<h2 id="prepare">Verify the three model roles</h2>
+<h2 id="prepare">Verify model roles and actual deployments</h2>
 <table>
 <thead>
 <tr>
 <th>Role</th>
-<th>Actual deployment</th>
-<th>Model/version</th>
+<th>Configuration key</th>
+<th>Default model/version</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Agent</td>
-<td><code>lab-agent-sol-dea3cec5</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong></td>
+<td><code>MODEL_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
 </tr>
 <tr>
 <td>Managed Evaluation Judge</td>
-<td><code>lab-judge-luna-dea3cec5</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong></td>
+<td><code>JUDGE_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
 </tr>
 <tr>
-<td>Agent Optimizer instruction generator</td>
-<td><code>lab-planner-dea3cec5</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong></td>
+<td>Optimizer/search planner</td>
+<td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared GlobalStandard 20 deployment</td>
+</tr>
+<tr>
+<td>Policy embeddings</td>
+<td><code>EMBEDDING_DEPLOYMENT</code></td>
+<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, GlobalStandard 10</td>
 </tr>
 </tbody>
 </table>
-<p>Sol was verified through an actual pinned Foundry prompt-agent invocation and successful <code>knowledge_base_retrieve</code> call, not just a model catalog entry. The generated response used the four-field JSON contract. Both versions keep the same model, read-only tools, reasoning setting and structured-output schema.</p>
-<p>The Optimizer model is a separate role with its own <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>. Do not assume that a model usable as an Agent or Judge is automatically an allowed optimization model.</p>
+<p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
+<p>Historical Sol measurements verified actual Agent and <code>knowledge_base_retrieve</code> calls, not just a catalog entry. Repeat the <a href="index.html#agent">real response check in 03</a> for a new environment. Optimizer has a separate <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>; Agent/Judge availability does not establish generator support.</p>
 <figure class="portal-shot" id="portal-models">
 <img src="../web/assets/portal/en/02-model-deployments.png" alt="Earlier model-deployment list showing where to inspect names and versions, not the current Sol deployment" width="1271" height="820" loading="lazy">
 <figcaption><strong>Locate model/version fields.</strong> The picture predates the Sol deployment. Use the role table and current recorded API observations, not this older list, as runtime evidence. <a href="../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<h2 id="bootstrap">Prepare a strong v1, then a controlled v2</h2>
-<p>Use <strong><code>prompts/en/baseline.txt</code></strong> for the English baseline. It covers policy evidence, dates, routing, uncertainty and action boundaries. V1 must not be weakened to manufacture an apparent improvement.</p>
-<p><strong>V1 and v2 are complete Foundry Agent versions</strong>, not just document revision labels. In this comparison only their instructions differ. Changing the model, tools, reasoning or output schema requires a new matched experiment, not reuse of old-model scores.</p>
-<p>Released versions are immutable. <code>ensure_fixed_release</code> in <code>lab/agents.py</code> permits only <strong>1 and 2</strong>, reuses a matching existing release, blocks mismatches and never silently creates v3. For development, use explicitly pinned <strong><code>draft-…</code></strong> versions. Draft support was verified in this subscription; verify it elsewhere because unsupported draft creation can fall back to a regular release.</p>
-<p><code>native_response_format()</code> projects the shared response schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency are still checked after generation; a valid JSON shape alone is not policy correctness.</p>
-<p>Keep the English registered dataset <strong><code>contoso-eval-en-dev12</code> version <code>1</code></strong>, all 12 rows from <code>data/en/optimizer/dev.jsonl</code>, with the original SHA-256. The Agent receives <strong><code>query</code> only</strong>; reference columns are not injected into generation.</p>
-<p><a id="sdk-prerequisites"></a></p>
-<p>Provide Python 3.11–3.14, Azure CLI, the checked-out source and <code>requirements.lock</code>. Use a separate prepared environment, not an unrelated user's environment:</p>
-<pre><code class="language-bash">source .venv/bin/activate
-python -m pip install -r requirements.lock
-az login
-az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&quot; -o json
+<h2 id="bootstrap">Prepare an executable Agent</h2>
+<p>First complete Python installation, virtual-environment creation, login, and language variables using the <a href="index.html#setup-local">copyable commands in 01</a>. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <code>iq prepare → iq probe</code> succeeds, create a policy-connected v1:</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>
-<p>Check those values against the approved project. The operator supplies its endpoint, subscription, current evaluation ID and completed baseline run ID. Do not copy historical rehearsal IDs or use an Optimizer job ID as an evaluation ID.</p>
-<p>The reevaluation helper clones the baseline data source and validates the <strong>remote</strong> evaluator contract. A stale local <code>JUDGE_DEPLOYMENT</code> must not replace the actual Judge in the evaluation definition.</p>
-<h2 id="scope">Freeze the comparison and spending scope</h2>
-<p><a id="approval"></a></p>
+<p><code>native-agent</code> uses <code>ensure_fixed_release</code> to allow only <strong>1 and 2</strong>, comparing local workspace ownership with remote metadata. It reuses matching configurations, rejects a different v2, and never creates v3. It also retains a model-deployment snapshot and rejects drift. Receipts <code>agents/native-v1.json</code>, <code>agents/native-v2.json</code>, and <code>agents/native-model.json</code> belong to that environment's artifacts folder.</p>
+<p><code>native_response_format()</code> projects the common schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency still require post-generation checks. Valid JSON does not establish policy correctness.</p>
+<p><a id="sdk-prerequisites"></a></p>
+<p><strong>Creating v2 is not completing evaluation.</strong> The default path creates one unpublished v2 from reviewed instructions, runs the same managed evaluation, and then decides whether to accept it. Experienced operators may first test <code>draft-…</code> versions as in the historical rehearsal, but must verify subscription support. Draft validation is not an unstated prerequisite for the default path.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
+</code></pre>
+<p>Do not combine portal Promote and CLI creation. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.</p>
+<p>Retrieve IDs with <code>native-evals --name lab-en-learning-loop</code>. The reevaluation helper copies the baseline data source and checks the <strong>remote</strong> contract. Do not replace the remote definition with a stale local <code>JUDGE_DEPLOYMENT</code>.</p>
+<h2 id="scope">Freeze the comparison conditions</h2>
 <table>
 <thead>
 <tr>
@@ -180,7 +207,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <tbody>
 <tr>
 <td>Data</td>
-<td>Same English dev12 bytes, registration/version, questions and references</td>
+<td>Same selected-language dev12 bytes, registration/version, questions and references</td>
 </tr>
 <tr>
 <td>Relevance</td>
@@ -213,15 +240,219 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 </tbody>
 </table>
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
-<h2 id="rbac">Verify least-privilege access</h2>
-<p>Use the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. Participants need only the authorized project operations. Role-assignment authority is separate from model or evaluation access.</p>
-<p>Keep the policy tool read-only. Do not assign subscription-wide Owner, disable network restrictions, change organization policy or transfer tokens between users as a shortcut.</p>
+<h2 id="approval">Complete the actual authorization file</h2>
+<p>Open <code>approval.example.json</code> and <strong>Save As approval.json</strong>. This worksheet explains fields; it is not an approved request. Keep the actual organizational authorization private. Use double quotes for JSON strings, but not for numbers, true, false, or null.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>How to complete it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema_version</code>, <code>scope_sha256</code>, <code>models</code>, <code>retention_days</code></td>
+<td>Preserve generated values. Editing the model array or plan invalidates existing authorization.</td>
+</tr>
+<tr>
+<td><code>approved</code></td>
+<td>Set <code>true</code> only after actual approval.</td>
+</tr>
+<tr>
+<td><code>approved_by</code></td>
+<td>The operator sign-in name matching <code>expected_user</code> in <code>config.json</code>.</td>
+</tr>
+<tr>
+<td><code>approved_at</code>, <code>expires_at</code></td>
+<td>Actual authorization start/end in timezone-aware ISO 8601, such as <code>2026-10-03T09:00:00+09:00</code>. Do not reuse the example date. The current time must fall within the interval.</td>
+</tr>
+<tr>
+<td><code>currency</code>, <code>budget_amount</code>, <code>budget_policy</code></td>
+<td>Approved three-letter currency and positive numeric budget. Keep policy <code>BOUNDED</code>; the budget owner determines the amount.</td>
+</tr>
+<tr>
+<td><code>acknowledge_no_monetary_cap</code></td>
+<td>Keep <code>false</code>. Unlimited spending is not the default lab policy.</td>
+</tr>
+<tr>
+<td><code>max_hosting_hours</code></td>
+<td>Approved positive integer hours. If 8, the approval interval must also be no longer than 8 hours.</td>
+</tr>
+<tr>
+<td><code>max_wait_seconds</code></td>
+<td>Positive integer wait limit, for example 3600. Ending the wait does not cancel a remote job.</td>
+</tr>
+<tr>
+<td><code>max_calls</code>, <code>max_candidates</code></td>
+<td>Approved call/candidate limits. The candidate example is 2; consider internal Agent, Judge, and search calls when setting the call limit.</td>
+</tr>
+<tr>
+<td><code>allow_global_inference</code></td>
+<td><code>true</code> only when GlobalStandard processing is authorized; it is not NCUS-only processing.</td>
+</tr>
+<tr>
+<td><code>allow_resource_creation</code>, <code>allow_rbac_assignments</code></td>
+<td>Each is <code>true</code> only when this plan's resources and resource-scoped role assignments are authorized.</td>
+</tr>
+<tr>
+<td><code>acknowledge_continuous_hosting</code>, <code>acknowledge_unknown_cost</code></td>
+<td>Each is <code>true</code> only after acknowledging continuing hosting charges and an unconfirmed final cost.</td>
+</tr>
+<tr>
+<td><code>allow_training</code>, <code>allow_global_training</code></td>
+<td><code>false</code> for this path.</td>
+</tr>
+<tr>
+<td><code>max_epochs</code>, <code>max_training_jobs</code></td>
+<td><code>0</code> for this path.</td>
+</tr>
+<tr>
+<td><code>accept_deprecated_models</code></td>
+<td>Default <code>false</code>; do not change it without reviewing a service deprecation notice.</td>
+</tr>
+</tbody>
+</table>
+<p>Validate with <code>preflight --approval ...</code> and read <code>approval_reason</code> on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another class, an automatic retry, or deletion.</p>
+<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. The operator monitors actual usage and cancels jobs or removes resources when required.</p>
+<h2 id="rbac">Verify permissions and provider registration</h2>
+<p>Follow the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. <strong>Foundry User/Owner/Account Owner/Project Manager</strong> may still appear under their former <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> names.</p>
+<table>
+<thead>
+<tr>
+<th>Identity or task</th>
+<th>Required scope to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New-environment operator</td>
+<td>This bootstrap checks effective subscription permissions for group/deployment/resource writes and <code>Microsoft.Authorization/roleAssignments/write</code>. An already-authorized provisioning operator performs it.</td>
+</tr>
+<tr>
+<td>Portal participant</td>
+<td>Agent/evaluation operations in the assigned project; an administrator reviews the required project-scoped roles, such as Foundry User.</td>
+</tr>
+<tr>
+<td>Policy-setup operator</td>
+<td>Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on this Search service.</td>
+</tr>
+<tr>
+<td>Project managed identity</td>
+<td>Search Index Data Reader on this Search service, model invocation, and telemetry submission to the assigned monitoring resource.</td>
+</tr>
+<tr>
+<td>Search managed identity</td>
+<td>Model invocation on the assigned Foundry resource.</td>
+</tr>
+<tr>
+<td>Log reader</td>
+<td>Read access to the assigned Application Insights/Log Analytics resources, not subscription-wide log access by default.</td>
+</tr>
+</tbody>
+</table>
+<p>In Azure Portal → <strong>Subscriptions → selected subscription → Resource providers</strong>, verify <strong>Registered</strong> for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>. An authorized subscription administrator registers missing providers through organizational procedures. Bootstrap never auto-registers providers or expands permissions.</p>
+<p>Allow registration/role propagation, then rerun the same preflight. For continuing <code>403</code>, compare identity, role scope, and network access. Do not grant new subscription-wide Owner, disable network or organizational policies, or transfer tokens as a shortcut.</p>
 <h2 id="cost">Costs and operational boundaries</h2>
-<p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Quota is not free usage, and GlobalStandard is not an NCUS-only processing guarantee. Record measured tokens and actual billing separately; unknown billing is not zero.</p>
-<p>Name the cost/cleanup owner. Do not publish to production or activate a candidate merely because an Optimizer ranking increased. Keep the baseline active unless the measured decision and authorized operational review justify a change. Closing a browser does not stop resource charges.</p>
-<h2 id="handoff">Hand off the current pair</h2>
-<p>Give participants the current Agent/version IDs, deployment-role map, dev12 hash, exact evaluator settings, SDK context, approval scope and <a href="verification.html">latest verification record</a>. The English report publishes actual responses, scores and reasons for every case.</p>
+<p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.</p>
+<p>In Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure organizational budget alerts where needed, but do not present them as enforced caps. Record the cost/cleanup owner and end time in the handoff.</p>
+<h2 id="handoff">Hand off actual values without gaps</h2>
+<p>Copy this table into the private class record and fill it with actual values. “The environment is ready” is not a sufficient handoff.</p>
+<table>
+<thead>
+<tr>
+<th>Required item</th>
+<th>Actual values or evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity</td>
+<td>User, tenant ID, and subscription ID; never passwords or tokens</td>
+</tr>
+<tr>
+<td>Responsibilities</td>
+<td>Who performs provisioning, SDK operations, portal exercises, cost monitoring, and cleanup</td>
+</tr>
+<tr>
+<td>Local paths</td>
+<td>Environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code></td>
+</tr>
+<tr>
+<td>Azure environment</td>
+<td>Resource group, Foundry account/project, project endpoint, and Search service</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>Actual names, product/version, SKU, and capacity for all four deployments</td>
+</tr>
+<tr>
+<td>Policy search</td>
+<td>Source/language, eight uploaded documents, knowledge-base/connection names, and <code>retrieval_verified</code></td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>Actual name, pinned v1, strict output, and a successful real Agent tool call</td>
+</tr>
+<tr>
+<td>Dataset</td>
+<td>JSONL path, 12 rows, SHA-256, registration name, and version</td>
+</tr>
+<tr>
+<td>Evaluation</td>
+<td>Relevance 4, TaskAdherence 1, Judge deployment, and query-only input; add actual evaluation/v1-run IDs after the first run</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>Scope hash, expiry, budget, candidate limit, and retention</td>
+</tr>
+<tr>
+<td>Finish</td>
+<td>Exact deletable group/objects, deletion approver, planned time, and shared-resource retention</td>
+</tr>
+</tbody>
+</table>
+<p>Historical results are separate in the <a href="verification.html">verification record</a>. Keep English and Korean source data separate; do not relabel English measurements as a Korean execution.</p>
 <p>Raw service files can contain account metadata, tokens or signed URLs. Keep those local; <strong>the synthetic evaluation results themselves are not secret</strong>. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.</p>
+<h2 id="cleanup">Verify deletion and retention</h2>
+<p>Use <a href="index.html#cleanup">step 10</a> as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Deletion or handoff check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active evaluation/Optimizer jobs</td>
+<td>Cancellation availability, actual terminal state, and unresolved job IDs</td>
+</tr>
+<tr>
+<td>Locally owned objects</td>
+<td>Exact <code>cleanup</code> plan and verified absence afterward</td>
+</tr>
+<tr>
+<td>Portal-created objects</td>
+<td>Individually inspect datasets, evaluations, conversations, Optimizer records, and empty Agent entries</td>
+</tr>
+<tr>
+<td>Dedicated resource group</td>
+<td>Review all inventory, obtain authorization, delete, and verify a successful <code>az group exists</code> returns <code>false</code></td>
+</tr>
+<tr>
+<td>Shared/external resources</td>
+<td>Retained item, reason, owner, and retention end date</td>
+</tr>
+<tr>
+<td>Billing/soft delete</td>
+<td>Delayed charges, prior usage, and separate service retention/purge policy</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Keep outcomes and failures privately for the required period; do not delete <code>.lab</code> first</td>
+</tr>
+</tbody>
+</table>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -233,7 +464,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

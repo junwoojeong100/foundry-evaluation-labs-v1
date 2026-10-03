@@ -316,7 +316,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
     for case in cases:
         validate_case(case)
         if case["split"] != split:
-            raise LabError("선택한 파일과 사례의 split이 다릅니다. 호출 전에 데이터를 수정하세요.")
+            raise LabError("선택한 파일과 사례의 split이 다릅니다. 호출 전에 선택한 데이터 경로를 확인해야 합니다.")
         _case_inputs(case)
     ids = [case.get("id") for case in cases]
     if (
@@ -330,12 +330,12 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
         cases = cases[:limit]
     run_dir = safe_run_dir(run_id)
     if run_dir.exists() and not resume:
-        raise LabError(f"{run_dir}이 이미 존재합니다. 원본 근거를 덮어쓰지 말고 새 run-id를 지정하세요.")
+        raise LabError(f"{run_dir}이 이미 존재합니다. 원본 근거를 덮어쓰지 않고 새 run-id를 지정해야 합니다.")
     if resume and not run_dir.exists():
         raise LabError("--resume requires the original run/checkpoint, not a new run-id.")
     agent = load_agent(config, stage)
     if stage != "baseline" and sha256_file(content_path(ROOT, "data/knowledge/documents.json")) != agent["knowledge_sha256"]:
-        raise LabError("에이전트 생성 후 지식 원본이 바뀌었습니다. 새 지식·에이전트 버전을 기록하세요.")
+        raise LabError("에이전트 생성 후 지식 원본이 바뀌었습니다. 새 지식·에이전트 버전을 기록해야 합니다.")
     metadata = {
         **language_metadata(),
         "run_id": run_id,
@@ -442,7 +442,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
             else:
                 metadata["status"] = "invalid_model_before_capture"
             save_json(run_dir / "metadata.json", metadata)
-            raise LabError("에이전트 생성 후 모델 배포 구성이 바뀌었습니다. 같은 기반 버전으로 실험을 다시 고정하세요.")
+            raise LabError("에이전트 생성 후 모델 배포 구성이 바뀌었습니다. 같은 기반 버전으로 실험을 다시 고정해야 합니다.")
         metadata["model_snapshot"] = before_model
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             try:
@@ -512,7 +512,7 @@ def run_batch(config: Config, stage: str, split: str, run_id: str, *, limit: int
     save_json(run_dir / "metadata.json", metadata)
     export_evaluation(run_dir, cases, records)
     if stage != "baseline" and metadata["retrieval"]["rows_with_tool_output"] == 0:
-        print("WARNING: IQ 도구의 정상 출력이 한 건도 관찰되지 않았습니다. 검색 효과를 판단하지 말고 연결/권한/지시를 확인하세요.", file=sys.stderr)
+        print("WARNING: IQ 도구의 정상 출력이 한 건도 관찰되지 않았습니다. 검색 효과를 판단하지 않고 연결/권한/지시를 확인해야 합니다.", file=sys.stderr)
     return metadata
 
 
@@ -614,7 +614,7 @@ def score_run(run_id: str) -> dict:
             )
             if metadata["stage"] != "baseline" and observed["rows_with_tool_output"] == 0:
                 report.write(text(
-                    "- **주의: 실제 IQ 사용이 관찰되지 않았습니다. 이 실행으로 검색 개선 효과를 결론 내리지 마세요.**\n",
+                    "- **주의: 실제 IQ 사용이 관찰되지 않았습니다. 이 실행으로 검색 개선 효과를 결론 내리지 않습니다.**\n",
                     "- **Warning: no actual IQ use was observed. Do not infer a retrieval improvement from this run.**\n",
                 ))
     return summary

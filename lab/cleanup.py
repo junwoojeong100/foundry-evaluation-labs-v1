@@ -115,7 +115,7 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
                             item["exists"] = False
                         else:
                             if action.get("etag") and remote.etag and action["etag"] != remote.etag:
-                                raise LabError("생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토하세요.")
+                                raise LabError("생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토해야 합니다.")
                             item["current_etag"] = remote.etag
                     inspected.append(item)
                 completed = []

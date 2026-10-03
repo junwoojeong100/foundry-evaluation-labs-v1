@@ -4,7 +4,7 @@
 
 ## One unchanged dataset for the comparison {#start}
 
-Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Foundry Evaluation, Agent Optimizer and reevaluation. The existing registered dataset is **`contoso-eval-en-dev12` version `1`**. Reuse that registration rather than uploading a duplicate.
+Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Foundry Evaluation, Agent Optimizer, and reevaluation. In a new project, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. In a prepared project, reuse its operator-confirmed registration.
 
 Keep its exact bytes and SHA-256, all questions and references, and language fixed. The current Agent is **`contoso-eval-en-sol`**, with released instruction variants v1/v2 on the same `gpt-6-sol` model. The original Korean corpus is separate and has not been newly executed as part of this English measurement.
 
@@ -18,7 +18,7 @@ The purpose is **evaluation against your own business tasks and criteria**, not 
 
 [data/en/cases.jsonl](en/cases.jsonl) contains 100 cases: `train` 56, `validation` 12, `dev` 12 and `test` 20. Only dev12 is used in this workshop. Other source subsets remain available but are not additional participant exercises.
 
-Do not select only easy rows, duplicate questions, merge subsets or replace references after seeing results. [The eight policy documents](en/knowledge/documents.json) retain stable `ATLAS-*` IDs and effective dates. Policy access is prepared by the operator; participants do not build a separate knowledge system.
+Do not select only easy rows, duplicate questions, merge subsets, or replace references after seeing results. [The eight policy documents](en/knowledge/documents.json) retain stable `ATLAS-*` IDs and effective dates. The participant or authorized operator prepares policy access with the [commands in 03](../guide/en/handbook.md#agent).
 
 ## Upload and response schema {#schema}
 
@@ -61,6 +61,8 @@ The [latest report](../guide/en/verification.md) publishes the current v2 and it
 
 The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, **not a replacement local Judge**.
 
-Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the candidate instructions and preserve model/tools/reasoning/schema. Use drafts during development; do not continually increment the released workshop versions beyond v1/v2.
+Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Operators may use separate drafts after verifying support.
 
 Public evaluation evidence excludes authentication, signed URLs and private account metadata. The synthetic responses and failure reasons themselves may be shared. Publish failures as faithfully as successes.
+
+`cleanup` does not remove every registered dataset. Follow [10](../guide/en/handbook.md#cleanup) to retain or delete registrations/evaluation records according to dedicated or shared-project ownership.

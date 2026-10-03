@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""합성 원본을 검증하고 평가·학습·최적화용 JSONL을 결정적으로 내보낸다."""
+"""합성 원본을 검증하고 평가·학습·최적화용 JSONL을 결정적으로 내보냅니다."""
 
 from __future__ import annotations
 
@@ -176,7 +176,7 @@ def context_document_ids(
             positions.append(original.index(paragraph))
         require(
             positions == sorted(set(positions)),
-            f"{doc_id}: 문단 순서를 유지하고 같은 문단을 반복하지 마세요",
+            f"{doc_id}: 문단 순서를 유지하고 같은 문단을 반복하지 않아야 합니다",
         )
         doc_ids.append(doc_id)
     return doc_ids
@@ -324,7 +324,7 @@ def jsonl_bytes(rows: list[dict[str, Any]]) -> bytes:
 
 
 def render_user_message(row: dict[str, Any]) -> str:
-    """평가용 라벨이 아닌 query와 정책 발췌만 모델에 보낸다."""
+    """평가용 라벨이 아닌 query와 정책 발췌만 모델에 보냅니다."""
     return canonical_json({"query": row["query"], "context": row["context"]})
 
 
@@ -339,7 +339,7 @@ def sft_record(row: dict[str, Any], system_prompt: str) -> dict[str, Any]:
 
 
 def optimizer_record(row: dict[str, Any]) -> dict[str, Any]:
-    """포털 평가 열로 내보낸다. query만 에이전트 입력이고 나머지는 평가자용이다."""
+    """포털 평가 열로 내보냅니다. query만 에이전트 입력이고 나머지는 평가자용입니다."""
     return {
         "query": row["query"],
         "ground_truth": row["ground_truth"],
@@ -352,7 +352,7 @@ def sha256(data: bytes) -> str:
 
 
 def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, bytes]:
-    """검증된 생성물의 상대 경로와 바이트를 반환하며 파일을 쓰지 않는다."""
+    """검증된 생성물의 상대 경로와 바이트를 반환하며 파일을 쓰지 않습니다."""
     require(language in LANGUAGES, f"Unsupported content language: {language}")
     data_prefix = "data/en" if language == "en" else "data"
     prompt_prefix = "prompts/en" if language == "en" else "prompts"
@@ -428,8 +428,8 @@ def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, byt
             "sft_source_splits": ["train", "validation"],
         },
         "provenance": {
-            "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답",
-            "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아님",
+            "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답입니다.",
+            "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아닙니다.",
             "optimizer_export": {
                 "service": "Agent Optimizer",
                 "lane": "prompt-agent-portal",
@@ -442,8 +442,8 @@ def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, byt
                 "query_includes_reference_context": False,
             },
             "network_or_model_calls": False,
-            "performance_metrics": "포함하지 않음; 실제 평가를 별도로 실행해야 함",
-            "paraphrase_review": "상황·판단 과제별 수동 분리; 식별자 검사만으로 의미 중복을 보증하지 않음",
+            "performance_metrics": "포함하지 않습니다. 실제 평가를 별도로 실행해야 합니다.",
+            "paraphrase_review": "상황·판단 과제별로 수동 분리합니다. 식별자 검사만으로 의미 중복이 없음을 보증하지 않습니다.",
         },
     }
     if language == "en":
@@ -478,7 +478,7 @@ def main(argv: list[str] | None = None) -> int:
                 path.write_bytes(data)
         if mismatches:
             print("생성물이 없거나 오래되었습니다:\n" + "\n".join(mismatches), file=sys.stderr)
-            print("python3 -B scripts/build_datasets.py 로 다시 생성하세요.", file=sys.stderr)
+            print(f"python scripts/build_datasets.py --language {args.language} 명령으로 다시 생성해야 합니다.", file=sys.stderr)
             return 1
         manifest_path = "data/en/manifest.json" if args.language == "en" else "data/manifest.json"
         manifest = parse_json(artifacts[manifest_path].decode("utf-8"))

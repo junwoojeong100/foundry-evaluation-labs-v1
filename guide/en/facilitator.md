@@ -1,27 +1,33 @@
 # Facilitator guide · improve the measured result {#facilitator-guide}
 
-[Six participant steps](handbook.md#start) · [Operator handoff](admin-setup.md#handoff) · [Latest v2 verification](verification.md)
+[Ten participant steps](handbook.md#setup) · [Operator handoff](admin-setup.md#handoff) · [Execution issues](troubleshooting.md) · [Latest v2 verification](verification.md)
 
 Teach **evaluate → learn → improve → reevaluate** using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.
 
 ## Before class {#prepare}
 
-The operator provides **`contoso-eval-en-sol`**, Sol model deployment, the existing read-only policy tool, the registered English dev12, a Luna Judge and a supported `gpt-5.5` Optimizer deployment. Verify model roles and identity using the [operator guide](admin-setup.md#prepare).
+Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete [handoff](admin-setup.md#handoff) and verified project, Agent, retrieval, and dataset registration.
 
-Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning and strict output schema match; only instructions differ. V1 already has useful grounding, routing, date and uncertainty safeguards. Candidate development uses drafts, not an ever-growing sequence of released versions.
+New lab Agents use `lab-en-iq` or `lab-ko-iq`. Do not assume the historical `contoso-eval-en-sol` already exists in a new project. Verify [model roles and identity](admin-setup.md#prepare), and reserve time for cleanup in 10.
+
+Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.
 
 Keep English and Korean data/Agents separate. The Korean guide explains the procedure; the current published measurements are **English-data results only**.
 
-## Keep exactly six participant steps {#checkpoints}
+## Verify completion across all ten steps {#checkpoints}
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| 01 Dataset | Inspect the unchanged three-column JSONL and existing registration | All 12 rows, version and SHA-256 |
-| 02 Criteria | Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1; Luna Judge | Saved remote definition and query-only Agent input |
-| 03 Baseline | Run actual Foundry Evaluation against pinned Sol v1 | Completed run ID and all output items |
-| 04 Analysis | Read actual answers, metric scores, reasons and source policy | A concrete improvement hypothesis, including failures |
-| 05 Optimization | Actual instruction-only Agent Optimizer; inspect the candidate diff | Real job/candidate IDs, unchanged non-instruction configuration |
-| 06 Reevaluation | Same definition/data/Judge, explicitly pinned candidate; Compare runs | Matched item-level evidence, improvement checks and honest decision |
+| 01 Environment | Check account, subscription, permissions, Python, CLI, and language variables | Matching identity and successful local commands |
+| 02 Provisioning | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
+| 03 Agent setup | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
+| 04 Dataset | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
+| 05 Criteria | Relevance 4, TaskAdherence 1, and the actual Judge | Saved remote definition and query-only input |
+| 06 Baseline | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
+| 07 Analysis | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
+| 08 Optimization | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file, and provenance |
+| 09 Reevaluation | Evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision |
+| 10 Cleanup | Preserve evidence, inspect scope, authorize, and delete | Dedicated-group absence or a shared-resource retention handoff |
 
 Use **Individual turns / One time / Existing dataset**. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.
 
@@ -62,6 +68,8 @@ Optimizer ranking is internal selection evidence, not the direct managed reevalu
 
 Relevance maps to `{{sample.output_text}}`; TaskAdherence maps to `{{sample.output_items}}`. Do not overwrite service-generated bindings or feed `ground_truth` into the Agent. The actual remote Judge overrides any stale local default.
 
+After a timeout, identify **which existing job ID to resume** first. Use the [issue record](troubleshooting.md) to prevent deletion/recreation or paid retries “until it succeeds.” Do not mark a blocked step completed.
+
 ## Correct common misconceptions {#misconceptions}
 
 | Claim | Correction |
@@ -80,3 +88,5 @@ Relevance maps to `{{sample.output_text}}`; TaskAdherence maps to `{{sample.outp
 Publish **the latest v2 verification and its frozen v1 control**, not a sequence of obsolete current-version reports. Keep earlier raw receipts for audit without relabeling them as this pair.
 
 Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.
+
+**Before ending class, perform [the cleanup checks in 10](handbook.md#cleanup) together.** Confirm dedicated-group deletion or a named owner and deadline for retained shared resources. Hand off actual outcomes and issue records privately; do not delete ownership records first.

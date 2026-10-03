@@ -53,7 +53,7 @@ def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
     if cache_path.exists():
         previous = read_json(cache_path)
         if previous.get("contract") != contract:
-            raise LabError("기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존하세요.")
+            raise LabError("기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존해야 합니다.")
         if previous.get("status") != "completed":
             raise LabError("이 embedding 요청은 실패 또는 결과 불명입니다. 원격 요청을 확인하기 전 재호출하지 않습니다.")
         validate_vectors(previous["response"], len(texts))
@@ -71,7 +71,7 @@ def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
         with cache_path.open("x", encoding="utf-8") as stream:
             json.dump(record, stream, ensure_ascii=False, indent=2)
     except FileExistsError as exc:
-        raise LabError("동시 embedding 실행을 차단했습니다. 기존 기록을 확인하세요.") from exc
+        raise LabError("동시 embedding 실행을 차단했습니다. 기존 기록을 확인해야 합니다.") from exc
     started = time.perf_counter()
     try:
         with credential_for(config) as credential:

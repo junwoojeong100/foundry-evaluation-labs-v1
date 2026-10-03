@@ -95,12 +95,12 @@ def _persist(state: dict) -> None:
 def _locked():
     directory = _directory()
     if not directory.is_dir():
-        raise LabError("먼저 python -m lab tune-prepare --kind sft 를 실행하세요.")
+        raise LabError("먼저 python -m lab tune-prepare --kind sft 를 실행해야 합니다.")
     path = directory / "operation.lock"
     try:
         stream = path.open("x", encoding="utf-8")
     except FileExistsError as exc:
-        raise LabError("SFT operation.lock이 있습니다. 동시 실행 또는 중단된 작업을 먼저 확인하세요.") from exc
+        raise LabError("SFT operation.lock이 있습니다. 동시 실행 또는 중단된 작업을 먼저 확인해야 합니다.") from exc
     try:
         with stream:
             stream.write(f"pid={os.getpid()}\nstarted_at={_now()}\n")
@@ -208,7 +208,7 @@ def _load_state(config: Config) -> dict:
 def _unchanged(state: dict, preparation: dict) -> None:
     for key in ("manifest_sha256", "prompt_sha256", "knowledge_sha256"):
         if state.get(key) != preparation[key]:
-            raise LabError(f"SFT 준비 이후 {key}가 변경되었습니다. 원본 실험을 보존하세요.")
+            raise LabError(f"SFT 준비 이후 {key}가 변경되었습니다. 원본 실험을 보존해야 합니다.")
     for split, expected in preparation["files"].items():
         actual = state["files"][split]
         if any(actual.get(key) != expected[key] for key in ("name", "sha256", "bytes", "rows")):
@@ -238,7 +238,7 @@ def upload_files(config: Config, *, confirm: bool = False) -> dict:
         _unchanged(state, preparation)
         pending = [entry for entry in state["files"].values() if not entry["id"]]
         if any(entry["phase"] not in {"not_uploaded", "rejected"} for entry in pending):
-            raise LabError("결과 불명 업로드가 있습니다. 재업로드하지 말고 포털에서 실제 파일을 확인하세요.")
+            raise LabError("결과 불명 업로드가 있습니다. 재업로드하지 않고 포털에서 실제 파일을 확인해야 합니다.")
         if not pending:
             return state
         if state["job"]["phase"] != "not_submitted":
@@ -256,7 +256,7 @@ def upload_files(config: Config, *, confirm: bool = False) -> dict:
                     entry.update(phase=_outcome(exc), error=_error(exc))
                     state["status"] = f"UPLOAD_{entry['phase'].upper()}"
                     _persist(state)
-                    raise LabError("파일 업로드 실패. sft-state.json과 포털을 확인하세요. 자동 재시도하지 않습니다.") from exc
+                    raise LabError("파일 업로드에 실패했습니다. sft-state.json과 포털을 확인해야 합니다. 자동 재시도하지 않습니다.") from exc
                 entry.update(phase="uploaded", status=payload.get("status"), response=payload, error=None)
                 # Commit each returned ID before attempting the next upload.
                 _persist(state)
@@ -317,7 +317,7 @@ def _observe_job(response, state: dict, *, retrieved: bool) -> None:
     if job["status"] == "succeeded":
         model_id = _text(payload.get("fine_tuned_model"), "succeeded fine_tuned_model")
         if model_id == BASE_MODEL:
-            raise LabError("학습 결과 ID가 기반 모델과 같습니다. 실제 학습 모델을 확인하세요.")
+            raise LabError("학습 결과 ID가 기반 모델과 같습니다. 실제 학습 모델을 확인해야 합니다.")
         job["fine_tuned_model"] = model_id
     _persist(state)
 
@@ -327,7 +327,7 @@ def submit_job(config: Config, *, confirm: bool = False) -> dict:
     with _locked():
         state = _load_state(config)
         if state["job"]["phase"] != "not_submitted" or state["job"]["id"]:
-            raise LabError("이미 제출했거나 결과 불명인 학습 요청입니다. submit을 반복하지 말고 status/포털을 확인하세요.")
+            raise LabError("이미 제출했거나 결과 불명인 학습 요청입니다. submit을 반복하지 않고 status/포털을 확인해야 합니다.")
         _unchanged(state, _preparation())
         baseline = _baseline_evidence(state)
         if not all(entry["id"] for entry in state["files"].values()):
@@ -336,10 +336,10 @@ def submit_job(config: Config, *, confirm: bool = False) -> dict:
             _verify_account(config)
             current = _deployment(config, baseline["model_deployment"], tuned_model=None)
             if _deployment_contract(current) != _deployment_contract(baseline["deployment_evidence"]):
-                raise LabError("학습 전 baseline 이후 배포 설정이 변경되었습니다. 새 run-id로 baseline을 다시 기록하세요.")
+                raise LabError("학습 전 baseline 이후 배포 설정이 변경되었습니다. 새 run-id로 baseline을 다시 기록해야 합니다.")
             _refresh_files(client, state)
             if any(entry["status"] != "processed" for entry in state["files"].values()):
-                raise LabError("두 파일 모두 processed여야 합니다. status로 확인 후 수동으로 submit 하세요.")
+                raise LabError("두 파일 모두 processed여야 합니다. status로 확인한 뒤 수동으로 submit해야 합니다.")
             request = _request(state)
             state["job"].update(
                 phase="submitting", request=request, requested_at=_now(),
@@ -353,7 +353,7 @@ def submit_job(config: Config, *, confirm: bool = False) -> dict:
                 state["job"].update(phase=f"submission_{_outcome(exc)}", error=_error(exc))
                 state["status"] = state["job"]["phase"].upper()
                 _persist(state)
-                raise LabError("학습 요청 실패/결과 불명. 포털에서 실제 작업을 확인하세요. 재제출은 차단했습니다.") from exc
+                raise LabError("학습 요청 실패 또는 결과 불명 상태입니다. 포털에서 실제 작업을 확인해야 합니다. 재제출은 차단했습니다.") from exc
             _observe_job(response, state, retrieved=False)
         return state
 
@@ -384,7 +384,7 @@ def wait_job(config: Config, *, timeout_seconds: int = 3600, interval_seconds: i
             return state
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            raise LabError(f"SFT 대기 한도 도달. 원격 작업 {state['job']['id']}는 보존했습니다. status로 재개하세요.")
+            raise LabError(f"SFT 대기 한도에 도달했습니다. 원격 작업 {state['job']['id']}는 보존했습니다. status로 재개해야 합니다.")
         print(f"{state['job']['id']}: {state['job']['status']}; waiting without resubmission", flush=True)
         time.sleep(min(interval_seconds, remaining))
 
@@ -395,13 +395,13 @@ def cancel_job(config: Config, *, confirm: bool = False) -> dict:
         state = _load_state(config)
         job = state["job"]
         if not job["id"]:
-            raise LabError("취소할 기록된 작업 ID가 없습니다. 결과 불명 요청은 포털에서 먼저 확인하세요.")
+            raise LabError("취소할 기록된 작업 ID가 없습니다. 결과 불명 요청은 포털에서 먼저 확인해야 합니다.")
         with _client(config) as client:
             _observe_job(client.fine_tuning.jobs.retrieve(job["id"]), state, retrieved=True)
             if job["status"] in TERMINAL:
                 return state
             if job.get("cancellation"):
-                raise LabError("이미 취소 요청을 시도했습니다. status로 실제 종료 상태를 확인하세요.")
+                raise LabError("이미 취소 요청을 시도했습니다. status로 실제 종료 상태를 확인해야 합니다.")
             job["cancellation"] = {"phase": "requesting", "requested_at": _now()}
             _persist(state)
             try:
@@ -409,7 +409,7 @@ def cancel_job(config: Config, *, confirm: bool = False) -> dict:
             except Exception as exc:
                 job["cancellation"].update(phase=_outcome(exc), error=_error(exc))
                 _persist(state)
-                raise LabError("취소 결과를 단정할 수 없습니다. status/포털로 확인하세요.") from exc
+                raise LabError("취소 결과를 단정할 수 없습니다. status/포털로 확인해야 합니다.") from exc
             job["cancellation"]["phase"] = "requested"
             _observe_job(response, state, retrieved=False)
         return state
@@ -417,7 +417,7 @@ def cancel_job(config: Config, *, confirm: bool = False) -> dict:
 
 def _deployment(config: Config, name: str, *, tuned_model: str | None) -> dict:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", name):
-        raise LabError("실제 모델 배포 이름을 지정하세요. 리소스 ID나 URL은 허용하지 않습니다.")
+        raise LabError("실제 모델 배포 이름을 지정해야 합니다. 리소스 ID나 URL은 허용하지 않습니다.")
     deployment = _object(az_json([
         "cognitiveservices", "account", "deployment", "show",
         "--subscription", config.subscription_id, "--resource-group", config.resource_group,
@@ -649,7 +649,7 @@ def run_baseline(config: Config, base_deployment: str, run_id: str, *, confirm: 
     _confirm(confirm)
     directory = safe_run_dir(run_id)
     if directory.exists():
-        raise LabError("baseline 실행 폴더가 이미 있습니다. 새 --run-id를 지정하세요.")
+        raise LabError("baseline 실행 폴더가 이미 있습니다. 새 --run-id를 지정해야 합니다.")
     with _locked():
         preparation = _preparation()
         state = _load_state(config) if (_directory() / STATE_FILE).exists() else _new_state(config, preparation)
@@ -691,7 +691,7 @@ def run_baseline(config: Config, base_deployment: str, run_id: str, *, confirm: 
 def _baseline_evidence(state: dict) -> dict:
     reference = state.get("baseline")
     if not isinstance(reference, dict) or reference.get("phase") != "completed":
-        raise LabError("먼저 baseline --base-deployment ... --run-id ... --confirm 으로 학습 전 dev 기준선을 완료하세요.")
+        raise LabError("먼저 baseline --base-deployment ... --run-id ... --confirm 으로 학습 전 dev 기준선을 완료해야 합니다.")
     directory = safe_run_dir(_text(reference.get("run_id"), "baseline run-id"))
     hashes = reference.get("artifacts_sha256", {})
     if set(hashes) != set(BASELINE_ARTIFACTS):
@@ -743,10 +743,10 @@ def run_pair(
 ) -> dict:
     _confirm(confirm)
     if split not in {"dev", "test"} or base_deployment == tuned_deployment:
-        raise LabError("dev/test와 서로 다른 기반·학습 배포 이름을 지정하세요.")
+        raise LabError("dev/test와 서로 다른 기반·학습 배포 이름을 지정해야 합니다.")
     directories = {arm: safe_run_dir(f"{run_prefix}-{arm}") for arm in ("base", "tuned")}
     if any(path.exists() for path in directories.values()):
-        raise LabError("실행 폴더가 이미 있습니다. 덮어쓰기 없이 새 --run-prefix를 지정하세요.")
+        raise LabError("실행 폴더가 이미 있습니다. 덮어쓰기 없이 새 --run-prefix를 지정해야 합니다.")
     with _locked():
         state = _load_state(config)
         _unchanged(state, _preparation())

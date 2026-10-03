@@ -19,15 +19,15 @@ def az_json(args: list[str]) -> object:
             timeout=90,
         )
     except FileNotFoundError as exc:
-        raise LabError("Azure CLI(az)가 없습니다. 가이드 02장의 설치 링크를 사용하세요.") from exc
+        raise LabError("Azure CLI(az)가 없습니다. 가이드 01의 설치 절차를 먼저 진행해야 합니다.") from exc
     except subprocess.TimeoutExpired as exc:
-        raise LabError("Azure CLI 조회가 90초를 초과했습니다. 네트워크와 로그인을 확인하세요.") from exc
+        raise LabError("Azure CLI 조회가 90초를 초과했습니다. 네트워크와 로그인을 확인해야 합니다.") from exc
     if result.returncode:
         raise LabError(f"Azure CLI 조회 실패: {result.stderr.strip()}")
     try:
         return json.loads(result.stdout)
     except json.JSONDecodeError as exc:
-        raise LabError("Azure CLI 응답이 JSON이 아닙니다. az 버전과 로그인을 확인하세요.") from exc
+        raise LabError("Azure CLI 응답이 JSON이 아닙니다. az 버전과 로그인을 확인해야 합니다.") from exc
 
 
 def check_identity(config: Config, run: Callable = az_json) -> dict:
@@ -45,7 +45,7 @@ def check_identity(config: Config, run: Callable = az_json) -> dict:
         failed = ", ".join(key for key, ok in checks.items() if not ok)
         raise LabError(
             f"로그인 환경 불일치({failed}). 작업을 중단했습니다. "
-            f"az login --tenant {config.tenant_id} 후 지정 계정으로 로그인하세요. "
+            f"az login --tenant {config.tenant_id} 후 지정 계정으로 로그인해야 합니다. "
             "SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다."
         )
     return {"user": actual_user, "subscription": account["id"], "tenant": account["tenantId"]}
@@ -121,7 +121,7 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
     if public_access == "Disabled":
         checks.append({
             "name": "network", "status": "BLOCKED",
-            "observed": "PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행하세요.",
+            "observed": "PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행해야 합니다.",
         })
     return {
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -138,7 +138,7 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
             "데이터 평면 RBAC와 모델 추론 성공",
             "Foundry IQ 지식 베이스 생성·검색 권한",
             "Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한",
-            "GlobalStandard의 North Central US 내부 처리 보장(보장하지 않음)",
+            "GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.",
         ],
     }
 

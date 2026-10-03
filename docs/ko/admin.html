@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 같은 업무 데이터의 개선 전후를 비교하는 한국어·영어 실습 가이드">
-  <title>운영자 사전 준비 · 고정된 Sol v1/v2 비교 · Foundry 실습 가이드</title>
+  <meta name="description" content="Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.">
+  <title>운영자 준비·승인·정리 안내 · Foundry 실습 가이드</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 6단계의 읽음 표시는 이전 장별 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화할까요?", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시. 실행 명령이나 실제 성공 기록이 아닙니다.", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사하세요.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "printError": "인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용하세요.", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 10단계의 읽음 표시는 이전 가이드 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화합니다. 본문과 실습 파일은 유지합니다.", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사합니다.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "printError": "인쇄 창을 열지 못했습니다. 브라우저 인쇄 기능이나 하단의 통합 PDF 파일을 이용합니다.", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
   <script src="../../web/theme.js"></script>
   <link rel="stylesheet" href="../../web/styles.css">
   <script src="../../web/app.js" defer></script>
@@ -53,13 +53,15 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">기존 격리 프로젝트 사용</a></li>
-<li><a href="#prepare">세 모델 역할 확인</a></li>
-<li><a href="#bootstrap">충분히 강한 v1과 통제된 v2 준비</a></li>
-<li><a href="#scope">비교 조건과 비용 범위 고정</a></li>
-<li><a href="#rbac">최소 권한 확인</a></li>
-<li><a href="#cost">비용과 운영 경계</a></li>
-<li><a href="#handoff">현재 비교 쌍 인수</a></li>
+<li><a href="#start">새 환경과 준비된 환경을 구분합니다</a></li>
+<li><a href="#prepare">모델 역할과 실제 배포를 확인합니다</a></li>
+<li><a href="#bootstrap">Agent를 실제로 준비합니다</a></li>
+<li><a href="#scope">비교 조건을 고정합니다</a></li>
+<li><a href="#approval">실제 승인에 맞춰 승인서를 작성합니다</a></li>
+<li><a href="#rbac">권한과 공급자 등록을 확인합니다</a></li>
+<li><a href="#cost">비용과 운영 경계를 정합니다</a></li>
+<li><a href="#handoff">빈칸 없이 인수 정보를 전달합니다</a></li>
+<li><a href="#cleanup">삭제와 보존을 확인합니다</a></li>
 </ul>
 </div>
 
@@ -70,6 +72,7 @@
 <li><a href="index.html">참가자 실습 가이드</a></li>
 <li><a href="facilitator.html">강사용 진행 가이드</a></li>
 <li><a href="admin.html" aria-current="page">관리자 사전 준비</a></li>
+<li><a href="troubleshooting.html">실행 이슈·해결 기록</a></li>
 <li><a href="verification.html">최신 검증·출처</a></li>
 <li><a href="data-guide.html">데이터 설명</a></li>
 <li><a href="print.html">부록 포함 인쇄본</a></li></ul></nav>
@@ -95,7 +98,7 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">이 문서는 필요할 때만 읽는 참고 자료입니다. 참가자 실습은 본문 6단계에서 끝납니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">본문에서 연결한 준비·승인·문제 해결·정리에 사용하는 참고 자료입니다. 참가자 실습은 10단계입니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
@@ -104,72 +107,96 @@
 <a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-01">2026-10-01</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-03">2026-10-03</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="ko" aria-label="운영자 사전 준비 · 고정된 Sol v1/v2 비교">
-        <h1 id="operator-guide">운영자 사전 준비 · 고정된 Sol v1/v2 비교</h1>
-<p><a href="index.html#start">참가자 가이드</a> · <a href="facilitator.html#prepare">강사 안내</a> · <a href="verification.html">최신 v2 검증</a></p>
-<p>환경은 수업 전에 준비합니다. 참가자 실습은 <strong>데이터셋 → 평가기 → Foundry Evaluation → 사례 분석 → Agent Optimizer → 재평가</strong>이며 인프라 구축은 추가 필수 실습이 아닙니다.</p>
-<h2 id="start">기존 격리 프로젝트 사용</h2>
-<p>운영자가 소유한 North Central US 프로젝트, 기존 정책 연결과 승인된 합성 Contoso 데이터를 사용합니다. CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 신원이 로그인됐다고 자원을 재생성하거나 운영 트래픽을 사용하거나 공유 권한을 확대하지 않습니다.</p>
-<p>영어 대상은 <strong><code>contoso-eval-en-sol</code></strong>입니다. 영어·한국어 원본 데이터는 분리하며 한국어 가이드가 새로운 한국어 서비스 실행을 입증하지는 않습니다.</p>
+      <article id="guide-start" class="guide-content" lang="ko" aria-label="운영자 준비·승인·정리 안내">
+        <h1 id="operator-guide">운영자 준비·승인·정리 안내</h1>
+<p><a href="index.html#setup">처음부터 진행하는 10단계</a> · <a href="facilitator.html#prepare">강사 안내</a> · <a href="troubleshooting.html">실행 이슈</a> · <a href="verification.html">최신 v2 검증</a></p>
+<p>이 문서는 참가자 가이드의 <strong>02 생성 승인, 03 Agent 준비, 10 삭제</strong>에 필요한 운영자 참고 자료입니다. 직접 준비하는 참가자도 사용할 수 있습니다. 실습을 시작할 수 없는 빈칸을 남기지 않도록 실제 값과 완료 상태를 인수표에 기록합니다.</p>
+<h2 id="start">새 환경과 준비된 환경을 구분합니다</h2>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>진행 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>사용할 프로젝트가 없습니다.</td>
+<td><a href="index.html#setup">01 계정 준비</a>부터 시작하고 승인된 <code>bootstrap plan → preflight → apply → status</code> 경로로 생성합니다.</td>
+</tr>
+<tr>
+<td>운영자가 같은 실습을 미리 준비했습니다.</td>
+<td>실제 프로젝트·Agent·데이터·권한을 <a href="#handoff">인수표</a>로 전달합니다. 참가자는 중복 생성하지 않습니다.</td>
+</tr>
+<tr>
+<td>조직의 기존 공유 프로젝트만 있습니다.</td>
+<td>자동 bootstrap은 기존 그룹을 임의로 인수하지 않습니다. 소유 운영자가 별도 준비·변경 범위를 정하고 프로젝트별 역할을 승인합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 사용자에게 운영자의 토큰이나 로그인 세션을 넘기지 않습니다. bootstrap에 묶인 생성 명령은 소유 운영자가 실행합니다. 다른 참가자는 본인에게 부여된 포털 권한을 사용하며, SDK를 사용할 경우 본인의 신원에 맞는 별도 설정과 권한이 필요합니다.</p>
+<p>새 한국어 예시는 <strong><code>lab-ko-iq</code></strong>, 영어 예시는 <strong><code>lab-en-iq</code></strong>입니다. 과거 측정의 <code>contoso-eval-en-sol</code>과 <code>lab-...-dea3cec5</code> 배포는 참고 이름이지 신규 환경에서 사용할 고정 이름이 아닙니다.</p>
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../../web/assets/portal/01-project-overview.png" alt="이전 한국어 실습의 Foundry 프로젝트 홈. 프로젝트 선택과 엔드포인트 위치 예시이며 현재 검증 결과가 아님" width="1440" height="1000" loading="lazy">
+<img src="../../web/assets/portal/01-project-overview.png" alt="이전 한국어 실습의 Foundry 프로젝트 홈입니다. 프로젝트 선택과 엔드포인트 위치 예시이며 현재 검증 결과는 아닙니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>한국어 실습 프로젝트 위치 예시입니다.</strong> 이전 프로젝트 홈이며 리소스 그룹 화면이나 현재 v2 결과가 아닙니다. 메뉴는 원래 영문입니다. 실제 프로젝트·리소스 그룹·현재 상태는 운영자 인수 정보로 확인합니다. <a href="../../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<h2 id="prepare">세 모델 역할 확인</h2>
+<h2 id="prepare">모델 역할과 실제 배포를 확인합니다</h2>
 <table>
 <thead>
 <tr>
 <th>역할</th>
-<th>실제 배포</th>
-<th>모델·버전</th>
+<th>설정 키</th>
+<th>기본 모델·버전</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Agent</td>
-<td><code>lab-agent-sol-dea3cec5</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong></td>
+<td><code>MODEL_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 20입니다.</td>
 </tr>
 <tr>
 <td>관리형 평가 Judge</td>
-<td><code>lab-judge-luna-dea3cec5</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong></td>
+<td><code>JUDGE_DEPLOYMENT</code></td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 20입니다.</td>
 </tr>
 <tr>
-<td>Agent Optimizer 지시 생성</td>
-<td><code>lab-planner-dea3cec5</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong></td>
+<td>Optimizer·검색 planner</td>
+<td><code>OPTIMIZER_DEPLOYMENT</code>·<code>IQ_PLANNER_DEPLOYMENT</code></td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, 같은 GlobalStandard 20 배포를 사용합니다.</td>
+</tr>
+<tr>
+<td>정책 embedding</td>
+<td><code>EMBEDDING_DEPLOYMENT</code></td>
+<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, GlobalStandard 10입니다.</td>
 </tr>
 </tbody>
 </table>
-<p>Sol은 카탈로그 표시뿐 아니라 고정된 Foundry 프롬프트 Agent 호출과 <code>knowledge_base_retrieve</code> 성공으로 확인했습니다. 응답은 네 필드 JSON 계약을 사용했습니다. 두 버전의 모델·읽기 전용 도구·추론 설정·구조화 출력 스키마를 동일하게 유지합니다.</p>
-<p>Optimizer는 별도 역할이며 <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">지원 모델 목록</a>을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로도 지원된다고 가정하지 않습니다.</p>
+<p>숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Foundry의 <strong>Models + endpoints/Build → Models</strong>에서 배포 이름·모델·버전·상태를 대조합니다. <code>.env</code>에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.</p>
+<p>과거 Sol 실측은 카탈로그뿐 아니라 Agent·<code>knowledge_base_retrieve</code> 호출을 확인했습니다. 신규 환경에서도 <a href="index.html#agent">03의 실제 응답 확인</a>을 수행합니다. Optimizer는 별도 <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">지원 모델 목록</a>을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로 지원된다고 가정하지 않습니다.</p>
 <figure class="portal-shot" id="portal-models">
-<img src="../../web/assets/portal/02-model-deployments.png" alt="이전 한국어 실습 프로젝트의 모델 배포 목록. 이름·버전 확인 위치 예시이며 현재 Sol 배포 증거가 아님" width="1270" height="750" loading="lazy">
+<img src="../../web/assets/portal/02-model-deployments.png" alt="이전 한국어 실습 프로젝트의 모델 배포 목록입니다. 이름·버전 확인 위치 예시이며 현재 Sol 배포 증거는 아닙니다." width="1270" height="750" loading="lazy">
 <figcaption><strong>모델·버전 열의 위치 예시입니다.</strong> 한국어 실습의 Sol 배포 이전 캡처이므로 현재 역할 표와 기록된 API 관측을 사용합니다. 이전 화면을 런타임 성공 근거로 사용하지 않습니다. <a href="../../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<h2 id="bootstrap">충분히 강한 v1과 통제된 v2 준비</h2>
-<p>영어 기준선은 <strong><code>prompts/en/baseline.txt</code></strong>입니다. 정책 근거, 날짜, 분류, 불확실성과 실행 경계를 포함합니다. 개선을 크게 보이게 하려고 v1을 약화하지 않습니다.</p>
-<p><strong>v1·v2는 지침 파일 번호가 아니라 Foundry Agent 전체 구성의 버전</strong>입니다. 이번 비교에서는 지침만 다릅니다. 모델·도구·추론·출력 스키마가 달라지면 같은 조건의 실험을 새로 구성해야 하며 이전 모델 점수를 재사용하지 않습니다.</p>
-<p>정식 버전은 변경할 수 없습니다. <code>lab/agents.py</code>의 <code>ensure_fixed_release</code>는 <strong>1·2만 허용</strong>하고 같은 구성의 기존 버전을 재사용하며, 다른 구성을 덮어쓰거나 v3를 조용히 만들지 않습니다. 개발에는 명시적으로 고정한 <strong><code>draft-…</code></strong>를 사용합니다. 이번 구독에서 초안 지원을 확인했지만 다른 구독은 초안 요청이 정식 버전으로 처리될 수 있으므로 별도 확인이 필요합니다.</p>
-<p><code>native_response_format()</code>은 공통 응답 스키마를 엄격한 생성 스키마의 지원 범위로 변환합니다. 인용 중복과 <code>needs_human</code>·route 일관성은 생성 후에도 확인합니다. 유효한 JSON 형식만으로 정책 정확성이 보장되지는 않습니다.</p>
-<p>등록된 영어 <strong><code>contoso-eval-en-dev12</code> 버전 <code>1</code></strong>, <code>data/en/optimizer/dev.jsonl</code>의 12행과 원본 SHA-256을 유지합니다. Agent 입력은 <strong><code>query</code>만</strong>이며 참고 열을 생성 입력으로 주입하지 않습니다.</p>
-<p><a id="sdk-prerequisites"></a></p>
-<p>Python 3.11–3.14, Azure CLI, 저장소 코드와 <code>requirements.lock</code>을 준비합니다. 다른 사용자의 환경 대신 별도로 준비한 실습 환경을 사용합니다.</p>
-<pre><code class="language-bash">source .venv/bin/activate
-python -m pip install -r requirements.lock
-az login
-az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&quot; -o json
+<h2 id="bootstrap">Agent를 실제로 준비합니다</h2>
+<p>Python 설치·가상환경 생성·로그인·언어 변수 설정은 <a href="index.html#setup-local">01의 복사 가능한 명령</a>을 먼저 수행합니다. 아직 없는 <code>.venv</code>를 활성화하거나 <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
+<p>한국어 기준선은 <code>prompts/baseline.txt</code>, 영어는 <code>prompts/en/baseline.txt</code>입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. <code>iq prepare → iq probe</code>가 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </code></pre>
-<p>출력 값을 승인된 프로젝트와 대조합니다. 운영자는 endpoint·구독·현재 evaluation ID·완료된 기준선 run ID를 제공합니다. 과거 리허설 ID를 복사하거나 Optimizer job ID를 evaluation ID로 사용하지 않습니다.</p>
-<p>재평가 helper는 기준선 data source를 복사하고 <strong>원격</strong> 평가 계약을 검증합니다. 오래된 로컬 <code>JUDGE_DEPLOYMENT</code>로 실제 평가 정의의 Judge를 바꾸면 안 됩니다.</p>
-<h2 id="scope">비교 조건과 비용 범위 고정</h2>
-<p><a id="approval"></a></p>
+<p><code>native-agent</code>는 <code>ensure_fixed_release</code>를 사용하여 <strong>1·2만 허용</strong>하고, 소유 workspace를 원격 metadata와 대조합니다. 같은 구성은 재사용하며 다른 v2를 덮어쓰거나 v3를 만들지 않습니다. 모델 배포 snapshot도 보관하고 변경 시 비교를 차단합니다. <code>agents/native-v1.json</code>, <code>agents/native-v2.json</code>, <code>agents/native-model.json</code>은 해당 환경의 artifacts 폴더에 기록됩니다.</p>
+<p><code>native_response_format()</code>은 공통 스키마를 엄격한 생성 스키마의 지원 범위로 변환합니다. 인용 중복과 <code>needs_human</code>·route 일관성은 생성 후에도 확인합니다. 유효한 JSON만으로 정책 정확성이 보장되지는 않습니다.</p>
+<p><a id="sdk-prerequisites"></a></p>
+<p><strong>v2 생성은 평가 완료가 아닙니다.</strong> 기본 경로는 검토한 지침으로 미게시 v2를 한 번 만들고 같은 관리형 평가를 실행한 뒤 채택 여부를 판단합니다. 기존 리허설처럼 숙련된 운영자가 <code>draft-…</code>를 먼저 평가할 수도 있지만 구독별 지원을 확인해야 하며 기본 경로의 숨은 필수 조건으로 두지 않습니다.</p>
+<pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/lab-ko/candidate.txt --confirm
+</code></pre>
+<p>포털 Promote와 CLI 생성을 중복 실행하지 않습니다. v1·v2는 Agent 전체 구성 버전이며 같은 Agent·모델·도구·출력 설정에서 지침만 달라야 합니다.</p>
+<p>평가 ID를 찾을 때는 <code>native-evals --name lab-ko-learning-loop</code>를 사용합니다. 재평가 helper는 기준선 data source를 복사하고 <strong>원격</strong> 계약을 검증합니다. 오래된 로컬 <code>JUDGE_DEPLOYMENT</code>로 원격 정의를 바꾸지 않습니다.</p>
+<h2 id="scope">비교 조건을 고정합니다</h2>
 <table>
 <thead>
 <tr>
@@ -180,7 +207,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 <tbody>
 <tr>
 <td>데이터</td>
-<td>같은 영어 dev12 바이트·등록·버전·질문·참고 답변</td>
+<td>선택한 언어의 같은 dev12 바이트·등록·버전·질문·참고 답변입니다.</td>
 </tr>
 <tr>
 <td>Relevance</td>
@@ -213,15 +240,219 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 </tbody>
 </table>
 <p>카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.</p>
-<h2 id="rbac">최소 권한 확인</h2>
-<p><a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">현재 Foundry RBAC 안내</a>에 따라 승인된 프로젝트 작업만 허용합니다. 역할 할당 권한과 모델·평가 사용 권한은 별개입니다.</p>
-<p>정책 도구는 읽기 전용으로 유지합니다. 편의를 위해 구독 Owner를 부여하거나 네트워크 제한·조직 정책을 해제하거나 사용자 간 토큰을 옮기지 않습니다.</p>
-<h2 id="cost">비용과 운영 경계</h2>
-<p>평가는 Agent·Judge를 호출하고 최적화에는 추가 내부 호출이 있습니다. 할당량은 무료 사용량이 아니고 GlobalStandard는 NCUS 내 처리 보장이 아닙니다. 관측 토큰과 실제 청구액을 구분하며 미확인 비용을 0원으로 표시하지 않습니다.</p>
-<p>비용·정리 담당자를 지정합니다. Optimizer 순위 상승만으로 운영용 게시나 후보 활성화를 하지 않습니다. 실측 결정과 승인된 운영 검토가 없다면 원본을 유지합니다. 브라우저를 닫아도 과금은 멈추지 않습니다.</p>
-<h2 id="handoff">현재 비교 쌍 인수</h2>
-<p>현재 Agent·버전 ID, 역할별 배포, dev12 해시, 평가 설정, SDK 환경, 승인 범위와 <a href="verification.html">최신 검증 기록</a>을 전달합니다. 영문 보고서는 모든 사례의 실제 응답·점수·채점 이유를 공개합니다.</p>
+<h2 id="approval">실제 승인에 맞춰 승인서를 작성합니다</h2>
+<p><code>approval.example.json</code>을 편집기에서 열어 <strong>approval.json으로 따로 저장</strong>합니다. 다음 표는 필드 작성 설명이며 승인된 문서 자체가 아닙니다. 조직의 실제 승인 근거를 비공개로 보관합니다. JSON 문자열에는 큰따옴표를 사용하고 숫자·true·false·null에는 따옴표를 붙이지 않습니다.</p>
+<table>
+<thead>
+<tr>
+<th>필드</th>
+<th>작성 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema_version</code>, <code>scope_sha256</code>, <code>models</code>, <code>retention_days</code></td>
+<td>생성된 값을 그대로 유지합니다. <code>models</code> 배열이나 계획을 편집하면 기존 승인은 유효하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>approved</code></td>
+<td>실제 승인 후에만 <code>true</code>로 변경합니다.</td>
+</tr>
+<tr>
+<td><code>approved_by</code></td>
+<td><code>config.json</code>의 <code>expected_user</code>와 같은 운영자 로그인 이름입니다.</td>
+</tr>
+<tr>
+<td><code>approved_at</code>, <code>expires_at</code></td>
+<td>실제 승인 시작·만료 시각입니다. <code>2026-10-03T09:00:00+09:00</code> 형식의 시간대 포함 ISO 8601을 사용합니다. 예시 날짜를 그대로 복사하지 않습니다. 현재 시각이 두 시각 사이여야 합니다.</td>
+</tr>
+<tr>
+<td><code>currency</code>, <code>budget_amount</code>, <code>budget_policy</code></td>
+<td>승인 통화의 세 글자 코드와 양수 예산입니다. 예산 정책은 <code>BOUNDED</code>로 유지합니다. 금액은 담당자가 결정합니다.</td>
+</tr>
+<tr>
+<td><code>acknowledge_no_monetary_cap</code></td>
+<td><code>false</code>로 유지합니다. 이 실습에서 무제한 지출을 기본으로 설정하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>max_hosting_hours</code></td>
+<td>승인된 양의 정수 시간입니다. 예를 들어 8이면 승인 시작부터 만료까지도 8시간 이하여야 합니다.</td>
+</tr>
+<tr>
+<td><code>max_wait_seconds</code></td>
+<td>양의 정수 대기 한도입니다. 예를 들어 3600입니다. 대기 종료는 원격 작업 취소가 아닙니다.</td>
+</tr>
+<tr>
+<td><code>max_calls</code>, <code>max_candidates</code></td>
+<td>승인된 호출·후보 한도입니다. 후보 예시는 2입니다. 내부 Agent·Judge·검색 호출까지 고려하여 호출 한도를 정합니다.</td>
+</tr>
+<tr>
+<td><code>allow_global_inference</code></td>
+<td>GlobalStandard의 처리 경계를 승인한 경우 <code>true</code>입니다. NCUS 내부 처리만 보장하지 않습니다.</td>
+</tr>
+<tr>
+<td><code>allow_resource_creation</code>, <code>allow_rbac_assignments</code></td>
+<td>해당 계획의 리소스 생성·리소스 범위 역할 할당을 승인한 경우 각각 <code>true</code>입니다.</td>
+</tr>
+<tr>
+<td><code>acknowledge_continuous_hosting</code>, <code>acknowledge_unknown_cost</code></td>
+<td>지속 과금 가능성과 확정되지 않은 총비용을 확인한 경우 각각 <code>true</code>입니다.</td>
+</tr>
+<tr>
+<td><code>allow_training</code>, <code>allow_global_training</code></td>
+<td>이 경로는 <code>false</code>입니다.</td>
+</tr>
+<tr>
+<td><code>max_epochs</code>, <code>max_training_jobs</code></td>
+<td>이 경로는 <code>0</code>입니다.</td>
+</tr>
+<tr>
+<td><code>accept_deprecated_models</code></td>
+<td>기본 <code>false</code>입니다. 서비스가 지원 종료를 알리면 별도 검토 없이 바꾸지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><code>preflight --approval ...</code>로 파일을 검증합니다. 오류가 있으면 <code>approval_reason</code>을 확인합니다. 한 파일의 승인은 정확한 계획 해시·모델·보존 범위에만 적용되며 다른 수업·재시도·삭제 승인을 포함하지 않습니다.</p>
+<p><strong>강제 범위를 구분합니다.</strong> bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Azure Portal·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 운영자는 실제 사용량을 확인하고 필요할 때 작업 취소·리소스 삭제를 수행합니다.</p>
+<h2 id="rbac">권한과 공급자 등록을 확인합니다</h2>
+<p><a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">현재 Foundry RBAC 안내</a>를 기준으로 권한을 확인합니다. <strong>Foundry User/Owner/Account Owner/Project Manager</strong>는 이전 <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> 이름으로 보일 수 있습니다.</p>
+<table>
+<thead>
+<tr>
+<th>작업 주체</th>
+<th>확인할 범위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>새 환경 생성 운영자</td>
+<td>이 bootstrap은 구독에서 리소스 그룹·배포·각 리소스 생성과 <code>Microsoft.Authorization/roleAssignments/write</code> 유효 권한을 확인합니다. 기존 승인된 프로비저닝 담당자가 수행합니다.</td>
+</tr>
+<tr>
+<td>포털 실습 참가자</td>
+<td>지정 프로젝트의 Agent·평가 작업 권한입니다. Foundry User 등 실제 필요한 역할을 관리자가 프로젝트 범위에서 검토합니다.</td>
+</tr>
+<tr>
+<td>정책 준비 운영자</td>
+<td>해당 Search의 Search Service Contributor와 Search Index Data Contributor 등 스키마·업로드 권한입니다.</td>
+</tr>
+<tr>
+<td>프로젝트 관리 ID</td>
+<td>해당 Search의 Search Index Data Reader, 모델 호출과 해당 관측 리소스 전송 권한입니다.</td>
+</tr>
+<tr>
+<td>Search 관리 ID</td>
+<td>해당 Foundry 리소스의 모델 호출 권한입니다.</td>
+</tr>
+<tr>
+<td>로그 확인자</td>
+<td>해당 Application Insights·Log Analytics를 읽는 권한입니다. 구독 전체 로그 접근을 기본으로 요구하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p>Azure Portal → <strong>Subscriptions → 지정 구독 → Resource providers</strong>에서 <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, <code>Microsoft.Insights</code>가 <strong>Registered</strong>인지 확인합니다. 미등록이면 구독 관리자가 조직 절차에 따라 등록합니다. bootstrap은 공급자를 자동 등록하거나 권한을 확대하지 않습니다.</p>
+<p>등록·역할 전파를 기다린 뒤 같은 preflight를 다시 실행합니다. <code>403</code>이 계속되면 계정·역할 scope·네트워크를 대조합니다. 편의를 위해 구독 Owner를 새로 부여하거나 네트워크 제한·조직 정책을 해제하거나 토큰을 옮기지 않습니다.</p>
+<h2 id="cost">비용과 운영 경계를 정합니다</h2>
+<p>평가는 Agent·Judge를 호출하고 최적화에는 추가 내부 호출이 있습니다. Search·모니터링은 실습 화면을 닫아도 비용이 남을 수 있습니다. 관측 토큰·예상 비용·실제 청구를 구분하고 미확인 비용을 0원으로 표시하지 않습니다.</p>
+<p>Azure Portal → <strong>Cost Management → Cost analysis</strong>에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 조직의 비용 알림을 설정하지만 이것을 강제 상한으로 설명하지 않습니다. 비용·삭제 담당자와 종료 시각은 인수표에 기록합니다.</p>
+<h2 id="handoff">빈칸 없이 인수 정보를 전달합니다</h2>
+<p>다음 표를 비공개 수업 기록에 복사하고 자신의 실제 값으로 채웁니다. “준비됨”이라는 문장만 전달하지 않습니다.</p>
+<table>
+<thead>
+<tr>
+<th>필수 항목</th>
+<th>기록할 실제 값·완료 근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>로그인 범위</td>
+<td>사용자, tenant ID, subscription ID입니다. 비밀번호·토큰은 포함하지 않습니다.</td>
+</tr>
+<tr>
+<td>실행 담당</td>
+<td>생성·SDK·포털 실습·비용·삭제를 각각 누가 수행하는지 기록합니다.</td>
+</tr>
+<tr>
+<td>로컬 경로</td>
+<td>환경 이름, bootstrap config 경로, 런타임 <code>.env</code> 경로, <code>LAB_LANGUAGE</code>, <code>LAB_ARTIFACTS_DIR</code>입니다.</td>
+</tr>
+<tr>
+<td>Azure 환경</td>
+<td>리소스 그룹·Foundry account·project·project endpoint·Search 이름입니다.</td>
+</tr>
+<tr>
+<td>모델</td>
+<td>네 배포의 실제 이름·제품명·버전·SKU·용량입니다.</td>
+</tr>
+<tr>
+<td>정책 검색</td>
+<td>정책 원본·언어, 업로드 8건, knowledge base·connection 이름, <code>retrieval_verified</code>입니다.</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>실제 이름, 고정 버전 1, 엄격한 출력 형식, 실제 Agent 도구 호출 확인입니다.</td>
+</tr>
+<tr>
+<td>데이터</td>
+<td>JSONL 경로, 12행, SHA-256, 등록 이름·버전입니다.</td>
+</tr>
+<tr>
+<td>평가</td>
+<td>Relevance 4·TaskAdherence 1, Judge 배포, query 전용 입력입니다. 첫 평가 뒤 실제 evaluation ID·v1 run ID도 추가합니다.</td>
+</tr>
+<tr>
+<td>승인</td>
+<td>계획 해시, 승인 만료·예산·후보 한도·보존 기간입니다.</td>
+</tr>
+<tr>
+<td>종료</td>
+<td>삭제 가능한 정확한 그룹/객체, 삭제 승인 담당자, 삭제 예정 시각입니다. 공유 자원 보존 여부도 기록합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>현재 리허설 결과는 <a href="verification.html">검증 기록</a>에서 별도로 확인합니다. 원본 영어·한국어 데이터는 분리하며 영어 실측을 한국어 실행으로 바꾸어 표시하지 않습니다.</p>
 <p>원본 서비스 파일에는 계정 메타데이터·토큰·서명된 URL이 포함될 수 있어 로컬에서 보관합니다. <strong>합성 평가 결과 자체가 비밀인 것은 아닙니다.</strong> 성공·실패를 모두 포함한 허용 필드만 공개하고, 불리한 결과가 아니라 자격 증명을 제외합니다. 과거 시도는 원본 감사 기록으로 보존하되 현재 버전 보고서에 계속 누적하지 않습니다.</p>
+<h2 id="cleanup">삭제와 보존을 확인합니다</h2>
+<p><a href="index.html#cleanup">10의 삭제 절차</a>를 종료 체크리스트로 사용합니다. 생성 승인은 삭제 승인이 아니며 실습 자료만으로 타인의 자원을 삭제하지 않습니다.</p>
+<table>
+<thead>
+<tr>
+<th>대상</th>
+<th>삭제 또는 인계 확인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실행 중인 평가·Optimizer</td>
+<td>취소 가능 여부, 실제 종료 상태, 남은 job ID를 기록합니다.</td>
+</tr>
+<tr>
+<td>로컬 소유 객체</td>
+<td><code>cleanup</code> 계획의 정확한 대상과 실행 후 부재 상태를 확인합니다.</td>
+</tr>
+<tr>
+<td>포털 생성 객체</td>
+<td>데이터셋·평가·대화·Optimizer·남은 빈 Agent 항목을 개별 확인합니다.</td>
+</tr>
+<tr>
+<td>전용 리소스 그룹</td>
+<td>전체 인벤토리를 검토하고 승인 후 삭제합니다. 성공한 <code>az group exists</code>의 <code>false</code>를 확인합니다.</td>
+</tr>
+<tr>
+<td>공유·외부 자원</td>
+<td>삭제하지 않은 항목의 이름·이유·담당자·보존 종료일을 기록합니다.</td>
+</tr>
+<tr>
+<td>비용·soft delete</td>
+<td>청구 지연과 이미 발생한 요금을 확인하고, 서비스별 보존·영구 삭제 정책을 별도로 적용합니다.</td>
+</tr>
+<tr>
+<td>증빙</td>
+<td>결과와 실패 기록을 필요한 기간 비공개로 보관하며 로컬 <code>.lab</code>부터 삭제하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -233,7 +464,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
         <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="../Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>
@@ -241,7 +472,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id}&q
 
   <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
     <p class="eyebrow">LEARNING RECORD</p>
-    <h2 id="reset-title">이 문서의 학습 기록을 초기화할까요?</h2>
+    <h2 id="reset-title">이 문서의 학습 기록을 초기화합니다</h2>
     <p id="reset-description">이 문서에서 표시한 모든 장의 읽음 표시를 한국어·영어 모두에서 지웁니다. 다른 문서와 이전 안내의 학습 기록, 본문, 실습 파일은 바뀌지 않습니다.</p>
     <form method="dialog" class="dialog-actions">
       <button class="secondary-button" value="cancel" autofocus>취소</button>

@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="An English and Korean hands-on guide to Microsoft Foundry managed Evaluation and Agent Optimizer, using the same business dataset to compare versions.">
+  <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
   <title>Facilitator guide · improve the measured result · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The six-step reading record is separate from earlier chapter records. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -54,7 +54,7 @@
           <div class="toc">
 <ul>
 <li><a href="#prepare">Before class</a></li>
-<li><a href="#checkpoints">Keep exactly six participant steps</a></li>
+<li><a href="#checkpoints">Verify completion across all ten steps</a></li>
 <li><a href="#evaluation-sharing">Discuss the actual cases</a></li>
 <li><a href="#interpret-results">Interpret improvements correctly</a></li>
 <li><a href="#resume">Recover without changing the experiment</a></li>
@@ -70,6 +70,7 @@
 <li><a href="index.html">Participant guide</a></li>
 <li><a href="facilitator.html" aria-current="page">Facilitator guide</a></li>
 <li><a href="admin.html">Operator setup</a></li>
+<li><a href="troubleshooting.html">Execution issues and resolutions</a></li>
 <li><a href="verification.html">Verification and sources</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -95,7 +96,7 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">Read this reference only when needed. The participant lab ends after the six main steps. Theme and reading progress are saved only in this browser.</p>
+        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
@@ -104,18 +105,19 @@
 <a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-01">2026-10-01</time></span>
+        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Facilitator guide · improve the measured result">
         <h1 id="facilitator-guide">Facilitator guide · improve the measured result</h1>
-<p><a href="index.html#start">Six participant steps</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="verification.html">Latest v2 verification</a></p>
+<p><a href="index.html#setup">Ten participant steps</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="troubleshooting.html">Execution issues</a> · <a href="verification.html">Latest v2 verification</a></p>
 <p>Teach <strong>evaluate → learn → improve → reevaluate</strong> using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
 <h2 id="prepare">Before class</h2>
-<p>The operator provides <strong><code>contoso-eval-en-sol</code></strong>, Sol model deployment, the existing read-only policy tool, the registered English dev12, a Luna Judge and a supported <code>gpt-5.5</code> Optimizer deployment. Verify model roles and identity using the <a href="admin.html#prepare">operator guide</a>.</p>
-<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning and strict output schema match; only instructions differ. V1 already has useful grounding, routing, date and uncertainty safeguards. Candidate development uses drafts, not an ever-growing sequence of released versions.</p>
+<p>Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete <a href="admin.html#handoff">handoff</a> and verified project, Agent, retrieval, and dataset registration.</p>
+<p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. Do not assume the historical <code>contoso-eval-en-sol</code> already exists in a new project. Verify <a href="admin.html#prepare">model roles and identity</a>, and reserve time for cleanup in 10.</p>
+<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.</p>
 <p>Keep English and Korean data/Agents separate. The Korean guide explains the procedure; the current published measurements are <strong>English-data results only</strong>.</p>
-<h2 id="checkpoints">Keep exactly six participant steps</h2>
+<h2 id="checkpoints">Verify completion across all ten steps</h2>
 <table>
 <thead>
 <tr>
@@ -126,34 +128,54 @@
 </thead>
 <tbody>
 <tr>
-<td>01 Dataset</td>
-<td>Inspect the unchanged three-column JSONL and existing registration</td>
-<td>All 12 rows, version and SHA-256</td>
+<td>01 Environment</td>
+<td>Check account, subscription, permissions, Python, CLI, and language variables</td>
+<td>Matching identity and successful local commands</td>
 </tr>
 <tr>
-<td>02 Criteria</td>
-<td>Relevance 1–5 / threshold 4; TaskAdherence binary 0/1 / pass 1; Luna Judge</td>
-<td>Saved remote definition and query-only Agent input</td>
+<td>02 Provisioning</td>
+<td>Plan, authorize, preflight, apply, and inspect status</td>
+<td>APPLIED, generated <code>.env</code>, and runtime preflight PASS</td>
 </tr>
 <tr>
-<td>03 Baseline</td>
-<td>Run actual Foundry Evaluation against pinned Sol v1</td>
-<td>Completed run ID and all output items</td>
+<td>03 Agent setup</td>
+<td>Verify model/retrieval and create <code>native-agent</code> v1</td>
+<td>Actual JSON response and Agent tool call</td>
 </tr>
 <tr>
-<td>04 Analysis</td>
-<td>Read actual answers, metric scores, reasons and source policy</td>
-<td>A concrete improvement hypothesis, including failures</td>
+<td>04 Dataset</td>
+<td>Register or reuse unchanged three-column JSONL</td>
+<td>All 12 rows, registration/version, and SHA-256</td>
 </tr>
 <tr>
-<td>05 Optimization</td>
-<td>Actual instruction-only Agent Optimizer; inspect the candidate diff</td>
-<td>Real job/candidate IDs, unchanged non-instruction configuration</td>
+<td>05 Criteria</td>
+<td>Relevance 4, TaskAdherence 1, and the actual Judge</td>
+<td>Saved remote definition and query-only input</td>
 </tr>
 <tr>
-<td>06 Reevaluation</td>
-<td>Same definition/data/Judge, explicitly pinned candidate; Compare runs</td>
-<td>Matched item-level evidence, improvement checks and honest decision</td>
+<td>06 Baseline</td>
+<td>Foundry Evaluation against pinned v1</td>
+<td>Completed actual run ID and all 12 items</td>
+</tr>
+<tr>
+<td>07 Analysis</td>
+<td>Read actual answers, scores, reasons, and policies</td>
+<td>Concrete improvement hypothesis, including failures</td>
+</tr>
+<tr>
+<td>08 Optimization</td>
+<td>Instruction-only optimization and candidate-diff review</td>
+<td>Job/candidate IDs, reviewed file, and provenance</td>
+</tr>
+<tr>
+<td>09 Reevaluation</td>
+<td>Evaluate same-criteria v2 and open Compare runs</td>
+<td>Complete paired evidence and retain/accept/hold decision</td>
+</tr>
+<tr>
+<td>10 Cleanup</td>
+<td>Preserve evidence, inspect scope, authorize, and delete</td>
+<td>Dedicated-group absence or a shared-resource retention handoff</td>
 </tr>
 </tbody>
 </table>
@@ -220,6 +242,7 @@
 </tbody>
 </table>
 <p>Relevance maps to <code>{{sample.output_text}}</code>; TaskAdherence maps to <code>{{sample.output_items}}</code>. Do not overwrite service-generated bindings or feed <code>ground_truth</code> into the Agent. The actual remote Judge overrides any stale local default.</p>
+<p>After a timeout, identify <strong>which existing job ID to resume</strong> first. Use the <a href="troubleshooting.html">issue record</a> to prevent deletion/recreation or paid retries “until it succeeds.” Do not mark a blocked step completed.</p>
 <h2 id="misconceptions">Correct common misconceptions</h2>
 <table>
 <thead>
@@ -259,6 +282,7 @@
 <p><a id="next-loop"></a></p>
 <p>Publish <strong>the latest v2 verification and its frozen v1 control</strong>, not a sequence of obsolete current-version reports. Keep earlier raw receipts for audit without relabeling them as this pair.</p>
 <p>Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.</p>
+<p><strong>Before ending class, perform <a href="index.html#cleanup">the cleanup checks in 10</a> together.</strong> Confirm dedicated-group deletion or a named owner and deadline for retained shared resources. Hand off actual outcomes and issue records privately; do not delete ownership records first.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -270,7 +294,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-01">2026-10-01</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

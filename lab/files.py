@@ -120,11 +120,11 @@ def workspace(config: Config, *, create: bool = False) -> dict:
     if path.exists():
         state = read_json(path)
         if not isinstance(state, dict) or any(state.get(k) != v for k, v in scope.items()):
-            raise LabError("기록된 실습 범위와 .env가 다릅니다. 기존 아티팩트를 보존하고 별도 패키지에서 시작하세요.")
+            raise LabError("기록된 실습 범위와 .env가 다릅니다. 기존 아티팩트를 보존하고 별도 패키지에서 시작해야 합니다.")
         require_content_language(state)
         return state
     if not create:
-        raise LabError("실습 작업 기록이 없습니다. 에이전트 생성 단계부터 진행하세요.")
+        raise LabError("실습 작업 기록이 없습니다. 가이드 03의 정책 연결·Agent 준비부터 진행해야 합니다.")
     state = {**scope, "workspace_id": str(uuid4()), "created": []}
     save_json(path, state)
     return state

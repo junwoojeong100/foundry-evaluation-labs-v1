@@ -6,9 +6,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock, patch
 
 from scripts.add_foundry_eval_run import candidate_source, evaluation_contract, submit_or_resume, verify_agent_execution
+from lab.config import LabError, load_config
+from lab.managed_eval import list_native_evaluations
 
 
 def evaluation():
@@ -45,6 +47,33 @@ def baseline():
 
 
 class NativeFoundryEvaluationTests(unittest.TestCase):
+    def test_portal_id_lookup_is_read_only_and_filters_exact_names(self):
+        config = load_config(Path(__file__).resolve().parents[1] / ".env.example")
+        client = MagicMock()
+        client.evals.list.return_value = [
+            SimpleNamespace(id="eval-other", name="other"),
+            SimpleNamespace(id="eval-unit", name="lab-ko-learning-loop"),
+        ]
+        run = SimpleNamespace(
+            id="evalrun-unit", name="baseline-v1", status="completed",
+            model_dump=lambda **_: {
+                "data_source": {"target": {"name": "lab-ko-iq", "version": "1"}},
+                "result_counts": {"total": 12},
+            },
+        )
+        client.evals.runs.list.return_value = [run]
+        with patch("lab.managed_eval.credential_for"), patch("lab.managed_eval.AIProjectClient") as factory:
+            factory.return_value.__enter__.return_value.get_openai_client.return_value.__enter__.return_value = client
+            result = list_native_evaluations(config, "lab-ko-learning-loop")
+            self.assertEqual(result["mode"], "READ_ONLY")
+            self.assertEqual(result["evaluations"][0]["evaluation_id"], "eval-unit")
+            self.assertEqual(result["evaluations"][0]["runs"][0]["agent_version"], "1")
+            client.evals.runs.list.assert_called_once_with(eval_id="eval-unit", limit=100)
+            client.evals.create.assert_not_called()
+            client.evals.runs.create.assert_not_called()
+            with self.assertRaisesRegex(LabError, "No evaluation"):
+                list_native_evaluations(config, "missing")
+
     def test_only_the_explicit_agent_version_changes(self):
         original = baseline()
         snapshot = deepcopy(original)

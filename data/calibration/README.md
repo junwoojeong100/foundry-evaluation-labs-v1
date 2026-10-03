@@ -1,5 +1,9 @@
 # Authored Contoso Judge calibration
 
+This is a supporting library/reference dataset, not a required step in the
+current ten-step participant guide. The main workshop uses Foundry managed
+Evaluation and Agent Optimizer; its setup and cleanup are documented separately.
+
 `fixtures.jsonl` contains **16 newly authored synthetic examples**, including
 correct answers, policy-date mistakes, fabricated approvals, stale retrieval,
 missing retrieval, boundary errors, clarification, human escalation, refusal,
@@ -32,7 +36,10 @@ With retrieval rubric 1.1.0, policy correctness and relevance each agreed on
 16/16 references, while retrieval groundedness agreed on 14/15 applicable
 references. The one missing-retrieval fixture is not applicable, not a fabricated
 perfect score. No reference was removed or relabeled and no threshold was
-lowered. See [the verified execution record](../../guide/verification.md).
+lowered. This paragraph describes the earlier calibration record, not the
+[current English v1/v2 verification](../../guide/verification.md). Keep the
+original private calibration receipts when reproducing that earlier result;
+the current report does not attest a new calibration run.
 
 The authoritative approval record remains private. Existing/shared resources
 and policies are outside scope. There is no deletion authorization. Local mocks
@@ -72,8 +79,8 @@ results. All rate, semantic, relevance, error, critical-case and regression
 thresholds are inherited unchanged; only the declared sample-size contract
 differs. This is not a silent rewrite of the original gate.
 
-`create_holdout(..., count=None)` derives its count from the frozen contract;
-the guide explicitly supplies `--count 12`. The default twelve include one
+`create_holdout(..., count=None)` derives its count from the frozen contract.
+An explicit `--count 12` selects the same sample size. The default twelve include one
 scripted clarification → explicit user follow-up → final response case:
 **12 final cases normally require 13 agent capture turns**, not 12 turns or
 12 total model/planner/Judge requests. Template variants remain synthetic

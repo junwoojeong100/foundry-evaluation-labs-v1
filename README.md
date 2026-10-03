@@ -2,11 +2,15 @@
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
-Use **Microsoft Foundry managed Evaluation and Agent Optimizer** to improve an Agent against your own representative business tasks:
+**Follow ten steps from your first Azure environment checks to verified resource deletion.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
 
-> Dataset → evaluators → Foundry Evaluation → actual scores and reasons → instruction improvement → same-criteria reevaluation
+> Account, tools, and access → Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
 
 The sample Contoso policies and questions are synthetic. The lesson is **evaluate → learn → improve → reevaluate**, not a public benchmark leaderboard or production certification.
+
+Start at 01 for first-time setup. The guide includes Windows PowerShell and macOS/Linux installation/venv commands, where to find input values, authorization fields, actual Agent creation and evaluation-ID lookup, and completion checks. Prepared environments use a handoff rather than duplicate creation.
+
+**[Execution issues and resolutions](guide/en/troubleshooting.md)** distinguish this revision's read-only checks from historical paid measurements. The results below are not a new Korean execution.
 
 ## One current Sol v1/v2 comparison
 
@@ -48,6 +52,7 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 | Facilitation and recovery | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
 | Data contract | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |
 | Latest v2 evidence | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) | [최신 검증](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) |
+| Execution issues and resolutions | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) | [이슈 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) |
 | Complete print edition | [Open](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) | [인쇄본](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) |
 | PDF | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) |
 
@@ -59,11 +64,13 @@ Screenshot sets stay language-specific: English guides use `web/assets/portal/en
 
 ## Execution boundaries
 
-The operator prepares an isolated project and read-only policy connection before class. No separate knowledge-building, Judge-calibration or governance exercise is required. The Agent advises; it cannot issue refunds, submit tickets, delete data or grant access.
+The participant or authorized operator prepares an isolated project and read-only policy connection in 01–03. Separate Judge calibration and governance are not required exercises. The Agent advises; it cannot issue refunds, submit tickets, delete data, or grant access.
 
 Runtime availability is role-specific. Verify the actual Agent/tool path and the [supported optimization models](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models). Do not change model roles midway through a comparison.
 
 Production publication is not part of the lab. Closing a browser does not stop resource costs. Preserve genuine failures and do not rerun an unchanged candidate until a favorable sample appears.
+
+Step 10 preserves results, checks ownership/scope, and obtains deletion authorization. `cleanup` removes recorded objects, not all Search/model/group hosting. Dedicated groups need separate deletion and an `az group exists` result of `false`; shared resources require an owner handoff.
 
 ## Maintain the deliverables
 
@@ -79,6 +86,8 @@ python -m unittest discover -s tests -q
 
 English sources are `guide/en/*.md` and `data/README.en.md`; Korean sources are `guide/*.md` and `data/README.md`. Generated HTML belongs in `docs/` and `docs/ko/`. Preserve corresponding section IDs and separate language corpora.
 
-Render both print editions as A4 PDFs with background graphics. Verify them with `scripts/verify_pdf.py` and the dependencies in `requirements-verification.lock`; rebuild the allowlisted ZIP with `python scripts/package_lab.py`. Keep `evidence/latest.json` synchronized with actual service results and checks.
+Korean documentation, guidance, and error messages use a consistent formal register. Preserve verbatim measured responses, evaluator reasons, and evaluation-data quotations rather than editing evidence for prose style.
+
+Render both print editions as A4 PDFs with background graphics. Verify them with `python -m scripts.verify_pdf` and the dependencies in `requirements-verification.lock`; rebuild the allowlisted ZIP with `python scripts/package_lab.py`. Preserve historical service measurements in `evidence/latest.json` and record this revision's document/browser/PDF checks in `guide/en/troubleshooting.md`. Update service results only after an actual new execution.
 
 GitHub Pages serves **main / repository root** with `.nojekyll`. Root `index.html` and legacy `docs/english.html` forward to English while preserving query strings and fragments.

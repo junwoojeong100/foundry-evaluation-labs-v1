@@ -33,7 +33,7 @@ def prepare_optimizer(run_id: str) -> Path:
     if metadata.get("stage") != "iq":
         raise LabError("이 경로는 IQ 연결 후의 dev 실행을 Optimizer의 기준선으로 사용합니다.")
     if metadata.get("retrieval", {}).get("rows_with_tool_output", 0) == 0:
-        raise LabError("실제 IQ 도구 출력이 없는 기준선입니다. 도구 연결·권한·지시를 고치고 새 dev 실행을 사용하세요.")
+        raise LabError("실제 IQ 도구 출력이 없는 기준선입니다. 도구 연결·권한·지시를 고치고 새 dev 실행을 사용해야 합니다.")
     source = content_path(ROOT, "data/splits/dev.jsonl")
     assert_dataset_use(source, "optimization")
     assert_dataset_use(content_path(ROOT, "data/optimizer/dev.jsonl"), "optimization")
@@ -44,7 +44,7 @@ def prepare_optimizer(run_id: str) -> Path:
         raise LabError("기록된 기준선 프롬프트와 실제 스냅샷이 다릅니다.")
     target = ARTIFACTS / "optimizer"
     if (target / "handoff.json").exists():
-        raise LabError("Optimizer 준비 기록이 이미 있습니다. 기존 실험을 보존하고 새 패키지에서 준비하세요.")
+        raise LabError("Optimizer 준비 기록이 이미 있습니다. 기존 실험을 보존하고 새 패키지에서 준비해야 합니다.")
     target.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(prompt, target / "input-prompt.txt")
     shutil.copyfile(content_path(ROOT, "data/optimizer/dev.jsonl"), target / "dev-upload.jsonl")
