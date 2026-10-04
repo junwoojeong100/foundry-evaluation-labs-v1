@@ -237,6 +237,23 @@ The model roles are **answer generation (Agent), scoring (Judge), instruction su
 
 This repository's setup region is **North Central US (`northcentralus`)**. Defaults are Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/search planner `gpt-5.5`, and embedding `text-embedding-3-small`. Check the exact versions, SKUs (deployment types), and capacity units in the [model table](admin-setup.md#prepare) and plan. Do not silently substitute a different region or model.
 
+### Allocate the recommended minimum TPM {#resources-tpm}
+
+**TPM (Tokens Per Minute) is a per-deployment token rate limit**, not the model's context window or guaranteed processing speed. These starting requirements cover **one environment running one 12-case evaluation or Optimizer job at a time**. They are recommended minimums with headroom for evaluation/retrieval calls, not proven absolute lower bounds or a guarantee against 429 errors.
+
+| Role/model | Recommended minimum TPM to start | ARM capacity in a new default plan |
+|---|---:|---:|
+| Agent · `gpt-6-sol` | **100,000** | 100 |
+| Judge · `gpt-6-luna` | **100,000** | 100 |
+| Optimizer / search planner · `gpt-5.5` | **100,000** | 100, one deployment shared by both roles |
+| Embedding · `text-embedding-3-small` | **10,000** | 10 |
+
+New `bootstrap plan` output requests these capacities. **ARM units depend on the model/SKU**; do not universally multiply capacity by 1,000. After deployment, confirm actual TPM with runtime preflight below. Unallocated subscription quota does not establish that an individual deployment has enough TPM assigned.
+
+Existing plans and deployments are not automatically increased. For a prepared environment, follow the [operator TPM setup instructions](admin-setup.md#throughput) within its authorization. Do not edit `config.json`, approval hashes, or the manifest to bypass checks.
+
+**Shared users or overlapping jobs require additional capacity.** Azure rate-limits estimated tokens based on inputs and maximum-output settings, not only billed tokens. **RPM (Requests Per Minute)** and short-window request bursts are separate constraints. See the [official TPM/RPM explanation](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits).
+
 ### Check readiness and obtain cost authorization {#resources-approval}
 
 ```sh
@@ -266,7 +283,7 @@ The first command creates resources, deployments, connections, and resource-scop
 
 1. In [Azure Portal](https://portal.azure.com) → **Resource groups**, search for `names.resource_group` from `config.json`. Confirm the subscription, region, and complete resource list.
 2. Open [Foundry](https://ai.azure.com) with **New Foundry** enabled. If **Select a project to continue** appears, choose `names.project` and select **Let's go**. Read and **Close** the welcome tour if shown. If already in New Foundry, use the upper-left project selector. Do not use a Classic hub-based project.
-3. In the project's **Overview**, find its endpoint. It must match `AZURE_AI_PROJECT_ENDPOINT` in `.env`, in the form `https://account.services.ai.azure.com/api/projects/project`.
+3. In the project's **Home** (Overview in some layouts), find **Project endpoint**. It must match `AZURE_AI_PROJECT_ENDPOINT` in `.env`, in the form `https://account.services.ai.azure.com/api/projects/project`.
 4. In **Models + endpoints** or **Build → Models**, locate the deployments matching `.env` values `MODEL_DEPLOYMENT`, `JUDGE_DEPLOYMENT`, `OPTIMIZER_DEPLOYMENT`, and `EMBEDDING_DEPLOYMENT`. See [portal orientation](admin-setup.md#prepare) if labels differ.
 
 <figure class="portal-shot" id="portal-created-resources">
@@ -288,7 +305,9 @@ The first command creates resources, deployments, connections, and resource-scop
 python -m lab --config .lab/lab-en/.env preflight
 ```
 
-**Completion criteria:** Runtime preflight reports `PASS`; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.
+Inspect `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, and `embedding_tpm` under `checks`. Each `observed` value is actual deployment TPM; `expected` is the recommended minimum above. Insufficient or unverifiable token limits report `BLOCKED`: do not continue to model calls. Prepare the allocation, then rerun the same read-only preflight.
+
+**Completion criteria:** Runtime preflight and all five TPM checks report `PASS`; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
@@ -309,6 +328,8 @@ python -m lab --config .lab/lab-en/.env preflight
 {: .note .warning}
 
 **1. Verify that the model responds.** `smoke` is a short functional check.
+
+First pass the [TPM checks in 02](#resources-tpm). One successful short response does not establish sufficient throughput for the full evaluation.
 
 ```sh
 python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
@@ -583,8 +604,8 @@ Create `.lab/lab-en/notes.md` in a text editor and fill in this worksheet with y
 **Agent Optimizer proposes and tests instruction improvements.** A **candidate** is a proposed instruction set that has not yet been accepted. This does not retrain the model.
 
 1. Open **Build → Agents → lab-en-iq → Optimize Preview/Optimize**.
-2. Select **Agent**, not **Cost**, which optimizes a different concern.
-3. Select **Create an optimization run / Create optimization run** and use the settings below. Preview means a pre-release feature. If the menu or model is unavailable, stop and follow [Optimizer troubleshooting](troubleshooting.md#optimizer).
+2. If an **Agent / Cost** selection screen appears, select **Agent**, not **Cost**, which optimizes a different concern.
+3. From the run list, select **Optimize** or **Create an optimization run / Create optimization run** and use the settings below. Preview means a pre-release feature. If the menu or model is unavailable, stop and follow [Optimizer troubleshooting](troubleshooting.md#optimizer).
 
 | Setting | Choice |
 |---|---|
@@ -730,6 +751,7 @@ In `notes.md`, record v1/v2 pass counts and means per metric, errors, latency/to
 | Environment | Cleanup scope |
 |---|---|
 | Dedicated resource group created for you in 02 | Follow the group-deletion procedure below. Reconfirm that no unrelated resources are present and deletion is authorized. |
+| Dedicated environment explicitly approved for retention | Do not run deletion commands. Record remaining resources, the retention reason, cost owner, and review date; verify that the resources remain and hand them over. |
 | Operator-provided shared project | **Do not delete the resource group, Foundry resource, shared models, or Search service.** Remove only assigned objects and hand remaining resources to the operator. |
 | Setup or execution stopped partway through | Compare `config.json`, the manifest, and actual Azure resources. Failure does not mean nothing was created. |
 
@@ -760,6 +782,8 @@ az resource list --subscription "YOUR_SUBSCRIPTION_ID" --resource-group "YOUR_LA
 
 **Resource-group deletion is irreversible and removes the group's Foundry resources, model deployments, Search, and monitoring together.** After saving evidence and receiving approval for that exact group, choose one method:
 
+The default Application Insights Smart Detection action group can also serve alerts in other resource groups. A dedicated lab group does not establish that every resource is independent. Review shared dependencies with the owner before deletion, or retain the group; do not delete alerts, permissions, or locks simply to bypass a check.
+
 1. **Portal:** Azure Portal → Resource groups → exact group → **Delete resource group**. Read the deletion inventory, type the requested group name, and confirm.
 2. **CLI:** Run the command below and review the target again at the confirmation prompt. Do not append `--yes` to bypass confirmation.
 
@@ -782,5 +806,5 @@ Authentication or network errors are not `false` and do not prove deletion. If `
 
 Afterward, open **Cost Management → Cost analysis** for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.
 
-**Final completion criteria:** Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete `.lab` first and lose ownership evidence. See the [operator cleanup worksheet](admin-setup.md#cleanup) and [deletion troubleshooting](troubleshooting.md#cleanup).
+**Final completion criteria:** Verify an authorized dedicated-group deletion and record the time, or hand over an explicitly retained dedicated/shared-resource inventory with reasons, cost owner, and retention review date. Do not delete `.lab` first and lose ownership evidence. See the [operator cleanup worksheet](admin-setup.md#cleanup) and [deletion troubleshooting](troubleshooting.md#cleanup).
 {: .completion-check}

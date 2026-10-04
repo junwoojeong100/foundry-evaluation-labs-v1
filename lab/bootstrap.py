@@ -54,9 +54,9 @@ RESOURCE_TYPES = {
     "insights": ("Microsoft.Insights/components", "2020-02-02"),
 }
 DEFAULT_MODELS = (
-    {"roles": ["agent"], "name": "gpt-6-sol", "version": "2026-09-22", "sku": "GlobalStandard", "capacity": 20},
-    {"roles": ["judge"], "name": "gpt-6-luna", "version": "2026-09-22", "capacity": 20},
-    {"roles": ["planner", "optimizer"], "name": "gpt-5.5", "version": "2026-04-24", "capacity": 20},
+    {"roles": ["agent"], "name": "gpt-6-sol", "version": "2026-09-22", "sku": "GlobalStandard", "capacity": 100},
+    {"roles": ["judge"], "name": "gpt-6-luna", "version": "2026-09-22", "capacity": 100},
+    {"roles": ["planner", "optimizer"], "name": "gpt-5.5", "version": "2026-04-24", "capacity": 100},
     {"roles": ["embedding"], "name": "text-embedding-3-small", "version": "1", "capacity": 10},
 )
 Run = Callable[[list[str]], Any]
@@ -1101,6 +1101,68 @@ def _owned(config: dict, key: str, spec: dict, remote: dict, manifest: dict, obs
         raise BootstrapError("ARM deployment record is not bound to this isolated plan.")
 
 
+def _associated_monitoring_ids(config: dict, observed: dict, unexpected: set[str], run: Run) -> set[str]:
+    ids = _ids(config)
+    alert_id = (
+        f"{ids['resource_group']}/providers/Microsoft.AlertsManagement/smartDetectorAlertRules/"
+        f"Failure Anomalies - {config['names']['insights']}"
+    ).lower()
+    local_action_id = (
+        f"{ids['resource_group']}/providers/Microsoft.Insights/actionGroups/Application Insights Smart Detection"
+    ).lower()
+    if "insights" not in observed or not unexpected <= {alert_id, local_action_id}:
+        return set()
+    alert = _get({"id": alert_id, "api_version": "2021-04-01"}, run)
+    if not isinstance(alert, dict):
+        return set()
+    props = alert.get("properties")
+    if not isinstance(props, dict):
+        return set()
+    actions = props.get("actionGroups")
+    detector = props.get("detector")
+    scope = props.get("scope")
+    if not isinstance(actions, dict) or not isinstance(detector, dict) or not isinstance(scope, list):
+        return set()
+    groups = actions.get("groupIds")
+    if (
+        str(alert.get("id", "")).lower() != alert_id
+        or str(alert.get("type", "")).lower() != "microsoft.alertsmanagement/smartdetectoralertrules"
+        or str(alert.get("location", "")).lower() != "global"
+        or detector.get("id") != "FailureAnomaliesDetector"
+        or [str(value).lower() for value in scope] != [ids["insights"].lower()]
+        or not isinstance(groups, list) or len(groups) != 1 or not isinstance(groups[0], str)
+        or actions.get("customEmailSubject") is not None or actions.get("customWebhookPayload") is not None
+    ):
+        return set()
+    action_id = groups[0].lower()
+    pattern = (
+        rf"/subscriptions/{re.escape(config['subscription_id'].lower())}/resourcegroups/[^/]+/"
+        r"providers/microsoft\.insights/actiongroups/application insights smart detection"
+    )
+    if not re.fullmatch(pattern, action_id) or local_action_id in unexpected and action_id != local_action_id:
+        return set()
+    action = _get({"id": action_id, "api_version": "2023-01-01"}, run)
+    if not isinstance(action, dict):
+        return set()
+    settings = action.get("properties")
+    if not isinstance(settings, dict):
+        return set()
+    receivers = settings.get("armRoleReceivers")
+    expected_roles = {"749f88d5-cbae-40b8-bcfc-e573ddc772fa", ROLE_IDS["monitor_reader"]}
+    if (
+        str(action.get("id", "")).lower() != action_id
+        or str(action.get("type", "")).lower() != "microsoft.insights/actiongroups"
+        or str(action.get("location", "")).lower() != "global"
+        or settings.get("groupShortName") != "SmartDetect" or settings.get("enabled") is not True
+        or not isinstance(receivers, list) or len(receivers) != 2
+        or any(not isinstance(row, dict) or row.get("useCommonAlertSchema") is not True for row in receivers)
+        or {str(row.get("roleId", "")).lower() for row in receivers} != expected_roles
+        or any(value != [] for key, value in settings.items() if key.endswith("Receivers") and key != "armRoleReceivers")
+    ):
+        return set()
+    return unexpected
+
+
 def _inspect(config: dict, manifest: dict, run: Run) -> dict:
     observed = {}
     # JSON object order is not a dependency contract: verify the group and MI owners first.
@@ -1117,7 +1179,11 @@ def _inspect(config: dict, manifest: dict, run: Run) -> dict:
         listed = run(["resource", "list", "--subscription", config["subscription_id"],
                       "--resource-group", config["names"]["resource_group"]])
         allowed = {r["id"].lower() for r in manifest["resources"].values()}
-        if not isinstance(listed, list) or any(str(row.get("id", "")).lower() not in allowed for row in listed):
+        if not isinstance(listed, list) or any(not isinstance(row, dict) for row in listed):
+            raise BootstrapError("The lab group resource inventory is invalid; incremental apply is blocked.")
+        unexpected = {str(row.get("id", "")).lower() for row in listed} - allowed
+        # Insights can add default monitoring after deployment; verify its links without adopting it.
+        if unexpected and unexpected != _associated_monitoring_ids(config, observed, unexpected, run):
             raise BootstrapError("The lab group contains an unknown resource; incremental apply is blocked.")
     return observed
 

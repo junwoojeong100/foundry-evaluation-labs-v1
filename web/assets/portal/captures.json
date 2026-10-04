@@ -1,277 +1,231 @@
 {
   "schema_version": 1,
+  "portal_origin": "https://ai.azure.com",
   "captured_date": "2026-10-03",
   "date_timezone": "Asia/Seoul",
-  "portal_origin": "https://ai.azure.com",
   "tool": "playwright-headless.browser_run_code_unsafe",
-  "headless_verified": true,
-  "ui_language": "en-US",
   "data_language": "ko",
-  "authentication": "User completed normal interactive authentication. The earlier temporary transfer file was removed. Additional captures reused authentication only in memory; the isolated login browser and authenticated headless context were closed.",
-  "scope": "Existing dedicated Korean-data Contoso lab only. Portal controls are English; Korean questions and instructions are not translated English-run images. Route templates omit tenant, subscription and resource identifiers.",
-  "new_paid_runs_submitted": false,
-  "cloud_configuration_changed": false,
-  "onboarding_capture_verification": {
-    "captured_date": "2026-10-03",
-    "headless_user_agent_verified": true,
-    "language_specific_new_screenshots": 6,
-    "shared_administrative_screenshots": 2,
-    "resource_count_before": 5,
-    "resource_count_after": 5,
-    "agent_count_before": 3,
-    "agent_count_after": 3,
-    "agent_version_count_before": 4,
-    "agent_version_count_after": 4,
-    "evaluation_count_before": 2,
-    "evaluation_count_after": 2,
-    "evaluation_run_count_before": 7,
-    "evaluation_run_count_after": 7,
-    "resource_ids_agent_versions_and_run_ids_unchanged": true,
-    "new_paid_runs_submitted": false,
-    "agent_save_or_chat_submitted": false,
-    "resource_creation_or_deletion_submitted": false,
-    "delete_confirmation_empty": true,
-    "final_delete_button_disabled": true,
-    "authentication_state_exported_to_disk": false,
-    "temporary_login_browser_closed": true,
-    "authenticated_headless_context_closed": true
-  },
-  "additional_capture_verification": {
-    "captured_date": "2026-10-01",
-    "headless_user_agent_verified": true,
-    "new_screenshots": 5,
-    "evaluation_definitions_before": 2,
-    "evaluation_definitions_after": 2,
-    "optimizer_evaluation_runs_before": 6,
-    "optimizer_evaluation_runs_after": 6,
-    "evaluation_wizard_submitted": false,
-    "authentication_state_written_to_disk": false
-  },
+  "ui_language": "en-US",
   "edits": "Crop and opaque privacy masks only; no status, score or content replacement.",
+  "purpose": "Asset provenance for UI-location illustrations, not a lab execution or validation report.",
   "screenshots": [
     {
       "file": "23-resource-group.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "f2973ef31cdf647a5b8a25c2cf271ff810efe902e7e04942f61ea7b20630faaf",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://portal.azure.com",
       "route": "/resourceGroups/{korean-lab-resource-group}/overview",
-      "state": "existing-Korean-lab-inventory; five resources; earlier failed deployment history preserved; not a new bootstrap execution",
-      "redactions": ["profile", "subscription-name", "subscription-id-in-embedded-React-frame", "tenant-identifiers"],
-      "width": 1440, "height": 1000,
-      "sha256": "f2973ef31cdf647a5b8a25c2cf271ff810efe902e7e04942f61ea7b20630faaf"
+      "redactions": [
+        "profile",
+        "subscription-name",
+        "subscription-id-in-embedded-React-frame",
+        "tenant-identifiers"
+      ]
     },
     {
       "file": "24-select-project.png",
+      "width": 640,
+      "height": 474,
+      "sha256": "94c5e6a6f33a0a6f18957f225e2b64b3769e9f992ee3dd60e351dab190f37591",
       "capture_session_date": "2026-10-03",
       "route": "/new-experience/project-selection",
-      "state": "existing-Korean-project-selected-before-navigation; not a create-project form",
-      "redactions": ["dialog-only-account-header-and-unrelated-projects-excluded"],
-      "width": 640, "height": 474,
-      "sha256": "94c5e6a6f33a0a6f18957f225e2b64b3769e9f992ee3dd60e351dab190f37591"
+      "redactions": [
+        "dialog-only-account-header-and-unrelated-projects-excluded"
+      ]
     },
     {
       "file": "25-project-overview.png",
+      "width": 1440,
+      "height": 492,
+      "sha256": "2c5784072653190d82db8e68c164cc17cb4a47dd51168b12cf7703083173b1f8",
       "capture_session_date": "2026-10-03",
       "route": "/home",
-      "state": "existing-Korean-project; project selector and endpoint controls; model catalog excluded for focus",
-      "redactions": ["profile", "welcome-name", "API-key-field", "project-endpoint", "openai-endpoint"],
-      "width": 1440, "height": 492,
-      "sha256": "2c5784072653190d82db8e68c164cc17cb4a47dd51168b12cf7703083173b1f8"
+      "redactions": [
+        "profile",
+        "welcome-name",
+        "API-key-field",
+        "project-endpoint",
+        "openai-endpoint"
+      ]
     },
     {
       "file": "26-knowledge-base.png",
+      "width": 1440,
+      "height": 374,
+      "sha256": "4f7144eae7895dc3e7a42c3b577db1f23fdc82d0a669f3f998be0a2cfa7d4606",
       "capture_session_date": "2026-10-03",
       "route": "/build/knowledge",
-      "state": "existing-Korean-policy-knowledge-base-Active; connection and source inspected; no retrieval query or plan change",
-      "redactions": ["profile"],
-      "width": 1440, "height": 374,
-      "sha256": "4f7144eae7895dc3e7a42c3b577db1f23fdc82d0a669f3f998be0a2cfa7d4606"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "27-agent-configuration.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "dfde43e4eb3468a3456b9eee3d3ff9bbbbd4f51b12cf257b7ff798feadd0ac7a",
       "capture_session_date": "2026-10-03",
       "route": "/build/agents/{korean-iq-agent}/build",
-      "state": "existing-Korean-v1-with-policy-Knowledge; original remote instructions predate the prose revision; no configuration change or chat",
-      "agent_version": "1",
-      "save_disabled": true,
-      "chat_submitted": false,
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "dfde43e4eb3468a3456b9eee3d3ff9bbbbd4f51b12cf257b7ff798feadd0ac7a"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "28-delete-review.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d39117cb6323acd08ed3f68ba0a7ceaff87dc987ebbe3dd3ad39e35014815548",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://portal.azure.com",
       "route": "/resourceGroups/{korean-lab-resource-group}/delete-review",
-      "state": "unsubmitted-delete-review; five proposed resources; closed with Cancel; group still exists",
-      "confirmation_empty": true,
-      "final_delete_disabled": true,
-      "deletion_submitted": false,
-      "redactions": ["profile", "subscription-name-and-id", "subscription-column-in-embedded-delete-frame", "tenant-identifiers"],
-      "width": 1440, "height": 1000,
-      "sha256": "d39117cb6323acd08ed3f68ba0a7ceaff87dc987ebbe3dd3ad39e35014815548"
+      "redactions": [
+        "profile",
+        "subscription-name-and-id",
+        "subscription-column-in-embedded-delete-frame",
+        "tenant-identifiers"
+      ]
     },
     {
       "file": "01-project-overview.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7cbe03eca6382792c0394e4782efbb9f108ef3200997b74ac9e97c4e92b7d5c9",
       "capture_session_date": "2026-09-30",
       "route": "/home",
-      "state": "existing-resource",
-      "redactions": ["profile", "welcome-name", "project-endpoint", "openai-endpoint"],
-      "width": 1440, "height": 1000,
-      "sha256": "7cbe03eca6382792c0394e4782efbb9f108ef3200997b74ac9e97c4e92b7d5c9"
+      "redactions": [
+        "profile",
+        "welcome-name",
+        "project-endpoint",
+        "openai-endpoint"
+      ]
     },
     {
       "file": "02-model-deployments.png",
+      "width": 1270,
+      "height": 750,
+      "sha256": "2a43a326f5848636baa56e7a214e7197015d421ee5c9b33d7f98243ae559c94a",
       "capture_session_date": "2026-09-30",
       "route": "/build/models/deployments",
-      "state": "existing-resource",
-      "redactions": ["creator-column", "request-panel-excluded-by-crop"],
-      "width": 1270, "height": 750,
-      "sha256": "2a43a326f5848636baa56e7a214e7197015d421ee5c9b33d7f98243ae559c94a"
-    },
-    {
-      "file": "03-agent-versions.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/agents",
-      "state": "existing-resource",
-      "redactions": ["profile"],
-      "width": 1440, "height": 750,
-      "sha256": "b2dc1fe00e36d7490da05792faa6995296711d0d9879fb6001ecd4a642e739a8"
-    },
-    {
-      "file": "04-baseline-playground.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/agents/{baseline-agent}/build",
-      "state": "existing-resource-no-chat-sent",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "a31f5c03d44f7f103f36d2ce3683f3b210dd123d69ca0194ed8c0e9846a64453"
-    },
-    {
-      "file": "05-knowledge-base.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/knowledge/search/c/{connection}/bases/{knowledge-base}",
-      "state": "existing-resource",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1100,
-      "sha256": "4c49b2aa676e50d91c4886d632240aaedf8346c5903539bf8b0a37cc73ca2ac4"
-    },
-    {
-      "file": "06-iq-agent-knowledge.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/agents/{iq-agent}/build",
-      "state": "existing-resource-no-chat-sent",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "d1e4fb77cf7854932e309873bf5681d6db035bc7a87f353305dfdb5d321569ff"
+      "redactions": [
+        "creator-column",
+        "request-panel-excluded-by-crop"
+      ]
     },
     {
       "file": "07-optimizer-target.png",
+      "width": 1210,
+      "height": 968,
+      "sha256": "95b4664fd4934d40d48814a390893965007cc5716ee114c9456b07d8959ccceb",
       "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization",
-      "state": "unsubmitted-draft-target",
-      "redactions": ["dialog-only-account-header-excluded"],
-      "width": 1210, "height": 968,
-      "sha256": "95b4664fd4934d40d48814a390893965007cc5716ee114c9456b07d8959ccceb"
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ]
     },
     {
       "file": "08-optimizer-dataset.png",
+      "width": 1210,
+      "height": 968,
+      "sha256": "fe5c848a2a08dee0172bed76e232c41bd5ab909d1e3d62a9f1f7bfa8efca09a5",
       "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization",
-      "state": "unsubmitted-draft-no-upload",
-      "redactions": ["dialog-only-account-header-excluded", "creator-column"],
-      "width": 1210, "height": 968,
-      "sha256": "fe5c848a2a08dee0172bed76e232c41bd5ab909d1e3d62a9f1f7bfa8efca09a5"
+      "redactions": [
+        "dialog-only-account-header-excluded",
+        "creator-column"
+      ]
     },
     {
       "file": "09-optimizer-results.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "e4b5ef7f250e3d1cdb36959664173bc8ab07471937f8881bfde74e3968d2fd2f",
       "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
-      "state": "existing-completed-run",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "e4b5ef7f250e3d1cdb36959664173bc8ab07471937f8881bfde74e3968d2fd2f"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "10-optimizer-changes.png",
+      "width": 1038,
+      "height": 622,
+      "sha256": "dd1a83aa499d4212ad6fa5362a7187740fb63c9c8e8a2e0b1315c1346424484b",
       "capture_session_date": "2026-09-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
-      "state": "existing-candidate-not-promoted",
-      "redactions": ["dialog-only-account-header-excluded"],
-      "width": 1038, "height": 622,
-      "sha256": "dd1a83aa499d4212ad6fa5362a7187740fb63c9c8e8a2e0b1315c1346424484b"
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ]
     },
     {
       "file": "11-evaluation-results.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "000e7b63d446f9770c55f64e5eef6f0ea16b753e50b65f274f68c83e0e0ce0b3",
       "capture_session_date": "2026-09-30",
       "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
-      "state": "existing-completed-run",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "000e7b63d446f9770c55f64e5eef6f0ea16b753e50b65f274f68c83e0e0ce0b3"
-    },
-    {
-      "file": "12-trace-lookup.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/agents/{iq-agent}/traces",
-      "state": "existing-iq-dev-response-filter",
-      "redactions": ["profile"],
-      "width": 1440, "height": 800,
-      "sha256": "6fdeb21b63418be704db25e95890d8216c24970185e1d7fb8f4a52b86ae35700"
-    },
-    {
-      "file": "13-trace-tool-call.png",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/agents/{iq-agent}/traces",
-      "state": "existing-iq-dev-mcp-span",
-      "redactions": ["dialog-only-account-header-excluded"],
-      "width": 1440, "height": 1000,
-      "sha256": "05fad7f92b63108cf788f449bb3b3f6ae4793b09c7ee70a676ccc6e9d31e6069"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "15-evaluation-dataset.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "df985d8c44d11c6850be46c53a8b343b0f10ae5aa066ca7b22e64a6d60889d81",
       "capture_session_date": "2026-10-01",
       "route": "/build/evaluations/submit",
-      "state": "unsubmitted-draft; existing Korean contoso-dev-v11-860db66e version1 with query/context/ground_truth; five-row preview only; no upload",
-      "redactions": ["profile", "creator-column"],
-      "width": 1440, "height": 1000,
-      "sha256": "df985d8c44d11c6850be46c53a8b343b0f10ae5aa066ca7b22e64a6d60889d81"
+      "redactions": [
+        "profile",
+        "creator-column"
+      ]
     },
     {
       "file": "16-evaluation-criteria.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "1d2b080b3042264eea7b06cd13736867e4693495f87c4466e32e384e8da24901",
       "capture_session_date": "2026-10-01",
       "route": "/build/evaluations/submit",
-      "state": "unsubmitted-Korean-draft; Relevance threshold4 and TaskAdherence threshold1 verified in the form; existing Korean-project Judge lab-judge-860db66e, not the current Sol/Luna comparison",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "1d2b080b3042264eea7b06cd13736867e4693495f87c4466e32e384e8da24901"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "17-evaluation-review.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "214ac5b7b051d48539e90c3a723c1fd1fbdb4570b5f21b21a6f09f85fb7e5250",
       "capture_session_date": "2026-10-01",
       "route": "/build/evaluations/submit",
-      "state": "unsubmitted-Korean-draft-review; existing lab-20260930-live-iq target and contoso-dev-v11-860db66e version1; individual-turn one-time evaluation; no Submit clicked",
-      "redactions": ["profile"],
-      "width": 1440, "height": 1000,
-      "sha256": "214ac5b7b051d48539e90c3a723c1fd1fbdb4570b5f21b21a6f09f85fb7e5250"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "19-evaluation-case.png",
+      "width": 1440,
+      "height": 440,
+      "sha256": "5f4307c84fc89d94c5fb7e8fa5e7d2d6f13cca68e53a8fcfe8d4f1ad9c168bbc",
       "capture_session_date": "2026-10-01",
       "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
-      "state": "existing-completed-Korean-optimizer-candidate; actual first-case question and answer in User view; visible 1-error badge and incorrect response retained; not current Sol evidence",
-      "redactions": ["fullscreen-dialog-excludes-account-header", "empty-area-cropped"],
-      "width": 1440, "height": 440,
-      "sha256": "5f4307c84fc89d94c5fb7e8fa5e7d2d6f13cca68e53a8fcfe8d4f1ad9c168bbc"
+      "redactions": [
+        "fullscreen-dialog-excludes-account-header",
+        "empty-area-cropped"
+      ]
     },
     {
       "file": "20-evaluation-comparison.png",
+      "width": 1440,
+      "height": 520,
+      "sha256": "7af164c7e23a2c01180227932e71872064240904991a5b03b75c8e92cd6335ed",
       "capture_session_date": "2026-10-01",
       "route": "/build/evaluations/{native-optimizer-eval}/compare",
-      "state": "existing-completed-Korean-optimizer-baseline-and-candidate; baseline selected explicitly; TTest; relevance4.08vs4.00 and task_adherence0.58vs0.67; both Inconclusive; not current Sol comparison",
-      "redactions": ["profile", "empty-area-cropped"],
-      "width": 1440, "height": 520,
-      "sha256": "7af164c7e23a2c01180227932e71872064240904991a5b03b75c8e92cd6335ed"
+      "redactions": [
+        "profile",
+        "empty-area-cropped"
+      ]
     }
   ]
 }

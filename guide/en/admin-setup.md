@@ -1,6 +1,6 @@
 # Operator setup, authorization, and cleanup {#operator-guide}
 
-[Ten steps from the beginning](handbook.md#setup) · [Facilitator](facilitator.md#prepare) · [Execution issues](troubleshooting.md) · [Latest v2 verification](verification.md)
+[Ten steps from the beginning](handbook.md#setup) · [Facilitator](facilitator.md#prepare) · [Troubleshooting](troubleshooting.md)
 
 Use this reference for participant steps **02 provisioning authorization, 03 Agent setup, and 10 deletion**. Participants preparing their own environments can use it too. Supply actual values and completion evidence rather than leaving prerequisites implicit.
 
@@ -29,12 +29,30 @@ Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Kore
 
 | Role | Configuration key | Default model/version |
 |---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 20 |
-| Managed Evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 20 |
-| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared GlobalStandard 20 deployment |
+| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 100 |
+| Managed Evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 100 |
+| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared GlobalStandard 100 deployment |
 | Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10 |
 
 Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
+
+**Distinguish additional monitoring resources.** Application Insights can automatically add a [default Failure Anomalies alert and Smart Detection action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation). Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same `bootstrap status` again; do not edit the manifest or delete the alert to bypass the check.
+
+### Set TPM before starting model calls {#throughput}
+
+The [participant step-02 recommendations](handbook.md#resources-tpm) require **100,000 TPM** per Agent, Judge, and shared Optimizer/planner deployment, and **10,000 TPM** for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. For simultaneous English/Korean environments, sum both allocations for each model. Do not count two roles sharing one deployment as two deployments.
+
+1. **New dedicated environment:** Check generative capacity 100 and embedding capacity 10 in the updated `bootstrap plan`, then authorize and provision that exact plan. Existing plans do not change automatically. For an unprovisioned lower-capacity plan, prepare a new environment name and authorization rather than editing the hashed plan.
+2. **Separately managed prepared deployment:** Its owner checks **Tokens per Minute Rate Limit** under Foundry **Build → Models → Deployments → deployment name → Details**. Use **Edit** to meet these values only when the change is authorized. If the UI uses thousands of tokens, also check the final TPM display, save, and allow propagation. **Portal-only changes to a bootstrap-managed environment cause plan drift.** Do not edit hashes/approvals to bypass it; prepare a newly authorized dedicated environment with sufficient capacity when necessary.
+3. **Verify the setting:** With that environment's `.env` and language-specific artifacts path, run the read-only check below. Inspect each `*_tpm` entry's `observed`, `expected`, and `reason`.
+
+```sh
+python -m lab --config .lab/lab-en/.env preflight
+```
+
+Continue to step-03 smoke/retrieval and later evaluation/Optimizer only after overall `status: PASS` and all five TPM checks pass. The checker reads the actual deployment's `rateLimits` entry with `key: token`. If the CLI omits labels, it reads raw ARM metadata for that same deployment instead of guessing TPM from request counts or `sku.capacity`. Unverifiable limits are `BLOCKED`.
+
+TPM accounting uses estimates rather than average billed tokens; **RPM and short-window burst limits** also apply. Allow more headroom for longer inputs/maximum outputs, shared users, and overlapping evaluation/optimization. These recommended minimums do not guarantee a 429-free run. See [official rate-limit guidance](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits).
 
 Use the [real response check in 03](handbook.md#agent) to verify Agent and `knowledge_base_retrieve` calls. Optimizer has a separate [supported-model list](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models); Agent/Judge availability does not establish generator support.
 
@@ -80,9 +98,11 @@ Retrieve IDs with `native-evals --name lab-en-learning-loop`. The reevaluation h
 | Agent | Same Sol model/version, tools, reasoning and strict output schema |
 | Change | Instructions only; releases remain v1/v2 |
 | Optimizer | Instruction target only, model/tool-description changes off, bounded candidate count |
-| Publication | Latest v2 and its frozen v1 control; all 12 sanitized case outcomes |
+| Lab records | Keep same-condition v1/candidate results for all twelve cases in private run folders, separate from reusable guides |
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
+
+The standalone `scripts/compare_foundry_eval.py` selects report language and the default dev12 file using `LAB_LANGUAGE` or `--language ko`/`--language en`. Match explicitly supplied datasets to that language; do not relabel another corpus's results.
 
 ### Check evaluation response mappings {#evaluation-mapping}
 
@@ -166,7 +186,7 @@ Copy this table into the private class record and fill it with actual values. �
 | Authorization | Scope hash, expiry, budget, candidate limit, and retention |
 | Finish | Exact deletable group/objects, deletion approver, planned time, and shared-resource retention |
 
-Historical results are separate in the [verification record](verification.md). Keep English and Korean source data separate; do not relabel English measurements as a Korean execution.
+Keep English and Korean source data and private lab records separate; do not relabel another language's results as a new execution.
 
 Raw service files can contain account metadata, tokens or signed URLs. Keep those local; **the synthetic evaluation results themselves are not secret**. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.
 

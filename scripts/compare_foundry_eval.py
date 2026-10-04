@@ -6,6 +6,7 @@ import argparse
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import statistics
@@ -37,7 +38,10 @@ def _public_text(value: object, field: str) -> str:
 def compare_pair(*, dataset: list[dict], baseline: dict, candidate: dict,
                  baseline_agent: dict, candidate_agent: dict,
                  baseline_evaluation: dict, candidate_evaluation: dict,
-                 baseline_items: list[dict], candidate_items: list[dict]) -> dict:
+                 baseline_items: list[dict], candidate_items: list[dict],
+                 language: str = "en") -> dict:
+    if language not in {"en", "ko"}:
+        raise ValueError("Comparison language must be en or ko; never relabel another corpus.")
     if not dataset or any(not isinstance(row, dict) or not isinstance(row.get("query"), str) for row in dataset):
         raise ValueError("A nonempty source dataset with string queries is required.")
     by_query = {row["query"]: row for row in dataset}
@@ -172,7 +176,7 @@ def compare_pair(*, dataset: list[dict], baseline: dict, candidate: dict,
         failures.append("no strict measured quality improvement")
     report = {
         "kind": "REAL_MANAGED_EVALUATION_LATEST_PAIR",
-        "evaluation_id": baseline["eval_id"], "language": "en", "case_count": len(dataset),
+        "evaluation_id": baseline["eval_id"], "language": language, "case_count": len(dataset),
         "contract": contract, "arms": arms,
         "decision": {
             "measured_quality_improved_without_regression": not failures,
@@ -202,15 +206,19 @@ def main() -> int:
     parser.add_argument("--candidate", type=Path, required=True)
     parser.add_argument("--baseline-agent", type=Path, required=True)
     parser.add_argument("--candidate-agent", type=Path, required=True)
-    parser.add_argument("--dataset", type=Path, default=ROOT / "data/en/optimizer/dev.jsonl")
+    parser.add_argument("--language", choices=("en", "ko"), default=os.environ.get("LAB_LANGUAGE", "en"))
+    parser.add_argument("--dataset", type=Path, help="Defaults to the selected language's unchanged dev12 file")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    dataset_path = args.dataset or ROOT / (
+        "data/en/optimizer/dev.jsonl" if args.language == "en" else "data/optimizer/dev.jsonl"
+    )
 
     def load(path):
         return json.loads(path.read_text(encoding="utf-8"))
 
     report = compare_pair(
-        dataset=[json.loads(line) for line in args.dataset.read_text().splitlines()],
+        dataset=[json.loads(line) for line in dataset_path.read_text(encoding="utf-8").splitlines()],
         baseline=load(args.baseline / "run-latest.json"),
         candidate=load(args.candidate / "run-latest.json"),
         baseline_agent=load(args.baseline_agent), candidate_agent=load(args.candidate_agent),
@@ -218,6 +226,7 @@ def main() -> int:
         candidate_evaluation=load(args.candidate / "evaluation.json"),
         baseline_items=load(args.baseline / "output-items.json")["items"],
         candidate_items=load(args.candidate / "output-items.json")["items"],
+        language=args.language,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

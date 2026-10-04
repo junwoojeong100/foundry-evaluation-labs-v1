@@ -182,17 +182,18 @@ class NativeFoundryEvaluationTests(unittest.TestCase):
         self.assertEqual(contract["judge_deployment"], "remote-luna-judge")
         self.assertEqual(contract["thresholds"], {"Relevance": 4, "TaskAdherence": 1})
 
-    def test_current_instruction_pair_does_not_embed_dataset_answers(self):
+    def test_language_baselines_do_not_embed_dataset_answers(self):
         root = Path(__file__).resolve().parents[1]
-        for name in ("baseline.txt", "optimized.txt"):
-            instructions = (root / "prompts/en" / name).read_text(encoding="utf-8")
-            with self.subTest(prompt=name):
+        for language, prefix in (("en", "en/"), ("ko", "")):
+            instructions = (root / "prompts" / prefix / "baseline.txt").read_text(encoding="utf-8")
+            with self.subTest(language=language):
                 self.assertLessEqual(len(instructions), 6000)
-                self.assertTrue(instructions.isascii())
+                if language == "en":
+                    self.assertTrue(instructions.isascii())
                 self.assertNotRegex(instructions, r"\b20\d{2}\b|\d+(?:\.\d+)?%|ATLAS-[A-Z]+-\d+")
                 for field in ("answer", "citations", "route", "needs_human", "knowledge_base_retrieve"):
                     self.assertIn(field, instructions)
-                for line in (root / "data/en/optimizer/dev.jsonl").read_text().splitlines():
+                for line in (root / "data" / prefix / "optimizer/dev.jsonl").read_text(encoding="utf-8").splitlines():
                     row = json.loads(line)
                     self.assertNotIn(row["query"], instructions)
                     self.assertNotIn(row["ground_truth"], instructions)

@@ -54,7 +54,10 @@
           <div class="toc">
 <ul>
 <li><a href="#start">Distinguish new and prepared environments</a></li>
-<li><a href="#prepare">Verify model roles and actual deployments</a></li>
+<li><a href="#prepare">Verify model roles and actual deployments</a><ul>
+<li><a href="#throughput">Set TPM before starting model calls</a></li>
+</ul>
+</li>
 <li><a href="#bootstrap">Prepare an executable Agent</a></li>
 <li><a href="#scope">Freeze the comparison conditions</a><ul>
 <li><a href="#evaluation-mapping">Check evaluation response mappings</a></li>
@@ -75,8 +78,7 @@
 <li><a href="index.html">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html" aria-current="page">Operator setup</a></li>
-<li><a href="troubleshooting.html">Execution issues and resolutions</a></li>
-<li><a href="verification.html">Verification and sources</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
         </details>
@@ -115,7 +117,7 @@
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Operator setup, authorization, and cleanup">
         <h1 id="operator-guide">Operator setup, authorization, and cleanup</h1>
-<p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="troubleshooting.html">Execution issues</a> · <a href="verification.html">Latest v2 verification</a></p>
+<p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
 <p>Use this reference for participant steps <strong>02 provisioning authorization, 03 Agent setup, and 10 deletion</strong>. Participants preparing their own environments can use it too. Supply actual values and completion evidence rather than leaving prerequisites implicit.</p>
 <h2 id="start">Distinguish new and prepared environments</h2>
 <table>
@@ -162,17 +164,17 @@
 <tr>
 <td>Agent</td>
 <td><code>MODEL_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 100</td>
 </tr>
 <tr>
 <td>Managed Evaluation Judge</td>
 <td><code>JUDGE_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 20</td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 100</td>
 </tr>
 <tr>
 <td>Optimizer/search planner</td>
 <td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared GlobalStandard 20 deployment</td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared GlobalStandard 100 deployment</td>
 </tr>
 <tr>
 <td>Policy embeddings</td>
@@ -182,6 +184,18 @@
 </tbody>
 </table>
 <p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
+<p><strong>Distinguish additional monitoring resources.</strong> Application Insights can automatically add a <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">default Failure Anomalies alert and Smart Detection action group</a>. Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same <code>bootstrap status</code> again; do not edit the manifest or delete the alert to bypass the check.</p>
+<h3 id="throughput">Set TPM before starting model calls</h3>
+<p>The <a href="index.html#resources-tpm">participant step-02 recommendations</a> require <strong>100,000 TPM</strong> per Agent, Judge, and shared Optimizer/planner deployment, and <strong>10,000 TPM</strong> for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. For simultaneous English/Korean environments, sum both allocations for each model. Do not count two roles sharing one deployment as two deployments.</p>
+<ol>
+<li><strong>New dedicated environment:</strong> Check generative capacity 100 and embedding capacity 10 in the updated <code>bootstrap plan</code>, then authorize and provision that exact plan. Existing plans do not change automatically. For an unprovisioned lower-capacity plan, prepare a new environment name and authorization rather than editing the hashed plan.</li>
+<li><strong>Separately managed prepared deployment:</strong> Its owner checks <strong>Tokens per Minute Rate Limit</strong> under Foundry <strong>Build → Models → Deployments → deployment name → Details</strong>. Use <strong>Edit</strong> to meet these values only when the change is authorized. If the UI uses thousands of tokens, also check the final TPM display, save, and allow propagation. <strong>Portal-only changes to a bootstrap-managed environment cause plan drift.</strong> Do not edit hashes/approvals to bypass it; prepare a newly authorized dedicated environment with sufficient capacity when necessary.</li>
+<li><strong>Verify the setting:</strong> With that environment's <code>.env</code> and language-specific artifacts path, run the read-only check below. Inspect each <code>*_tpm</code> entry's <code>observed</code>, <code>expected</code>, and <code>reason</code>.</li>
+</ol>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env preflight
+</code></pre>
+<p>Continue to step-03 smoke/retrieval and later evaluation/Optimizer only after overall <code>status: PASS</code> and all five TPM checks pass. The checker reads the actual deployment's <code>rateLimits</code> entry with <code>key: token</code>. If the CLI omits labels, it reads raw ARM metadata for that same deployment instead of guessing TPM from request counts or <code>sku.capacity</code>. Unverifiable limits are <code>BLOCKED</code>.</p>
+<p>TPM accounting uses estimates rather than average billed tokens; <strong>RPM and short-window burst limits</strong> also apply. Allow more headroom for longer inputs/maximum outputs, shared users, and overlapping evaluation/optimization. These recommended minimums do not guarantee a 429-free run. See <a href="https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits">official rate-limit guidance</a>.</p>
 <p>Use the <a href="index.html#agent">real response check in 03</a> to verify Agent and <code>knowledge_base_retrieve</code> calls. Optimizer has a separate <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">supported-model list</a>; Agent/Judge availability does not establish generator support.</p>
 <figure class="portal-shot" id="portal-models">
 <img src="../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployment list showing deployment names, models, versions, and readiness." width="1271" height="820" loading="lazy">
@@ -239,12 +253,13 @@
 <td>Instruction target only, model/tool-description changes off, bounded candidate count</td>
 </tr>
 <tr>
-<td>Publication</td>
-<td>Latest v2 and its frozen v1 control; all 12 sanitized case outcomes</td>
+<td>Lab records</td>
+<td>Keep same-condition v1/candidate results for all twelve cases in private run folders, separate from reusable guides</td>
 </tr>
 </tbody>
 </table>
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
+<p>The standalone <code>scripts/compare_foundry_eval.py</code> selects report language and the default dev12 file using <code>LAB_LANGUAGE</code> or <code>--language ko</code>/<code>--language en</code>. Match explicitly supplied datasets to that language; do not relabel another corpus's results.</p>
 <h3 id="evaluation-mapping">Check evaluation response mappings</h3>
 <p>Participants select the <a href="index.html#prepare">two evaluators and Judge in 05</a> and preserve automatic mappings. Reading Raw JSON or guessing SDK fields is not a beginner prerequisite.</p>
 <table>
@@ -446,7 +461,7 @@
 </tr>
 </tbody>
 </table>
-<p>Historical results are separate in the <a href="verification.html">verification record</a>. Keep English and Korean source data separate; do not relabel English measurements as a Korean execution.</p>
+<p>Keep English and Korean source data and private lab records separate; do not relabel another language's results as a new execution.</p>
 <p>Raw service files can contain account metadata, tokens or signed URLs. Keep those local; <strong>the synthetic evaluation results themselves are not secret</strong>. Publish only allowlisted fields, including failures, and exclude credentials—not inconvenient outcomes. Historical attempts stay in the private audit, not as additional current-version reports.</p>
 <h2 id="cleanup">Verify deletion and retention</h2>
 <p class="print-with-table">Use <a href="index.html#cleanup">step 10</a> as the exit checklist. Provisioning approval is not deletion approval, and workshop documentation does not authorize deleting another person's resources.</p>

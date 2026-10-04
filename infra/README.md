@@ -40,21 +40,43 @@ Bootstrap generates a new `rg-foundry-eval-v11-<date>-<suffix>` group name in
 environments, configurations, and resource groups are not silently adopted or
 overwritten. Do not run `apply` again simply because an old note said pending.
 
+Application Insights can asynchronously add its default Failure Anomalies alert
+and Smart Detection action group. Inventory inspection verifies the alert's
+exact owned component scope and the linked group's default role-only receivers
+without adding either resource to the ownership manifest. The action group can
+be shared across resource groups; it is never modified or deleted by this
+recognition. Other unexpected resources and changed receiver configurations
+remain blocked. Do not delete service-created monitoring or edit a hashed
+manifest to make a readiness check pass.
+
 ## Model roles
 
 The current defaults are candidates that require a fresh availability check:
 
 | Role | Model | Version | Deployment type | Requested ARM capacity |
 |---|---|---|---|---:|
-| Prepared sample agent | gpt-6-sol | 2026-09-22 | GlobalStandard | 20 |
-| Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 20 |
-| Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | GlobalStandard | 20 |
+| Prepared sample agent | gpt-6-sol | 2026-09-22 | GlobalStandard | 100 |
+| Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 100 |
+| Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | GlobalStandard | 100 |
 | Read-only knowledge embeddings | text-embedding-3-small | 1 | GlobalStandard | 10 |
 
-The `gpt-6-sol` Agent was verified through an actual pinned Foundry prompt-agent
-call with the read-only knowledge tool, followed by managed Evaluation.
-The separate `gpt-6-luna` Judge was verified in the real managed evaluation.
+For one environment running one evaluation/optimization job at a time, the
+recommended starting minimum is **100,000 TPM** for each generative deployment
+and **10,000 TPM** for embeddings. These are workload recommendations with
+headroom, not proven absolute lower bounds or a universal capacity-unit
+conversion. Shared users and overlapping jobs need additional sizing.
+
+Bootstrap preflight validates quota and ARM capacity; after provisioning,
+`python -m lab --config <runtime-env> preflight` also reads actual named token
+rate limits and blocks insufficient or unverifiable TPM before the guide's
+model tests. New defaults do not rewrite existing hashed plans or allocations.
+See the [TPM setup and readiness instructions](../guide/en/admin-setup.md#throughput).
+RPM, request bursts, and estimated maximum-output tokens can still cause 429s
+even when TPM meets the recommendation.
+
 Runtime support is role-specific; catalog visibility alone is not sufficient.
+Verify the pinned Agent with its read-only knowledge tool and the separate Judge
+through actual managed Evaluation in the selected environment.
 
 `gpt-6-luna` is not in the current official list of supported **optimization
 models**, so that role remains `gpt-5.5`. See
@@ -124,7 +146,7 @@ fallback, rollback, or resource deletion is automatic.
   deletion and an `az group exists` absence check. Preserve shared resources.
 
 Private `.env`, `.lab/`, approvals, credentials, raw responses, and signed
-download URLs must not enter the public site or distribution archive. The
-published verification record contains only sanitized observations and hashes.
+download URLs must not enter the public site or distribution archive. Keep
+execution-specific records separate from the reusable guides.
 Set `LAB_ARTIFACTS_DIR` and `LAB_LANGUAGE` before starting Python; keep English and
 Korean run records separate.

@@ -1,13 +1,15 @@
 # Foundry Learning Loop Lab v1 · English
 
-English is the default. See the [main README](README.md) for the current Sol v1/v2 pair, fixed model roles and the complete bilingual guide directory.
+English is the default. See the [main README](README.md) for fixed model roles and the complete bilingual guide directory.
 
 **[Start the English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html)** · [Korean guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)
 
-The ten-step guide starts with Azure account, permissions, local tools, and resource creation; it ends with evidence retention and verified deletion. The core is **Foundry Evaluation → Agent Optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
+The ten-step guide starts with Azure account, permissions, local tools, and resource creation; it ends with authorized cleanup or retention. The core is **Foundry Evaluation → Agent Optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
 
 First-time participants can start with the guide's basic terms, terminal instructions, and ordered portal actions. Steps 04–06 use one evaluation wizard. Prepared classes agree who runs commands instead of sharing the operator's credentials or recreating resources.
 
-Only the **latest v2 and its frozen v1 control** are reported. [Read the verification](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html#status) and [evidence/latest.json](evidence/latest.json), including all actual responses, scores and reasons. Candidate development uses drafts, not endlessly incremented releases. Observed improvement is not a promise of future scores or production approval.
+Compare a reviewed candidate with its fixed v1 under the same conditions. If no different candidate is worth retaining, keep v1 instead of inventing an improvement. Keep actual responses, scores and reasons privately, not in the reusable guide.
 
-See [execution issues and resolutions](guide/en/troubleshooting.md) for observed blockers, fixes, reproduction commands, and the distinction between read-only/local checks and historical paid execution.
+See [troubleshooting](guide/en/troubleshooting.md) for recovery procedures. Separate narrated CLI/SDK replay videos: [English](docs/media/Foundry-Lab-Replay-EN.mp4) · [한국어](docs/media/Foundry-Lab-Replay-KO.mp4). These are execution-record summaries, not portal screen recordings.
+
+Authenticated portal walkthroughs are also available: [English](docs/media/Foundry-Portal-Walkthrough-EN.mp4) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.mp4). They show the actual Azure/Foundry UI with private fields redacted, without creating duplicate evaluation or optimization jobs.

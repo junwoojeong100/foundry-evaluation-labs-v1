@@ -73,8 +73,7 @@
 <li><a href="index.html" aria-current="page">Participant guide</a></li>
 <li><a href="facilitator.html">Facilitator guide</a></li>
 <li><a href="admin.html">Operator setup</a></li>
-<li><a href="troubleshooting.html">Execution issues and resolutions</a></li>
-<li><a href="verification.html">Verification and sources</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
         </details>
@@ -355,6 +354,42 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 <p>Use your text editor's <strong>Open file</strong> action to inspect these files. <code>.lab</code> stores lab records and may appear as a hidden folder. JSON stores settings as name/value pairs. Do not convert these files to Word documents or change their extensions.</p>
 <p>The model roles are <strong>answer generation (Agent), scoring (Judge), instruction suggestions/search planning (Optimizer/planner), and numerical representations for search (embedding)</strong>. You do not develop a new model in this lab.</p>
 <p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-small</code>. Check the exact versions, SKUs (deployment types), and capacity units in the <a href="admin.html#prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
+<h3 id="resources-tpm">Allocate the recommended minimum TPM</h3>
+<p><strong>TPM (Tokens Per Minute) is a per-deployment token rate limit</strong>, not the model's context window or guaranteed processing speed. These starting requirements cover <strong>one environment running one 12-case evaluation or Optimizer job at a time</strong>. They are recommended minimums with headroom for evaluation/retrieval calls, not proven absolute lower bounds or a guarantee against 429 errors.</p>
+<table>
+<thead>
+<tr>
+<th>Role/model</th>
+<th style="text-align: right;">Recommended minimum TPM to start</th>
+<th style="text-align: right;">ARM capacity in a new default plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent · <code>gpt-6-sol</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr>
+<td>Judge · <code>gpt-6-luna</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr>
+<td>Optimizer / search planner · <code>gpt-5.5</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100, one deployment shared by both roles</td>
+</tr>
+<tr>
+<td>Embedding · <code>text-embedding-3-small</code></td>
+<td style="text-align: right;"><strong>10,000</strong></td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+<p>New <code>bootstrap plan</code> output requests these capacities. <strong>ARM units depend on the model/SKU</strong>; do not universally multiply capacity by 1,000. After deployment, confirm actual TPM with runtime preflight below. Unallocated subscription quota does not establish that an individual deployment has enough TPM assigned.</p>
+<p>Existing plans and deployments are not automatically increased. For a prepared environment, follow the <a href="admin.html#throughput">operator TPM setup instructions</a> within its authorization. Do not edit <code>config.json</code>, approval hashes, or the manifest to bypass checks.</p>
+<p><strong>Shared users or overlapping jobs require additional capacity.</strong> Azure rate-limits estimated tokens based on inputs and maximum-output settings, not only billed tokens. <strong>RPM (Requests Per Minute)</strong> and short-window request bursts are separate constraints. See the <a href="https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits">official TPM/RPM explanation</a>.</p>
 <h3 id="resources-approval">Check readiness and obtain cost authorization</h3>
 <pre><code class="language-sh">python -m lab bootstrap preflight --config .lab/lab-en/config.json
 </code></pre>
@@ -372,7 +407,7 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <ol>
 <li>In <a href="https://portal.azure.com">Azure Portal</a> → <strong>Resource groups</strong>, search for <code>names.resource_group</code> from <code>config.json</code>. Confirm the subscription, region, and complete resource list.</li>
 <li>Open <a href="https://ai.azure.com">Foundry</a> with <strong>New Foundry</strong> enabled. If <strong>Select a project to continue</strong> appears, choose <code>names.project</code> and select <strong>Let's go</strong>. Read and <strong>Close</strong> the welcome tour if shown. If already in New Foundry, use the upper-left project selector. Do not use a Classic hub-based project.</li>
-<li>In the project's <strong>Overview</strong>, find its endpoint. It must match <code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code>, in the form <code>https://account.services.ai.azure.com/api/projects/project</code>.</li>
+<li>In the project's <strong>Home</strong> (Overview in some layouts), find <strong>Project endpoint</strong>. It must match <code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code>, in the form <code>https://account.services.ai.azure.com/api/projects/project</code>.</li>
 <li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, locate the deployments matching <code>.env</code> values <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, and <code>EMBEDDING_DEPLOYMENT</code>. See <a href="admin.html#prepare">portal orientation</a> if labels differ.</li>
 </ol>
 <figure class="portal-shot" id="portal-created-resources">
@@ -392,7 +427,8 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 
 <pre><code class="language-sh">python -m lab --config .lab/lab-en/.env preflight
 </code></pre>
-<p class="completion-check"><strong>Completion criteria:</strong> Runtime preflight reports <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
+<p>Inspect <code>agent_tpm</code>, <code>judge_tpm</code>, <code>optimizer_tpm</code>, <code>iq_planner_tpm</code>, and <code>embedding_tpm</code> under <code>checks</code>. Each <code>observed</code> value is actual deployment TPM; <code>expected</code> is the recommended minimum above. Insufficient or unverifiable token limits report <code>BLOCKED</code>: do not continue to model calls. Prepare the allocation, then rerun the same read-only preflight.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Runtime preflight and all five TPM checks report <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
 
 <h2 id="agent">03. Connect policies and create the Agent</h2>
@@ -406,6 +442,7 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <h3 id="agent-knowledge">Verify the model and policy retrieval</h3>
 <p class="note warning"><strong>These three commands perform actual uploads/model calls and can incur charges.</strong> For a prepared environment, obtain the operator's verified results instead of repeating them. When preparing your own environment, check each result before continuing.</p>
 <p><strong>1. Verify that the model responds.</strong> <code>smoke</code> is a short functional check.</p>
+<p>First pass the <a href="#resources-tpm">TPM checks in 02</a>. One successful short response does not establish sufficient throughput for the full evaluation.</p>
 <pre><code class="language-sh">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 </code></pre>
 <p>Confirm <strong><code>status: completed</code></strong> in the output.</p>
@@ -755,8 +792,8 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <p><strong>Agent Optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
 <ol>
 <li>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize</strong>.</li>
-<li>Select <strong>Agent</strong>, not <strong>Cost</strong>, which optimizes a different concern.</li>
-<li>Select <strong>Create an optimization run / Create optimization run</strong> and use the settings below. Preview means a pre-release feature. If the menu or model is unavailable, stop and follow <a href="troubleshooting.html#optimizer">Optimizer troubleshooting</a>.</li>
+<li>If an <strong>Agent / Cost</strong> selection screen appears, select <strong>Agent</strong>, not <strong>Cost</strong>, which optimizes a different concern.</li>
+<li>From the run list, select <strong>Optimize</strong> or <strong>Create an optimization run / Create optimization run</strong> and use the settings below. Preview means a pre-release feature. If the menu or model is unavailable, stop and follow <a href="troubleshooting.html#optimizer">Optimizer troubleshooting</a>.</li>
 </ol>
 <table>
 <thead>
@@ -944,6 +981,10 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <td>Follow the group-deletion procedure below. Reconfirm that no unrelated resources are present and deletion is authorized.</td>
 </tr>
 <tr>
+<td>Dedicated environment explicitly approved for retention</td>
+<td>Do not run deletion commands. Record remaining resources, the retention reason, cost owner, and review date; verify that the resources remain and hand them over.</td>
+</tr>
+<tr>
 <td>Operator-provided shared project</td>
 <td><strong>Do not delete the resource group, Foundry resource, shared models, or Search service.</strong> Remove only assigned objects and hand remaining resources to the operator.</td>
 </tr>
@@ -967,6 +1008,7 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-group &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;[].{name:name,type:type}&quot; -o table
 </code></pre>
 <p><strong>Resource-group deletion is irreversible and removes the group's Foundry resources, model deployments, Search, and monitoring together.</strong> After saving evidence and receiving approval for that exact group, choose one method:</p>
+<p>The default Application Insights Smart Detection action group can also serve alerts in other resource groups. A dedicated lab group does not establish that every resource is independent. Review shared dependencies with the owner before deletion, or retain the group; do not delete alerts, permissions, or locks simply to bypass a check.</p>
 <ol>
 <li><strong>Portal:</strong> Azure Portal → Resource groups → exact group → <strong>Delete resource group</strong>. Read the deletion inventory, type the requested group name, and confirm.</li>
 <li><strong>CLI:</strong> Run the command below and review the target again at the confirmation prompt. Do not append <code>--yes</code> to bypass confirmation.</li>
@@ -983,7 +1025,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </code></pre>
 <p>Authentication or network errors are not <code>false</code> and do not prove deletion. If <code>true</code>, inspect deletion progress. For <strong>Locks</strong>, permissions, or dependencies in other groups, follow <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>. Do not remove organizational locks without authorization.</p>
 <p>Afterward, open <strong>Cost Management → Cost analysis</strong> for the subscription, time range, and group. Billing updates can lag, and earlier usage charges do not disappear. Separately check logs/storage in other groups and service-specific soft-deleted resources. Permanent deletion/purge requires organizational policy and separate authorization.</p>
-<p class="completion-check"><strong>Final completion criteria:</strong> Verify the dedicated group's absence and record the time, or hand over a shared-resource inventory with reasons, owner, and retention deadline. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">operator cleanup worksheet</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
+<p class="completion-check"><strong>Final completion criteria:</strong> Verify an authorized dedicated-group deletion and record the time, or hand over an explicitly retained dedicated/shared-resource inventory with reasons, cost owner, and retention review date. Do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">operator cleanup worksheet</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

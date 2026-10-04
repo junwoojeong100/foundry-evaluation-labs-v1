@@ -1,284 +1,248 @@
 {
   "schema_version": 1,
-  "captured_date": "2026-10-03",
-  "date_timezone": "Asia/Seoul",
-  "recorded_at": "2026-10-03T05:22:43.692Z",
   "portal_origin": "https://ai.azure.com",
   "additional_portal_origin": "https://portal.azure.com",
+  "captured_date": "2026-10-03",
+  "date_timezone": "Asia/Seoul",
   "tool": "playwright-headless.browser_run_code_unsafe",
-  "headless_verified": true,
-  "ui_language": "en-US",
   "data_language": "en",
-  "dataset": "contoso-atlas-cloud-en-v1/dev12",
-  "authentication": "User completed normal interactive authentication; matching lab tenant verified in the headless session. Authentication state is excluded.",
-  "scope": "Dedicated NCUS English rehearsal: native Foundry Evaluation, Agent Optimizer and same-definition reevaluation. These are not Korean-data run results.",
-  "new_paid_runs_submitted": true,
-  "cloud_configuration_changed": true,
-  "screenshot_only_extra_model_calls": false,
-  "onboarding_capture_verification": {
-    "captured_date": "2026-10-03",
-    "headless_user_agent_verified": true,
-    "language_specific_new_screenshots": 6,
-    "shared_administrative_screenshots": 2,
-    "resource_count_before": 6,
-    "resource_count_after": 6,
-    "agent_count_before": 6,
-    "agent_count_after": 6,
-    "agent_version_count_before": 10,
-    "agent_version_count_after": 10,
-    "evaluation_count_before": 6,
-    "evaluation_count_after": 6,
-    "evaluation_run_count_before": 23,
-    "evaluation_run_count_after": 23,
-    "resource_ids_agent_versions_and_run_ids_unchanged": true,
-    "new_paid_runs_submitted": false,
-    "agent_save_or_chat_submitted": false,
-    "resource_creation_or_deletion_submitted": false,
-    "delete_confirmation_empty": true,
-    "final_delete_button_disabled": true,
-    "authentication_state_exported_to_disk": false,
-    "temporary_login_browser_closed": true,
-    "authenticated_headless_context_closed": true,
-    "historical_paid_rehearsal_flags_above_do_not_describe_this_capture_session": true
-  },
+  "ui_language": "en-US",
   "edits": "Opaque privacy masks and cropping only. No scores, statuses, instructions or synthetic data were replaced.",
+  "purpose": "Asset provenance for UI-location illustrations, not a lab execution or validation report.",
   "screenshots": [
     {
       "file": "23-resource-group.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "fb97827e68f7a34fba1c27fa85cd0fd4bf8024bdc5dd7107f4ba5c2f1669b8ce",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://portal.azure.com",
       "route": "/resourceGroups/{english-lab-resource-group}/overview",
-      "state": "existing-English-lab-inventory; six resources including the alert rule; earlier failed deployment history preserved",
-      "redactions": ["profile", "subscription-name", "subscription-id-in-embedded-React-frame", "tenant-identifiers"],
-      "width": 1440,
-      "height": 1000,
-      "sha256": "fb97827e68f7a34fba1c27fa85cd0fd4bf8024bdc5dd7107f4ba5c2f1669b8ce"
+      "redactions": [
+        "profile",
+        "subscription-name",
+        "subscription-id-in-embedded-React-frame",
+        "tenant-identifiers"
+      ]
     },
     {
       "file": "24-select-project.png",
+      "width": 640,
+      "height": 474,
+      "sha256": "df4655fffa7f51eb43d0b97b67f01fbaa160433efcde7846b698bf72e41b765b",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://ai.azure.com",
       "route": "/new-experience/project-selection",
-      "state": "existing-English-project-selected-before-navigation; not a create-project form",
-      "redactions": ["dialog-only-account-header-and-unrelated-projects-excluded"],
-      "width": 640,
-      "height": 474,
-      "sha256": "df4655fffa7f51eb43d0b97b67f01fbaa160433efcde7846b698bf72e41b765b"
+      "redactions": [
+        "dialog-only-account-header-and-unrelated-projects-excluded"
+      ]
     },
     {
       "file": "25-project-overview.png",
+      "width": 1440,
+      "height": 492,
+      "sha256": "a433936849a60514e661a6f4609e81f7dda10e112d83de36fafb9a4fd4f960ab",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://ai.azure.com",
       "route": "/home",
-      "state": "existing-English-project; project selector and endpoint controls; model catalog excluded for focus",
-      "redactions": ["profile", "welcome-name", "API-key-field", "project-endpoint", "openai-endpoint"],
-      "width": 1440,
-      "height": 492,
-      "sha256": "a433936849a60514e661a6f4609e81f7dda10e112d83de36fafb9a4fd4f960ab"
+      "redactions": [
+        "profile",
+        "welcome-name",
+        "API-key-field",
+        "project-endpoint",
+        "openai-endpoint"
+      ]
     },
     {
       "file": "26-knowledge-base.png",
+      "width": 1440,
+      "height": 374,
+      "sha256": "56ef6e26fe13a9e51d679d92c06cb1f0ed9899d13c31abd7eb415ddc6538006d",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/knowledge",
-      "state": "existing-English-policy-knowledge-base-Active; connection and source inspected; no retrieval query or plan change",
-      "redactions": ["profile"],
-      "width": 1440,
-      "height": 374,
-      "sha256": "56ef6e26fe13a9e51d679d92c06cb1f0ed9899d13c31abd7eb415ddc6538006d"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "27-agent-configuration.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "a1d0c2480d72b3ce867054a99ce071d85b108fec9487fb84c1edda2abb02715f",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/agents/{english-sol-agent}/build",
-      "state": "existing-English-Sol-v1-with-policy-Knowledge; displayed instructions matched the baseline source; no save or chat",
-      "agent_version": "1",
-      "instructions_sha256": "a0924c7ada384ce8092fb32a43fbd8647c275323ec212698256124212de96b92",
-      "save_disabled": true,
-      "chat_submitted": false,
-      "redactions": ["profile"],
-      "width": 1440,
-      "height": 1000,
-      "sha256": "a1d0c2480d72b3ce867054a99ce071d85b108fec9487fb84c1edda2abb02715f"
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "28-delete-review.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "901f5b7482d0d26c12b136804356c58596fc850ccd844316cde84bf8bc42263e",
       "capture_session_date": "2026-10-03",
       "portal_origin": "https://portal.azure.com",
       "route": "/resourceGroups/{english-lab-resource-group}/delete-review",
-      "state": "unsubmitted-delete-review; six proposed resources; closed with Cancel; group still exists",
-      "confirmation_empty": true,
-      "final_delete_disabled": true,
-      "deletion_submitted": false,
-      "redactions": ["profile", "subscription-name-and-id", "subscription-column-in-embedded-delete-frame", "tenant-identifiers"],
-      "width": 1440,
-      "height": 1000,
-      "sha256": "901f5b7482d0d26c12b136804356c58596fc850ccd844316cde84bf8bc42263e"
+      "redactions": [
+        "profile",
+        "subscription-name-and-id",
+        "subscription-column-in-embedded-delete-frame",
+        "tenant-identifiers"
+      ]
     },
     {
       "file": "00-resource-group.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "dab5ef443b70c67253352ca7fc6ce2754b299e094a7f6696c3405a98ca55d525",
+      "capture_session_date": "2026-09-30",
       "portal_origin": "https://portal.azure.com",
       "route": "/resourceGroups/{english-lab-resource-group}/overview",
-      "state": "new-owned-resource-group; unrelated inherited policy failure remains visible",
-      "capture_session_date": "2026-09-30",
       "redactions": [
         "account-menu",
         "subscription-name",
         "subscription-id"
-      ],
-      "width": 1600,
-      "height": 1000,
-      "sha256": "dab5ef443b70c67253352ca7fc6ce2754b299e094a7f6696c3405a98ca55d525"
+      ]
     },
     {
       "file": "02-model-deployments.png",
+      "width": 1271,
+      "height": 820,
+      "sha256": "655ea2f7ffee38c4df4802cc5202414d52ff9f682fc50a01fa13ec6dc1dc5f4a",
+      "capture_session_date": "2026-10-01",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/models/deployments",
-      "state": "actual deployments including Luna diagnostic slots; deployment success is not agent-runtime success",
-      "capture_session_date": "2026-10-01",
       "redactions": [
         "creator-column",
         "request-panel-excluded-by-crop"
-      ],
-      "width": 1271,
-      "height": 820,
-      "sha256": "655ea2f7ffee38c4df4802cc5202414d52ff9f682fc50a01fa13ec6dc1dc5f4a"
+      ]
     },
     {
       "file": "07-optimizer-target.png",
-      "portal_origin": "https://ai.azure.com",
-      "route": "/build/agents/{native-evaluation-agent}/optimization",
-      "state": "before submission: original v1, instruction-only, one candidate, gpt-5.5 optimizer, gpt-6-luna Judge",
-      "capture_session_date": "2026-10-01",
-      "redactions": [
-        "dialog-only-account-header-excluded"
-      ],
       "width": 1210,
       "height": 968,
-      "sha256": "2e6a5a4597897d4fb128edd54de995638ed6006b2968417c23218ef7b0fb0568"
+      "sha256": "2e6a5a4597897d4fb128edd54de995638ed6006b2968417c23218ef7b0fb0568",
+      "capture_session_date": "2026-10-01",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization",
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ]
     },
     {
       "file": "08-optimizer-dataset.png",
+      "width": 1210,
+      "height": 968,
+      "sha256": "33232ecc24b90fa9a59922d104b9cd6cf82d22b93ac83a3a7e12e9b855e49ab4",
+      "capture_session_date": "2026-10-01",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/agents/{native-evaluation-agent}/optimization",
-      "state": "same registered English dev12 dataset selected before submission",
-      "capture_session_date": "2026-10-01",
       "redactions": [
         "dialog-only-account-header-excluded",
         "creator-column"
-      ],
-      "width": 1210,
-      "height": 968,
-      "sha256": "33232ecc24b90fa9a59922d104b9cd6cf82d22b93ac83a3a7e12e9b855e49ab4"
+      ]
     },
     {
       "file": "09-optimizer-results.png",
-      "portal_origin": "https://ai.azure.com",
-      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
-      "state": "succeeded; one candidate; small service ranking increase, not an independent quality pass",
-      "capture_session_date": "2026-10-01",
-      "redactions": [
-        "profile"
-      ],
       "width": 1440,
       "height": 1000,
-      "sha256": "51a3868f84825d8a7656e62dff14af2fcc55eaceec5b333f2dd966335b48c055"
+      "sha256": "51a3868f84825d8a7656e62dff14af2fcc55eaceec5b333f2dd966335b48c055",
+      "capture_session_date": "2026-10-01",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "10-optimizer-changes.png",
-      "portal_origin": "https://ai.azure.com",
-      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
-      "state": "actual service-generated instruction diff",
-      "capture_session_date": "2026-10-01",
-      "redactions": [
-        "dialog-only-account-header-excluded"
-      ],
       "width": 1038,
       "height": 622,
-      "sha256": "425ef360ff663491c7c1ffd2acf87492a51c1dbdade150eddaed3e3752f533f3"
+      "sha256": "425ef360ff663491c7c1ffd2acf87492a51c1dbdade150eddaed3e3752f533f3",
+      "capture_session_date": "2026-10-01",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{native-evaluation-agent}/optimization/{actual-job}",
+      "redactions": [
+        "dialog-only-account-header-excluded"
+      ]
     },
     {
       "file": "15-evaluation-dataset.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "9401d3ee13757a33a0ccc2dc1c33bf6f7692890bc2a8120fb4154d333395cc48",
+      "capture_session_date": "2026-09-30",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/evaluations/submit",
-      "state": "registered English dev12 dataset with query/context/ground_truth; five-row preview is not the dataset size",
-      "capture_session_date": "2026-09-30",
       "redactions": [
         "profile",
         "creator-column"
-      ],
-      "width": 1440,
-      "height": 1000,
-      "sha256": "9401d3ee13757a33a0ccc2dc1c33bf6f7692890bc2a8120fb4154d333395cc48"
+      ]
     },
     {
       "file": "16-evaluation-criteria.png",
-      "portal_origin": "https://ai.azure.com",
-      "route": "/build/evaluations/submit",
-      "state": "Relevance threshold4 and binary TaskAdherence threshold1; gpt-6-luna Judge",
-      "capture_session_date": "2026-10-01",
-      "redactions": [
-        "profile"
-      ],
       "width": 1440,
       "height": 1000,
-      "sha256": "9169797763083abd7efe46497e99762caaa1a8b5a984b781548ac4870bffbbc0"
+      "sha256": "9169797763083abd7efe46497e99762caaa1a8b5a984b781548ac4870bffbbc0",
+      "capture_session_date": "2026-10-01",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "17-evaluation-review.png",
-      "portal_origin": "https://ai.azure.com",
-      "route": "/build/evaluations/submit",
-      "state": "before actual submission: pinned original agent v1, individual turns, one-time native evaluation",
-      "capture_session_date": "2026-10-01",
-      "redactions": [
-        "profile"
-      ],
       "width": 1440,
       "height": 1000,
-      "sha256": "7bffa91e315d8993082ad9077d7f685b86267d42efaa0df1aa3d0c3c8c548c3a"
+      "sha256": "7bffa91e315d8993082ad9077d7f685b86267d42efaa0df1aa3d0c3c8c548c3a",
+      "capture_session_date": "2026-10-01",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "profile"
+      ]
     },
     {
       "file": "18-evaluation-results.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "12c9b1021f5456a59c1dffb747faef3b4b10f523436c391c7de9c4e253a0eab2",
+      "capture_session_date": "2026-10-01",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/evaluations/{comparison-evaluation}/run/{baseline-run}",
-      "state": "actual completed baseline; Relevance10/12 and TaskAdherence12/12",
-      "capture_session_date": "2026-10-01",
       "redactions": [
         "profile",
         "creator"
-      ],
-      "width": 1440,
-      "height": 1000,
-      "sha256": "12c9b1021f5456a59c1dffb747faef3b4b10f523436c391c7de9c4e253a0eab2"
+      ]
     },
     {
       "file": "19-evaluation-case.png",
+      "width": 1440,
+      "height": 340,
+      "sha256": "54bc98ecd6f8607d585ed70193c534c3307a39059a286699688c1894c315fc3d",
+      "capture_session_date": "2026-10-01",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/evaluations/{comparison-evaluation}/run/{baseline-run}",
-      "state": "actual atlas-dev-001 conversation opened from its conversation_id; User view",
-      "capture_session_date": "2026-10-01",
       "redactions": [
         "fullscreen-dialog-excludes-account-header",
         "empty-area-cropped"
-      ],
-      "width": 1440,
-      "height": 340,
-      "sha256": "54bc98ecd6f8607d585ed70193c534c3307a39059a286699688c1894c315fc3d"
+      ]
     },
     {
       "file": "20-evaluation-comparison.png",
+      "width": 1440,
+      "height": 520,
+      "sha256": "be93509f521bf25ac6a0fe9ba707169640947352a1f7adc41f3595b59ba73567",
+      "capture_session_date": "2026-10-01",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/evaluations/{comparison-evaluation}/compare",
-      "state": "actual baseline selected explicitly; Relevance mean4.42 vs4.33 and PairedTTest Inconclusive",
-      "capture_session_date": "2026-10-01",
       "redactions": [
         "profile",
         "empty-area-cropped"
-      ],
-      "width": 1440,
-      "height": 520,
-      "sha256": "be93509f521bf25ac6a0fe9ba707169640947352a1f7adc41f3595b59ba73567"
+      ]
     }
   ]
 }

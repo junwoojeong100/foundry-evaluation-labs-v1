@@ -3,7 +3,7 @@ Microsoft Foundry architecture/service icon
 
 File: foundry.svg
 Publisher and rights holder: Microsoft Corporation.
-Verified: 2026-09-30.
+Source record date: 2026-09-30.
 
 Official source and usage terms:
 https://learn.microsoft.com/en-us/azure/architecture/icons/
@@ -53,94 +53,40 @@ reference foundry.svg. This file is self-contained and works offline without
 scripts or external resources. CSS scales the complete square viewBox without
 cropping or framing.
 
-Microsoft Foundry portal screenshots
-===================================
+Portal illustrations
+====================
 
-Files: portal/01-project-overview.png through portal/13-trace-tool-call.png,
-plus portal/15-evaluation-dataset.png, portal/16-evaluation-criteria.png,
-portal/17-evaluation-review.png, portal/19-evaluation-case.png, and
-portal/20-evaluation-comparison.png.
-Product UI: Microsoft Corporation. Source: https://ai.azure.com/
-Captured: 2026-09-30 (original 13) and 2026-10-01 (five additional evaluation
-views), using Playwright Headless after normal interactive authentication.
-See portal/captures.json for routes, redactions, dimensions and SHA-256 hashes.
+Files: portal/*.png, portal/en/*.png, and portal/shared/*.png.
+Product UI: Microsoft Corporation.
+Sources: https://ai.azure.com/ and https://portal.azure.com/.
 
-These are actual product UI captures of the existing Korean-data Contoso lab,
-not mockups or screenshots copied from Microsoft Learn. Personal profile,
-creator and endpoint fields were masked, or excluded by cropping, before
-publication. Dialog-only screenshots exclude the account header. Product
-statuses, scores, instructions and synthetic tool output were not rewritten.
-The optimization target/data wizard was inspected but never submitted.
-Existing result pages were read without starting new paid jobs or deployments.
-Korean guides use these language-matched captures. Portal controls are English;
-the questions and instructions belong to the Korean lab. The five additional
-views use the same existing Korean project: evaluation settings were left
-unsubmitted, and case/comparison views use previously completed runs. Actual
-errors, incorrect model responses, and statistical outcomes remain visible.
-The new captures are not evidence of a new Korean Sol evaluation.
-The original 13 images remain byte-for-byte unchanged.
+These are product UI illustrations for the educational workflow, not mockups
+or assertions about a reader's current environment. Language-specific images
+use the corresponding Contoso corpus; neutral subscription/access images are
+shared. They illustrate controls, not a new or current service measurement.
 
-The captures illustrate this educational guide and do not imply Microsoft
-endorsement, confer product rights, or change the existing artwork terms.
-Authentication state, cookies, signed download URLs and raw browser snapshots
-are not part of these distributable assets.
+See portal/captures.json, portal/en/captures.json and
+portal/shared/captures.json for the image sources, capture dates, routes,
+dimensions, SHA-256 hashes and privacy redactions. The capture tool is
+Playwright Headless. Cropping and opaque privacy masks exclude identifying
+account, subscription, tenant, endpoint and credential fields. Product text
+and displayed results are not rewritten. Authentication state, cookies,
+signed download URLs and raw browser snapshots are not distributable assets.
 
-English rehearsal portal screenshots
-====================================
+These illustrations do not imply Microsoft endorsement, confer product
+rights or change the existing artwork terms. Image provenance is retained;
+separate historical lab-validation reports and execution logs are not part
+of the guide.
 
-Files: portal/en/*.png. See portal/en/captures.json for exact captures.
-Product UI: Microsoft Corporation. Sources: https://ai.azure.com/ and
-https://portal.azure.com/.
+Source and layout references
+============================
 
-These separate captures show the newly provisioned English-data rehearsal.
-The English corpus, prompts, and actual service results are not translations
-overlaid on the earlier Korean screenshots. The user completed interactive
-authentication, and subsequent navigation/capture used Playwright Headless
-with the matching lab tenant and English UI.
+Archived workshop source:
+https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2
 
-The rehearsal includes approved resource creation and paid lab operations;
-reading or photographing their results does not submit extra model calls.
-Individual capture states distinguish unsubmitted settings from actual job
-results. Only cropping and opaque privacy masks are applied. Identifying
-account, creator, subscription, and endpoint values are excluded; actual
-statuses, instruction text, synthetic data, and scores are not altered.
+Layout/teaching-structure reference:
+https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html
 
-The current English Sol v1/v2 guides use these captures only as historical UI
-illustrations. They are not the current Sol evaluation evidence. Current
-questions, actual responses, scores and reasons are published in
-evidence/latest.json; do not substitute the older screenshot values.
-
-Onboarding and cleanup screenshots
-=================================
-
-Captured: 2026-10-03 with Playwright Headless.
-Files: portal/23-*.png through portal/28-*.png, matching portal/en/ files,
-and portal/shared/21-subscription-overview.png plus
-portal/shared/22-check-access.png. The three capture manifests contain exact
-dimensions, SHA-256 values, redactions, and capture states.
-
-The two shared images show subscription administration, not a language-specific
-dataset or run. Six further images per language show that language's existing
-resource group, project selection, project endpoint controls, policy knowledge
-base, Agent v1 configuration, and unsubmitted group-deletion review.
-Project selection is navigation, not resource creation.
-
-The user completed interactive login in a temporary visible browser. Capture
-then used a separate, authenticated Headless Chromium context. Authentication
-state was transferred only in memory, not exported as a file. Both temporary
-authenticated contexts were closed afterward.
-
-Only cropping and opaque privacy masks were applied, including private values
-inside Azure Portal's embedded React frames. Profile, subscription, tenant,
-membership, endpoint, and credential fields are masked; billing panels are
-excluded. Statuses, earlier deployment failures, policy instructions, and
-resource lists were not replaced. The Korean Agent retains its earlier
-instructions; the English Sol v1 instruction hash matched the baseline source.
-
-No resource creation/deletion, Agent save, chat, evaluation, Optimizer job, or
-retrieval-plan change was submitted for these captures. Both deletion name
-fields remained empty, the final Delete buttons were disabled, and the panes
-were closed with Cancel. Resource IDs, Agent versions, and evaluation/run IDs
-were compared before and after and were unchanged for both lab environments.
-All earlier screenshot files remain unchanged. These new illustrations are
-not evidence of a new paid execution or of successful resource deletion.
+The latter informed the goal, concept, preparation, execution, completion
+and troubleshooting structure. Its data, instructions, grading method and
+measured results were not incorporated into this lab.

@@ -162,7 +162,7 @@ class GuideBuildTests(unittest.TestCase):
         source = (
             "# 문서 연결\n\n## 시작\n\n"
             "[강사](facilitator.md#준비) [관리자](admin-setup.md?mode=read#rbac)\n\n"
-            "[검증](verification.md) [데이터](../data/README.md)\n\n"
+            "[문제 해결](troubleshooting.md) [데이터](../data/README.md)\n\n"
             '<a href="../guide/handbook.md#start">참가자</a>\n\n'
             '<img src="../web/assets/example-diagram.svg" alt="구조">\n'
         )
@@ -171,7 +171,7 @@ class GuideBuildTests(unittest.TestCase):
         )
         for href in (
             "docs/ko/facilitator.html#준비", "docs/ko/admin.html?mode=read#rbac",
-            "docs/ko/verification.html", "docs/ko/data-guide.html", "docs/ko/index.html#start",
+            "docs/ko/troubleshooting.html", "docs/ko/data-guide.html", "docs/ko/index.html#start",
         ):
             self.assertIn(f'href="{href}"', rendered)
         self.assertIn('src="web/assets/example-diagram.svg"', rendered)
@@ -195,11 +195,11 @@ class GuideBuildTests(unittest.TestCase):
             self.assertIn(value, rendered)
         self.assertIn("python -m lab validate", rendered)
         readme = build_guide.render_markdown(
-            "[가이드](docs/index.html?from=readme#start) [검증](evidence/latest.json)",
+            "[가이드](docs/index.html?from=readme#start) [데이터 명세](data/manifest.json)",
             output_base="docs",
         )
         self.assertIn('href="index.html?from=readme#start"', readme.content)
-        self.assertIn('href="../evidence/latest.json"', readme.content)
+        self.assertIn('href="../data/manifest.json"', readme.content)
 
     def test_output_writer_creates_only_requested_directories_and_check_is_read_only(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -260,8 +260,8 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_full_build_requires_all_sources_instead_of_placeholder_pages(self) -> None:
         sources = self._site_sources()
-        del sources["guide/verification.md"]
-        with self.assertRaisesRegex(ValueError, "guide/verification.md"):
+        del sources["guide/troubleshooting.md"]
+        with self.assertRaisesRegex(ValueError, "guide/troubleshooting.md"):
             build_guide.render_site(sources, self.template, "unused")
 
     def test_single_path_progress_is_separate_from_old_chapters_and_reference_pages(self) -> None:
@@ -285,7 +285,7 @@ class GuideBuildTests(unittest.TestCase):
     def test_default_check_validates_all_outputs_and_does_not_write(self) -> None:
         pages = self._site_pages()
         print_template = (ROOT / "web" / "print-template.html").read_text(encoding="utf-8")
-        for stale in (None, "admin.html", "print.html", "missing:verification.html"):
+        for stale in (None, "admin.html", "print.html", "missing:troubleshooting.html"):
             with self.subTest(stale=stale):
                 def read_output(path: Path) -> bytes:
                     if stale == "missing:" + path.name:
@@ -304,7 +304,7 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_missing_source_aborts_full_build_before_any_write(self) -> None:
         def read_source(path: Path, **kwargs: object) -> str:
-            if path.name == "verification.md":
+            if path.name == "troubleshooting.md":
                 raise FileNotFoundError(path)
             return FIXTURE
 
@@ -314,7 +314,7 @@ class GuideBuildTests(unittest.TestCase):
              redirect_stdout(io.StringIO()), redirect_stderr(error):
             self.assertEqual(build_guide.main([]), 2)
             output_open.assert_not_called()
-        self.assertIn("guide/verification.md", error.getvalue())
+        self.assertIn("guide/troubleshooting.md", error.getvalue())
 
     def test_single_document_mode_requires_explicit_source_and_output(self) -> None:
         for args in (["--source", "fixture.md"], ["--output", "fixture.html"]):

@@ -1,0 +1,360 @@
+1
+00:00:00,000 --> 00:00:05,354
+This video summarizes the complete Foundry lab, starting with a new
+Azure resource group.
+
+2
+00:00:05,354 --> 00:00:13,354
+It replays actual command and managed-service records, with long
+waits removed. It is not a recording of the separately authenticated
+
+3
+00:00:13,354 --> 00:00:14,377
+portal interface.
+
+4
+00:00:14,377 --> 00:00:22,618
+A fictional Contoso support Agent retrieves policies, answers twelve
+questions, and goes through evaluation and instruction optimization.
+
+5
+00:00:22,618 --> 00:00:25,024
+This lab does not retrain model weights.
+
+6
+00:00:26,024 --> 00:00:34,123
+First inspect the signed-in Azure CLI user, tenant and subscription.
+A successful sign-in alone does not establish that the correct lab
+
+7
+00:00:34,123 --> 00:00:35,563
+environment is selected.
+
+8
+00:00:35,563 --> 00:00:43,062
+The portal and CLI authenticate separately, so check both
+identities. Do not bypass personal authentication or continue under
+
+9
+00:00:43,062 --> 00:00:44,021
+another account.
+
+10
+00:00:44,021 --> 00:00:51,820
+Use the repository's virtual environment, set the language and
+artifact directory, and repeat those settings in each new terminal.
+
+11
+00:00:51,820 --> 00:00:53,740
+Never mix the two language runs.
+
+12
+00:00:54,740 --> 00:01:02,251
+The plan command creates local configuration and an unapproved
+authorization example. Check the actual subscription, model
+
+13
+00:01:02,251 --> 00:01:05,022
+selections, region and retention scope first.
+
+14
+00:01:05,022 --> 00:01:12,964
+Sol serves the Agent, Luna judges the responses, and GPT five point
+five handles optimization and search planning. Start with one
+
+15
+00:01:12,964 --> 00:01:17,828
+hundred thousand TPM per generative deployment and ten thousand for
+embeddings.
+
+16
+00:01:17,828 --> 00:01:25,955
+Verify the deployed token limit rather than assuming a universal
+ARM-capacity conversion. Confirm authorization before provisioning;
+
+17
+00:01:25,955 --> 00:01:28,972
+a local budget entry does not stop Azure billing.
+
+18
+00:01:29,972 --> 00:01:37,718
+Apply the authorized plan to create the Foundry account and project,
+model deployments, Search, Application Insights and the log
+
+19
+00:01:37,718 --> 00:01:38,323
+workspace.
+
+20
+00:01:38,323 --> 00:01:46,009
+An accepted creation request is not full readiness. Inspect the
+owned-resource status, then confirm all five runtime TPM checks
+
+21
+00:01:46,009 --> 00:01:47,582
+before making model calls.
+
+22
+00:01:47,582 --> 00:01:55,207
+Application Insights can add a default alert and action group.
+Verify their actual relationships and default receivers without
+
+23
+00:01:55,207 --> 00:01:57,809
+adopting or deleting a shared action group.
+
+24
+00:01:58,809 --> 00:02:05,048
+The model smoke command checks one short, real response. This
+confirms connectivity, not answer quality.
+
+25
+00:02:05,048 --> 00:02:12,727
+Next upload the eight language-matched synthetic policies and
+prepare the search index, knowledge base and read-only connection.
+
+26
+00:02:12,727 --> 00:02:20,347
+Do not confuse creation with successful retrieval. Confirm real
+references in the probe, and separately verify access under the
+
+27
+00:02:20,347 --> 00:02:25,026
+Agent's managed identity rather than assuming user access proves
+Agent access.
+
+28
+00:02:26,026 --> 00:02:34,439
+Create the fixed version-one Agent with its policy tool. In the same
+owned environment, an identical configuration should be verified and
+
+29
+00:02:34,439 --> 00:02:36,220
+reused rather than recreated.
+
+30
+00:02:36,220 --> 00:02:43,835
+The service may return an equivalent tool-filter representation, but
+changes to tools or permissions must still be rejected.
+
+31
+00:02:43,835 --> 00:02:52,002
+Send the guide's example question and inspect answer, citations,
+route and needs human. Verify the real policy-tool call and document
+
+32
+00:02:52,002 --> 00:02:56,178
+identifiers. Valid JSON alone does not establish policy correctness.
+
+33
+00:02:57,178 --> 00:03:04,311
+Use the guide's dev12 JSONL without editing it. Verify its row count
+and hash, then register the first dataset version.
+
+34
+00:03:04,311 --> 00:03:12,463
+A five-row preview does not mean the complete dataset has only five
+items. Check all twelve in the source and in the eventual evaluation
+
+35
+00:03:12,463 --> 00:03:12,942
+results.
+
+36
+00:03:12,942 --> 00:03:20,735
+Query is the Agent's input. Context and ground truth are reference
+material, not text to append to that input. Editing the file or
+
+37
+00:03:20,735 --> 00:03:24,331
+embedding its answers in instructions breaks the comparison.
+
+38
+00:03:25,331 --> 00:03:32,471
+An evaluator and a Judge are different. The evaluator defines what
+to score; the Judge model performs that scoring.
+
+39
+00:03:32,471 --> 00:03:40,107
+Relevance passes at four or above on a five-point scale. Task
+Adherence is binary: one is a pass, not a low score and not a
+
+40
+00:03:40,107 --> 00:03:41,225
+threshold of four.
+
+41
+00:03:41,225 --> 00:03:49,482
+Relevance uses response text, while Task Adherence receives output
+items with conversation and tool context. Confirm the saved remote
+
+42
+00:03:49,482 --> 00:03:55,070
+mappings and actual Judge deployment, and do not move the thresholds
+after seeing results.
+
+43
+00:03:56,070 --> 00:04:04,072
+After reviewing the dataset and criteria, submit the baseline once.
+Steps four through six do not create three different evaluations.
+
+44
+00:04:04,072 --> 00:04:12,255
+In this English run, all twelve items completed and 12 passed every
+selected criterion. There were no errors or missing items, and every
+
+45
+00:04:12,255 --> 00:04:13,338
+score is retained.
+
+46
+00:04:13,338 --> 00:04:21,521
+Completed means processing ended, not that every answer is correct.
+Use the read-only lookup to record the evaluation ID and version-one
+
+47
+00:04:21,521 --> 00:04:25,131
+run ID. A long wait is not permission to submit a duplicate.
+
+48
+00:04:26,131 --> 00:04:33,486
+Connect each answer and scoring reason to the source policy. An
+average can hide date-boundary, citation or routing problems.
+
+49
+00:04:33,486 --> 00:04:41,253
+The English run's lowest Relevance scores were four, including the
+GPU-menu question. The answer correctly refused to pretend it had
+
+50
+00:04:41,253 --> 00:04:43,431
+inspected the screen or live service.
+
+51
+00:04:43,431 --> 00:04:51,080
+Preserve that honesty while making the supported conclusion and
+verification path clearer. Check document identifiers and response
+
+52
+00:04:51,080 --> 00:04:58,847
+structure separately; generic evaluator passes do not certify every
+business rule. Never repair the saved response to make it appear
+
+53
+00:04:58,847 --> 00:04:59,318
+correct.
+
+54
+00:05:00,318 --> 00:05:08,286
+In Agent Optimizer, select version one and the same dev12 dataset,
+and optimize instructions only. Leave model and tool-description
+
+55
+00:05:08,286 --> 00:05:11,024
+optimization off and limit candidates to two.
+
+56
+00:05:11,024 --> 00:05:19,053
+Assign the optimization and evaluation models to their separate
+roles, then run once. Inspect the actual instruction changes as well
+
+57
+00:05:19,053 --> 00:05:20,452
+as the internal scores.
+
+58
+00:05:20,452 --> 00:05:28,177
+A higher internal rank is not independent managed-evaluation
+improvement or production approval. Reject changes that embed case
+
+59
+00:05:28,177 --> 00:05:32,861
+answers or policy numbers, or replace honest uncertainty with
+invented facts.
+
+60
+00:05:33,861 --> 00:05:41,948
+Only create version two when there is a real instruction candidate
+worth reviewing, and reevaluate using the baseline's exact dataset
+
+61
+00:05:41,948 --> 00:05:43,650
+and evaluator configuration.
+
+62
+00:05:43,650 --> 00:05:51,555
+This run selected no different instruction candidate, so it retains
+version one. It does not claim that version two was created or
+
+63
+00:05:51,555 --> 00:05:54,838
+reevaluated, and follows the guide's retention branch.
+
+64
+00:05:54,838 --> 00:06:03,108
+For a comparison, explicitly choose version one as the baseline and
+review all twelve cases. Consider nonregression, actual improvement,
+
+65
+00:06:03,108 --> 00:06:11,134
+policy errors and cost tradeoffs together. Preserve inconclusive
+statistics, and never repeat unchanged candidates until a favorable
+
+66
+00:06:11,134 --> 00:06:12,046
+sample appears.
+
+67
+00:06:13,046 --> 00:06:21,024
+The last step is not unconditional deletion. This request explicitly
+retains the new resource group and its resources, so no deletion
+
+68
+00:06:21,024 --> 00:06:22,223
+command is executed.
+
+69
+00:06:22,223 --> 00:06:29,661
+Read the cleanup plan only, then confirm that the group still
+exists. Keep the private configuration, ownership manifest and
+
+70
+00:06:29,661 --> 00:06:32,960
+execution identifiers needed to reopen the environment.
+
+71
+00:06:32,960 --> 00:06:40,638
+Hand over shared monitoring dependencies and the possibility of
+continuing Search and log charges. Closing a browser or deleting
+
+72
+00:06:40,638 --> 00:06:43,157
+local records does not stop Azure billing.
+
+73
+00:06:44,157 --> 00:06:51,672
+You can now reopen the created project and Agent in the retained
+environment. Use the recorded names and versions rather than mixing
+
+74
+00:06:51,672 --> 00:06:53,949
+results from another account or dataset.
+
+75
+00:06:53,949 --> 00:07:01,179
+The point of the lab is not one high score. It is to inspect actual
+answers and reasons under fixed conditions, and review only
+
+76
+00:07:01,179 --> 00:07:02,887
+justified instruction changes.
+
+77
+00:07:02,887 --> 00:07:10,459
+Correct procedural errors in the reusable guide without inserting
+this run's verification history. This video is a separate execution
+
+78
+00:07:10,459 --> 00:07:15,583
+summary; finishing the lab does not grant production approval or
+guarantee future quality.

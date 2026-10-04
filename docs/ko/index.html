@@ -73,8 +73,7 @@
 <li><a href="index.html" aria-current="page">참가자 실습 가이드</a></li>
 <li><a href="facilitator.html">강사용 진행 가이드</a></li>
 <li><a href="admin.html">관리자 사전 준비</a></li>
-<li><a href="troubleshooting.html">실행 이슈·해결 기록</a></li>
-<li><a href="verification.html">최신 검증·출처</a></li>
+<li><a href="troubleshooting.html">문제 해결</a></li>
 <li><a href="data-guide.html">데이터 설명</a></li>
 <li><a href="print.html">부록 포함 인쇄본</a></li></ul></nav>
         </details>
@@ -355,6 +354,42 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifac
 <p>파일은 텍스트 편집기의 <strong>파일 열기</strong>로 확인합니다. <code>.lab</code>는 실습 기록 폴더이며 운영체제에 따라 숨김 폴더로 보일 수 있습니다. JSON은 설정을 <code>이름: 값</code>으로 저장하는 형식입니다. Word 문서로 변환하거나 파일 확장자를 바꾸지 않습니다.</p>
 <p>모델 역할은 <strong>답변 생성(Agent), 채점(Judge), 지침 제안·검색 계획(Optimizer/planner), 검색용 숫자 변환(embedding)</strong>으로 나눕니다. 여기서 모델 자체를 직접 개발하지는 않습니다.</p>
 <p>이 저장소의 기본 생성 지역은 <strong>North Central US (<code>northcentralus</code>)</strong>입니다. 기본 배포는 Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/검색 planner <code>gpt-5.5</code>, embedding <code>text-embedding-3-small</code>입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 <a href="admin.html#prepare">모델 표</a>와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.</p>
+<h3 id="resources-tpm">모델별 최소 권장 TPM을 확보합니다</h3>
+<p><strong>TPM(Tokens Per Minute)은 배포별 분당 토큰 처리 한도</strong>이며, 모델의 최대 입력 길이나 실제 처리 속도와는 다릅니다. 아래는 <strong>한 환경에서 평가·Optimizer를 한 번에 하나씩 실행하는 12문항 실습</strong>의 시작 기준입니다. 모든 요청에서 입증된 절대 최소치나 429 오류가 없다는 보장이 아니라, 평가기·검색 호출을 고려한 여유 포함 최소 권장값입니다.</p>
+<table>
+<thead>
+<tr>
+<th>역할·모델</th>
+<th style="text-align: right;">실습 시작 최소 권장 TPM</th>
+<th style="text-align: right;">새 기본 계획의 ARM 용량</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent · <code>gpt-6-sol</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr>
+<td>Judge · <code>gpt-6-luna</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr>
+<td>Optimizer / 검색 planner · <code>gpt-5.5</code></td>
+<td style="text-align: right;"><strong>100,000</strong></td>
+<td style="text-align: right;">100, 두 역할이 같은 배포를 공유</td>
+</tr>
+<tr>
+<td>Embedding · <code>text-embedding-3-small</code></td>
+<td style="text-align: right;"><strong>10,000</strong></td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+<p>새 <code>bootstrap plan</code>은 이 용량으로 계획을 만듭니다. <strong>ARM 용량은 모델·SKU별 단위</strong>이므로 다른 모델에 무조건 1,000을 곱하지 않습니다. 생성 후 실제 배포의 TPM을 아래 runtime preflight로 확인합니다. 구독에 남은 할당량이 있어도 해당 배포에 충분히 할당되지 않았다면 준비 완료가 아닙니다.</p>
+<p>기존 계획·배포는 자동으로 상향되지 않습니다. 준비된 환경의 설정과 승인 범위는 <a href="admin.html#throughput">운영자 TPM 설정 안내</a>로 확인합니다. <code>config.json</code>·승인서·manifest를 직접 고쳐 검사를 우회하지 않습니다.</p>
+<p><strong>여러 사용자가 같은 배포를 공유하거나 작업을 겹치면 추가 용량이 필요합니다.</strong> Azure는 실제 청구 토큰뿐 아니라 입력·최대 출력 설정으로 추정한 토큰을 제한에 반영하며, 별도의 <strong>RPM(분당 요청 수)</strong>·짧은 구간의 요청 집중도도 제한합니다. <a href="https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits">공식 TPM·RPM 설명</a>을 참고합니다.</p>
 <h3 id="resources-approval">준비 상태와 비용 승인을 확인합니다</h3>
 <pre><code class="language-sh">python -m lab bootstrap preflight --config .lab/lab-ko/config.json
 </code></pre>
@@ -372,7 +407,7 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 <ol>
 <li><a href="https://portal.azure.com">Azure Portal</a> → <strong>Resource groups</strong>에서 <code>config.json</code>의 <code>names.resource_group</code>을 검색합니다. 구독·지역·리소스 목록을 확인합니다.</li>
 <li><a href="https://ai.azure.com">Foundry</a>를 열고 <strong>New Foundry</strong>를 사용합니다. <strong>Select a project to continue</strong>가 나타나면 <code>names.project</code>와 같은 프로젝트를 선택하고 <strong>Let's go</strong>를 누릅니다. 환영 안내가 나타나면 읽고 <strong>Close</strong>로 닫습니다. 이미 New Foundry라면 좌측 상단 프로젝트 선택을 사용합니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.</li>
-<li>프로젝트의 <strong>Overview</strong>에서 endpoint를 확인합니다. <code>.env</code>의 <code>AZURE_AI_PROJECT_ENDPOINT</code>와 같은 <code>https://계정명.services.ai.azure.com/api/projects/프로젝트명</code> 형식이어야 합니다.</li>
+<li>프로젝트의 <strong>Home</strong>(일부 UI의 Overview)에서 <strong>Project endpoint</strong>를 확인합니다. <code>.env</code>의 <code>AZURE_AI_PROJECT_ENDPOINT</code>와 같은 <code>https://계정명.services.ai.azure.com/api/projects/프로젝트명</code> 형식이어야 합니다.</li>
 <li><strong>Models + endpoints</strong> 또는 <strong>Build → Models</strong>에서 <code>.env</code>의 <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, <code>EMBEDDING_DEPLOYMENT</code>에 대응하는 실제 배포를 확인합니다. 메뉴 명칭이 달라지면 <a href="admin.html#prepare">화면 위치 안내</a>를 참고합니다.</li>
 </ol>
 <figure class="portal-shot" id="portal-created-resources">
@@ -392,7 +427,8 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 
 <pre><code class="language-sh">python -m lab --config .lab/lab-ko/.env preflight
 </code></pre>
-<p class="completion-check"><strong>완료 기준:</strong> 런타임 preflight가 <code>PASS</code>이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.</p>
+<p><code>checks</code>의 <code>agent_tpm</code>, <code>judge_tpm</code>, <code>optimizer_tpm</code>, <code>iq_planner_tpm</code>, <code>embedding_tpm</code>을 확인합니다. 각 항목의 <code>observed</code>가 실제 배포 TPM, <code>expected</code>가 위 최소 권장값입니다. 부족하거나 토큰 제한을 확인할 수 없으면 <code>BLOCKED</code>이며 다음 호출 단계로 진행하지 않습니다. 설정을 준비한 뒤 같은 읽기 전용 preflight를 다시 실행합니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> 런타임 preflight 전체와 다섯 TPM 항목이 <code>PASS</code>이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.</p>
 <p class="step-next no-print"><a href="#agent" data-next-step>다음: 03. 정책 연결·Agent 생성 →</a></p>
 
 <h2 id="agent">03. 정책을 연결하고 Agent를 생성합니다</h2>
@@ -406,6 +442,7 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 <h3 id="agent-knowledge">모델과 정책 검색을 확인합니다</h3>
 <p class="note warning"><strong>이 세 명령은 실제 업로드·모델 호출을 수행하며 비용이 발생할 수 있습니다.</strong> 준비된 환경은 담당자가 확인한 결과를 인수하고 반복하지 않습니다. 직접 준비한다면 각 명령의 정상 결과를 확인한 뒤 다음 명령으로 이동합니다.</p>
 <p><strong>1. 모델이 실제로 응답하는지 확인합니다.</strong> <code>smoke</code>는 짧은 동작 확인입니다.</p>
+<p>먼저 <a href="#resources-tpm">02의 TPM 검사</a>를 통과해야 합니다. 짧은 응답 한 번의 성공만으로 전체 평가에 필요한 처리량을 확보했다고 판단하지 않습니다.</p>
 <pre><code class="language-sh">python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
 </code></pre>
 <p>출력의 <strong><code>status: completed</code></strong>를 확인합니다.</p>
@@ -755,8 +792,8 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 <p><strong>Agent Optimizer는 더 나은 지침을 제안하고 시험하는 기능</strong>입니다. <strong>후보(candidate)</strong>는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.</p>
 <ol>
 <li><strong>Build → Agents → lab-ko-iq → Optimize Preview/Optimize</strong>를 엽니다.</li>
-<li><strong>Agent</strong>를 선택합니다. 비용 최적화인 <strong>Cost</strong>는 이번 실습 대상이 아닙니다.</li>
-<li><strong>Create an optimization run / Create optimization run</strong>을 선택하고 아래 표대로 설정합니다. Preview는 미리 보기 기능이므로 메뉴나 모델이 없다면 <a href="troubleshooting.html#optimizer">Optimizer 오류 해결</a>을 확인하고 중단합니다.</li>
+<li><strong>Agent / Cost</strong> 선택 화면이 나타나면 <strong>Agent</strong>를 선택합니다. 비용 최적화인 <strong>Cost</strong>는 이번 실습 대상이 아닙니다.</li>
+<li>작업 목록의 <strong>Optimize</strong> 또는 <strong>Create an optimization run / Create optimization run</strong>을 선택하고 아래 표대로 설정합니다. Preview는 미리 보기 기능이므로 메뉴나 모델이 없다면 <a href="troubleshooting.html#optimizer">Optimizer 오류 해결</a>을 확인하고 중단합니다.</li>
 </ol>
 <table>
 <thead>
@@ -944,6 +981,10 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 <td>아래 전용 그룹 삭제 절차를 사용합니다. 그룹 안에 다른 업무 자원이 없고 삭제 승인을 받았는지 다시 확인합니다.</td>
 </tr>
 <tr>
+<td>보존하도록 승인받은 전용 환경</td>
+<td>삭제 명령을 실행하지 않습니다. 남은 자원·보존 이유·비용 담당자·보존 검토일을 기록하고 실제 자원이 남아 있는지 확인하여 인계합니다.</td>
+</tr>
+<tr>
 <td>운영자가 제공한 공유 프로젝트</td>
 <td><strong>리소스 그룹·Foundry·공유 모델·Search 서비스를 삭제하지 않습니다.</strong> 자신에게 할당된 객체만 정리하고 운영자에게 남은 자원을 인계합니다.</td>
 </tr>
@@ -967,6 +1008,7 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-group &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;[].{name:name,type:type}&quot; -o table
 </code></pre>
 <p><strong>그룹 전체 삭제는 되돌릴 수 없으며 그룹 안의 Foundry·모델·Search·모니터링 자원이 함께 삭제됩니다.</strong> 보관이 끝났고 정확한 그룹 전체를 삭제하도록 승인받은 경우에만 다음 두 방법 중 하나를 선택합니다.</p>
+<p>Application Insights의 기본 Smart Detection Action group은 다른 그룹의 경고에서도 공유할 수 있습니다. 전용 실습 그룹이라는 이유만으로 모든 항목이 독립적이라고 가정하지 않습니다. 공유 연결이 있으면 담당자와 종속성을 먼저 정리하거나 해당 그룹을 보존하며, 확인을 위해 경고·권한·잠금을 임의로 삭제하지 않습니다.</p>
 <ol>
 <li><strong>포털 방법:</strong> Azure Portal → Resource groups → 정확한 그룹 → <strong>Delete resource group</strong>을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.</li>
 <li><strong>CLI 방법:</strong> 다음 명령을 실행하고 확인 질문에서 이름·범위를 다시 확인한 뒤 동의합니다. <code>--yes</code>를 붙여 확인을 생략하지 않습니다.</li>
@@ -983,7 +1025,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </code></pre>
 <p>권한 오류·네트워크 오류는 <code>false</code>가 아니며 삭제 성공으로 처리하지 않습니다. <code>true</code>이면 삭제 진행 상태를 확인합니다. <strong>Locks</strong>, 권한, 다른 그룹의 종속 자원 때문에 실패하면 <a href="troubleshooting.html#cleanup">삭제 문제 해결</a>을 따릅니다. 조직이 설정한 잠금을 임의로 제거하지 않습니다.</p>
 <p>삭제 뒤 <strong>Cost Management → Cost analysis</strong>에서 해당 구독·기간·리소스 그룹을 확인합니다. 청구 반영에는 지연이 있으며 기존 사용 요금은 사라지지 않습니다. 별도 그룹의 로그·저장소나 서비스별 soft-delete 보존 항목은 따로 확인합니다. 영구 삭제/purge는 조직 정책과 별도 승인이 있을 때만 수행합니다.</p>
-<p class="completion-check"><strong>최종 완료 기준:</strong> 전용 그룹의 부재를 확인하고 삭제 시각을 기록했거나, 공유 자원의 남은 항목·이유·담당자·보존 종료일을 기록하여 인계했습니다. <code>.lab</code> 기록을 먼저 지워 소유권 근거를 잃지 않습니다. <a href="admin.html#cleanup">운영자 정리표</a> · <a href="troubleshooting.html#cleanup">삭제 문제 해결</a>을 참고합니다.</p>
+<p class="completion-check"><strong>최종 완료 기준:</strong> 삭제 승인된 전용 그룹의 부재와 삭제 시각을 확인했거나, 보존 승인된 전용·공유 자원의 남은 항목·이유·비용 담당자·보존 검토일을 기록하여 인계했습니다. <code>.lab</code> 기록을 먼저 지워 소유권 근거를 잃지 않습니다. <a href="admin.html#cleanup">운영자 정리표</a> · <a href="troubleshooting.html#cleanup">삭제 문제 해결</a>을 참고합니다.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>

@@ -12,18 +12,17 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ROOT = Path(__file__).resolve().parents[1]
 GUIDE_FILES = (
     "docs/index.html", "docs/facilitator.html", "docs/admin.html",
-    "docs/english.html", "docs/verification.html", "docs/troubleshooting.html", "docs/data-guide.html", "docs/print.html",
+    "docs/english.html", "docs/troubleshooting.html", "docs/data-guide.html", "docs/print.html",
     "docs/ko/index.html", "docs/ko/facilitator.html", "docs/ko/admin.html",
-    "docs/ko/verification.html", "docs/ko/troubleshooting.html", "docs/ko/data-guide.html", "docs/ko/print.html",
+    "docs/ko/troubleshooting.html", "docs/ko/data-guide.html", "docs/ko/print.html",
     "docs/Foundry-Learning-Loop-Lab-EN.pdf", "docs/Foundry-Learning-Loop-Lab-KO.pdf",
 )
 ROOT_FILES = (
     "README.md", "README.en.md", "README.ko.md", "index.html", "pyproject.toml", "requirements.lock",
     "requirements-verification.lock", ".env.example", ".gitignore", ".nojekyll",
     *GUIDE_FILES,
-    "evidence/latest.json",
 )
-SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra")
+SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra", "docs/media")
 ARCHIVE_ROOT = "foundry-evaluation-labs-v1.1"
 FIXED_TIME = (2026, 10, 3, 12, 0, 0)
 
@@ -49,16 +48,15 @@ def build_archive(root: Path, destination: Path) -> dict:
     files = package_files(root)
     required = (
         "README.md", "README.en.md", "README.ko.md", "index.html", *GUIDE_FILES,
-        ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
+        ".env.example", "requirements.lock", "guide/handbook.md",
     )
     missing = [name for name in required if root / name not in files]
     if missing:
         raise ValueError("Required deliverables are missing: " + ", ".join(missing))
     manifest = {
         "version": "1.1.0",
-        "guide_checked_date": "2026-10-03",
         "excluded": [".env", ".venv", ".lab", "artifacts", "credentials", "raw live evaluation/training results"],
-        "included_evidence": "Only evidence/latest.json and the current documentation screenshots.",
+        "included_media": "Guide illustrations and bilingual replay videos; private run records are excluded.",
         "files": {
             path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in files

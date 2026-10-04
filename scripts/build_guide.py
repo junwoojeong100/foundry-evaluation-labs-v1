@@ -51,14 +51,12 @@ DOCUMENTS = (
     Document("guide/en/handbook.md", "index.html", "Participant guide"),
     Document("guide/en/facilitator.md", "facilitator.html", "Facilitator guide"),
     Document("guide/en/admin-setup.md", "admin.html", "Operator setup"),
-    Document("guide/en/troubleshooting.md", "troubleshooting.html", "Execution issues and resolutions"),
-    Document("guide/en/verification.md", "verification.html", "Verification and sources"),
+    Document("guide/en/troubleshooting.md", "troubleshooting.html", "Troubleshooting"),
     Document("data/README.en.md", "data-guide.html", "Data guide"),
     Document("guide/handbook.md", "ko/index.html", "참가자 실습 가이드", "ko"),
     Document("guide/facilitator.md", "ko/facilitator.html", "강사용 진행 가이드", "ko"),
     Document("guide/admin-setup.md", "ko/admin.html", "관리자 사전 준비", "ko"),
-    Document("guide/troubleshooting.md", "ko/troubleshooting.html", "실행 이슈·해결 기록", "ko"),
-    Document("guide/verification.md", "ko/verification.html", "최신 검증·출처", "ko"),
+    Document("guide/troubleshooting.md", "ko/troubleshooting.html", "문제 해결", "ko"),
     Document("data/README.md", "ko/data-guide.html", "데이터 설명", "ko"),
 )
 DOCUMENT_LINKS = {

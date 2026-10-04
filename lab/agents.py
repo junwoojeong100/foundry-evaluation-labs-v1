@@ -34,6 +34,18 @@ def native_response_format() -> dict:
     }}
 
 
+def _definition_for_comparison(definition: dict) -> dict:
+    if not isinstance(definition, dict):
+        raise LabError("The service did not return an Agent definition.")
+    normalized = deepcopy(definition)
+    tools = normalized.get("tools")
+    if isinstance(tools, list):
+        for tool in tools:
+            if isinstance(tool, dict) and tool.get("type") == "mcp" and isinstance(tool.get("allowed_tools"), list):
+                tool["allowed_tools"] = {"tool_names": tool["allowed_tools"]}
+    return normalized
+
+
 def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, agent_name: str,
                          version: str, definition: dict, receipt: Path,
                          workspace_id: str | None = None) -> dict:
@@ -41,6 +53,7 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
         raise LabError("This workshop permits only released v1 and v2; use drafts for experiments.")
     if definition.get("kind") != "prompt" or not isinstance(definition.get("instructions"), str) or not definition["instructions"].strip():
         raise LabError("A nonempty prompt-agent definition is required.")
+    expected_definition = _definition_for_comparison(definition)
     intent = {
         "project_endpoint": project_endpoint, "agent_name": agent_name, "version": version,
         "definition_sha256": hashlib.sha256(
@@ -59,7 +72,7 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
     if existing is not None:
         if workspace_id is not None and (existing.get("metadata") or {}).get("workspace") != workspace_id:
             raise LabError("The existing Agent version belongs to a different workspace; no changes were made.")
-        if existing["definition"] != definition:
+        if _definition_for_comparison(existing["definition"]) != expected_definition:
             raise LabError("The released version is immutable and differs from this source; no new version was created.")
         record = {"intent": intent, "status": "verified", "agent": existing}
         if previous is None:
@@ -81,9 +94,9 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
     if version == "2":
         if workspace_id is not None and (releases[0].get("metadata") or {}).get("workspace") != workspace_id:
             raise LabError("The baseline Agent belongs to a different workspace; no changes were made.")
-        baseline = releases[0]["definition"]
+        baseline = _definition_for_comparison(releases[0]["definition"])
         if {key: value for key, value in baseline.items() if key != "instructions"} != {
-            key: value for key, value in definition.items() if key != "instructions"
+            key: value for key, value in expected_definition.items() if key != "instructions"
         }:
             raise LabError("V1 and v2 must keep the same model, tools and generation settings.")
         if baseline["instructions"] == definition["instructions"]:
@@ -101,7 +114,7 @@ def ensure_fixed_release(project: AIProjectClient, *, project_endpoint: str, age
     record.update(status="created", agent=created)
     save_json(receipt, record)
     if (
-        created["version"] != version or created["definition"] != definition
+        created["version"] != version or _definition_for_comparison(created["definition"]) != expected_definition
         or (workspace_id is not None and (created.get("metadata") or {}).get("workspace") != workspace_id)
     ):
         raise LabError("The created version differs from the requested fixed version; receipt preserved.")

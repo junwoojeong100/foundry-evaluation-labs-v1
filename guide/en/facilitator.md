@@ -1,6 +1,6 @@
 # Facilitator guide · improve the measured result {#facilitator-guide}
 
-[Ten participant steps](handbook.md#setup) · [Operator handoff](admin-setup.md#handoff) · [Execution issues](troubleshooting.md) · [Latest v2 verification](verification.md)
+[Ten participant steps](handbook.md#setup) · [Operator handoff](admin-setup.md#handoff) · [Troubleshooting](troubleshooting.md)
 
 Teach **evaluate → learn → improve → reevaluate** using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.
 
@@ -14,11 +14,11 @@ Start together with the [six basic terms](handbook.md#basics) and [question → 
 
 Steps 04–06 use one evaluation wizard, not three evaluations. Read one scored example together in 07 before independent analysis. If a group shares an Agent, assign one owner for v2 creation and paid submissions.
 
-New lab Agents use `lab-en-iq` or `lab-ko-iq`. Do not assume the historical `contoso-eval-en-sol` already exists in a new project. Verify [model roles and identity](admin-setup.md#prepare), and reserve time for cleanup in 10.
+New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare), and reserve time for cleanup in 10.
 
 Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.
 
-Keep English and Korean data/Agents separate. The Korean guide explains the procedure; the current published measurements are **English-data results only**.
+Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.
 
 ## Verify completion across all ten steps {#checkpoints}
 
@@ -31,9 +31,9 @@ Keep English and Korean data/Agents separate. The Korean guide explains the proc
 | 05 Criteria | Relevance 4, TaskAdherence 1, and the actual Judge | Saved remote definition and query-only input |
 | 06 Baseline | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | 07 Analysis | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
-| 08 Optimization | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file, and provenance |
-| 09 Reevaluation | Evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision |
-| 10 Cleanup | Preserve evidence, inspect scope, authorize, and delete | Dedicated-group absence or a shared-resource retention handoff |
+| 08 Optimization | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
+| 09 Reevaluation | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |
+| 10 Cleanup | Preserve results and ownership, then perform authorized deletion or retention | Authorized group deletion or an approved dedicated/shared-resource retention handoff |
 
 Use **Individual turns / One time / Existing dataset**. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.
 
@@ -43,7 +43,7 @@ Ask participants to connect **question → actual answer → evaluator score and
 
 Discuss at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer or substitute local scores.
 
-The latest public record includes all 12 synthetic questions, both actual responses and the managed evaluator reasons. Those results are not credentials. Exclude tokens, cookies, signed URLs and private account metadata, not unsuccessful outcomes.
+Keep the selected lab's twelve synthetic questions, actual responses and managed evaluator reasons in separate private run records. Preserve unsuccessful outcomes; remove tokens, cookies, signed URLs and private account metadata if results need to be shared.
 
 ## Interpret improvements correctly {#interpret-results}
 
@@ -87,12 +87,12 @@ After a timeout, identify **which existing job ID to resume** first. Use the [is
 | “The source schema certifies correct business decisions.” | It controls output structure, not policy truth or proper routing |
 | “Public evidence must include cookies and raw logs.” | Publish actual synthetic responses and reasons through an allowlist, not authentication data |
 
-## Finish with one current report {#finish}
+## Finish with a separate lab record {#finish}
 
 <a id="next-loop"></a>
 
-Publish **the latest v2 verification and its frozen v1 control**, not a sequence of obsolete current-version reports. Keep earlier raw receipts for audit without relabeling them as this pair.
+Hand over the actual environment, run IDs, comparison conditions and final decision privately. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.
 
 Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.
 
-**Before ending class, perform [the cleanup checks in 10](handbook.md#cleanup) together.** Confirm dedicated-group deletion or a named owner and deadline for retained shared resources. Hand off actual outcomes and issue records privately; do not delete ownership records first.
+**Before ending class, perform [the cleanup/retention checks in 10](handbook.md#cleanup) together.** Confirm authorized deletion or a cost owner and review date for retained resources. Do not delete the records needed to establish ownership or reopen the environment.

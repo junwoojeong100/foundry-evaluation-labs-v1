@@ -14,6 +14,7 @@ class PackageTests(unittest.TestCase):
                 *ROOT_FILES,
                 ".env.example", "requirements.lock", "guide/handbook.md", "evidence/latest.json",
                 "evidence/old-run/report.json", "evidence/old-screenshot.png",
+                "docs/media/Foundry-Lab-Replay-EN.mp4",
                 ".env", ".venv/private.txt", "artifacts/secret.json", "lab/code.py",
                 "lab/__pycache__/code.pyc", "lab/.secret", "guide/.hidden",
             ):
@@ -27,7 +28,8 @@ class PackageTests(unittest.TestCase):
             self.assertIn("docs/Foundry-Learning-Loop-Lab-KO.pdf", selected)
             self.assertTrue(set(GUIDE_FILES).issubset(selected))
             self.assertIn("README.ko.md", selected)
-            self.assertIn("evidence/latest.json", selected)
+            self.assertNotIn("evidence/latest.json", selected)
+            self.assertIn("docs/media/Foundry-Lab-Replay-EN.mp4", selected)
             self.assertNotIn("evidence/old-run/report.json", selected)
             self.assertNotIn("evidence/old-screenshot.png", selected)
             self.assertNotIn(".env", selected)

@@ -2,11 +2,47 @@
 
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 import subprocess
 from typing import Callable
+from urllib.parse import quote
 
 from lab.config import Config, LabError
+
+
+LAB_MINIMUM_TPM = {
+    "agent": 100_000,
+    "judge": 100_000,
+    "optimizer": 100_000,
+    "iq_planner": 100_000,
+    "embedding": 10_000,
+}
+
+
+def _tokens_per_minute(rate_limits: object) -> float:
+    if not isinstance(rate_limits, list) or any(not isinstance(limit, dict) for limit in rate_limits):
+        raise ValueError("Deployment rateLimits must be a list of named limits.")
+    token_limits = [limit for limit in rate_limits if limit.get("key") == "token"]
+    if not token_limits:
+        raise ValueError("No named token limit; TPM cannot be inferred from SKU capacity or request limits.")
+    values = []
+    for limit in token_limits:
+        count, period = limit.get("count"), limit.get("renewalPeriod")
+        if (
+            type(count) not in (int, float) or type(period) not in (int, float)
+            or count < 0 or period <= 0
+        ):
+            raise ValueError("Token limit count/renewalPeriod is missing or invalid.")
+        try:
+            finite = math.isfinite(count) and math.isfinite(period)
+            value = count * 60 / period
+        except OverflowError as exc:
+            raise ValueError("Token limit is outside the supported numeric range.") from exc
+        if not finite or not math.isfinite(value):
+            raise ValueError("Token limit cannot be normalized to a finite TPM value.")
+        values.append(value)
+    return min(values)
 
 
 def az_json(args: list[str]) -> object:
@@ -86,10 +122,36 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
     })
     deployment_map = {d["name"]: d for d in deployments}
     model_evidence = {}
-    for role, name in (
+    roles = (
         ("agent", config.model), ("judge", config.judge), ("optimizer", config.optimizer),
         ("iq_planner", config.planner), ("embedding", config.embedding),
-    ):
+    )
+    rate_limit_sources = {}
+    for name in dict.fromkeys(name for _, name in roles):
+        deployment = deployment_map.get(name)
+        if not deployment:
+            continue
+        limits = deployment.get("properties", {}).get("rateLimits")
+        source = "Azure CLI deployment metadata"
+        if not isinstance(limits, list) or not any(
+            isinstance(limit, dict) and limit.get("key") == "token" for limit in limits
+        ):
+            # Use raw ARM when CLI metadata lacks token/request labels instead of inferring TPM.
+            identifier = f"{config.account_id}/deployments/{quote(name, safe='')}"
+            deployment = run([
+                "rest", "--method", "GET", "--url",
+                f"https://management.azure.com{identifier}?api-version=2025-06-01",
+            ])
+            if (
+                not isinstance(deployment, dict) or deployment.get("name") != name
+                or str(deployment.get("id", "")).lower() != identifier.lower()
+                or not isinstance(deployment.get("properties"), dict)
+            ):
+                raise LabError("TPM 조회 응답이 요청한 모델 배포와 다릅니다.")
+            deployment_map[name] = deployment
+            source = "Raw ARM deployment metadata"
+        rate_limit_sources[name] = source
+    for role, name in roles:
         deployment = deployment_map.get(name)
         ready = deployment and deployment.get("properties", {}).get("provisioningState") == "Succeeded"
         checks.append({
@@ -97,10 +159,28 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
             "observed": name,
         })
         if deployment:
+            limits = deployment.get("properties", {}).get("rateLimits")
+            minimum_tpm = LAB_MINIMUM_TPM[role]
+            try:
+                observed_tpm = _tokens_per_minute(limits)
+                sufficient = observed_tpm >= minimum_tpm
+                reason = (
+                    "Meets the lab starting TPM requirement; RPM and shared load still apply."
+                    if sufficient else
+                    f"Allocate at least {minimum_tpm:,} TPM with operator approval, then rerun preflight."
+                )
+            except ValueError as exc:
+                observed_tpm, sufficient, reason = None, False, str(exc)
+            checks.append({
+                "name": f"{role}_tpm", "status": "PASS" if sufficient else "BLOCKED",
+                "observed": observed_tpm, "expected": minimum_tpm, "reason": reason,
+            })
             model_evidence[role] = {
                 "deployment": name,
                 "model": deployment.get("properties", {}).get("model"),
                 "sku": deployment.get("sku"),
+                "tokens_per_minute": observed_tpm,
+                "rate_limit_source": rate_limit_sources[name],
             }
         if role == "iq_planner":
             observed_model = (deployment or {}).get("properties", {}).get("model", {}).get("name")
@@ -139,6 +219,7 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
             "Foundry IQ 지식 베이스 생성·검색 권한",
             "Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한",
             "GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.",
+            "TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.",
         ],
     }
 

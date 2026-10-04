@@ -24,7 +24,7 @@ PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "pri
 STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
 SUBSTEPS = {
     "setup": ["setup-account", "setup-local", "setup-login"],
-    "resources": ["resources-plan", "resources-approval", "resources-create"],
+    "resources": ["resources-plan", "resources-tpm", "resources-approval", "resources-create"],
     "agent": ["agent-knowledge", "agent-create"],
     "cleanup": ["cleanup-records", "cleanup-scope", "cleanup-delete"],
 }
@@ -198,46 +198,49 @@ class DocumentationTests(unittest.TestCase):
         for name in PAGES:
             self.assertTrue((SITE / name).is_file(), name)
 
-    def test_only_the_current_verification_record_is_published(self):
-        self.assertEqual(
-            {path.relative_to(ROOT / "evidence").as_posix() for path in (ROOT / "evidence").rglob("*") if path.is_file()},
-            {"latest.json"},
-        )
-        latest = json.loads((ROOT / "evidence/latest.json").read_text())
-        self.assertEqual(latest["schema_version"], 1)
-        for name in ("README.md", "README.en.md", "README.ko.md"):
-            self.assertIn("evidence/latest.json", (ROOT / name).read_text())
+    def test_run_specific_verification_reports_are_not_published(self):
+        for name in (
+            "evidence/latest.json", "guide/verification.md", "guide/en/verification.md",
+            "docs/verification.html", "docs/ko/verification.html", "prompts/en/optimized.txt",
+        ):
+            self.assertFalse((ROOT / name).exists(), name)
+        self.assertTrue(all(document.key != "verification" for document in DOCUMENTS))
+        sources = [ROOT / document.source for document in DOCUMENTS]
+        sources.extend(ROOT / name for name in ("README.md", "README.en.md", "README.ko.md"))
+        for source in sources:
+            with self.subTest(source=source):
+                text = source.read_text()
+                self.assertNotIn("evidence/latest.json", text)
+                self.assertNotIn("verification.md", text)
+                self.assertNotRegex(text, r"\b(?:evalrun|opt)_[0-9a-f]{24,}\b")
+                self.assertNotIn("onboarding_capture_verification", text)
 
-    def test_latest_v2_publishes_every_case_without_obsolete_reports(self):
-        latest = json.loads((ROOT / "evidence/latest.json").read_text())
-        self.assertEqual(latest["kind"], "LATEST_SOL_V2_MANAGED_EVALUATION")
-        self.assertEqual(latest["models"]["agent"]["name"], "gpt-6-sol")
-        self.assertEqual(latest["scope"]["released_versions"], ["1", "2"])
-        self.assertEqual(latest["baseline"]["agent_version"], "1")
-        self.assertEqual(latest["candidate"]["agent_version"], "2")
-        self.assertEqual(latest["agent"]["active_lab_version"], "2")
-        self.assertNotIn("follow_up_refinement", latest)
-        self.assertNotIn("native_foundry", latest)
-        self.assertFalse(latest["decision"]["guarantees_future_results"])
-        self.assertEqual(latest["decision"]["production_approval"], "NOT_GRANTED")
-        dataset = [json.loads(line) for line in (ROOT / "data/en/optimizer/dev.jsonl").read_text().splitlines()]
-        self.assertEqual(len(latest["case_evidence"]), len(dataset))
-        for expected, actual in zip(dataset, latest["case_evidence"], strict=True):
-            self.assertEqual(expected["query"], actual["query"])
-            self.assertEqual(expected["context"], actual["reference_context"])
-            self.assertEqual(expected["ground_truth"], actual["reference_answer"])
-            for arm in ("baseline", "candidate"):
-                self.assertTrue(actual[arm]["response"])
-                self.assertEqual(set(actual[arm]["metrics"]), {"Relevance", "TaskAdherence"})
-                for metric in actual[arm]["metrics"].values():
-                    self.assertTrue(metric["reason"])
-                    self.assertIs(type(metric["passed"]), bool)
-                self.assertNotIn("conversation_id", actual[arm])
-        for edition in ("guide/verification.md", "guide/en/verification.md"):
-            text = (ROOT / edition).read_text()
-            self.assertIn(latest["candidate"]["run_id"], text)
-            self.assertNotIn("evalrun_edcc42822c0c4d27ad734b474379964e", text)
-            self.assertNotIn("evalrun_9609268e6d30446abc01c6b1fe2011d8", text)
+    def test_bilingual_videos_are_separate_from_reusable_guides(self):
+        for language in ("en", "ko"):
+            for family in ("Foundry-Lab-Replay", "Foundry-Portal-Walkthrough"):
+                with self.subTest(language=language, family=family):
+                    video = ROOT / f"docs/media/{family}-{language.upper()}.mp4"
+                    with video.open("rb") as stream:
+                        self.assertEqual(stream.read(8)[4:], b"ftyp")
+                    subtitles = video.with_suffix(".srt").read_text(encoding="utf-8")
+                    self.assertGreater(len(re.findall(r"(?m)^\d+$", subtitles)), 40 if family == "Foundry-Lab-Replay" else 30)
+                    if language == "ko":
+                        self.assertGreater(len(re.findall("[가-힣]", subtitles)), 1000)
+                    else:
+                        self.assertNotRegex(subtitles, "[가-힣]")
+                    for name in ("README.md", "README.ko.md"):
+                        self.assertIn(video.name, (ROOT / name).read_text())
+                    self.assertNotIn(video.name, self.source(language))
+
+    def test_current_portal_navigation_is_explicit_without_execution_history(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            folder = ROOT / ("guide/en" if language == "en" else "guide")
+            admin = (folder / "admin-setup.md").read_text(encoding="utf-8")
+            for label in ("**Home**", "**Agent / Cost**", "**Optimize**"):
+                self.assertIn(label, source)
+            self.assertIn("Details", admin)
+            self.assertIn("Tokens per Minute Rate Limit", admin)
 
     def test_removed_training_guides_do_not_return_in_any_edition(self):
         for name in ("guide/sft-appendix.md", "guide/en/sft-appendix.md", "docs/sft.html", "docs/ko/sft.html", "web/assets/portal/14-sft-job.png"):
@@ -252,6 +255,23 @@ class DocumentationTests(unittest.TestCase):
             with self.subTest(document=path.relative_to(ROOT)):
                 self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bSFT\b|sft-appendix|sft\.html|Supervised Fine.Tuning")
         self.assertTrue(all(document.key != "sft" for document in DOCUMENTS))
+
+    def test_tpm_requirements_and_readonly_check_are_documented_before_model_calls(self):
+        for language in ("en", "ko"):
+            with self.subTest(language=language):
+                source = self.source(language)
+                folder = ROOT / ("guide/en" if language == "en" else "guide")
+                admin = (folder / "admin-setup.md").read_text()
+                for term in (
+                    "{#resources-tpm}", "100,000", "10,000", "TPM", "RPM",
+                    "agent_tpm", "judge_tpm", "optimizer_tpm", "iq_planner_tpm", "embedding_tpm",
+                    "observed", "expected", "BLOCKED", "admin-setup.md#throughput",
+                ):
+                    self.assertIn(term, source)
+                self.assertLess(source.index("{#resources-tpm}"), source.index("smoke --run-id"))
+                for term in ("{#throughput}", "rateLimits", "key: token", "100,000", "10,000"):
+                    self.assertIn(term, admin)
+                self.assertNotIn("GlobalStandard 20", admin)
 
     def test_both_participant_guides_have_one_complete_ten_step_path(self):
         for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
@@ -390,11 +410,9 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("production" if language == "en" else "운영", source)
 
     def test_source_attribution_keeps_the_archived_repository_reference(self):
-        for name in ("guide/verification.md", "guide/en/verification.md"):
-            source = (ROOT / name).read_text()
-            references = re.findall(r"^\[source-workshop\]: (\S+)", source, re.MULTILINE)
-            self.assertEqual(len(references), 1)
-            self.assertIn("foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2", references[0])
+        source = (ROOT / "web/assets/NOTICE.txt").read_text()
+        reference = "https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2"
+        self.assertEqual(source.count(reference), 1)
 
     def test_all_rendered_links_and_fragments_resolve_without_private_paths(self):
         parsed = {}
@@ -479,13 +497,11 @@ class DocumentationTests(unittest.TestCase):
         }
         for language, directory in directories.items():
             manifest = json.loads((directory / "captures.json").read_text())
-            self.assertTrue(manifest["headless_verified"])
+            self.assertIn("playwright", manifest["tool"].lower())
             self.assertEqual(manifest["data_language"], language)
             self.assertEqual(manifest["ui_language"], "en-US")
             if language == "not_applicable":
                 self.assertEqual(set(manifest["intended_guide_languages"]), {"en", "ko"})
-                self.assertFalse(manifest["new_paid_runs_submitted"])
-                self.assertFalse(manifest["cloud_configuration_changed"])
             captures = {item["file"]: item for item in manifest["screenshots"]}
             self.assertEqual(len(captures), len(manifest["screenshots"]))
             self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
@@ -637,51 +653,34 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotIn("verification.md", source)
 
     def test_provenance_remains_in_maintainer_references_not_learner_copy(self):
+        notice = (ROOT / "web/assets/NOTICE.txt").read_text()
+        self.assertIn("Playwright Headless", notice)
+        self.assertIn("captures.json", notice)
         for language in ("en", "ko"):
             folder = ROOT / "guide" / ("en" if language == "en" else "")
-            self.assertIn("Playwright Headless", (folder / "troubleshooting.md").read_text())
-            self.assertIn("captures.json", (folder / "verification.md").read_text())
+            self.assertNotIn("Playwright Headless", (folder / "troubleshooting.md").read_text())
+            self.assertFalse((folder / "verification.md").exists())
 
-    def test_onboarding_capture_provenance_keeps_cloud_changes_and_deletion_unsubmitted(self):
+    def test_capture_manifests_keep_asset_provenance_without_old_validation_history(self):
         for language in ("en", "ko"):
             directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
             text = (directory / "captures.json").read_text()
             manifest = json.loads(text)
-            observation = manifest["onboarding_capture_verification"]
-            self.assertTrue(observation["headless_user_agent_verified"])
-            self.assertEqual(observation["language_specific_new_screenshots"], 6)
-            self.assertEqual(observation["shared_administrative_screenshots"], 2)
-            for count in ("resource_count", "agent_count", "agent_version_count", "evaluation_count", "evaluation_run_count"):
-                self.assertEqual(observation[count + "_before"], observation[count + "_after"])
-            self.assertTrue(observation["resource_ids_agent_versions_and_run_ids_unchanged"])
-            for flag in (
-                "new_paid_runs_submitted", "agent_save_or_chat_submitted",
-                "resource_creation_or_deletion_submitted", "authentication_state_exported_to_disk",
-            ):
-                self.assertFalse(observation[flag])
-            self.assertTrue(observation["temporary_login_browser_closed"])
-            self.assertTrue(observation["authenticated_headless_context_closed"])
+            self.assertNotIn("onboarding_capture_verification", manifest)
+            self.assertNotIn("additional_capture_verification", manifest)
+            self.assertNotIn("new_paid_runs_submitted", manifest)
+            self.assertNotIn("cloud_configuration_changed", manifest)
             captures = {item["file"]: item for item in manifest["screenshots"]}
             for filename in ONBOARDING_IMAGES:
-                self.assertEqual(captures[filename]["capture_session_date"], "2026-10-03")
-            deletion = captures["28-delete-review.png"]
-            self.assertTrue(deletion["confirmation_empty"])
-            self.assertTrue(deletion["final_delete_disabled"])
-            self.assertFalse(deletion["deletion_submitted"])
-            agent = captures["27-agent-configuration.png"]
-            self.assertEqual(agent["agent_version"], "1")
-            self.assertTrue(agent["save_disabled"])
-            self.assertFalse(agent["chat_submitted"])
+                self.assertIn(filename, captures)
+                self.assertTrue(captures[filename]["capture_session_date"])
+                self.assertNotIn("instructions_sha256", captures[filename])
             self.assertNotRegex(text, r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|/Users/|Bearer |sig=")
-        english = json.loads((ROOT / "web/assets/portal/en/captures.json").read_text())
-        agent = next(item for item in english["screenshots"] if item["file"] == "27-agent-configuration.png")
-        self.assertEqual(agent["instructions_sha256"], hashlib.sha256((ROOT / "prompts/en/baseline.txt").read_bytes()).hexdigest())
 
     def test_reference_format_is_attributed_without_changing_the_lab_contract(self):
         reference = "https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html"
+        self.assertIn(reference, (ROOT / "web/assets/NOTICE.txt").read_text())
         for language in ("en", "ko"):
-            folder = ROOT / "guide" / ("en" if language == "en" else "")
-            self.assertIn(reference, (folder / "verification.md").read_text())
             source = self.source(language)
             self.assertIn("Active", source)
             self.assertIn("Enabled", source)
@@ -804,21 +803,25 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotIn("purge", block)
                 self.assertNotIn("rm -rf", block)
 
-    def test_issue_records_are_bilingual_packaged_and_keep_measurement_boundaries(self):
+    def test_troubleshooting_is_bilingual_packaged_and_not_a_validation_log(self):
         for language in ("en", "ko"):
             document = next(item for item in documents_for(language) if item.key == "troubleshooting")
             source = (ROOT / document.source).read_text()
             for required in (
-                "2026-10-03", "Unable to create data source configuration from item schema",
+                "Unable to create data source configuration from item schema",
                 "native-evals", "native-agent", "receipt", "403", "Inconclusive",
                 "repair-dependencies", "repair-trace-routing",
             ):
                 self.assertIn(required, source)
             self.assertIn(document.output, (ROOT / "scripts/package_lab.py").read_text())
-        self.assertEqual(
-            json.loads((ROOT / "evidence/latest.json").read_text())["guide_reference_date"],
-            "2026-10-01",
-        )
+            self.assertNotRegex(source, r"\{#(?:verification|beginner-review|portal-captures)\}")
+
+    def test_retention_and_shared_monitoring_are_explicit_in_both_guides(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            self.assertIn("Smart Detection", source)
+            self.assertIn("LOCAL_PLAN_ONLY", source)
+            self.assertIn("approved for retention" if language == "en" else "보존 승인", source)
 
 
 if __name__ == "__main__":

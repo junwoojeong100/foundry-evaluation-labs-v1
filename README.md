@@ -2,7 +2,7 @@
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
-**Follow ten steps from your first Azure environment checks to verified resource deletion.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
+**Follow ten steps from your first Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
 
 > Account, tools, and access → Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
 
@@ -14,29 +14,21 @@ Start at 01 for first-time setup. The guide includes Windows PowerShell and macO
 
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
 
-**[Execution issues and resolutions](guide/en/troubleshooting.md)** distinguish this revision's read-only checks from historical paid measurements. The results below are not a new Korean execution.
+## Fixed model roles and comparison conditions
 
-## One current Sol v1/v2 comparison
-
-| Role | Verified model/version |
+| Role | Planned model/version |
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
 | Foundry Evaluation Judge | **gpt-6-luna / 2026-09-22** |
 | Agent Optimizer generator | **gpt-5.5 / 2026-04-24** |
 
-The English Agent is **`contoso-eval-en-sol`**. V1/v2 are complete immutable Agent versions; in this comparison **only their instructions differ**. The model, tools, reasoning, strict JSON output schema, dataset and evaluators stay fixed. V1 is already a strong baseline, not deliberately weakened.
+New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. Never weaken v1 to manufacture improvement.
 
-Candidate development uses explicitly pinned drafts. `ensure_fixed_release` permits only released **1 and 2**, reuses identical releases and rejects changes that would silently create v3. The current v2 instructions are [here](prompts/en/optimized.txt), with the [v1 baseline](prompts/en/baseline.txt) kept separately.
-
-**[Latest v2 verification and v1 control](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html#status)** · **[Complete public case evidence](evidence/latest.json)**
-
-Only this current comparison is reported. It includes all **12 actual questions, both responses, evaluator scores and reasons**, including failures. Old raw receipts remain locally for audit; credentials, cookies, signed URLs and private account metadata are never published.
-
-The actual managed Optimizer retained v1 rather than automatically recommending its generated candidates. The selected v2 is an **operator-reviewed instruction refinement after that Optimizer run**, validated separately by managed Evaluation. It is not mislabeled as the service's automatically recommended candidate.
+`ensure_fixed_release` permits released versions **1 and 2**, reuses equivalent configurations, and rejects silent v3 creation or overwrites. Use the reviewed instructions from your own Optimizer job. Record any operator corrections separately from the original service output. If no different candidate is worth retaining, keep v1 and follow the retention/cleanup branch without inventing a v2 comparison.
 
 ## Fixed data and criteria
 
-Use unchanged **`data/en/optimizer/dev.jsonl`**, registered as `contoso-eval-en-dev12` version `1`. Its **12 JSONL records** contain `query`, `context`, and a JSON-string `ground_truth`. Only `query` reaches the Agent. Korean data remains separate; current published measurements are English, not a new Korean run.
+Use unchanged **`data/en/optimizer/dev.jsonl`** for English and **`data/optimizer/dev.jsonl`** for Korean. Register the selected language as `lab-en-dev12` or `lab-ko-dev12`, version `1`. The **12 JSONL records** contain `query`, `context`, and a JSON-string `ground_truth`. Only `query` reaches the Agent; never mix language corpora or run folders.
 
 | Managed evaluator | Scale and pass rule |
 |---|---|
@@ -55,18 +47,19 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 | Operator preparation | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) | [운영자](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) |
 | Facilitation and recovery | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
 | Data contract | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |
-| Latest v2 evidence | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) | [최신 검증](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) |
-| Execution issues and resolutions | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) | [이슈 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) |
+| Troubleshooting | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) | [문제 해결](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) |
 | Complete print edition | [Open](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) | [인쇄본](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) |
 | PDF | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) |
+| CLI/SDK lab replay | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) |
+| Actual portal walkthrough | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
+
+Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay execution records. The portal walkthroughs record the authenticated Azure/Foundry UI, with personal fields redacted, using existing resources and completed runs without resubmitting evaluations or optimization. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
 
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
 Participant sidebars show only the ten main steps. Detailed headings and direct links remain in the body; reference documents keep their own navigation.
 
-Portal pictures are labeled **UI illustrations from earlier captures**, not current Sol measurements. The latest report and its actual run IDs are the measurement source.
-
-Screenshot sets stay language-specific: English uses `web/assets/portal/en/` and Korean uses its lab captures in `web/assets/portal/`. Only language-neutral subscription/access controls share `web/assets/portal/shared/`. Each complete language edition contains **12 previous + 6 new language-specific + 2 shared = 20 screenshots**. The 14 new files were captured on 2026-10-03 with Playwright Headless, using existing resources and empty deletion-confirmation forms without creating, saving, chatting, or confirming deletion. Earlier pictures and measured output remain unchanged.
+Portal pictures illustrate UI locations; they are not a claim about your own run. English and Korean use their respective image sets, while subscription/access controls share `web/assets/portal/shared/`. Asset sources, privacy edits and illustration metadata are documented in [NOTICE](web/assets/NOTICE.txt) and the capture manifests.
 
 ## Execution boundaries
 
@@ -76,7 +69,7 @@ Runtime availability is role-specific. Verify the actual Agent/tool path and the
 
 Production publication is not part of the lab. Closing a browser does not stop resource costs. Preserve genuine failures and do not rerun an unchanged candidate until a favorable sample appears.
 
-Step 10 preserves results, checks ownership/scope, and obtains deletion authorization. `cleanup` removes recorded objects, not all Search/model/group hosting. Dedicated groups need separate deletion and an `az group exists` result of `false`; shared resources require an owner handoff.
+Step 10 preserves results and checks ownership and authorization. `cleanup` without confirmation only displays a plan; confirmed cleanup removes recorded objects, not all Search/model/group hosting. Authorized group deletion requires an `az group exists` result of `false`. Explicitly retained dedicated or shared resources require an inventory, cost owner and retention review date instead.
 
 ## Maintain the deliverables
 
@@ -94,6 +87,8 @@ English sources are `guide/en/*.md` and `data/README.en.md`; Korean sources are 
 
 Korean documentation, guidance, and error messages use a consistent formal register. Preserve verbatim measured responses, evaluator reasons, and evaluation-data quotations rather than editing evidence for prose style.
 
-Render both print editions as A4 PDFs with background graphics. Verify them with `python -m scripts.verify_pdf` and the dependencies in `requirements-verification.lock`; rebuild the allowlisted ZIP with `python scripts/package_lab.py`. Preserve historical service measurements in `evidence/latest.json` and record this revision's document/browser/PDF checks in `guide/en/troubleshooting.md`. Update service results only after an actual new execution.
+Render both print editions as A4 PDFs with background graphics. Verify them with `python -m scripts.verify_pdf` and the dependencies in `requirements-verification.lock`; build the allowlisted ZIP with `python scripts/package_lab.py`.
+
+Keep execution-specific scores, run IDs, validation logs and raw results in ignored private run folders, not in reusable guide sources. Correct a guide only when its instructions are wrong. Keep necessary ownership/configuration records for retained resources; remove superseded reports and temporary output without deleting cloud resources.
 
 GitHub Pages serves **main / repository root** with `.nojekyll`. Root `index.html` and legacy `docs/english.html` forward to English while preserving query strings and fragments.

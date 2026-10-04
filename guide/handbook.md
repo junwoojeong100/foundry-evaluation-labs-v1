@@ -237,6 +237,23 @@ python -m lab bootstrap plan --subscription "YOUR_SUBSCRIPTION_ID" --tenant "YOU
 
 이 저장소의 기본 생성 지역은 **North Central US (`northcentralus`)**입니다. 기본 배포는 Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/검색 planner `gpt-5.5`, embedding `text-embedding-3-small`입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 [모델 표](admin-setup.md#prepare)와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.
 
+### 모델별 최소 권장 TPM을 확보합니다 {#resources-tpm}
+
+**TPM(Tokens Per Minute)은 배포별 분당 토큰 처리 한도**이며, 모델의 최대 입력 길이나 실제 처리 속도와는 다릅니다. 아래는 **한 환경에서 평가·Optimizer를 한 번에 하나씩 실행하는 12문항 실습**의 시작 기준입니다. 모든 요청에서 입증된 절대 최소치나 429 오류가 없다는 보장이 아니라, 평가기·검색 호출을 고려한 여유 포함 최소 권장값입니다.
+
+| 역할·모델 | 실습 시작 최소 권장 TPM | 새 기본 계획의 ARM 용량 |
+|---|---:|---:|
+| Agent · `gpt-6-sol` | **100,000** | 100 |
+| Judge · `gpt-6-luna` | **100,000** | 100 |
+| Optimizer / 검색 planner · `gpt-5.5` | **100,000** | 100, 두 역할이 같은 배포를 공유 |
+| Embedding · `text-embedding-3-small` | **10,000** | 10 |
+
+새 `bootstrap plan`은 이 용량으로 계획을 만듭니다. **ARM 용량은 모델·SKU별 단위**이므로 다른 모델에 무조건 1,000을 곱하지 않습니다. 생성 후 실제 배포의 TPM을 아래 runtime preflight로 확인합니다. 구독에 남은 할당량이 있어도 해당 배포에 충분히 할당되지 않았다면 준비 완료가 아닙니다.
+
+기존 계획·배포는 자동으로 상향되지 않습니다. 준비된 환경의 설정과 승인 범위는 [운영자 TPM 설정 안내](admin-setup.md#throughput)로 확인합니다. `config.json`·승인서·manifest를 직접 고쳐 검사를 우회하지 않습니다.
+
+**여러 사용자가 같은 배포를 공유하거나 작업을 겹치면 추가 용량이 필요합니다.** Azure는 실제 청구 토큰뿐 아니라 입력·최대 출력 설정으로 추정한 토큰을 제한에 반영하며, 별도의 **RPM(분당 요청 수)**·짧은 구간의 요청 집중도도 제한합니다. [공식 TPM·RPM 설명](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits)을 참고합니다.
+
 ### 준비 상태와 비용 승인을 확인합니다 {#resources-approval}
 
 ```sh
@@ -266,7 +283,7 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 
 1. [Azure Portal](https://portal.azure.com) → **Resource groups**에서 `config.json`의 `names.resource_group`을 검색합니다. 구독·지역·리소스 목록을 확인합니다.
 2. [Foundry](https://ai.azure.com)를 열고 **New Foundry**를 사용합니다. **Select a project to continue**가 나타나면 `names.project`와 같은 프로젝트를 선택하고 **Let's go**를 누릅니다. 환영 안내가 나타나면 읽고 **Close**로 닫습니다. 이미 New Foundry라면 좌측 상단 프로젝트 선택을 사용합니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.
-3. 프로젝트의 **Overview**에서 endpoint를 확인합니다. `.env`의 `AZURE_AI_PROJECT_ENDPOINT`와 같은 `https://계정명.services.ai.azure.com/api/projects/프로젝트명` 형식이어야 합니다.
+3. 프로젝트의 **Home**(일부 UI의 Overview)에서 **Project endpoint**를 확인합니다. `.env`의 `AZURE_AI_PROJECT_ENDPOINT`와 같은 `https://계정명.services.ai.azure.com/api/projects/프로젝트명` 형식이어야 합니다.
 4. **Models + endpoints** 또는 **Build → Models**에서 `.env`의 `MODEL_DEPLOYMENT`, `JUDGE_DEPLOYMENT`, `OPTIMIZER_DEPLOYMENT`, `EMBEDDING_DEPLOYMENT`에 대응하는 실제 배포를 확인합니다. 메뉴 명칭이 달라지면 [화면 위치 안내](admin-setup.md#prepare)를 참고합니다.
 
 <figure class="portal-shot" id="portal-created-resources">
@@ -288,7 +305,9 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 python -m lab --config .lab/lab-ko/.env preflight
 ```
 
-**완료 기준:** 런타임 preflight가 `PASS`이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.
+`checks`의 `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, `embedding_tpm`을 확인합니다. 각 항목의 `observed`가 실제 배포 TPM, `expected`가 위 최소 권장값입니다. 부족하거나 토큰 제한을 확인할 수 없으면 `BLOCKED`이며 다음 호출 단계로 진행하지 않습니다. 설정을 준비한 뒤 같은 읽기 전용 preflight를 다시 실행합니다.
+
+**완료 기준:** 런타임 preflight 전체와 다섯 TPM 항목이 `PASS`이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#agent" data-next-step>다음: 03. 정책 연결·Agent 생성 →</a></p>
@@ -309,6 +328,8 @@ python -m lab --config .lab/lab-ko/.env preflight
 {: .note .warning}
 
 **1. 모델이 실제로 응답하는지 확인합니다.** `smoke`는 짧은 동작 확인입니다.
+
+먼저 [02의 TPM 검사](#resources-tpm)를 통과해야 합니다. 짧은 응답 한 번의 성공만으로 전체 평가에 필요한 처리량을 확보했다고 판단하지 않습니다.
 
 ```sh
 python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
@@ -583,8 +604,8 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 **Agent Optimizer는 더 나은 지침을 제안하고 시험하는 기능**입니다. **후보(candidate)**는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.
 
 1. **Build → Agents → lab-ko-iq → Optimize Preview/Optimize**를 엽니다.
-2. **Agent**를 선택합니다. 비용 최적화인 **Cost**는 이번 실습 대상이 아닙니다.
-3. **Create an optimization run / Create optimization run**을 선택하고 아래 표대로 설정합니다. Preview는 미리 보기 기능이므로 메뉴나 모델이 없다면 [Optimizer 오류 해결](troubleshooting.md#optimizer)을 확인하고 중단합니다.
+2. **Agent / Cost** 선택 화면이 나타나면 **Agent**를 선택합니다. 비용 최적화인 **Cost**는 이번 실습 대상이 아닙니다.
+3. 작업 목록의 **Optimize** 또는 **Create an optimization run / Create optimization run**을 선택하고 아래 표대로 설정합니다. Preview는 미리 보기 기능이므로 메뉴나 모델이 없다면 [Optimizer 오류 해결](troubleshooting.md#optimizer)을 확인하고 중단합니다.
 
 | 설정 | 선택 |
 |---|---|
@@ -730,6 +751,7 @@ helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 
 | 환경 | 정리 범위 |
 |---|---|
 | 02에서 자신만을 위해 만든 전용 리소스 그룹 | 아래 전용 그룹 삭제 절차를 사용합니다. 그룹 안에 다른 업무 자원이 없고 삭제 승인을 받았는지 다시 확인합니다. |
+| 보존하도록 승인받은 전용 환경 | 삭제 명령을 실행하지 않습니다. 남은 자원·보존 이유·비용 담당자·보존 검토일을 기록하고 실제 자원이 남아 있는지 확인하여 인계합니다. |
 | 운영자가 제공한 공유 프로젝트 | **리소스 그룹·Foundry·공유 모델·Search 서비스를 삭제하지 않습니다.** 자신에게 할당된 객체만 정리하고 운영자에게 남은 자원을 인계합니다. |
 | 생성·실습 중간에 중단한 환경 | `config.json`·manifest와 Azure의 실제 자원을 대조합니다. 실패했다고 자원이 없다고 가정하지 않습니다. |
 
@@ -760,6 +782,8 @@ az resource list --subscription "YOUR_SUBSCRIPTION_ID" --resource-group "YOUR_LA
 
 **그룹 전체 삭제는 되돌릴 수 없으며 그룹 안의 Foundry·모델·Search·모니터링 자원이 함께 삭제됩니다.** 보관이 끝났고 정확한 그룹 전체를 삭제하도록 승인받은 경우에만 다음 두 방법 중 하나를 선택합니다.
 
+Application Insights의 기본 Smart Detection Action group은 다른 그룹의 경고에서도 공유할 수 있습니다. 전용 실습 그룹이라는 이유만으로 모든 항목이 독립적이라고 가정하지 않습니다. 공유 연결이 있으면 담당자와 종속성을 먼저 정리하거나 해당 그룹을 보존하며, 확인을 위해 경고·권한·잠금을 임의로 삭제하지 않습니다.
+
 1. **포털 방법:** Azure Portal → Resource groups → 정확한 그룹 → **Delete resource group**을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.
 2. **CLI 방법:** 다음 명령을 실행하고 확인 질문에서 이름·범위를 다시 확인한 뒤 동의합니다. `--yes`를 붙여 확인을 생략하지 않습니다.
 
@@ -782,5 +806,5 @@ az group exists --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_
 
 삭제 뒤 **Cost Management → Cost analysis**에서 해당 구독·기간·리소스 그룹을 확인합니다. 청구 반영에는 지연이 있으며 기존 사용 요금은 사라지지 않습니다. 별도 그룹의 로그·저장소나 서비스별 soft-delete 보존 항목은 따로 확인합니다. 영구 삭제/purge는 조직 정책과 별도 승인이 있을 때만 수행합니다.
 
-**최종 완료 기준:** 전용 그룹의 부재를 확인하고 삭제 시각을 기록했거나, 공유 자원의 남은 항목·이유·담당자·보존 종료일을 기록하여 인계했습니다. `.lab` 기록을 먼저 지워 소유권 근거를 잃지 않습니다. [운영자 정리표](admin-setup.md#cleanup) · [삭제 문제 해결](troubleshooting.md#cleanup)을 참고합니다.
+**최종 완료 기준:** 삭제 승인된 전용 그룹의 부재와 삭제 시각을 확인했거나, 보존 승인된 전용·공유 자원의 남은 항목·이유·비용 담당자·보존 검토일을 기록하여 인계했습니다. `.lab` 기록을 먼저 지워 소유권 근거를 잃지 않습니다. [운영자 정리표](admin-setup.md#cleanup) · [삭제 문제 해결](troubleshooting.md#cleanup)을 참고합니다.
 {: .completion-check}

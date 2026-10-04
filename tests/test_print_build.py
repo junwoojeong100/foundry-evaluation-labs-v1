@@ -29,7 +29,7 @@ def source_fixtures() -> dict[str, str]:
             f"# {document.label}\n\n## 시작 {{#start}}\n\n"
             f"[이 문서](#start) [참가자]({targets['index']}#start) "
             f"[강사]({targets['facilitator']}#start)\n\n"
-            f"[관리자]({targets['admin']}) [검증]({targets['verification']}) "
+            f"[관리자]({targets['admin']}) [문제 해결]({targets['troubleshooting']}) "
             f"[데이터]({targets['data-guide']}#start)\n\n"
             f"[코드 파일]({prefix}scripts/demo.py) [평가 데이터]({prefix}data/splits/test.jsonl)\n\n"
             "[공식 문서](https://learn.microsoft.com/azure/foundry/)\n\n"
@@ -102,7 +102,7 @@ class PrintBuildTests(unittest.TestCase):
         for target in ("index", "facilitator", "data-guide"):
             self.assertIn(f'href="#book-{target}--start"', self.rendered)
         self.assertIn('href="#book-admin"', self.rendered)
-        self.assertIn('href="#book-verification"', self.rendered)
+        self.assertIn('href="#book-troubleshooting"', self.rendered)
         self.assertNotIn('href="facilitator.html', self.rendered)
         self.assertNotIn('href="guide/', self.rendered)
         self.assertIn('href="https://learn.microsoft.com/azure/foundry/"', self.rendered)
@@ -157,8 +157,8 @@ class PrintBuildTests(unittest.TestCase):
 
     def test_missing_sources_and_broken_book_anchors_fail_explicitly(self) -> None:
         missing = dict(self.sources)
-        del missing["guide/verification.md"]
-        with self.assertRaisesRegex(ValueError, "guide/verification.md"):
+        del missing["guide/troubleshooting.md"]
+        with self.assertRaisesRegex(ValueError, "guide/troubleshooting.md"):
             build_print.render_book(missing, self.template)
         broken = dict(self.sources)
         broken["guide/en/handbook.md"] += "\n\n[없는 제목](facilitator.md#missing)\n"
@@ -197,7 +197,7 @@ class PrintBuildTests(unittest.TestCase):
         )
 
     def test_missing_source_stops_book_command_without_writing(self) -> None:
-        with patch.object(build_guide, "read_sources", side_effect=ValueError("필수 원문이 없습니다: guide/verification.md")), \
+        with patch.object(build_guide, "read_sources", side_effect=ValueError("필수 원문이 없습니다: guide/troubleshooting.md")), \
              patch.object(Path, "open") as output_open, \
              redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             self.assertEqual(build_print.main([]), 2)

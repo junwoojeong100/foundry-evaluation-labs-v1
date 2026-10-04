@@ -59,6 +59,17 @@ class NativeComparisonTests(unittest.TestCase):
         self.assertNotIn("private.example.invalid", json.dumps(report))
         self.assertNotIn("sample.output_items", json.dumps(report))
         self.assertEqual(report["arms"]["candidate"]["agent_tokens"], 200)
+        self.assertEqual(report["language"], "en")
+
+    def test_explicit_korean_comparison_is_not_mislabeled_as_english(self):
+        report = compare_pair(**fixture(), language="ko")
+        self.assertEqual(report["language"], "ko")
+        self.assertEqual(report["cases"][0]["query"], "Synthetic unit question")
+        self.assertTrue(report["decision"]["measured_quality_improved_without_regression"])
+
+    def test_unknown_comparison_language_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "language"):
+            compare_pair(**fixture(), language="unknown")
 
     def test_equal_results_are_not_an_improvement(self):
         data = fixture()

@@ -47,6 +47,66 @@ class FixedAgentVersionTests(unittest.TestCase):
             self.invoke(project, "3", Path(directory) / "v3.json")
         project.agents.create_version.assert_not_called()
 
+    def test_service_normalized_mcp_filter_is_equivalent_without_changing_the_receipt_intent(self):
+        definition = {
+            **self.definition,
+            "tools": [{"type": "mcp", "server_label": "policies", "allowed_tools": ["knowledge_base_retrieve"]}],
+        }
+        normalized = deepcopy(definition)
+        normalized["tools"][0]["allowed_tools"] = {"tool_names": ["knowledge_base_retrieve"]}
+        stored = agent("1", normalized)
+        agents = SimpleNamespace(
+            get_version=Mock(side_effect=[ResourceNotFoundError(), stored]),
+            list_versions=Mock(return_value=[]), create_version=Mock(return_value=stored),
+        )
+        with TemporaryDirectory() as directory:
+            receipt = Path(directory) / "v1.json"
+            first = self.invoke(SimpleNamespace(agents=agents), "1", receipt, definition)
+            second = self.invoke(SimpleNamespace(agents=agents), "1", receipt, definition)
+        self.assertEqual(first["intent"], second["intent"])
+        self.assertEqual(definition["tools"][0]["allowed_tools"], ["knowledge_base_retrieve"])
+        self.assertEqual(second["agent"]["definition"], normalized)
+        agents.create_version.assert_called_once()
+
+    def test_filter_normalization_does_not_hide_changed_tools_or_permissions(self):
+        definition = {
+            **self.definition,
+            "tools": [{"type": "mcp", "server_label": "policies", "allowed_tools": ["knowledge_base_retrieve"]}],
+        }
+        for allowed in (
+            {"tool_names": ["another_tool"]},
+            {"tool_names": ["knowledge_base_retrieve", "another_tool"]},
+            {"tool_names": ["knowledge_base_retrieve"], "read_only": True},
+            None,
+        ):
+            changed = deepcopy(definition)
+            changed["tools"][0]["allowed_tools"] = allowed
+            project = SimpleNamespace(agents=SimpleNamespace(
+                get_version=Mock(return_value=agent("1", changed)), create_version=Mock(),
+            ))
+            with self.subTest(allowed=allowed), TemporaryDirectory() as directory, self.assertRaisesRegex(LabError, "immutable"):
+                self.invoke(project, "1", Path(directory) / "v1.json", definition)
+            project.agents.create_version.assert_not_called()
+
+    def test_v2_preserves_equivalent_service_normalized_mcp_filters(self):
+        definition = {
+            **self.definition,
+            "tools": [{"type": "mcp", "allowed_tools": ["knowledge_base_retrieve"]}],
+        }
+        baseline = deepcopy(definition)
+        baseline["tools"][0]["allowed_tools"] = {"tool_names": ["knowledge_base_retrieve"]}
+        candidate = {**deepcopy(definition), "instructions": "Reviewed candidate"}
+        returned = {**deepcopy(baseline), "instructions": candidate["instructions"]}
+        agents = SimpleNamespace(
+            get_version=Mock(side_effect=ResourceNotFoundError()),
+            list_versions=Mock(return_value=[agent("1", baseline)]),
+            create_version=Mock(return_value=agent("2", returned)),
+        )
+        with TemporaryDirectory() as directory:
+            result = self.invoke(SimpleNamespace(agents=agents), "2", Path(directory) / "v2.json", candidate)
+        self.assertEqual(result["agent"]["definition"], returned)
+        agents.create_version.assert_called_once()
+
     def test_immutable_v2_cannot_be_silently_replaced_or_incremented(self):
         existing = agent("2", {**self.definition, "instructions": "Existing v2"})
         project = SimpleNamespace(agents=SimpleNamespace(

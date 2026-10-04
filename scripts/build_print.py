@@ -18,7 +18,7 @@ if __package__:
 else:
     import build_guide as guide
 
-BOOK_ORDER = ("index", "facilitator", "admin", "troubleshooting", "verification", "data-guide")
+BOOK_ORDER = ("index", "facilitator", "admin", "troubleshooting", "data-guide")
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
 
 

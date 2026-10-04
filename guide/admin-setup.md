@@ -1,6 +1,6 @@
 # 운영자 준비·승인·정리 안내 {#operator-guide}
 
-[처음부터 진행하는 10단계](handbook.md#setup) · [강사 안내](facilitator.md#prepare) · [실행 이슈](troubleshooting.md) · [최신 v2 검증](verification.md)
+[처음부터 진행하는 10단계](handbook.md#setup) · [강사 안내](facilitator.md#prepare) · [문제 해결](troubleshooting.md)
 
 이 문서는 참가자 가이드의 **02 생성 승인, 03 Agent 준비, 10 삭제**에 필요한 운영자 참고 자료입니다. 직접 준비하는 참가자도 사용할 수 있습니다. 실습을 시작할 수 없는 빈칸을 남기지 않도록 실제 값과 완료 상태를 인수표에 기록합니다.
 
@@ -29,12 +29,30 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인합니다. 다른 
 
 | 역할 | 설정 키 | 기본 모델·버전 |
 |---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 20입니다. |
-| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 20입니다. |
-| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 GlobalStandard 20 배포를 사용합니다. |
+| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 100입니다. |
+| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 100입니다. |
+| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 GlobalStandard 100 배포를 사용합니다. |
 | 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10입니다. |
 
 숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
+
+**관측 리소스의 추가 항목을 구분합니다.** Application Insights는 [기본 Failure Anomalies 경고와 Smart Detection Action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation)을 자동으로 추가할 수 있습니다. bootstrap은 경고가 자신의 Application Insights만 대상으로 하는지, 연결된 Action group이 기본 역할 수신자만 사용하는지 읽기 전용으로 확인합니다. 이름만 같은 항목을 인수하지 않으며, 다른 그룹의 공유 Action group도 변경·삭제하지 않습니다. 생성 중 연결이 아직 확인되지 않으면 같은 `bootstrap status`로 다시 확인하고 manifest를 편집하거나 경고를 삭제하여 우회하지 않습니다.
+
+### TPM을 설정한 뒤 호출을 시작합니다 {#throughput}
+
+[참가자 02의 최소 권장값](handbook.md#resources-tpm)은 Agent·Judge·Optimizer/planner 배포별 **100,000 TPM**, embedding **10,000 TPM**입니다. 한 환경에서 작업을 순차 실행하는 기준이며, 모델·SKU·지역별 할당량은 별개입니다. 영어·한국어 환경을 동시에 준비하면 각 모델에 두 환경의 할당량을 합산하고, 같은 배포를 공유하는 두 역할을 별도 배포 두 개로 계산하지 않습니다.
+
+1. **새 전용 환경:** 최신 코드의 `bootstrap plan`에서 생성 배포 용량 100·embedding 10을 확인하고 그 정확한 계획으로 승인·생성을 진행합니다. 과거 계획은 자동 변경되지 않습니다. 아직 생성하지 않은 낮은 용량의 계획이 있다면 직접 편집하지 말고 새 환경 이름으로 계획·승인을 준비합니다.
+2. **별도로 관리하는 준비된 배포:** 배포 소유 운영자가 Foundry **Build → Models → Deployments → 배포 이름 → Details**에서 **Tokens per Minute Rate Limit**을 확인합니다. 변경이 승인된 경우에만 **Edit**으로 위 값 이상을 설정합니다. 화면이 천 토큰 단위로 표시되면 최종 TPM 표시도 확인하고 저장·전파를 기다립니다. **bootstrap으로 관리하는 기존 환경은 포털에서만 용량을 바꾸면 계획과 불일치합니다.** 해시·승인서를 고쳐 우회하지 말고, 필요하면 충분한 용량으로 새로 승인한 전용 환경을 준비합니다.
+3. **설정 확인:** 해당 환경의 `.env`와 언어별 artifacts 경로로 다음 읽기 전용 검사를 실행합니다. `*_tpm`의 `observed`·`expected`와 `reason`을 확인합니다.
+
+```sh
+python -m lab --config .lab/lab-ko/.env preflight
+```
+
+전체 `status: PASS`와 다섯 TPM 항목의 `PASS` 뒤에만 03의 smoke·검색 및 이후 평가·Optimizer로 진행합니다. 검사기는 실제 배포의 `rateLimits` 중 `key: token`을 읽습니다. CLI가 이름표를 생략한 경우 같은 배포의 원시 ARM 메타데이터를 읽으며, 요청 수나 `sku.capacity`를 TPM으로 추정하지 않습니다. 확인 불가도 `BLOCKED`입니다.
+
+TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제한**도 적용됩니다. 입력·최대 출력 길이, 공유 사용자, 평가·최적화 동시 실행이 늘면 추가 여유를 산정합니다. 이 최소 권장값은 429 없는 실행을 보장하지 않습니다. [공식 제한 설명](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#understanding-rate-limits).
 
 [03의 실제 응답 확인](handbook.md#agent)으로 Agent와 `knowledge_base_retrieve` 호출을 확인합니다. Optimizer는 별도 [지원 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로 지원된다고 가정하지 않습니다.
 
@@ -80,9 +98,11 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | Agent | 같은 Sol 모델·버전, 도구, 추론, 엄격한 출력 스키마 |
 | 변경 대상 | 지침만 변경, 정식 버전은 v1/v2 |
 | Optimizer | Instruction만 선택, 모델·도구 설명 변경 끄기, 후보 수 제한 |
-| 공개 보고 | 최신 v2·고정 v1 대조군과 12건 전체의 민감정보 제거 결과 |
+| 실습 기록 | 같은 조건의 v1·후보와 12건 전체 결과를 비공개 실행 폴더에 보관하며 재사용 가이드와 분리 |
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
+
+별도 비교 도구 `scripts/compare_foundry_eval.py`는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택합니다. 직접 지정한 데이터셋과 실행 언어를 일치시키고 다른 언어의 결과를 재표기하지 않습니다.
 
 ### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
 
@@ -166,7 +186,7 @@ Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 �
 | 승인 | 계획 해시, 승인 만료·예산·후보 한도·보존 기간입니다. |
 | 종료 | 삭제 가능한 정확한 그룹/객체, 삭제 승인 담당자, 삭제 예정 시각입니다. 공유 자원 보존 여부도 기록합니다. |
 
-현재 리허설 결과는 [검증 기록](verification.md)에서 별도로 확인합니다. 원본 영어·한국어 데이터는 분리하며 영어 실측을 한국어 실행으로 바꾸어 표시하지 않습니다.
+원본 영어·한국어 데이터와 비공개 실습 기록을 분리하며 다른 언어의 결과를 새 실행으로 바꾸어 표시하지 않습니다.
 
 원본 서비스 파일에는 계정 메타데이터·토큰·서명된 URL이 포함될 수 있어 로컬에서 보관합니다. **합성 평가 결과 자체가 비밀인 것은 아닙니다.** 성공·실패를 모두 포함한 허용 필드만 공개하고, 불리한 결과가 아니라 자격 증명을 제외합니다. 과거 시도는 원본 감사 기록으로 보존하되 현재 버전 보고서에 계속 누적하지 않습니다.
 

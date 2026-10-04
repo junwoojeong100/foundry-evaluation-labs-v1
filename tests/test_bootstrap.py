@@ -319,6 +319,14 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(report["models"][0]["lifecycle"], ["GenerallyAvailable"])
         self.assertIn("model-specific", report["models"][0]["capacity_unit"])
 
+    def test_default_plan_allocates_the_lab_throughput_profile(self):
+        by_role = {role: model for model in self.config["models"] for role in model["roles"]}
+        for role in ("agent", "judge", "planner", "optimizer"):
+            self.assertEqual(by_role[role]["capacity"], 100)
+        self.assertEqual(by_role["embedding"]["capacity"], 10)
+        self.assertEqual(by_role["planner"]["deployment"], by_role["optimizer"]["deployment"])
+        self.assertEqual(self.azure.mutations, [])
+
     def test_wrong_active_identity_stops_before_resource_queries(self):
         self.azure.account["tenantId"] = str(uuid4())
         self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")
@@ -436,9 +444,10 @@ class BootstrapTests(unittest.TestCase):
 
     def test_model_capacity_constraints_are_live_not_universal_tpm(self):
         bounds = self.azure.catalog[0]["model"]["skus"][0]["capacity"]
-        bounds.update(minimum=1, step=3)
+        capacity = self.config["models"][0]["capacity"]
+        bounds.update(minimum=1, step=capacity + 1)
         self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")
-        bounds.update(minimum=None, step=None, allowedValues=[10, 20])
+        bounds.update(minimum=None, step=None, allowedValues=[capacity])
         self.assertEqual(b.preflight(self.path, run=self.azure)["readiness_status"], "READY")
 
     def test_group_collision_refuses_even_with_copied_ownership_tags(self):
@@ -603,6 +612,95 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(self.azure.mutations, [])
         for identity in (SUB, TENANT, OPERATOR, USER):
             self.assertNotIn(identity, json.dumps(report))
+
+    def add_default_monitoring(self, *, shared=False):
+        ids = b._ids(self.config)
+        group = f"/subscriptions/{SUB}/resourceGroups/shared-monitoring" if shared else ids["resource_group"]
+        action_id = f"{group}/providers/Microsoft.Insights/actionGroups/Application Insights Smart Detection".lower()
+        alert_id = (
+            f"{ids['resource_group']}/providers/Microsoft.AlertsManagement/smartDetectorAlertRules/"
+            f"Failure Anomalies - {self.config['names']['insights']}"
+        ).lower()
+        self.azure.remote[alert_id] = {
+            "id": alert_id, "type": "Microsoft.AlertsManagement/smartDetectorAlertRules", "location": "global",
+            "properties": {
+                "scope": [ids["insights"]], "detector": {"id": "FailureAnomaliesDetector"},
+                "actionGroups": {"groupIds": [action_id]},
+            },
+        }
+        self.azure.remote[action_id] = {
+            "id": action_id, "type": "Microsoft.Insights/ActionGroups", "location": "Global",
+            "properties": {
+                "groupShortName": "SmartDetect", "enabled": True, "webhookReceivers": [], "emailReceivers": [],
+                "armRoleReceivers": [
+                    {"roleId": role, "useCommonAlertSchema": True}
+                    for role in ("749f88d5-cbae-40b8-bcfc-e573ddc772fa", b.ROLE_IDS["monitor_reader"])
+                ],
+            },
+        }
+        return alert_id, action_id
+
+    def test_linked_default_monitoring_is_observed_without_adoption_or_mutation(self):
+        self.apply()
+        self.add_default_monitoring()
+        before = (self.path.parent / "manifest.json").read_bytes()
+        self.azure.mutations.clear()
+        report = b.status(self.path, run=self.azure, approval_path=self.approve())
+        self.assertEqual(report["status"], "OBSERVED_APPROVAL_VALID")
+        self.assertEqual(set(report["resources"]), set(b._resources(self.config)))
+        self.assertEqual((self.path.parent / "manifest.json").read_bytes(), before)
+        self.assertEqual(self.azure.mutations, [])
+        self.assertEqual(self.apply()["status"], "APPLIED")
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_default_monitoring_can_reference_a_shared_action_group_without_adopting_it(self):
+        self.apply()
+        _, action_id = self.add_default_monitoring(shared=True)
+        self.azure.mutations.clear()
+
+        def run(args):
+            result = self.azure(args)
+            if args[:2] == ["resource", "list"]:
+                return [row for row in result if row["id"].lower() != action_id]
+            return result
+
+        report = b.status(self.path, run=run, approval_path=self.approve())
+        self.assertEqual(report["status"], "OBSERVED_APPROVAL_VALID")
+        self.assertNotIn(action_id, json.dumps(self.azure.manifest()))
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_monitoring_names_alone_do_not_authorize_foreign_scope_or_receivers(self):
+        self.apply()
+        alert_id, action_id = self.add_default_monitoring()
+        original = deepcopy(self.azure.remote)
+        self.azure.mutations.clear()
+        mutations = (
+            (alert_id, "scope", [f"/subscriptions/{SUB}/resourceGroups/foreign/providers/Microsoft.Insights/components/other"]),
+            (alert_id, "detector", {"id": "OtherDetector"}),
+            (alert_id, "detector", None),
+            (alert_id, "scope", None),
+            (alert_id, "actionGroups", None),
+            (alert_id, "actionGroups", {"groupIds": [action_id.replace(SUB, TENANT)]}),
+            (action_id, "armRoleReceivers", [{"roleId": b.ROLE_IDS["monitor_reader"], "useCommonAlertSchema": True}]),
+            (action_id, "webhookReceivers", [{"serviceUri": "https://example.invalid/hook"}]),
+            (action_id, "azureFunctionReceivers", [{"functionName": "unrelated"}]),
+        )
+        for resource_id, key, value in mutations:
+            with self.subTest(resource=resource_id, property=key):
+                self.azure.remote = deepcopy(original)
+                self.azure.remote[resource_id]["properties"][key] = value
+                self.assertEqual(b.status(self.path, run=self.azure)["status"], "BLOCKED")
+                self.assertEqual(self.azure.mutations, [])
+        self.azure.remote = deepcopy(original)
+        self.azure.remote[alert_id]["type"] = "Microsoft.Storage/storageAccounts"
+        self.assertEqual(b.status(self.path, run=self.azure)["status"], "BLOCKED")
+        self.azure.remote = deepcopy(original)
+        del self.azure.remote[alert_id]
+        self.assertEqual(b.status(self.path, run=self.azure)["status"], "BLOCKED")
+        self.azure.remote = deepcopy(original)
+        self.azure.remote[action_id]["properties"] = None
+        self.assertEqual(b.status(self.path, run=self.azure)["status"], "BLOCKED")
+        self.assertEqual(self.azure.mutations, [])
 
     def test_what_if_requires_owned_group_but_not_cost_approval(self):
         with self.assertRaises(b.BootstrapError):

@@ -2,7 +2,7 @@
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
-**Azure를 처음 확인하는 단계부터 리소스 삭제까지 10단계로 진행합니다.** Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
+**Azure를 처음 확인하는 단계부터 승인된 정리 또는 보존까지 10단계로 진행합니다.** Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
 
 > 계정·PC·권한 확인 → Foundry 생성 → 정책·Agent 준비 → 데이터셋 → 평가기 → 평가 → 분석 → 최적화 → 재평가 → 삭제 확인
 
@@ -14,29 +14,21 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 
 시작 화면에서 실습의 정의·중요성·진행 방식·완료 산출물을 설명합니다. 각 단계는 **하는 일 → 중요한 이유 → 방법·위치 → 실제 화면과 실행 → 완료 기준**으로 읽을 수 있도록 구성합니다.
 
-문제·해결·확인 범위는 **[실행 이슈 기록](guide/troubleshooting.md)**에 정리합니다. 이번 문서 점검의 읽기 전용 조회와 과거 유료 실측을 구분하며, 아래 수치는 신규 한국어 실행 결과가 아닙니다.
+## 고정된 모델 역할과 비교 조건
 
-## 현재 Sol v1/v2 비교 하나
-
-| 역할 | 확인한 모델·버전 |
+| 역할 | 계획할 모델·버전 |
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
 | Foundry 평가 Judge | **gpt-6-luna / 2026-09-22** |
 | Agent Optimizer 생성 | **gpt-5.5 / 2026-04-24** |
 
-영어 Agent는 **`contoso-eval-en-sol`**입니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 이번 비교는 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정은 같습니다. v1부터 강한 기준선을 사용하며 개선을 크게 보이게 하려고 약화하지 않습니다.
+새 환경의 기본 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸면 실제 출력 이름을 사용합니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정을 유지하고 개선을 크게 보이게 하려고 v1을 약화하지 않습니다.
 
-후보는 명시적 초안에서 개발합니다. `ensure_fixed_release`는 정식 **1·2만 허용**하고 동일 버전을 재사용하며, v3를 조용히 만들거나 기존 버전을 덮어쓰지 않습니다. 현재 [v2 지침](prompts/en/optimized.txt)과 [v1 기준선](prompts/en/baseline.txt)을 분리했습니다.
-
-**[최신 v2 검증·v1 대조군](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html#status)** · **[전체 공개 사례 근거](evidence/latest.json)**
-
-현재 비교 하나만 보고하며 **질문 12건, 두 실제 응답, 평가 점수·이유 전체**를 실패까지 포함해 공개합니다. 과거 원본 receipt는 로컬 감사용으로 보존하고 인증·쿠키·서명된 URL·비공개 계정 메타데이터는 공개하지 않습니다.
-
-실제 관리형 Optimizer는 생성 후보 대신 v1을 유지하도록 선택했습니다. 현재 v2는 **해당 Optimizer 실행 이후 운영자가 검토·개선한 지침**을 별도 관리형 평가로 검증한 것입니다. 서비스가 자동 추천한 후보라고 바꾸어 표시하지 않습니다.
+`ensure_fixed_release`는 정식 **1·2만 허용**하고 같은 구성을 재사용하며, v3를 조용히 만들거나 기존 버전을 덮어쓰지 않습니다. 자신의 실제 Optimizer 작업에서 검토한 지침을 사용하고 운영자 수정은 원본 서비스 출력과 구분해 기록합니다. 유지할 다른 후보가 없으면 v1을 유지하고 정리·보존으로 이동하며 없는 v2 비교를 만들지 않습니다.
 
 ## 같은 데이터와 평가 기준
 
-변경 없는 **`data/en/optimizer/dev.jsonl`**, 등록 `contoso-eval-en-dev12` 버전 `1`을 사용합니다. **12행 JSONL**은 query·context·JSON 문자열 ground_truth를 포함하며 Agent에는 query만 전달합니다. 한국어 원본은 별도로 유지합니다. 현재 공개 수치는 영어 실측이며 한국어 새 실행 결과가 아닙니다.
+한국어는 변경 없는 **`data/optimizer/dev.jsonl`**, 영어는 **`data/en/optimizer/dev.jsonl`**을 사용합니다. 해당 언어의 `lab-ko-dev12` 또는 `lab-en-dev12` 버전 `1`로 등록합니다. **12행 JSONL**은 query·context·JSON 문자열 ground_truth를 포함하며 Agent에는 query만 전달합니다. 언어별 데이터와 실행 폴더를 섞지 않습니다.
 
 | 관리형 평가기 | 척도·통과 기준 |
 |---|---|
@@ -55,18 +47,19 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 | 운영자 준비 | [운영자](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) | [Operator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) |
 | 진행·복구 | [강사](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Facilitator](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
 | 데이터 계약 | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |
-| 최신 v2 근거 | [검증](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/verification.html) | [Verification](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/verification.html) |
-| 실행 문제·해결 | [이슈 기록](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) | [Issues](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) |
+| 문제 해결 | [문제 해결](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) | [Troubleshooting](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) |
 | 통합 인쇄본 | [열기](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) | [Print](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) |
 | PDF | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) |
+| CLI/SDK 실습 요약영상 | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) |
+| 실제 포털 화면 녹화 | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) |
+
+두 영상 모두 내레이션·자막·챕터를 포함하며 재사용 실습 가이드와 분리해 제공합니다. CLI/SDK 영상은 실행 기록을 재생하는 요약입니다. 포털 영상은 인증된 Azure/Foundry의 실제 화면을 녹화하고 개인정보를 가린 것으로, 기존 자원과 완료된 결과를 조회하며 평가·Optimizer를 다시 제출하지 않습니다. 외부 자막: CLI/SDK [한국어](docs/media/Foundry-Lab-Replay-KO.srt) · [English](docs/media/Foundry-Lab-Replay-EN.srt), 포털 [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt) · [English](docs/media/Foundry-Portal-Walkthrough-EN.srt).
 
 기본 언어는 영어입니다. 언어를 전환해도 대응 절·읽음 기록·테마를 유지합니다. 로그인·JavaScript 없이 열람할 수 있으며 오프라인에서는 저장소 전체의 폴더 구조를 유지합니다.
 
 참가자 가이드의 왼쪽 목차는 주요 10단계만 표시합니다. 상세 제목과 직접 링크는 본문에 유지하며, 참고 문서의 목차는 별도로 제공합니다.
 
-포털 그림은 **이전 촬영분의 조작 위치 예시**로 표시하며 현재 Sol 실측으로 사용하지 않습니다. 실제 측정 근거는 최신 보고서와 그 안의 run ID입니다.
-
-영문 가이드는 `web/assets/portal/en/`, 한국어는 `web/assets/portal/`의 해당 실습 환경을 사용하며, 구독·권한의 공통 관리 화면만 `web/assets/portal/shared/`를 공유합니다. 각 언어의 전체 가이드에는 **기존 12개 + 언어별 추가 6개 + 공통 2개 = 20개**의 화면을 수록합니다. 2026-10-03에 새로 촬영한 파일은 총 14개이며 모두 Playwright Headless 캡처입니다. 생성·저장·채팅·최종 삭제 없이 기존 상태와 빈 삭제 확인 창만 읽었습니다. 기존 사진과 실측 원문은 그대로 보존합니다.
+포털 그림은 조작 위치를 설명하는 자료이며 자신의 실행 결과를 뜻하지 않습니다. 영어·한국어는 해당 언어의 그림을 사용하고 구독·권한의 공통 화면만 `web/assets/portal/shared/`를 공유합니다. 자산 출처·개인정보 가림·그림 명세는 [NOTICE](web/assets/NOTICE.txt)와 이미지 manifest에서 확인합니다.
 
 ## 실행 경계
 
@@ -76,7 +69,7 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 
 운영용 게시는 실습에 포함하지 않습니다. 브라우저 종료로 과금이 멈추지 않습니다. 실제 실패를 보존하며 같은 후보를 유리한 점수가 나올 때까지 반복하지 않습니다.
 
-10에서는 결과 보관 후 삭제 대상·소유권·승인을 확인합니다. `cleanup`은 기록된 객체만 정리하며 Search·모델·그룹을 전부 삭제하지 않습니다. 전용 그룹은 별도 삭제와 `az group exists`의 `false`까지 확인하고 공유 자원은 담당자에게 인계합니다.
+10에서는 결과 보관 후 대상·소유권·승인을 확인합니다. 확인 인자가 없는 `cleanup`은 계획만 표시하며, 확인 후 실행해도 기록된 객체만 정리하고 Search·모델·그룹을 전부 삭제하지 않습니다. 삭제 승인된 전용 그룹은 `az group exists`의 `false`까지 확인합니다. 보존 승인된 전용·공유 자원은 목록·비용 담당자·보존 검토일을 기록해 인계합니다.
 
 ## 산출물 유지보수
 
@@ -94,6 +87,8 @@ python -m unittest discover -s tests -q
 
 한국어 문서·안내·오류 메시지는 ‘합니다·입니다’ 문체를 사용합니다. 과거 실측 응답·채점 이유와 평가 데이터의 원문 인용은 문체 정리를 위해 바꾸지 않습니다.
 
-통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성하고 `requirements-verification.lock` 환경에서 `python -m scripts.verify_pdf`로 검사합니다. ZIP은 `python scripts/package_lab.py`로 다시 만듭니다. `evidence/latest.json`의 기존 서비스 실측은 보존하고, 이번 문서·브라우저·PDF 확인은 `guide/troubleshooting.md`에 기록합니다. 새 서비스 결과는 실제 실행한 경우에만 갱신합니다.
+통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성하고 `requirements-verification.lock` 환경에서 `python -m scripts.verify_pdf`로 검사합니다. ZIP은 `python scripts/package_lab.py`로 만듭니다.
+
+실행별 점수·run ID·검증 로그·원본 결과는 Git에서 제외된 비공개 실행 폴더에 보관하고 재사용 가이드에 넣지 않습니다. 가이드는 안내가 잘못된 경우에만 수정합니다. 보존하는 리소스의 소유권·설정 기록은 유지하고 오래된 보고서·임시 파일만 정리하며 클라우드 리소스를 함께 삭제하지 않습니다.
 
 GitHub Pages는 **main 브랜치 루트**와 `.nojekyll`을 사용합니다. 루트 index.html·기존 docs/english.html은 쿼리와 절 링크를 유지하며 영어로 연결합니다.
