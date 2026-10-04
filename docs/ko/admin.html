@@ -203,7 +203,7 @@
 </figure>
 
 <h2 id="bootstrap">Agent를 실제로 준비합니다</h2>
-<p>Python 설치·가상환경 생성·로그인·언어 변수 설정은 <a href="index.html#setup-local">01의 복사 가능한 명령</a>을 먼저 수행합니다. 아직 없는 <code>.venv</code>를 활성화하거나 <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
+<p><a href="index.html#setup-local">01의 운영체제별 설치 안내</a>에 따라 <strong>Python 3.11–3.14·Git·Azure CLI</strong>를 준비하고 <a href="index.html#setup-verify">새 터미널에서 세 도구의 버전</a>을 확인합니다. 이미 정상인 도구는 다시 설치하지 않으며, 설치 제한·관리자 권한·프록시 문제는 수업 전에 담당자와 해결합니다. 이어서 확인한 Python으로 가상환경을 만들고 로그인·언어 변수를 설정합니다. 아직 없는 <code>.venv</code>를 활성화하거나 <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
 <p>한국어 기준선은 <code>prompts/baseline.txt</code>, 영어는 <code>prompts/en/baseline.txt</code>입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. <code>iq prepare → iq probe</code>가 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.</p>
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </code></pre>

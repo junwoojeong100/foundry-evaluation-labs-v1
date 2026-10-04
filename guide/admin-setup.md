@@ -63,7 +63,7 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 
 ## Agent를 실제로 준비합니다 {#bootstrap}
 
-Python 설치·가상환경 생성·로그인·언어 변수 설정은 [01의 복사 가능한 명령](handbook.md#setup-local)을 먼저 수행합니다. 아직 없는 `.venv`를 활성화하거나 `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
+[01의 운영체제별 설치 안내](handbook.md#setup-local)에 따라 **Python 3.11–3.14·Git·Azure CLI**를 준비하고 [새 터미널에서 세 도구의 버전](handbook.md#setup-verify)을 확인합니다. 이미 정상인 도구는 다시 설치하지 않으며, 설치 제한·관리자 권한·프록시 문제는 수업 전에 담당자와 해결합니다. 이어서 확인한 Python으로 가상환경을 만들고 로그인·언어 변수를 설정합니다. 아직 없는 `.venv`를 활성화하거나 `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
 한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. `iq prepare → iq probe`가 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 

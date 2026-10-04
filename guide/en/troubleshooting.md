@@ -19,8 +19,16 @@ Keep timestamps, steps, commands, target IDs, error codes and actions in your pr
 
 ## Environment, sign-in and local files {#environment}
 
+Resolve Python, Git, and Azure CLI installation and PATH issues before signing in to Azure.
+
 | Symptom | Action | Completion criteria |
 |---|---|---|
+| `py`, `python3.13`, `git`, or `az` reports `command not found` or `not recognized` | Complete [OS-specific installation in 01](handbook.md#setup-local), close all terminals, and reopen them; restart VS Code too. If it still fails, check installation paths and PATH with your administrator. Inspect paths with `Get-Command py, git, az` on Windows or `command -v git az` on macOS/Linux. | [All three version checks](handbook.md#setup-verify) succeed in the same new terminal. |
+| `winget` or `brew` is missing | On Windows, use the [official installer path](handbook.md#setup-windows). On macOS, complete [Homebrew installation and the PATH instructions under Next steps](handbook.md#setup-macos). | Prepare and verify the tools using one installation method without bypassing organizational restrictions. |
+| Microsoft Store opens instead of Python, or `py` is missing | Check Launcher, pip, and PATH options in the regular Windows Python installer. Run `py -3.13 --version` in a new PowerShell window, substituting your installed version if different. | An installed Python 3.11–3.14 runs, not a Store shortcut. |
+| Python is outside 3.11–3.14, or `.venv` uses a different Python | Select a supported version separately rather than replacing system Python. Create the lab environment with [the same verified command](handbook.md#setup-venv), such as `py -3.13` or `python3.13`. Check ownership and retention needs before replacing an existing `.venv`. | The environment's `python --version` is supported and `python -m pip --version` points inside that `.venv`. |
+| Linux reports `No module named venv` or `ensurepip is not available` | Install `python3-venv` from the [Ubuntu setup instructions](handbook.md#setup-linux). For a version-specific Python, confirm the matching venv package with your administrator. | The selected Python creates `.venv` and its pip check succeeds. |
+| Administrator permissions, proxy, or certificate errors block installation | Send the official download URL and error to your administrator for approved installation/network configuration. Do not disable TLS checks, security tools, or organizational policies. | Installation uses an approved path and all three version checks succeed. |
 | `.venv/bin/activate` or `Activate.ps1` is missing | Create the virtual environment in the repository and follow the [OS-specific setup order](handbook.md#setup-local). | `python -m pip --version` and `python -m lab --help` work in the same environment. |
 | `ModuleNotFoundError` | Confirm the intended environment and run `python -m pip install -r requirements.lock` with its Python. | Required imports and dataset checks work in that environment. |
 | PowerShell activation is blocked by policy | Use `.\.venv\Scripts\python.exe` without changing organizational policy. | Python runs without a policy change. |

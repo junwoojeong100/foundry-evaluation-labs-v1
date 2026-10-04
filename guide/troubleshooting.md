@@ -19,8 +19,16 @@
 
 ## 환경·로그인·로컬 파일 {#environment}
 
+Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합니다.
+
 | 증상 | 조치 | 진행 기준 |
 |---|---|---|
+| `py`·`python3.13`·`git`·`az`가 `command not found` 또는 `not recognized`입니다. | [01의 운영체제별 설치](handbook.md#setup-local)를 마치고 터미널을 모두 닫았다가 다시 엽니다. VS Code도 재시작합니다. 계속 실패하면 설치 경로의 PATH 등록을 담당자와 확인하며 Windows는 `Get-Command py, git, az`, macOS/Linux는 `command -v git az`로 경로를 확인합니다. | [세 도구의 버전 확인](handbook.md#setup-verify)이 같은 새 터미널에서 성공합니다. |
+| `winget` 또는 `brew`가 없습니다. | Windows는 [공식 설치 파일 경로](handbook.md#setup-windows)를 사용합니다. macOS는 [Homebrew 설치와 Next steps](handbook.md#setup-macos)의 PATH 설정을 완료합니다. | 설치 방법 하나로 필요한 도구를 준비하고 버전을 확인합니다. 조직의 설치 제한을 우회하지 않습니다. |
+| Python 대신 Microsoft Store가 열리거나 `py`가 없습니다. | Windows의 일반 Python 설치에서 Launcher·pip·PATH 옵션을 확인하고 새 PowerShell에서 `py -3.13 --version`을 실행합니다. 다른 지원 버전을 설치했다면 해당 번호를 사용합니다. | Store 바로가기가 아닌 설치한 Python 3.11–3.14가 실행됩니다. |
+| Python 버전이 3.11–3.14 밖이거나 다른 Python으로 `.venv`를 만들었습니다. | 시스템 Python을 교체하지 말고 지원 버전을 별도로 선택합니다. `py -3.13` 또는 `python3.13` 등 [버전을 확인한 같은 명령](handbook.md#setup-venv)으로 실습용 환경을 준비합니다. 기존 `.venv`는 소유 작업과 보관 필요성을 먼저 확인합니다. | 가상환경의 `python --version`이 지원 범위이고 `python -m pip --version`의 경로가 그 `.venv` 안입니다. |
+| Linux에서 `No module named venv` 또는 `ensurepip is not available`입니다. | [Ubuntu 설치 순서](handbook.md#setup-linux)의 `python3-venv`를 설치합니다. 버전 지정 Python이면 해당 버전에 맞는 venv 패키지를 담당자와 확인합니다. | 선택한 Python으로 `.venv` 생성과 pip 확인이 성공합니다. |
+| 다운로드·설치가 관리자 권한·프록시·인증서 오류로 막힙니다. | 담당자에게 공식 다운로드 주소와 오류를 전달하고 승인된 설치·네트워크 설정을 요청합니다. TLS 검증·보안 도구·조직 정책을 해제하지 않습니다. | 승인된 경로로 설치하고 세 도구의 버전 확인이 성공합니다. |
 | `.venv/bin/activate` 또는 `Activate.ps1`이 없습니다. | 저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 [설치 순서](handbook.md#setup-local)를 따릅니다. | 같은 Python의 `python -m pip --version`과 `python -m lab --help`가 성공합니다. |
 | `ModuleNotFoundError`가 나옵니다. | 사용할 가상환경을 확인하고 그 Python으로 `python -m pip install -r requirements.lock`을 실행합니다. | 같은 환경에서 필요한 import와 데이터 검사가 성공합니다. |
 | PowerShell 활성화가 정책으로 차단됩니다. | 조직 정책을 바꾸지 않고 `.\.venv\Scripts\python.exe`로 명령을 실행합니다. | 정책 변경 없이 Python을 실행할 수 있습니다. |

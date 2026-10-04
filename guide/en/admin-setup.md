@@ -63,7 +63,7 @@ Use the [real response check in 03](handbook.md#agent) to verify Agent and `know
 
 ## Prepare an executable Agent {#bootstrap}
 
-First complete Python installation, virtual-environment creation, login, and language variables using the [copyable commands in 01](handbook.md#setup-local). Do not activate a nonexistent `.venv` or treat fake IDs in `.env.example` as a live environment.
+Prepare **Python 3.11–3.14, Git, and Azure CLI** using the [OS-specific installation instructions in 01](handbook.md#setup-local), then [verify all three versions in a new terminal](handbook.md#setup-verify). Do not reinstall working tools; resolve installation restrictions, administrator permissions, and proxy issues with the responsible team before class. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent `.venv` or treat fake IDs in `.env.example` as a live environment.
 
 Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After `iq prepare → iq probe` succeeds, create a policy-connected v1:
 

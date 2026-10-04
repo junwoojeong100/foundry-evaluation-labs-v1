@@ -152,6 +152,7 @@
 <h2 id="start">How to use this guide</h2>
 <p>Keep timestamps, steps, commands, target IDs, error codes and actions in your private lab record. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.</p>
 <h2 id="environment">Environment, sign-in and local files</h2>
+<p>Resolve Python, Git, and Azure CLI installation and PATH issues before signing in to Azure.</p>
 <table>
 <thead>
 <tr>
@@ -161,6 +162,36 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>py</code>, <code>python3.13</code>, <code>git</code>, or <code>az</code> reports <code>command not found</code> or <code>not recognized</code></td>
+<td>Complete <a href="index.html#setup-local">OS-specific installation in 01</a>, close all terminals, and reopen them; restart VS Code too. If it still fails, check installation paths and PATH with your administrator. Inspect paths with <code>Get-Command py, git, az</code> on Windows or <code>command -v git az</code> on macOS/Linux.</td>
+<td><a href="index.html#setup-verify">All three version checks</a> succeed in the same new terminal.</td>
+</tr>
+<tr>
+<td><code>winget</code> or <code>brew</code> is missing</td>
+<td>On Windows, use the <a href="index.html#setup-windows">official installer path</a>. On macOS, complete <a href="index.html#setup-macos">Homebrew installation and the PATH instructions under Next steps</a>.</td>
+<td>Prepare and verify the tools using one installation method without bypassing organizational restrictions.</td>
+</tr>
+<tr>
+<td>Microsoft Store opens instead of Python, or <code>py</code> is missing</td>
+<td>Check Launcher, pip, and PATH options in the regular Windows Python installer. Run <code>py -3.13 --version</code> in a new PowerShell window, substituting your installed version if different.</td>
+<td>An installed Python 3.11–3.14 runs, not a Store shortcut.</td>
+</tr>
+<tr>
+<td>Python is outside 3.11–3.14, or <code>.venv</code> uses a different Python</td>
+<td>Select a supported version separately rather than replacing system Python. Create the lab environment with <a href="index.html#setup-venv">the same verified command</a>, such as <code>py -3.13</code> or <code>python3.13</code>. Check ownership and retention needs before replacing an existing <code>.venv</code>.</td>
+<td>The environment's <code>python --version</code> is supported and <code>python -m pip --version</code> points inside that <code>.venv</code>.</td>
+</tr>
+<tr>
+<td>Linux reports <code>No module named venv</code> or <code>ensurepip is not available</code></td>
+<td>Install <code>python3-venv</code> from the <a href="index.html#setup-linux">Ubuntu setup instructions</a>. For a version-specific Python, confirm the matching venv package with your administrator.</td>
+<td>The selected Python creates <code>.venv</code> and its pip check succeeds.</td>
+</tr>
+<tr>
+<td>Administrator permissions, proxy, or certificate errors block installation</td>
+<td>Send the official download URL and error to your administrator for approved installation/network configuration. Do not disable TLS checks, security tools, or organizational policies.</td>
+<td>Installation uses an approved path and all three version checks succeed.</td>
+</tr>
 <tr>
 <td><code>.venv/bin/activate</code> or <code>Activate.ps1</code> is missing</td>
 <td>Create the virtual environment in the repository and follow the <a href="index.html#setup-local">OS-specific setup order</a>.</td>

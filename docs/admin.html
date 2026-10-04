@@ -203,7 +203,7 @@
 </figure>
 
 <h2 id="bootstrap">Prepare an executable Agent</h2>
-<p>First complete Python installation, virtual-environment creation, login, and language variables using the <a href="index.html#setup-local">copyable commands in 01</a>. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p>Prepare <strong>Python 3.11–3.14, Git, and Azure CLI</strong> using the <a href="index.html#setup-local">OS-specific installation instructions in 01</a>, then <a href="index.html#setup-verify">verify all three versions in a new terminal</a>. Do not reinstall working tools; resolve installation restrictions, administrator permissions, and proxy issues with the responsible team before class. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
 <p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <code>iq prepare → iq probe</code> succeeds, create a policy-connected v1:</p>
 <pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>

@@ -151,30 +151,121 @@
 
 <h3 id="book-index--setup-local">도구와 실습 파일을 준비합니다</h3>
 <p><a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>를 설치합니다. Python은 제공된 프로그램 실행용, Git은 실습 파일 내려받기용, Azure CLI는 <code>az</code> 명령으로 Azure에 로그인·조회하는 도구입니다. 회사 PC에서 설치가 제한되면 담당자에게 요청합니다.</p>
-<p>설치 뒤 <strong>새 터미널</strong>을 엽니다. Windows는 시작 메뉴에서 <strong>PowerShell</strong>, macOS는 Spotlight에서 <strong>Terminal(터미널)</strong>, Linux는 앱 메뉴에서 터미널을 검색합니다. Azure Portal의 Cloud Shell이나 <code>&gt;&gt;&gt;</code>가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다.</p>
+<p><strong>이미 설치했다면 <a href="#book-index--setup-verify">설치 확인</a>부터 진행하고, 정상인 도구는 다시 설치하지 않습니다.</strong> Windows·macOS의 아래 예시는 지원 범위를 벗어난 최신 Python이 선택되지 않도록 <strong>3.13</strong>을 지정합니다. 이미 다른 지원 버전을 사용한다면 <code>py -3.13</code>·<code>python3.13</code>을 해당 버전의 명령으로 바꾸고, 버전 확인과 가상환경 생성에 같은 Python을 사용합니다. 3.10 이하·3.15 이상은 이 실습의 지원 범위가 아닙니다.</p>
+<p>먼저 <strong>내 PC의 터미널</strong>을 엽니다. Windows는 시작 메뉴에서 <strong>PowerShell</strong>, macOS는 Spotlight에서 <strong>Terminal(터미널)</strong>, Linux는 앱 메뉴에서 터미널을 검색합니다. Azure Portal의 Cloud Shell이나 <code>&gt;&gt;&gt;</code>가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다.</p>
 <p><strong>명령 읽는 법:</strong> <strong>한 명령씩</strong> 실행하고 끝난 뒤 다음 명령으로 이동합니다. 긴 명령이 화면·PDF에서 여러 줄로 보이더라도 명령 중간에 줄바꿈을 넣지 않습니다.</p>
 <p>복사 버튼은 <strong>상자 전체</strong>를 복사합니다. 여러 명령이 들어 있다면 편집기에 먼저 붙여넣고 한 명령씩 실행합니다. <code>YOUR_...</code>는 자신의 값으로 바꾸고 바깥 큰따옴표는 유지합니다.</p>
-<p><code>공통 터미널</code>은 두 운영체제 모두, <code>macOS/Linux</code>·<code>PowerShell</code>은 자신의 운영체제에 해당하는 상자만 실행합니다. <strong>오류가 나면 다음 명령으로 넘어가지 않고</strong> 해당 단계의 문제 해결을 확인합니다.</p>
-<pre><code class="language-sh">git --version
+<p><code>공통 터미널</code>은 모든 운영체제에서 사용합니다. <code>macOS/Linux</code>·<code>PowerShell</code> 상자는 바로 위 설명을 읽고 <strong>자신의 운영체제에 해당하는 것만</strong> 실행합니다. <strong>오류가 나면 다음 명령으로 넘어가지 않고</strong> 해당 단계의 문제 해결을 확인합니다.</p>
+<p><a href="#book-index--setup-windows">Windows 설치</a> · <a href="#book-index--setup-macos">macOS 설치</a> · <a href="#book-index--setup-linux">Linux 설치</a> 중 하나를 마친 뒤 <a href="#book-index--setup-verify">설치 확인</a>으로 이동합니다.</p>
+<h4 id="book-index--setup-windows">Windows · PowerShell에서 설치합니다</h4>
+<p>PowerShell에서 <code>winget --version</code>을 실행합니다. 버전이 나오면 Windows 패키지 관리자인 <strong>WinGet</strong>으로 아래 명령을 한 줄씩 실행합니다. 설치 동의나 관리자 권한 요청은 조직의 승인 범위에서 직접 확인합니다.</p>
+<pre><code class="language-powershell">winget install --exact --id Python.Python.3.13 --source winget
+winget install --exact --id Git.Git --source winget
+winget install --exact --id Microsoft.AzureCLI --source winget
+</code></pre>
+<p><strong>WinGet이 없거나 사용할 수 없다면 공식 설치 파일을 사용합니다.</strong> 두 방법을 모두 실행할 필요는 없습니다.</p>
+<table>
+<thead>
+<tr>
+<th>도구</th>
+<th>다운로드와 설치 화면에서 확인할 항목</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td><a href="https://www.python.org/downloads/windows/">Windows 다운로드</a>에서 <strong>Python 3.13의 최신 패치 버전</strong>과 PC에 맞는 installer를 선택합니다. embeddable package가 아닌 일반 설치 파일에서 <strong>Add python.exe to PATH</strong>를 선택하고 <strong>pip·Python Launcher</strong>를 포함하여 설치합니다.</td>
+</tr>
+<tr>
+<td>Git</td>
+<td><a href="https://git-scm.com/install/windows">Git for Windows</a>에서 PC에 맞는 설치 파일을 받습니다. PATH 선택 화면의 <strong>Git from the command line and also from 3rd-party software</strong>를 유지하여 PowerShell에서도 사용할 수 있게 합니다.</td>
+</tr>
+<tr>
+<td>Azure CLI</td>
+<td><a href="https://learn.microsoft.com/cli/azure/install-azure-cli-windows?pivots=msi">Windows 공식 설치 안내</a>의 <strong>Microsoft Installer (MSI)</strong>를 사용합니다. 일반적인 x64 PC는 64-bit MSI를 선택합니다.</td>
+</tr>
+</tbody>
+</table>
+<p>설치 후 <a href="#book-index--setup-verify">새 터미널에서 세 도구 확인</a>으로 이동합니다. <code>py</code>가 인식되지 않으면 Python 설치의 Launcher 옵션을 확인합니다.</p>
+<h4 id="book-index--setup-macos">macOS · Homebrew로 설치합니다</h4>
+<p>터미널에서 <code>brew --version</code>을 실행합니다. 명령이 없으면 <a href="https://brew.sh/">Homebrew 공식 설치 안내</a>를 따라 설치하고, 마지막에 표시되는 <strong>Next steps</strong>의 PATH 설정까지 마친 뒤 새 터미널에서 다시 확인합니다. 회사 PC의 설치·Command Line Tools 승인 절차를 우회하지 않습니다.</p>
+<pre><code class="language-bash">brew update
+brew install python@3.13 git azure-cli
+</code></pre>
+<p>Python은 <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew의 버전 지정 패키지</a>, Azure CLI는 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft의 macOS 설치 안내</a>를 따릅니다. <strong>이 경로에서는 <code>python3.13</code>을 사용합니다.</strong> 기존 <code>python3</code>는 macOS 기본 Python이나 다른 버전을 가리킬 수 있으므로 시스템 Python을 덮어쓰거나 강제로 연결하지 않습니다.</p>
+<h4 id="book-index--setup-linux">Linux · Ubuntu 24.04 LTS 예시입니다</h4>
+<p>다음은 기본 Python 3.12를 제공하는 <strong>Ubuntu 24.04 LTS</strong> 기준입니다. 다른 배포판은 해당 배포판의 Python·<a href="https://git-scm.com/install/linux">Git 설치 안내</a>와 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">Azure CLI 공식 설치 안내</a>를 따릅니다. Python 버전이 지원 범위 밖이면 시스템 Python을 교체하지 말고 담당자에게 지원되는 실행 환경을 요청합니다.</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install python3 python3-venv python3-pip git curl
+curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' -o install-azure-cli.sh
+</code></pre>
+<p>마지막 명령은 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux?pivots=apt">Microsoft의 Ubuntu/Debian용 설치 스크립트</a>를 <strong>내려받기만</strong> 합니다. <code>install-azure-cli.sh</code>를 편집기로 열어 내용을 확인하고, 관리자 권한으로 패키지를 설치할 승인을 받은 경우에만 다음을 실행합니다. <code>sudo</code> 권한이 없으면 담당자에게 설치를 요청합니다.</p>
+<pre><code class="language-bash">sudo bash install-azure-cli.sh
+</code></pre>
+<h4 id="book-index--setup-verify">새 터미널에서 설치를 확인합니다</h4>
+<p><strong>설치가 끝나면 열려 있던 터미널 창을 모두 닫고 다시 엽니다.</strong> PATH는 명령을 찾는 경로 목록이며, 기존 창에는 새 설치 경로가 반영되지 않을 수 있습니다. VS Code의 터미널을 사용한다면 VS Code도 종료한 뒤 다시 엽니다.</p>
+<p><strong>Windows PowerShell:</strong></p>
+<pre><code class="language-powershell">py -3.13 --version
+git --version
 az version
-git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+</code></pre>
+<p><strong>macOS · 위 Homebrew 설치 경로:</strong></p>
+<pre><code class="language-bash">python3.13 --version
+git --version
+az version
+</code></pre>
+<p><strong>Linux · 위 Ubuntu 설치 경로:</strong></p>
+<pre><code class="language-bash">python3 --version
+git --version
+az version
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>확인 항목</th>
+<th>정상 출력과 진행 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실습용 Python</td>
+<td><code>Python 3.13.x</code> 같은 버전이 나옵니다. <code>x</code>는 실제 패치 번호이며 <strong>3.11·3.12·3.13·3.14</strong> 중 하나여야 합니다.</td>
+</tr>
+<tr>
+<td>Git</td>
+<td><code>git version 2.x...</code>처럼 설치된 버전이 나옵니다.</td>
+</tr>
+<tr>
+<td>Azure CLI</td>
+<td>JSON에 <code>"azure-cli": "2.x..."</code>처럼 버전이 나옵니다. <strong>이 확인에는 Azure 로그인이 필요하지 않습니다.</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>az version</code>에 표시되는 Python은 Azure CLI 자체의 실행 환경이며, 실습용 Python 설치 확인을 대신하지 않습니다. <strong>세 명령이 모두 성공한 뒤에만</strong> 파일 다운로드·가상환경 생성으로 진행합니다. <code>command not found</code>, <code>not recognized</code>, Python 대신 Microsoft Store가 열리는 경우는 <a href="#book-troubleshooting--environment">설치·PATH 문제 해결</a>을 확인합니다.</p>
+<h4 id="book-index--setup-download">실습 파일을 내려받습니다</h4>
+<pre><code class="language-sh">git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 </code></pre>
 <p>이미 내려받았다면 clone을 반복하지 않고 해당 폴더로 이동합니다. GitHub의 <strong>Code → Download ZIP</strong>으로 받은 경우 먼저 압축을 풀고 <code>pyproject.toml</code>과 <code>requirements.lock</code>이 있는 폴더를 엽니다. HTML 파일 한 개만 내려받으면 코드·데이터·그림이 누락됩니다.</p>
-<p>이후 명령은 <strong><code>pyproject.toml</code>과 <code>requirements.lock</code>이 있는 실습 폴더</strong>에서 실행합니다. <code>.venv</code>는 이 실습만의 Python 패키지 공간입니다. 다음 첫 줄의 Python 버전이 3.11–3.14인지 확인한 뒤 나머지 줄을 실행합니다.</p>
-<p><strong>macOS/Linux에서는 다음을 실행합니다.</strong></p>
-<pre><code class="language-bash">python3 --version
-python3 -m venv .venv
+<h4 id="book-index--setup-venv">확인한 Python으로 가상환경을 만듭니다</h4>
+<p>이후 명령은 <strong><code>pyproject.toml</code>과 <code>requirements.lock</code>이 있는 실습 폴더</strong>에서 실행합니다. <code>.venv</code>는 이 실습만의 Python 패키지 공간입니다. 앞에서 버전을 확인한 <strong>같은 Python</strong>으로 만들며, 아래 세 경로 중 자신의 운영체제에 맞는 하나만 실행합니다.</p>
+<p><strong>macOS · 위 Homebrew 설치 경로:</strong></p>
+<pre><code class="language-bash">python3.13 -m venv .venv
+source .venv/bin/activate
+</code></pre>
+<p><strong>Linux · 위 Ubuntu 설치 경로:</strong></p>
+<pre><code class="language-bash">python3 -m venv .venv
 source .venv/bin/activate
 </code></pre>
 <p><strong>Windows PowerShell에서는 다음을 실행합니다.</strong></p>
-<pre><code class="language-powershell">py -3 --version
-py -3 -m venv .venv
+<pre><code class="language-powershell">py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 </code></pre>
 <p>PowerShell 실행 정책 때문에 활성화가 차단되면 조직 정책을 변경하지 않습니다. 이후 명령의 <code>python</code>을 <code>.\.venv\Scripts\python.exe</code>로 바꾸어 실행합니다. 기존 <code>.venv</code>가 있다면 다른 작업의 환경인지 확인하고 임의로 덮어쓰지 않습니다.</p>
-<p><strong>가상환경을 준비한 뒤 다음 공통 명령을 실행합니다.</strong></p>
-<pre><code class="language-sh">python -m pip install -r requirements.lock
+<p><strong>가상환경을 준비한 뒤 다음 공통 명령을 실행합니다.</strong> 첫 두 명령에서 Python 3.11–3.14와 <code>.venv</code> 안의 pip 경로를 확인한 뒤 패키지를 설치합니다.</p>
+<pre><code class="language-sh">python --version
+python -m pip --version
+python -m pip install -r requirements.lock
 python -m lab --help
 python scripts/build_datasets.py --language ko --check
 </code></pre>
@@ -198,7 +289,7 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifac
 </code></pre>
 <p>새 터미널을 열 때마다 가상환경 활성화와 이 두 변수를 다시 지정합니다. <code>LAB_LANGUAGE</code>를 바꾸면서 기존 실행 폴더를 재사용하지 않습니다. 생성되는 <code>.env</code>는 설정 파일이며 <code>source</code>나 PowerShell 스크립트로 실행하지 않습니다.</p>
 <p class="note"><strong>준비된 환경을 받은 경우:</strong> <a href="#book-admin--handoff">인수표</a>에서 본인의 실행 담당 범위를 확인합니다. 본인 계정으로 명령·Python 프로그램을 실행할 설정이 없다면 운영자가 02–03의 준비와 06의 ID 조회·09의 명령을 수행하고 결과를 전달합니다. 운영자의 <code>.env</code>나 로그인 세션을 그대로 복사해 쓰지 않습니다.</p>
-<p class="completion-check"><strong>완료 기준:</strong> 같은 사용자·테넌트·구독을 확인했고, Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 <a href="#book-troubleshooting--environment">환경 오류 해결</a>을 확인합니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> Python 3.11–3.14·Git·Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 <a href="#book-troubleshooting--environment">환경 오류 해결</a>을 확인합니다.</p>
 <p class="step-next no-print"><a href="#book-index--resources" data-next-step>다음: 02. Foundry 환경 생성 →</a></p>
 
 <h2 id="book-index--resources">02. Foundry 환경을 생성합니다</h2>
@@ -959,6 +1050,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <h2 id="book-facilitator--prepare">수업 전</h2>
 <p>참가자가 직접 01–03을 수행할지, 운영자가 준비한 환경을 받을지 먼저 정합니다. 직접 준비하는 수업은 권한·비용 승인과 삭제 담당자를 확보합니다. 준비된 수업은 <a href="#book-admin--handoff">인수표</a>를 빠짐없이 전달하고 실제 프로젝트·Agent·검색·데이터 등록을 확인합니다.</p>
 <p><strong>초보자 수업은 환경 준비와 평가 학습을 분리합니다.</strong> 02–03은 운영자가 미리 준비하는 방식을 권장하되, 참가자가 본인의 계정·프로젝트와 완료 근거를 확인하는 과정은 생략하지 않습니다. SDK 명령을 누가 실행할지 미리 정하고 운영자의 로그인 정보나 소유권 기록을 복사해 배포하지 않습니다.</p>
+<p>수업 전에 로컬 명령을 실행할 사람에게 <a href="#book-index--setup-local">01의 Windows·macOS·Linux 설치 안내</a>를 전달합니다. <strong>Python 3.11–3.14·Git·Azure CLI</strong>의 <a href="#book-index--setup-verify">버전 확인</a>과 가상환경 생성을 먼저 마치고, 회사 PC의 설치 승인·PATH·프록시 문제를 해결합니다. 포털만 사용하는 참가자는 인수표에 정한 역할을 따르며 명령 실행 담당자의 설치 완료와 혼동하지 않습니다.</p>
 <p>시작할 때 <a href="#book-index--basics">여섯 가지 용어</a>와 <a href="#book-index--evaluation-flow">질문→응답→채점 도식</a>을 함께 읽습니다. 참가자가 <strong>“답변하는 Agent와 채점하는 Judge는 다르다”</strong>, <strong>“모델이 아니라 지침을 바꾼다”</strong>를 자기 말로 설명하는지 확인합니다. 용어 암기나 높은 점수를 출발 조건으로 삼지 않습니다.</p>
 <p>04–06은 같은 평가 생성 화면입니다. 단계마다 새 평가를 만들지 않도록 안내하고, 07에서는 점수 한 건을 함께 읽은 뒤 개별 분석으로 넘어갑니다. 조별로 Agent를 공유하면 v2 생성·유료 제출 담당은 한 명으로 정합니다.</p>
 <p>새 실습의 Agent는 <code>lab-ko-iq</code> 또는 <code>lab-en-iq</code>입니다. 환경 prefix를 바꾸었다면 명령이 출력한 실제 이름을 사용합니다. <a href="#book-admin--prepare">모델 역할·신원</a>을 확인하고 수업 종료 전에 10의 정리 시간을 확보합니다.</p>
@@ -976,8 +1068,8 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <tbody>
 <tr>
 <td>01 환경 확인</td>
-<td>계정·구독·권한·Python·CLI·언어 변수를 확인합니다.</td>
-<td>신원이 일치하고 로컬 명령이 성공합니다.</td>
+<td>계정·구독·권한·Python 3.11–3.14·Git·Azure CLI·언어 변수를 확인합니다.</td>
+<td>신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다.</td>
 </tr>
 <tr>
 <td>02 환경 생성</td>
@@ -1220,7 +1312,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </figure>
 
 <h2 id="book-admin--bootstrap">Agent를 실제로 준비합니다</h2>
-<p>Python 설치·가상환경 생성·로그인·언어 변수 설정은 <a href="#book-index--setup-local">01의 복사 가능한 명령</a>을 먼저 수행합니다. 아직 없는 <code>.venv</code>를 활성화하거나 <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
+<p><a href="#book-index--setup-local">01의 운영체제별 설치 안내</a>에 따라 <strong>Python 3.11–3.14·Git·Azure CLI</strong>를 준비하고 <a href="#book-index--setup-verify">새 터미널에서 세 도구의 버전</a>을 확인합니다. 이미 정상인 도구는 다시 설치하지 않으며, 설치 제한·관리자 권한·프록시 문제는 수업 전에 담당자와 해결합니다. 이어서 확인한 Python으로 가상환경을 만들고 로그인·언어 변수를 설정합니다. 아직 없는 <code>.venv</code>를 활성화하거나 <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
 <p>한국어 기준선은 <code>prompts/baseline.txt</code>, 영어는 <code>prompts/en/baseline.txt</code>입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. <code>iq prepare → iq probe</code>가 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.</p>
 <pre><code class="language-bash">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </code></pre>
@@ -1563,6 +1655,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <h2 id="book-troubleshooting--start">사용 방법</h2>
 <p>오류 시각·단계·명령·대상 ID·오류 코드와 조치를 자신의 비공개 실습 기록에 남깁니다. 원본 응답·receipt를 보관하고 실패를 성공으로 고쳐 쓰지 않습니다. 실행별 검증 로그와 결과는 재사용 가이드에 추가하지 않습니다.</p>
 <h2 id="book-troubleshooting--environment">환경·로그인·로컬 파일</h2>
+<p>Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합니다.</p>
 <table>
 <thead>
 <tr>
@@ -1572,6 +1665,36 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>py</code>·<code>python3.13</code>·<code>git</code>·<code>az</code>가 <code>command not found</code> 또는 <code>not recognized</code>입니다.</td>
+<td><a href="#book-index--setup-local">01의 운영체제별 설치</a>를 마치고 터미널을 모두 닫았다가 다시 엽니다. VS Code도 재시작합니다. 계속 실패하면 설치 경로의 PATH 등록을 담당자와 확인하며 Windows는 <code>Get-Command py, git, az</code>, macOS/Linux는 <code>command -v git az</code>로 경로를 확인합니다.</td>
+<td><a href="#book-index--setup-verify">세 도구의 버전 확인</a>이 같은 새 터미널에서 성공합니다.</td>
+</tr>
+<tr>
+<td><code>winget</code> 또는 <code>brew</code>가 없습니다.</td>
+<td>Windows는 <a href="#book-index--setup-windows">공식 설치 파일 경로</a>를 사용합니다. macOS는 <a href="#book-index--setup-macos">Homebrew 설치와 Next steps</a>의 PATH 설정을 완료합니다.</td>
+<td>설치 방법 하나로 필요한 도구를 준비하고 버전을 확인합니다. 조직의 설치 제한을 우회하지 않습니다.</td>
+</tr>
+<tr>
+<td>Python 대신 Microsoft Store가 열리거나 <code>py</code>가 없습니다.</td>
+<td>Windows의 일반 Python 설치에서 Launcher·pip·PATH 옵션을 확인하고 새 PowerShell에서 <code>py -3.13 --version</code>을 실행합니다. 다른 지원 버전을 설치했다면 해당 번호를 사용합니다.</td>
+<td>Store 바로가기가 아닌 설치한 Python 3.11–3.14가 실행됩니다.</td>
+</tr>
+<tr>
+<td>Python 버전이 3.11–3.14 밖이거나 다른 Python으로 <code>.venv</code>를 만들었습니다.</td>
+<td>시스템 Python을 교체하지 말고 지원 버전을 별도로 선택합니다. <code>py -3.13</code> 또는 <code>python3.13</code> 등 <a href="#book-index--setup-venv">버전을 확인한 같은 명령</a>으로 실습용 환경을 준비합니다. 기존 <code>.venv</code>는 소유 작업과 보관 필요성을 먼저 확인합니다.</td>
+<td>가상환경의 <code>python --version</code>이 지원 범위이고 <code>python -m pip --version</code>의 경로가 그 <code>.venv</code> 안입니다.</td>
+</tr>
+<tr>
+<td>Linux에서 <code>No module named venv</code> 또는 <code>ensurepip is not available</code>입니다.</td>
+<td><a href="#book-index--setup-linux">Ubuntu 설치 순서</a>의 <code>python3-venv</code>를 설치합니다. 버전 지정 Python이면 해당 버전에 맞는 venv 패키지를 담당자와 확인합니다.</td>
+<td>선택한 Python으로 <code>.venv</code> 생성과 pip 확인이 성공합니다.</td>
+</tr>
+<tr>
+<td>다운로드·설치가 관리자 권한·프록시·인증서 오류로 막힙니다.</td>
+<td>담당자에게 공식 다운로드 주소와 오류를 전달하고 승인된 설치·네트워크 설정을 요청합니다. TLS 검증·보안 도구·조직 정책을 해제하지 않습니다.</td>
+<td>승인된 경로로 설치하고 세 도구의 버전 확인이 성공합니다.</td>
+</tr>
 <tr>
 <td><code>.venv/bin/activate</code> 또는 <code>Activate.ps1</code>이 없습니다.</td>
 <td>저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 <a href="#book-index--setup-local">설치 순서</a>를 따릅니다.</td>

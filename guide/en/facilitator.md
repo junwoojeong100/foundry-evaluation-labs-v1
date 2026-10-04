@@ -10,6 +10,8 @@ Decide whether participants perform 01–03 or receive an operator-prepared envi
 
 **Separate environment preparation from learning evaluation in beginner classes.** Prefer operator preparation for 02–03, but still have participants verify their own account, project, and completion evidence. Assign SDK-command responsibility before class; do not distribute the operator's sign-in or ownership records.
 
+Before class, send the [Windows/macOS/Linux installation instructions in 01](handbook.md#setup-local) to everyone responsible for local commands. Complete [version checks](handbook.md#setup-verify) for **Python 3.11–3.14, Git, and Azure CLI**, create the virtual environment, and resolve corporate installation approvals, PATH, and proxy issues. Portal-only participants follow the responsibilities in their handoff; the command owner's setup does not establish another participant's readiness.
+
 Start together with the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Ask participants to explain that **the Agent answers and the Judge scores**, and that **instructions, not model weights, will change**. Do not require memorized terminology or high scores to begin.
 
 Steps 04–06 use one evaluation wizard, not three evaluations. Read one scored example together in 07 before independent analysis. If a group shares an Agent, assign one owner for v2 creation and paid submissions.
@@ -24,7 +26,7 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| 01 Environment | Check account, subscription, permissions, Python, CLI, and language variables | Matching identity and successful local commands |
+| 01 Environment | Check account, subscription, permissions, Python 3.11–3.14, Git, Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
 | 02 Provisioning | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
 | 03 Agent setup | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | 04 Dataset | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |

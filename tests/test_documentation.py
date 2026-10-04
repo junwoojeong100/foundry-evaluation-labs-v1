@@ -307,7 +307,8 @@ class DocumentationTests(unittest.TestCase):
                 ):
                     self.assertIn(required, source)
                 self.assertIn("python3 -m venv", source)
-                self.assertIn("py -3 -m venv", source)
+                self.assertIn("python3.13 -m venv", source)
+                self.assertIn("py -3.13 -m venv", source)
                 self.assertIn("add_foundry_eval_run.py", source)
                 self.assertIn("{{item.query}}", source)
                 self.assertIn("--baseline", source)
@@ -333,19 +334,100 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(book.count('data-wizard-step="'), 3)
                 self.assertNotIn("{: .completion-check}", book)
 
+    def test_tool_installation_and_verification_precede_download_and_venv(self):
+        anchors = (
+            "setup-windows", "setup-macos", "setup-linux",
+            "setup-verify", "setup-download", "setup-venv", "setup-login",
+        )
+        commands = (
+            "winget install --exact --id Python.Python.3.13 --source winget",
+            "winget install --exact --id Git.Git --source winget",
+            "winget install --exact --id Microsoft.AzureCLI --source winget",
+            "brew install python@3.13 git azure-cli",
+            "sudo apt install python3 python3-venv python3-pip git curl",
+            "curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' -o install-azure-cli.sh",
+            "sudo bash install-azure-cli.sh",
+            "py -3.13 --version", "python3.13 --version", "python3 --version",
+            "git --version", "az version",
+            "py -3.13 -m venv .venv", "python3.13 -m venv .venv", "python3 -m venv .venv",
+        )
+        links = (
+            "https://www.python.org/downloads/windows/",
+            "https://git-scm.com/install/windows",
+            "https://learn.microsoft.com/cli/azure/install-azure-cli-windows?pivots=msi",
+            "https://brew.sh/",
+            "https://learn.microsoft.com/cli/azure/install-azure-cli-macos",
+            "https://learn.microsoft.com/cli/azure/install-azure-cli-linux?pivots=apt",
+        )
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            with self.subTest(language=language):
+                source = self.source(language)
+                positions = [source.index("{#" + anchor + "}") for anchor in anchors]
+                self.assertEqual(positions, sorted(positions))
+                for command in commands:
+                    self.assertIn(command, source)
+                for link in links:
+                    self.assertIn(link, source)
+                for term in (
+                    "3.11–3.14", "Ubuntu 24.04 LTS", "Add python.exe to PATH",
+                    "Python Launcher", "Next steps", "command not found",
+                    "not recognized", "troubleshooting.md#environment",
+                ):
+                    self.assertIn(term, source)
+                checks = source.split("{#setup-verify}", 1)[1].split("#### ", 1)[0]
+                for python in ("py -3.13", "python3.13", "python3"):
+                    self.assertIn(f"{python} --version\ngit --version\naz version", checks)
+                self.assertNotIn("az login", checks)
+                venv = source.split("{#setup-venv}", 1)[1].split("### ", 1)[0]
+                self.assertLess(venv.index("python -m pip --version"), venv.index("python -m pip install"))
+                for edition in ("index.html", "print.html"):
+                    text = (SITE / prefix / edition).read_text()
+                    anchor_prefix = "book-index--" if edition == "print.html" else ""
+                    for anchor in anchors:
+                        self.assertIn(f'id="{anchor_prefix}{anchor}"', text)
+                    article = ArticleTextParser() if edition == "index.html" else ArticleTextParser(
+                        target_tag="section", target_id="book-index",
+                    )
+                    article.feed(text)
+                    visible = "".join(article.text)
+                    for command in commands:
+                        self.assertIn(command, visible)
+
+    def test_setup_references_cover_all_three_tools_and_link_to_verification(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            for name in ("admin-setup.md", "facilitator.md", "troubleshooting.md"):
+                with self.subTest(language=language, document=name):
+                    source = (folder / name).read_text()
+                    self.assertIn("3.11–3.14", source)
+                    self.assertIn("Git", source)
+                    self.assertIn("Azure CLI", source)
+                    self.assertIn("handbook.md#setup-verify", source)
+        for name in ("README.md", "README.en.md", "README.ko.md"):
+            with self.subTest(document=name):
+                source = (ROOT / name).read_text()
+                for term in ("3.11–3.14", "Git", "Azure CLI", "index.html#setup-local"):
+                    self.assertIn(term, source)
+
     def test_shared_commands_are_distinguished_from_os_specific_setup(self):
         for language in ("en", "ko"):
             with self.subTest(language=language):
                 blocks = re.findall(r"```(bash|sh|powershell)\s*\n(.*?)```", self.source(language), re.DOTALL)
-                bash = [text for syntax, text in blocks if syntax == "bash"]
-                powershell = [text for syntax, text in blocks if syntax == "powershell"]
+                bash = "\n".join(text for syntax, text in blocks if syntax == "bash")
+                powershell = "\n".join(text for syntax, text in blocks if syntax == "powershell")
                 shared = "\n".join(text for syntax, text in blocks if syntax == "sh")
-                self.assertEqual(len(bash), 2)
-                self.assertEqual(len(powershell), 2)
-                self.assertIn("source .venv/bin/activate", bash[0])
-                self.assertIn("export LAB_LANGUAGE=", bash[1])
-                self.assertIn(".venv\\Scripts\\Activate.ps1", powershell[0])
-                self.assertIn("$env:LAB_LANGUAGE", powershell[1])
+                for command in (
+                    "brew install", "sudo apt install", "python3.13 --version", "python3 --version",
+                    "python3.13 -m venv", "python3 -m venv", "source .venv/bin/activate", "export LAB_LANGUAGE=",
+                ):
+                    self.assertIn(command, bash)
+                    self.assertNotIn(command, shared + powershell)
+                for command in (
+                    "winget install", "py -3.13 --version", "py -3.13 -m venv",
+                    ".venv\\Scripts\\Activate.ps1", "$env:LAB_LANGUAGE",
+                ):
+                    self.assertIn(command, powershell)
+                    self.assertNotIn(command, shared + bash)
                 for command in ("az login", "bootstrap plan", "native-agent --version 1", "native-evals", "add_foundry_eval_run.py", "az group delete"):
                     self.assertIn(command, shared)
                 self.assertNotIn("source .venv", shared)
@@ -474,14 +556,18 @@ class DocumentationTests(unittest.TestCase):
                 and urlsplit(href.removeprefix(SITE_URL)).path
                 in {"", "index.html", "docs/index.html", "docs/ko/index.html"}
             ]
-            self.assertGreaterEqual(len(entry_links), 2, name)
-            for link in entry_links:
-                self.assertEqual(link.fragment, "", (name, link.geturl()))
+            self.assertGreaterEqual(sum(not link.fragment for link in entry_links), 2, name)
             links = re.findall(r"\]\(([^)\s]+\.html[^)\s]*)\)", source)
             self.assertTrue(links, name)
             for href in links:
                 self.assertTrue(href.startswith(SITE_URL), (name, href))
-                self.assertTrue((ROOT / urlsplit(href.removeprefix(SITE_URL)).path).is_file(), href)
+                link = urlsplit(href.removeprefix(SITE_URL))
+                target = ROOT / link.path
+                self.assertTrue(target.is_file(), href)
+                if link.fragment:
+                    page = LinkParser()
+                    page.feed(target.read_text())
+                    self.assertIn(unquote(link.fragment), page.ids, href)
         for name in ("README.md", "README.ko.md"):
             source = (ROOT / name).read_text()
             for output in PAGES:

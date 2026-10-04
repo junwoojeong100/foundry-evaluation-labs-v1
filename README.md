@@ -10,6 +10,8 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 
 Start at 01 for first-time setup. The guide includes Windows PowerShell and macOS/Linux installation/venv commands, where to find input values, authorization fields, actual Agent creation and evaluation-ID lookup, and completion checks. Prepared environments use a handoff rather than duplicate creation.
 
+**Local prerequisites: Python 3.11–3.14, Git, and Azure CLI.** [Step 01 installation instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local) cover Windows WinGet/official installers, macOS Homebrew, and Ubuntu 24.04 LTS, with version checks before creating the virtual environment. Reuse supported tools already installed; resolve PATH or installation restrictions before signing in to Azure.
+
 **New to Azure or Foundry? Read the participant guide first.** It explains accounts, subscriptions, projects, and opening a terminal before using them. Steps 04–06 form one evaluation wizard, with ordered actions, score-reading examples, and visible completion checks. Open operator references only when linked. For beginner groups, prefer operator-prepared environments with explicit command responsibilities.
 
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.

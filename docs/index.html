@@ -227,30 +227,121 @@
 
 <h3 id="setup-local">Install tools and download the lab</h3>
 <p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>. Python runs the supplied programs, Git downloads the lab, and Azure CLI provides the <code>az</code> sign-in/query commands. Request administrator help if your work computer restricts installation.</p>
-<p>Open a <strong>new terminal</strong> after installation. Search for <strong>PowerShell</strong> in Windows Start, <strong>Terminal</strong> in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Azure Portal's Cloud Shell or the Python prompt showing <code>&gt;&gt;&gt;</code>.</p>
+<p><strong>If the tools are already installed, start with <a href="#setup-verify">installation checks</a> and do not reinstall working tools.</strong> The Windows/macOS examples below explicitly select <strong>3.13</strong> so an unsupported newer Python is not selected. If you already use another supported version, replace <code>py -3.13</code> or <code>python3.13</code> with its version-specific command, using the same Python for verification and virtual-environment creation. Python 3.10 or earlier and 3.15 or later are outside this lab's supported range.</p>
+<p>First open <strong>your computer's terminal</strong>. Search for <strong>PowerShell</strong> in Windows Start, <strong>Terminal</strong> in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Azure Portal's Cloud Shell or the Python prompt showing <code>&gt;&gt;&gt;</code>.</p>
 <p><strong>Reading commands:</strong> Run <strong>one command at a time</strong> and wait for it to finish. A long command can wrap across screen/PDF lines; do not insert a line break within that command.</p>
 <p>Copy buttons copy the <strong>whole block</strong>. If it contains several commands, paste into an editor first and run them individually. Replace <code>YOUR_...</code> with your value, preserving the surrounding double quotes.</p>
-<p>Blocks labeled <code>Shared terminal</code> work in both environments; run only your own OS's <code>macOS/Linux</code> or <code>PowerShell</code> blocks. <strong>Stop at an error instead of running the next command</strong>, and use that step's troubleshooting link.</p>
-<pre><code class="language-sh">git --version
+<p>Blocks labeled <code>Shared terminal</code> work on all operating systems. For <code>macOS/Linux</code> or <code>PowerShell</code> blocks, read the preceding description and <strong>run only the blocks for your OS</strong>. <strong>Stop at an error instead of running the next command</strong>, and use that step's troubleshooting link.</p>
+<p>Follow one of <a href="#setup-windows">Windows installation</a>, <a href="#setup-macos">macOS installation</a>, or <a href="#setup-linux">Linux installation</a>, then continue to <a href="#setup-verify">installation checks</a>.</p>
+<h4 id="setup-windows">Windows · install in PowerShell</h4>
+<p>Run <code>winget --version</code> in PowerShell. If it prints a version, use the Windows package manager <strong>WinGet</strong> to run the following commands one at a time. Personally review installation agreements and administrator prompts within your organization's authorization.</p>
+<pre><code class="language-powershell">winget install --exact --id Python.Python.3.13 --source winget
+winget install --exact --id Git.Git --source winget
+winget install --exact --id Microsoft.AzureCLI --source winget
+</code></pre>
+<p><strong>If WinGet is missing or unavailable, use the official installers instead.</strong> You do not need to use both methods.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Download and installer choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>From <a href="https://www.python.org/downloads/windows/">Windows downloads</a>, choose the <strong>latest Python 3.13 patch release</strong> and an installer matching your computer. Use the regular installer, not the embeddable package; select <strong>Add python.exe to PATH</strong> and include <strong>pip and the Python Launcher</strong>.</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>Download the appropriate installer from <a href="https://git-scm.com/install/windows">Git for Windows</a>. Keep <strong>Git from the command line and also from 3rd-party software</strong> on the PATH selection screen so Git works in PowerShell.</td>
+</tr>
+<tr>
+<td>Azure CLI</td>
+<td>Follow <strong>Microsoft Installer (MSI)</strong> in the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-windows?pivots=msi">official Windows instructions</a>. Choose the 64-bit MSI for a typical x64 computer.</td>
+</tr>
+</tbody>
+</table>
+<p>Continue to <a href="#setup-verify">checking all three tools in a new terminal</a>. If <code>py</code> is not recognized, check the Python installer's Launcher option.</p>
+<h4 id="setup-macos">macOS · install with Homebrew</h4>
+<p>Run <code>brew --version</code> in Terminal. If the command is missing, follow the <a href="https://brew.sh/">official Homebrew installation instructions</a>, complete the PATH configuration printed under <strong>Next steps</strong>, then check again in a new terminal. Do not bypass your organization's software or Command Line Tools approval process.</p>
+<pre><code class="language-bash">brew update
+brew install python@3.13 git azure-cli
+</code></pre>
+<p>This uses <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew's versioned Python package</a> and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft's macOS Azure CLI instructions</a>. <strong>Use <code>python3.13</code> for this path.</strong> An existing <code>python3</code> can still point to macOS's system Python or another version; do not overwrite or forcibly relink the system interpreter.</p>
+<h4 id="setup-linux">Linux · Ubuntu 24.04 LTS example</h4>
+<p>The following targets <strong>Ubuntu 24.04 LTS</strong>, which provides Python 3.12 by default. For another distribution, follow its Python instructions, <a href="https://git-scm.com/install/linux">Git installation guidance</a>, and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">official Azure CLI installation instructions</a>. If Python is outside the supported range, request a supported execution environment rather than replacing the system interpreter.</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install python3 python3-venv python3-pip git curl
+curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' -o install-azure-cli.sh
+</code></pre>
+<p>The last command <strong>only downloads</strong> <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux?pivots=apt">Microsoft's Ubuntu/Debian installation script</a>. Open <code>install-azure-cli.sh</code> in a text editor and inspect it before running the following command with authorization to install system packages. Ask your administrator to perform the installation if you do not have <code>sudo</code> access.</p>
+<pre><code class="language-bash">sudo bash install-azure-cli.sh
+</code></pre>
+<h4 id="setup-verify">Verify installation in a new terminal</h4>
+<p><strong>After installation, close all existing terminal windows and open a new one.</strong> PATH is the list of locations used to find commands; an existing window might not receive the newly installed paths. If you use VS Code's terminal, exit and reopen VS Code too.</p>
+<p><strong>Windows PowerShell:</strong></p>
+<pre><code class="language-powershell">py -3.13 --version
+git --version
 az version
-git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+</code></pre>
+<p><strong>macOS · the Homebrew path above:</strong></p>
+<pre><code class="language-bash">python3.13 --version
+git --version
+az version
+</code></pre>
+<p><strong>Linux · the Ubuntu path above:</strong></p>
+<pre><code class="language-bash">python3 --version
+git --version
+az version
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Expected output and requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab Python</td>
+<td>A version such as <code>Python 3.13.x</code>; <code>x</code> is the actual patch number. The minor version must be <strong>3.11, 3.12, 3.13, or 3.14</strong>.</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>An installed version such as <code>git version 2.x...</code>.</td>
+</tr>
+<tr>
+<td>Azure CLI</td>
+<td>JSON containing a version such as <code>"azure-cli": "2.x..."</code>. <strong>This check does not require Azure sign-in.</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Python information in <code>az version</code> describes Azure CLI's own runtime, not verification of the lab's Python installation. <strong>All three commands must succeed before</strong> downloading the lab or creating its virtual environment. For <code>command not found</code>, <code>not recognized</code>, or Microsoft Store opening instead of Python, see <a href="troubleshooting.html#environment">installation and PATH troubleshooting</a>.</p>
+<h4 id="setup-download">Download the lab files</h4>
+<pre><code class="language-sh">git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 </code></pre>
 <p>If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub <strong>Code → Download ZIP</strong>, extract the archive first and open the folder containing <code>pyproject.toml</code> and <code>requirements.lock</code>. Downloading only an HTML file omits the code, data, and images.</p>
-<p>Run subsequent commands from the <strong>lab folder containing <code>pyproject.toml</code> and <code>requirements.lock</code></strong>. <code>.venv</code> is an isolated Python package environment for this lab. Check that the first command below reports Python 3.11–3.14 before running the remaining lines.</p>
-<p><strong>On macOS/Linux, run:</strong></p>
-<pre><code class="language-bash">python3 --version
-python3 -m venv .venv
+<h4 id="setup-venv">Create a virtual environment with the verified Python</h4>
+<p>Run subsequent commands from the <strong>lab folder containing <code>pyproject.toml</code> and <code>requirements.lock</code></strong>. <code>.venv</code> is an isolated Python package environment for this lab. Create it with <strong>the same Python you verified above</strong>, running only the one path matching your operating system.</p>
+<p><strong>macOS · the Homebrew path above:</strong></p>
+<pre><code class="language-bash">python3.13 -m venv .venv
+source .venv/bin/activate
+</code></pre>
+<p><strong>Linux · the Ubuntu path above:</strong></p>
+<pre><code class="language-bash">python3 -m venv .venv
 source .venv/bin/activate
 </code></pre>
 <p><strong>In Windows PowerShell, run:</strong></p>
-<pre><code class="language-powershell">py -3 --version
-py -3 -m venv .venv
+<pre><code class="language-powershell">py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 </code></pre>
 <p>If PowerShell policy blocks activation, do not change organizational policy. Replace <code>python</code> in subsequent commands with <code>.\.venv\Scripts\python.exe</code>. If <code>.venv</code> already exists, confirm that it belongs to this lab rather than overwriting another task's environment.</p>
-<p><strong>After preparing the virtual environment, run these shared commands:</strong></p>
-<pre><code class="language-sh">python -m pip install -r requirements.lock
+<p><strong>After preparing the virtual environment, run these shared commands.</strong> Confirm Python 3.11–3.14 and a pip path inside <code>.venv</code> from the first two commands before installing packages.</p>
+<pre><code class="language-sh">python --version
+python -m pip --version
+python -m pip install -r requirements.lock
 python -m lab --help
 python scripts/build_datasets.py --language en --check
 </code></pre>
@@ -274,7 +365,7 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 </code></pre>
 <p>Repeat virtual-environment activation and these two settings in each new terminal. Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder. The generated <code>.env</code> is configuration, not a shell or PowerShell script; do not execute or <code>source</code> it.</p>
 <p class="note"><strong>Prepared environment:</strong> Agree on your responsibilities using the <a href="admin.html#handoff">handoff</a>. If command-line/Python access has not been configured for your own account, the operator performs setup in 02–03, ID lookup in 06, and commands in 09, then supplies the results. Do not copy the operator's <code>.env</code> or sign-in session.</p>
-<p class="completion-check"><strong>Completion criteria:</strong> The user, tenant, and subscription match; the Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Foundry environment →</a></p>
 
 <h2 id="resources">02. Create the Foundry environment</h2>
