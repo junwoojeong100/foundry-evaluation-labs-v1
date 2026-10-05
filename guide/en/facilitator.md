@@ -1,24 +1,26 @@
-# Facilitator guide · improve the measured result {#facilitator-guide}
+# Lab checklist · improve the measured result {#facilitator-guide}
 
-[Ten participant steps](handbook.md#setup) · [Operator handoff](admin-setup.md#handoff) · [Troubleshooting](troubleshooting.md)
+[Ten lab steps](handbook.md#setup) · [Environment and result worksheet](admin-setup.md#handoff) · [Troubleshooting](troubleshooting.md)
 
-Teach **evaluate → learn → improve → reevaluate** using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.
+Use this checklist to review your own **evaluate → learn → improve → reevaluate** lab. It is not an alternative to the [hands-on guide](handbook.md#setup). Do not manufacture a weak baseline or promise that every future evaluation will improve.
 
-## Before class {#prepare}
+## Check before starting {#prepare}
 
-Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete [handoff](admin-setup.md#handoff) and verified project, Agent, retrieval, and dataset registration.
+**Every participant performs 01–10 directly.** Use your own account, computer, dedicated environment, and Agent; do not delegate creation, commands, or cleanup. Confirm provisioning and role-assignment access, spending authorization, and deletion/retention scope before starting.
 
-**Separate environment preparation from learning evaluation in beginner classes.** Prefer operator preparation for 02–03, but still have participants verify their own account, project, and completion evidence. Assign SDK-command responsibility before class; do not distribute the operator's sign-in or ownership records.
+Follow [01's Windows/macOS/Linux installation](handbook.md#setup-local), complete [version checks](handbook.md#setup-verify) for **Python 3.11–3.14, Git, and Azure CLI**, and create the virtual environment. Resolve installation approvals, PATH, and proxy issues first.
 
-Before class, send the [Windows/macOS/Linux installation instructions in 01](handbook.md#setup-local) to everyone responsible for local commands. Complete [version checks](handbook.md#setup-verify) for **Python 3.11–3.14, Git, and Azure CLI**, create the virtual environment, and resolve corporate installation approvals, PATH, and proxy issues. Portal-only participants follow the responsibilities in their handoff; the command owner's setup does not establish another participant's readiness.
+After planning in 02, copy the [worksheet](admin-setup.md#handoff) into your `notes.md`. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records; use your originals when resuming.
 
-Start together with the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Ask participants to explain that **the Agent answers and the Judge scores**, and that **instructions, not model weights, will change**. Do not require memorized terminology or high scores to begin.
+Read the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Check that you can explain **the Agent answers and the Judge scores**, and **instructions, not model weights, will change**. Memorized terms and high scores are not starting conditions.
 
-Steps 04–06 use one evaluation wizard, not three evaluations. Read one scored example together in 07 before independent analysis. If a group shares an Agent, assign one owner for v2 creation and paid submissions.
+Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.
 
-New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare), and reserve time for cleanup in 10.
+Use each **code ↔ portal** table to connect **inputs → actual service call → saved result → the same portal object**. Do not execute implementation panels separately from the existing command. In particular, [06's lookup code](handbook.md#baseline-code-portal) does not submit, and [08 Optimizer](handbook.md#optimizer-code-portal) runs through actual portal actions.
 
-Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.
+New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare) and reserve time for cleanup in 10.
+
+Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. Create one reviewed v2 and reevaluate under the same criteria.
 
 Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.
 
@@ -30,20 +32,20 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 | 02 Provisioning | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
 | 03 Agent setup | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | 04 Dataset | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
-| 05 Criteria | Relevance 4, TaskAdherence 1, and the actual Judge | Saved remote definition and query-only input |
+| 05 Criteria | Relevance 4, TaskAdherence 1, and the actual Judge | Record the unsubmitted wizard settings and query-only input |
 | 06 Baseline | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | 07 Analysis | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
 | 08 Optimization | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
 | 09 Reevaluation | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |
-| 10 Cleanup | Preserve results and ownership, then perform authorized deletion or retention | Authorized group deletion or an approved dedicated/shared-resource retention handoff |
+| 10 Cleanup | Preserve results and ownership, then clean up your dedicated resources | Verified authorized group absence, or the actual inventory, cost responsibility, and review date for approved retention |
 
 Use **Individual turns / One time / Existing dataset**. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.
 
-## Discuss the actual cases {#evaluation-sharing}
+## Check quality using actual cases {#evaluation-sharing}
 
-Ask participants to connect **question → actual answer → evaluator score and reason → policy/reference answer**. `conversation_id → User view` shows the conversation; the evaluator reasons belong in **Detailed metrics result**, such as `Relevance.reason` and `TaskAdherence.reason`.
+Connect **question → actual answer → evaluator score and reason → policy/reference answer**. `conversation_id → User view` shows the conversation; the evaluator reasons belong in **Detailed metrics result**, such as `Relevance.reason` and `TaskAdherence.reason`.
 
-Discuss at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer or substitute local scores.
+Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.
 
 Keep the selected lab's twelve synthetic questions, actual responses and managed evaluator reasons in separate private run records. Preserve unsuccessful outcomes; remove tokens, cookies, signed URLs and private account metadata if results need to be shared.
 
@@ -69,7 +71,6 @@ Optimizer ranking is internal selection evidence, not the direct managed reevalu
 | No custom evaluators available | Switch **Custom only OFF** or select **View built-in evaluators** |
 | Duplicate local receipt or existing remote run | Retrieve that same run; do not rename it to force another submission |
 | Candidate changes model/tools/reasoning/schema | Reject an instruction-only comparison claim |
-| Draft becomes a numbered release | Stop; draft support is not enabled as expected |
 | Existing released v2 differs from local source | Do not overwrite it or create v3; preserve the release and inspect the mismatch |
 | Missing output or metrics | Report incomplete execution; do not reduce the denominator |
 | Statistical comparison is Inconclusive | Report that result; do not claim significance or equivalence |
@@ -93,8 +94,8 @@ After a timeout, identify **which existing job ID to resume** first. Use the [is
 
 <a id="next-loop"></a>
 
-Hand over the actual environment, run IDs, comparison conditions and final decision privately. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.
+Keep the actual environment, run IDs, comparison conditions, and final decision in your private records. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.
 
-Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.
+Record the same-model result, native statistical comparison, latency/token tradeoffs, and limits of a reused synthetic dev set. A lab adoption decision is not authorization to publish or activate in production; publication is outside this lab.
 
-**Before ending class, perform [the cleanup/retention checks in 10](handbook.md#cleanup) together.** Confirm authorized deletion or a cost owner and review date for retained resources. Do not delete the records needed to establish ownership or reopen the environment.
+**Finally, perform [the cleanup/retention checks in 10](handbook.md#cleanup) yourself.** Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. Do not delete records needed to establish ownership or reopen the environment.

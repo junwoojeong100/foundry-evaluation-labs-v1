@@ -6,7 +6,9 @@ English is the default. See the [main README](README.md) for fixed model roles a
 
 The ten-step guide starts with Azure account, permissions, local tools, and resource creation; it ends with authorized cleanup or retention. The core is **Foundry Evaluation → Agent Optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
 
-First-time participants can start with the guide's basic terms, terminal instructions, and ordered portal actions. Steps 04–06 use one evaluation wizard. Prepared classes agree who runs commands instead of sharing the operator's credentials or recreating resources.
+Every participant creates a dedicated environment and completes all ten steps with their own account and computer. Start with the basic terms, terminal instructions, and ordered portal actions. Steps 04–06 use one evaluation wizard. Setup references and checklists support your work rather than delegating it to separate roles. When resuming, use your original records and do not repeat completed creation or submissions.
+
+Existing commands and runtime code are unchanged. Read each command alongside the actual source and corresponding portal controls. Source panels explain real SDK/REST calls and guards; they are not additional programs to execute. Portal-only stages stay explicit rather than inventing local implementation.
 
 Install **Python 3.11–3.14, Git, and Azure CLI** using the [step-01 Windows/macOS/Linux instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local). The guide includes official installer alternatives, PATH troubleshooting, version checks, and virtual-environment creation with the verified Python. Already installed supported tools do not need reinstallation.
 

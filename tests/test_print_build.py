@@ -73,7 +73,7 @@ class PrintBuildTests(unittest.TestCase):
 
     def test_book_is_deterministic_and_uses_fixed_reference_date(self) -> None:
         self.assertEqual(self.rendered, build_print.render_book(self.sources, self.template))
-        self.assertIn('datetime="2026-10-03"', self.rendered)
+        self.assertIn('datetime="2026-10-05"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         plain = {source: "# 제목\n\n## 시작 {#start}\n\n본문" for source in self.sources}
         self.assertNotRegex(build_print.render_book(plain, self.template), r"\{\{[A-Z_]+\}\}")
@@ -83,7 +83,7 @@ class PrintBuildTests(unittest.TestCase):
         self.assertEqual([attrs["id"] for attrs in sections], ["book-" + key for key in build_print.BOOK_ORDER])
         self.assertNotIn("book-appendix", sections[0]["class"])
         self.assertTrue(all("book-appendix" in attrs["class"] for attrs in sections[1:]))
-        self.assertIn("Appendix 1 · Facilitator guide", self.rendered)
+        self.assertIn("Appendix 1 · Lab checklist", self.rendered)
 
     def test_all_heading_ids_are_unique_and_fragment_links_resolve(self) -> None:
         ids = [attrs["id"] for _, attrs in self.page.elements if "id" in attrs]
@@ -206,7 +206,7 @@ class PrintBuildTests(unittest.TestCase):
     def test_korean_book_preserves_its_language_and_nested_links(self) -> None:
         rendered = build_print.render_book(self.sources, self.template, language="ko")
         self.assertIn('<html lang="ko">', rendered)
-        self.assertIn("부록 1 · 강사용 진행 가이드", rendered)
+        self.assertIn("부록 1 · 실습 체크리스트", rendered)
         self.assertIn('href="../../web/styles.css"', rendered)
         self.assertIn('href="index.html"', rendered)
         self.assertIn('href="../print.html" lang="en"', rendered)

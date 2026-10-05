@@ -87,9 +87,9 @@ class GuideBuildTests(unittest.TestCase):
         cls.page.feed(cls.rendered)
 
     def test_build_is_deterministic_and_date_is_fixed(self) -> None:
-        self.assertEqual(build_guide.BUILD_DATE, "2026-10-03")
+        self.assertEqual(build_guide.BUILD_DATE, "2026-10-05")
         self.assertEqual(self.rendered, build_guide.render_guide(FIXTURE, self.template))
-        self.assertIn('datetime="2026-10-03"', self.rendered)
+        self.assertIn('datetime="2026-10-05"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         self.assertFalse(self.rendered.endswith("\n\n"))
 
@@ -428,6 +428,14 @@ class GuideBuildTests(unittest.TestCase):
         self.assertRegex(self.css, r"\.guide-content \.learning-path strong\s*\{[^}]*flex: 0 0 auto")
         self.assertRegex(self.css, r"\.guide-content \.learning-path strong\s*\{[^}]*white-space: nowrap")
 
+    def test_code_portal_tables_fit_mobile_with_and_without_javascript(self) -> None:
+        self.assertIn('h4[id$="-code-portal"] + table', self.css)
+        self.assertIn('h4[id$="-code-portal"] + .table-scroll table', self.css)
+        self.assertRegex(
+            self.css,
+            r'h4\[id\$="-code-portal"\] \+ \.table-scroll table\s*\{[^}]*min-width: 0;[^}]*table-layout: fixed',
+        )
+
     def test_missing_or_unknown_template_placeholders_fail_clearly(self) -> None:
         for placeholder in build_guide.REQUIRED_PLACEHOLDERS:
             with self.subTest(placeholder=placeholder):
@@ -455,13 +463,86 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn('href="index.html" lang="ko" hreflang="ko" data-language-link aria-current="page"', rendered)
 
     def test_translations_have_matching_keys_and_reject_unknown_languages(self) -> None:
-        for section in ("shell", "messages", "book"):
+        for section in ("shell", "source", "messages", "book"):
             self.assertEqual(
                 set(build_guide.LOCALES["en"][section]),
                 set(build_guide.LOCALES["ko"][section]),
             )
         with self.assertRaisesRegex(ValueError, "Unsupported guide language"):
             build_guide.render_guide(FIXTURE, self.template, language="fr")
+
+    def test_source_includes_extract_complete_symbols_without_execution(self) -> None:
+        source = (
+            "raise RuntimeError('must never execute this module')\n\n"
+            "VALUE = (\n    'one',\n    'two',\n)\n\n"
+            "class Example:\n"
+            "    @staticmethod\n"
+            "    def call():\n"
+            "        return '{{CONTENT}} & <tag>'\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lab").mkdir()
+            (root / "lab/example.py").write_text(source)
+            filename, code, language, start, end = build_guide.implementation_source(
+                "lab/example.py:Example.call", root=root,
+            )
+            self.assertEqual((filename, language, start, end), ("lab/example.py", "python", 9, 11))
+            self.assertEqual(code, "    @staticmethod\n    def call():\n        return '{{CONTENT}} & <tag>'\n")
+            constant = build_guide.implementation_source("lab/example.py:VALUE", root=root)
+            self.assertEqual(constant[1], "VALUE = (\n    'one',\n    'two',\n)\n")
+            (root / "schemas").mkdir()
+            (root / "schemas/example.json").write_text('{"type": "object"}\n')
+            self.assertEqual(
+                build_guide.implementation_source("schemas/example.json", root=root)[1:],
+                ('{"type": "object"}\n', "json", 1, 1),
+            )
+            with self.assertRaisesRegex(ValueError, "기호"):
+                build_guide.implementation_source("lab/example.py:missing", root=root)
+
+    def test_source_includes_reject_private_paths_traversal_and_symlinks(self) -> None:
+        for reference in (
+            "../lab/example.py:call", "/lab/example.py:call", ".lab/example.py:call",
+            ".env", "data/private.json", "lab/.private.py:call", "lab/example.txt",
+        ):
+            with self.subTest(reference=reference), self.assertRaises(ValueError):
+                build_guide.implementation_source(reference)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lab").mkdir()
+            (root / "original.py").write_text("def call():\n    return 1\n")
+            (root / "lab/example.py").symlink_to(root / "original.py")
+            with self.assertRaisesRegex(ValueError, "범위"):
+                build_guide.implementation_source("lab/example.py:call", root=root)
+
+    def test_source_includes_are_read_only_escaped_and_rebased_without_template_substitution(self) -> None:
+        source = "def example():\n    return '{{CONTENT}} & <tag>'\n"
+        with patch.object(
+            build_guide, "implementation_source",
+            return_value=("lab/example.py", source, "python", 3, 4),
+        ):
+            rendered = build_guide.render_guide(
+                "# Source\n\n<!-- source-code: lab/example.py:example -->\n",
+                self.template, relative_base="guide/en", output_base="docs",
+            )
+        page = PageInspector()
+        page.feed(rendered)
+        self.assertEqual(page.pre_text, [source])
+        self.assertIn('<details class="implementation-code" open>', rendered)
+        self.assertIn('href="../lab/example.py#L3-L4"', rendered)
+        self.assertIn("blob/main/lab/example.py#L3-L4", rendered)
+        self.assertIn("{{CONTENT}} &amp; &lt;tag&gt;", rendered)
+        self.assertIn("not another command", rendered)
+        self.assertIn(".implementation-code .copy-button { display: none; }", self.css)
+
+    def test_source_directives_inside_code_fences_are_literal_and_never_read(self) -> None:
+        source = "# Fixture\n\n```text\n<!-- source-code: lab/example.py:call -->\n```\n"
+        with patch.object(build_guide, "implementation_source") as read:
+            rendered = build_guide.render_guide(source, self.template)
+            read.assert_not_called()
+        page = PageInspector()
+        page.feed(rendered)
+        self.assertEqual(page.pre_text, ["<!-- source-code: lab/example.py:call -->\n"])
 
     def test_english_alias_preserves_query_and_fragment_with_a_static_fallback(self) -> None:
         alias = self._site_pages()["docs/english.html"]

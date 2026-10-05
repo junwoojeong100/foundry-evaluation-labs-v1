@@ -222,6 +222,11 @@ summary { cursor: pointer; }
 .copy-button:focus-visible { outline-color: #99c5ff; }
 .copy-button[data-copy-state="success"] { border-color: #75c7b0; color: #b8edda; }
 .copy-button[data-copy-state="error"] { border-color: #eab28f; color: #ffd8bc; }
+.guide-content .implementation-code { margin: 1.25rem 0 1.75rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
+.implementation-code > summary { min-height: 2.75rem; color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
+.implementation-code .implementation-note, .implementation-code .implementation-links { font-size: 0.84rem; line-height: 1.8; }
+.implementation-code .implementation-note { color: var(--muted); }
+.implementation-code .copy-button { display: none; }
 .code-block pre { margin: 0; border: 0; border-radius: 0; }
 .copy-feedback { display: block; margin: 0; color: #d3e2f4; font-size: 0.75rem; line-height: 1.6; }
 .copy-feedback:not(:empty) { padding: 0.15rem 1.25rem 0.9rem; }
@@ -348,6 +353,10 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .portal-shot figcaption { margin: 0.7rem 0.35rem 0.35rem; }
   .guide-content pre { padding: 1rem; font-size: 0.78rem; }
   .guide-content th, .guide-content td { padding: 0.75rem; }
+  .guide-content h4[id$="-code-portal"] + table,
+  .guide-content h4[id$="-code-portal"] + .table-scroll table { display: table; min-width: 0; width: 100%; table-layout: fixed; font-size: 0.78rem; }
+  h4[id$="-code-portal"] + table th, h4[id$="-code-portal"] + table td,
+  h4[id$="-code-portal"] + .table-scroll th, h4[id$="-code-portal"] + .table-scroll td { padding: 0.6rem 0.45rem; word-break: normal; overflow-wrap: anywhere; }
   .guide-content table.worked-comparison { display: table; min-width: 0; table-layout: fixed; font-size: 0.78rem; }
   .worked-comparison th, .worked-comparison td { padding: 0.6rem 0.45rem; word-break: normal; overflow-wrap: anywhere; }
   .worked-comparison th:first-child, .worked-comparison td:first-child { width: 22%; }
@@ -481,6 +490,9 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .guide-content .concept-flow strong, .concept-flow span, .concept-flow figcaption { font-size: 8pt; }
   .guide-content .wizard-context, .guide-content .completion-check { margin: 4mm 0; padding: 3mm; border-color: #777; border-radius: 0; background: #fff; color: #111; font-size: 9pt; break-inside: avoid-page; }
   .guide-content .portal-shot { margin: 5mm 0; padding: 2mm; border: 1px solid #aaa; border-radius: 0; background: #fff; break-inside: avoid-page; page-break-inside: avoid; }
+  .guide-content .implementation-code { margin: 4mm 0; padding: 0; border: 0; border-radius: 0; background: #fff; break-inside: auto; }
+  .implementation-code > summary { display: block; min-height: 0; font-size: 9pt; break-after: avoid-page; }
+  .implementation-code .implementation-note, .implementation-code .implementation-links { font-size: 8pt; }
   .guide-content .portal-shot img { width: auto; max-width: 100%; max-height: 112mm; margin: 0 auto; border: 0; border-radius: 0; object-fit: contain; }
   .portal-shot figcaption { margin: 2mm 1mm 0; color: #222; font-size: 8pt; line-height: 1.55; }
   .document-footer { padding: 5mm 0 0; margin-top: 7mm; color: #444; font-size: 8pt; }

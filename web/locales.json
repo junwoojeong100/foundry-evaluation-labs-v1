@@ -49,10 +49,16 @@
       "CHAPTER_UNIT": "chapter",
       "MAIN_CONTENTS": "Lab steps",
       "REFERENCE_CONTENTS": "In this reference guide",
-      "MAIN_NOTE": "Follow all ten steps from account setup to verified cleanup. Prepared environments can skip duplicate creation after the handoff checks.",
-      "REFERENCE_NOTE": "Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps.",
-      "RETURN_LABEL": "← Back to the participant guide",
+      "MAIN_NOTE": "Create your own lab environment and follow all ten steps through verified cleanup. When resuming, verify your records before repeating work.",
+      "REFERENCE_NOTE": "Use this reference at the linked step. You perform setup, evaluation, improvement, and cleanup yourself.",
+      "RETURN_LABEL": "← Back to the hands-on guide",
       "FALLBACK_TOC": "Read the guide"
+    },
+    "source": {
+      "LABEL": "Actual implementation",
+      "NOTE": "Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.",
+      "FILE": "Full source file",
+      "ONLINE": "View on GitHub"
     },
     "messages": {
       "menuOpen": "Open contents",
@@ -107,7 +113,7 @@
       "SKIP_LINK": "Skip to the print edition",
       "RETURN_LABEL": "← Back to the web guide",
       "PRINT_NOTE": "Complete print edition · Use your browser's print command to save an A4 PDF.",
-      "INTRODUCTION": "Follow ten steps from Azure account checks and resource creation through Foundry Evaluation, Agent Optimizer, comparison, and authorized cleanup or retention. Operator, facilitator, troubleshooting, and data references support the same path. Cross-document links stay within this book; file references use package paths.",
+      "INTRODUCTION": "Create your own lab environment and follow ten steps through Foundry Evaluation, Agent Optimizer, comparison, and authorized cleanup or retention. The setup reference, lab checklist, troubleshooting, and data guide support the same self-service path. Cross-document links stay within this book; file references use package paths.",
       "DOCUMENT_DATE": "As of",
       "CONTENTS": "Included documents",
       "APPENDIX": "Appendix",
@@ -133,7 +139,7 @@
       "PRINT_ALL": "전체 PDF",
       "PRINT_ALL_TITLE": "현재 문서 전체 · 인쇄 창에서 PDF로 저장",
       "NAV_LABEL": "문서 탐색",
-      "RELATED_DOCUMENTS": "참고 자료 · 운영자/심화",
+      "RELATED_DOCUMENTS": "참고 자료 · 설정과 점검",
       "DOCUMENTS_LABEL": "실습 문서 모음",
       "PROGRESS_TITLE": "내 학습 기록",
       "LOCAL_BADGE": "로컬",
@@ -165,10 +171,16 @@
       "CHAPTER_UNIT": "장",
       "MAIN_CONTENTS": "실습 순서",
       "REFERENCE_CONTENTS": "참고 문서 목차",
-      "MAIN_NOTE": "계정 확인부터 삭제 확인까지 10단계를 순서대로 진행합니다. 준비된 환경은 인수 확인 후 중복 생성을 건너뜁니다.",
-      "REFERENCE_NOTE": "본문에서 연결한 준비·승인·문제 해결·정리에 사용하는 참고 자료입니다. 참가자 실습은 10단계입니다.",
-      "RETURN_LABEL": "← 참가자 가이드로 돌아가기",
+      "MAIN_NOTE": "자신의 실습 환경을 만들고 정리까지 10단계를 직접 진행합니다. 재개할 때는 기록을 확인하고 완료한 작업을 반복하지 않습니다.",
+      "REFERENCE_NOTE": "본문에서 연결한 단계에 사용하는 참고 자료입니다. 환경 준비·평가·개선·정리는 모두 본인이 수행합니다.",
+      "RETURN_LABEL": "← 실습 가이드로 돌아가기",
       "FALLBACK_TOC": "본문 읽기"
+    },
+    "source": {
+      "LABEL": "실제 구현 코드",
+      "NOTE": "읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.",
+      "FILE": "전체 구현 파일",
+      "ONLINE": "GitHub에서 보기"
     },
     "messages": {
       "menuOpen": "학습 목차 열기",
@@ -223,7 +235,7 @@
       "SKIP_LINK": "인쇄본 본문으로 바로 가기",
       "RETURN_LABEL": "← 웹 가이드로 돌아가기",
       "PRINT_NOTE": "통합 인쇄본입니다. 브라우저의 인쇄 기능으로 A4 PDF를 저장합니다.",
-      "INTRODUCTION": "Azure 계정 확인·환경 생성부터 Foundry 평가·최적화·비교와 승인된 삭제 또는 보존까지 10단계로 진행합니다. 운영자·강사·문제 해결·데이터 문서는 같은 경로를 돕는 참고 자료입니다. 문서 링크는 책 안으로, 파일 참조는 패키지 경로로 연결됩니다.",
+      "INTRODUCTION": "자신의 실습 환경을 만들고 Foundry 평가·최적화·비교와 승인된 삭제 또는 보존까지 10단계를 직접 진행합니다. 환경 설정 참고·실습 체크리스트·문제 해결·데이터 설명은 같은 실습 경로를 돕는 자료입니다. 문서 링크는 책 안으로, 파일 참조는 패키지 경로로 연결됩니다.",
       "DOCUMENT_DATE": "문서 기준",
       "CONTENTS": "수록 문서",
       "APPENDIX": "부록",

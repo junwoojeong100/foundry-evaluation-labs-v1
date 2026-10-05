@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
-  <title>Facilitator guide · improve the measured result · Foundry Lab Guide</title>
+  <title>Lab checklist · improve the measured result · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
@@ -53,9 +53,9 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#prepare">Before class</a></li>
+<li><a href="#prepare">Check before starting</a></li>
 <li><a href="#checkpoints">Verify completion across all ten steps</a></li>
-<li><a href="#evaluation-sharing">Discuss the actual cases</a></li>
+<li><a href="#evaluation-sharing">Check quality using actual cases</a></li>
 <li><a href="#interpret-results">Interpret improvements correctly</a></li>
 <li><a href="#resume">Recover without changing the experiment</a></li>
 <li><a href="#misconceptions">Correct common misconceptions</a></li>
@@ -67,9 +67,9 @@
         <details class="related-documents">
           <summary>Reference guides and appendices</summary>
           <nav aria-label="Lab documents"><ul>
-<li><a href="index.html">Participant guide</a></li>
-<li><a href="facilitator.html" aria-current="page">Facilitator guide</a></li>
-<li><a href="admin.html">Operator setup</a></li>
+<li><a href="index.html">Hands-on guide</a></li>
+<li><a href="facilitator.html" aria-current="page">Lab checklist</a></li>
+<li><a href="admin.html">Environment setup reference</a></li>
 <li><a href="troubleshooting.html">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -95,30 +95,31 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
+        <p class="sidebar-note">Use this reference at the linked step. You perform setup, evaluation, improvement, and cleanup yourself. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
+<a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
+        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Facilitator guide · improve the measured result">
-        <h1 id="facilitator-guide">Facilitator guide · improve the measured result</h1>
-<p><a href="index.html#setup">Ten participant steps</a> · <a href="admin.html#handoff">Operator handoff</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
-<p>Teach <strong>evaluate → learn → improve → reevaluate</strong> using business-specific tasks and real managed results. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
-<h2 id="prepare">Before class</h2>
-<p>Decide whether participants perform 01–03 or receive an operator-prepared environment. Self-setup requires access, cost authorization, and a cleanup owner. Prepared classes need a complete <a href="admin.html#handoff">handoff</a> and verified project, Agent, retrieval, and dataset registration.</p>
-<p><strong>Separate environment preparation from learning evaluation in beginner classes.</strong> Prefer operator preparation for 02–03, but still have participants verify their own account, project, and completion evidence. Assign SDK-command responsibility before class; do not distribute the operator's sign-in or ownership records.</p>
-<p>Before class, send the <a href="index.html#setup-local">Windows/macOS/Linux installation instructions in 01</a> to everyone responsible for local commands. Complete <a href="index.html#setup-verify">version checks</a> for <strong>Python 3.11–3.14, Git, and Azure CLI</strong>, create the virtual environment, and resolve corporate installation approvals, PATH, and proxy issues. Portal-only participants follow the responsibilities in their handoff; the command owner's setup does not establish another participant's readiness.</p>
-<p>Start together with the <a href="index.html#basics">six basic terms</a> and <a href="index.html#evaluation-flow">question → answer → scoring diagram</a>. Ask participants to explain that <strong>the Agent answers and the Judge scores</strong>, and that <strong>instructions, not model weights, will change</strong>. Do not require memorized terminology or high scores to begin.</p>
-<p>Steps 04–06 use one evaluation wizard, not three evaluations. Read one scored example together in 07 before independent analysis. If a group shares an Agent, assign one owner for v2 creation and paid submissions.</p>
-<p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. If the environment prefix differs, use the actual name printed by the command. Verify <a href="admin.html#prepare">model roles and identity</a>, and reserve time for cleanup in 10.</p>
-<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. The default path creates one reviewed v2 and reevaluates it; only operators who verified draft support use a separate draft workflow.</p>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Lab checklist · improve the measured result">
+        <h1 id="facilitator-guide">Lab checklist · improve the measured result</h1>
+<p><a href="index.html#setup">Ten lab steps</a> · <a href="admin.html#handoff">Environment and result worksheet</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
+<p>Use this checklist to review your own <strong>evaluate → learn → improve → reevaluate</strong> lab. It is not an alternative to the <a href="index.html#setup">hands-on guide</a>. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
+<h2 id="prepare">Check before starting</h2>
+<p><strong>Every participant performs 01–10 directly.</strong> Use your own account, computer, dedicated environment, and Agent; do not delegate creation, commands, or cleanup. Confirm provisioning and role-assignment access, spending authorization, and deletion/retention scope before starting.</p>
+<p>Follow <a href="index.html#setup-local">01's Windows/macOS/Linux installation</a>, complete <a href="index.html#setup-verify">version checks</a> for <strong>Python 3.11–3.14, Git, and Azure CLI</strong>, and create the virtual environment. Resolve installation approvals, PATH, and proxy issues first.</p>
+<p>After planning in 02, copy the <a href="admin.html#handoff">worksheet</a> into your <code>notes.md</code>. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records; use your originals when resuming.</p>
+<p>Read the <a href="index.html#basics">six basic terms</a> and <a href="index.html#evaluation-flow">question → answer → scoring diagram</a>. Check that you can explain <strong>the Agent answers and the Judge scores</strong>, and <strong>instructions, not model weights, will change</strong>. Memorized terms and high scores are not starting conditions.</p>
+<p>Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.</p>
+<p>Use each <strong>code ↔ portal</strong> table to connect <strong>inputs → actual service call → saved result → the same portal object</strong>. Do not execute implementation panels separately from the existing command. In particular, <a href="index.html#baseline-code-portal">06's lookup code</a> does not submit, and <a href="index.html#optimizer-code-portal">08 Optimizer</a> runs through actual portal actions.</p>
+<p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. If the environment prefix differs, use the actual name printed by the command. Verify <a href="admin.html#prepare">model roles and identity</a> and reserve time for cleanup in 10.</p>
+<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. Create one reviewed v2 and reevaluate under the same criteria.</p>
 <p>Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.</p>
 <h2 id="checkpoints">Verify completion across all ten steps</h2>
 <table>
@@ -153,7 +154,7 @@
 <tr>
 <td>05 Criteria</td>
 <td>Relevance 4, TaskAdherence 1, and the actual Judge</td>
-<td>Saved remote definition and query-only input</td>
+<td>Record the unsubmitted wizard settings and query-only input</td>
 </tr>
 <tr>
 <td>06 Baseline</td>
@@ -177,15 +178,15 @@
 </tr>
 <tr>
 <td>10 Cleanup</td>
-<td>Preserve results and ownership, then perform authorized deletion or retention</td>
-<td>Authorized group deletion or an approved dedicated/shared-resource retention handoff</td>
+<td>Preserve results and ownership, then clean up your dedicated resources</td>
+<td>Verified authorized group absence, or the actual inventory, cost responsibility, and review date for approved retention</td>
 </tr>
 </tbody>
 </table>
 <p>Use <strong>Individual turns / One time / Existing dataset</strong>. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.</p>
-<h2 id="evaluation-sharing">Discuss the actual cases</h2>
-<p>Ask participants to connect <strong>question → actual answer → evaluator score and reason → policy/reference answer</strong>. <code>conversation_id → User view</code> shows the conversation; the evaluator reasons belong in <strong>Detailed metrics result</strong>, such as <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</p>
-<p>Discuss at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer or substitute local scores.</p>
+<h2 id="evaluation-sharing">Check quality using actual cases</h2>
+<p>Connect <strong>question → actual answer → evaluator score and reason → policy/reference answer</strong>. <code>conversation_id → User view</code> shows the conversation; the evaluator reasons belong in <strong>Detailed metrics result</strong>, such as <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</p>
+<p>Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.</p>
 <p>Keep the selected lab's twelve synthetic questions, actual responses and managed evaluator reasons in separate private run records. Preserve unsuccessful outcomes; remove tokens, cookies, signed URLs and private account metadata if results need to be shared.</p>
 <h2 id="interpret-results">Interpret improvements correctly</h2>
 <p><a id="review"></a></p>
@@ -225,10 +226,6 @@
 <tr>
 <td>Candidate changes model/tools/reasoning/schema</td>
 <td>Reject an instruction-only comparison claim</td>
-</tr>
-<tr>
-<td>Draft becomes a numbered release</td>
-<td>Stop; draft support is not enabled as expected</td>
 </tr>
 <tr>
 <td>Existing released v2 differs from local source</td>
@@ -283,9 +280,9 @@
 </table>
 <h2 id="finish">Finish with a separate lab record</h2>
 <p><a id="next-loop"></a></p>
-<p>Hand over the actual environment, run IDs, comparison conditions and final decision privately. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.</p>
-<p>Report the same-model result, native statistical comparison, any latency/token tradeoffs and the remaining limits of a reused synthetic dev set. Candidate activation is a separate operator decision; no production publication is part of this workshop.</p>
-<p><strong>Before ending class, perform <a href="index.html#cleanup">the cleanup/retention checks in 10</a> together.</strong> Confirm authorized deletion or a cost owner and review date for retained resources. Do not delete the records needed to establish ownership or reopen the environment.</p>
+<p>Keep the actual environment, run IDs, comparison conditions, and final decision in your private records. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.</p>
+<p>Record the same-model result, native statistical comparison, latency/token tradeoffs, and limits of a reused synthetic dev set. A lab adoption decision is not authorization to publish or activate in production; publication is outside this lab.</p>
+<p><strong>Finally, perform <a href="index.html#cleanup">the cleanup/retention checks in 10</a> yourself.</strong> Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. Do not delete records needed to establish ownership or reopen the environment.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -297,7 +294,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

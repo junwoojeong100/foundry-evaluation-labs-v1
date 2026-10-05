@@ -2,12 +2,12 @@
 
 This directory contains the reproducible infrastructure contract used to prepare
 an isolated lab environment. It supports steps **01–03** of the end-to-end
-participant guide. A participant with approved provisioning access can prepare
-their own environment; otherwise the owning operator performs these steps and
-hands off actual configuration values.
+hands-on guide. Every participant prepares their own dedicated environment and
+completes the lab with their own identity. Obtain approved provisioning,
+role-assignment, and spending access before creating resources.
 
-Use the [operator guide](../guide/en/admin-setup.md) or
-[한국어 운영자 가이드](../guide/admin-setup.md) for the current prerequisites.
+Use the [environment setup reference](../guide/en/admin-setup.md) or
+[한국어 환경 설정 참고](../guide/admin-setup.md) for the current prerequisites.
 The template also provisions the read-only knowledge and monitoring connections
 used by the Contoso sample agent. The participant guide connects this setup to
 **Foundry Evaluation → Agent Optimizer → same-criteria reevaluation → cleanup**.
@@ -85,8 +85,9 @@ models**, so that role remains `gpt-5.5`. See
 Both released instruction variants use the same Sol model and generation
 settings. Changing the Agent model requires a new same-model baseline and
 candidate comparison; old scores are not transferable. Keep the workshop's
-released versions at v1/v2 and use explicitly pinned drafts for candidate
-development. An existing released version is immutable and is not overwritten.
+released versions at v1/v2. Create one reviewed candidate and reevaluate it
+under the same conditions; separate draft experiments are outside this lab.
+An existing released version is immutable and is not overwritten.
 
 To choose other verified deployments, supply an explicit models JSON with
 `plan --models-json <file>`. Each entry contains `name`, `version`, `sku`,
@@ -97,9 +98,11 @@ support for every role.
 
 ## Approval, ownership, and execution
 
-The generated `approval.example.json` is **unapproved**. Operators must bind
-actual user authorization to the exact plan/template/model hashes before
-applying it. Repository documentation is not a customer's spending approval.
+The generated `approval.example.json` is **unapproved**. Bind actual
+authorization to your own identity and the exact plan/template/model hashes
+before applying it. `approved_by` must match your planned `expected_user`; this
+identity check is not an independent organizational signature. Repository
+documentation is not spending authorization.
 
 ```bash
 python3 -S -m lab.bootstrap preflight \
@@ -123,10 +126,11 @@ Quota is capacity, not free inference. ARM capacity units depend on the
 model/SKU; never apply a universal TPM conversion. Budget alerts are not spending
 cutoffs, and hosting/log costs can continue after a terminal closes.
 
-The operator must verify the intended user, tenant, and subscription for CLI,
-SDK, and portal separately. Do not infer an MCP principal from a subscription
-list. No provider registration, shared permission expansion, cross-region
-fallback, rollback, or resource deletion is automatic.
+Verify your intended user, tenant, and subscription for CLI, SDK, and portal
+separately. Do not infer an MCP principal from a subscription list. Register
+only the required providers through the documented authorized procedure;
+bootstrap does not register them automatically. Shared permission expansion,
+cross-region fallback, rollback, and resource deletion are not automatic.
 
 ## Resume and retain accurate evidence
 
@@ -141,7 +145,7 @@ fallback, rollback, or resource deletion is automatic.
 - An `APPLIED` result confirms infrastructure, not model quality or production
   approval. Follow it with a real connectivity check and managed evaluation.
 - `python -m lab cleanup` removes only recorded objects, not the resource group
-  or continuing Search/model/log hosting. Follow participant
+  or continuing Search/model/log hosting. Follow
   [step 10](../guide/en/handbook.md#cleanup) for authorized dedicated-group
   deletion and an `az group exists` absence check. Preserve shared resources.
 

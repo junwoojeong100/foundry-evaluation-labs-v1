@@ -30,16 +30,12 @@ confirm=True)` uses the configured, verified Azure CLI identity and Judge
 deployment. It is a **paid execution path**: caller confirmation does not replace
 budget, data-processing, or retention approval.
 
-**Actual LIVE outcome: execution completed, calibration quality HOLD.**
-The initial protocol rejection and both scored calibration runs are preserved.
-With retrieval rubric 1.1.0, policy correctness and relevance each agreed on
-16/16 references, while retrieval groundedness agreed on 14/15 applicable
-references. The one missing-retrieval fixture is not applicable, not a fabricated
-perfect score. No reference was removed or relabeled and no threshold was
-lowered. This paragraph describes the earlier calibration record, not the
-[current English v1/v2 verification](../../guide/verification.md). Keep the
-original private calibration receipts when reproducing that earlier result;
-the current report does not attest a new calibration run.
+This reusable reference makes no claim that calibration has run in your
+environment. Execution completion and calibration quality are separate
+outcomes. Keep your actual run IDs, agreement results, failures, and receipts
+in a private run folder, not in the guide. Missing-retrieval fixtures are not
+applicable to retrieval scoring, not fabricated perfect scores; do not remove
+references, relabel results, or lower thresholds to manufacture agreement.
 
 The authoritative approval record remains private. Existing/shared resources
 and policies are outside scope. There is no deletion authorization. Local mocks

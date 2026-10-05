@@ -1,12 +1,14 @@
 # 합성 한국어 평가 데이터 {#data-guide}
 
-[데이터셋 단계](../guide/handbook.md#start) · [운영자 인수](../guide/admin-setup.md#handoff) · [English data guide](README.en.md)
+[데이터셋 단계](../guide/handbook.md#start) · [실습 기록표](../guide/admin-setup.md#handoff) · [English data guide](README.en.md)
 
 ## 비교에는 변경 없는 데이터셋 하나 {#start}
 
-한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 새 프로젝트는 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 준비된 프로젝트에서는 운영자가 확인한 등록을 재사용합니다.
+한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
 
 비교하는 동안 파일의 바이트·SHA-256·질문·참고 답변·언어를 유지합니다. 한국어와 영어 데이터는 분리하며 한 비교 안에서 섞지 않습니다.
+
+[04의 코드 ↔ 포털 표](../guide/handbook.md#dataset-code-portal)에서 로컬 행 수·해시 확인과 실제 포털 등록을 구분합니다. [05의 원격 설정 검증 코드](../guide/handbook.md#criteria-code-portal), [09의 실제 SDK 제출 코드](../guide/handbook.md#decision-code-portal)는 같은 데이터·매핑·버전이 유지되는 과정을 보여줍니다. 읽기용 소스를 별도로 실행하지 않습니다.
 
 ## 목적과 한계 {#scope}
 
@@ -18,7 +20,7 @@ Contoso Atlas Cloud의 정책·질문·참고 답변은 합성 자료입니다. 
 
 [data/cases.jsonl](cases.jsonl)은 100건이며 `train` 56, `validation` 12, `dev` 12, `test` 20으로 나뉩니다. 이번 워크숍은 dev12만 사용하며 나머지는 추가 필수 실습이 아닙니다.
 
-결과를 보고 쉬운 행만 선택하거나 중복·병합하거나 참고 답변을 바꾸지 않습니다. [정책 문서 8개](knowledge/documents.json)의 `ATLAS-*` ID와 발효일을 유지합니다. 정책 연결은 [03의 준비 명령](../guide/handbook.md#agent)으로 참가자 또는 승인된 운영자가 생성합니다.
+결과를 보고 쉬운 행만 선택하거나 중복·병합하거나 참고 답변을 바꾸지 않습니다. [정책 문서 8개](knowledge/documents.json)의 `ATLAS-*` ID와 발효일을 유지합니다. 정책 연결도 본인이 [03의 준비 명령](../guide/handbook.md#agent)으로 생성합니다.
 
 ## 업로드·응답 스키마 {#schema}
 
@@ -49,7 +51,7 @@ Agent는 티켓 제출·구독 변경·크레딧 승인·데이터 삭제를 실
 
 **Foundry → Build → Evaluations → Create → Agent**에서 명시적 기준선 버전과 **Individual turns / One time / Existing dataset**을 선택합니다. 버전 선택으로 체크가 해제되면 대상을 다시 선택합니다.
 
-기존 dev12 등록을 선택합니다. 등록이 없는 새 승인 프로젝트에서만 정확한 언어 파일을 업로드하고 새 데이터셋 버전을 기록합니다. 미리 보기가 5행이어도 실제 파일·평가 범위는 12행입니다.
+처음에는 **Upload new dataset → Browse**로 정확한 한국어 파일을 올려 `lab-ko-dev12` 버전 `1`을 등록합니다. 재개·Optimizer·재평가는 **Existing dataset**에서 같은 이름·버전을 선택합니다. 미리 보기가 5행이어도 실제 파일·평가 범위는 12행입니다.
 
 custom prompt override는 비워 둡니다. 필드 매핑 화면이 나타나면 `query → query`를 사용합니다. 서비스 매핑은 **Relevance `response={{sample.output_text}}`**, **TaskAdherence `response={{sample.output_items}}`**이며 추가 JSONL 열이 아닙니다.
 
@@ -61,8 +63,8 @@ custom prompt override는 비워 둡니다. 필드 매핑 화면이 나타나면
 
 helper는 질문·참고 자료와 실제 행별 Agent 버전·지시를 대조합니다. 오류·누락을 성공으로 바꾸거나 분모에서 빼지 않습니다. JSON·분류 검사는 부가 검증이며 **관리형 평가를 대신하는 로컬 Judge가 아닙니다**.
 
-Agent Optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침을 검토하고 모델·도구·추론·스키마를 유지합니다. 검토한 v2를 한 번 비교하며 정식 버전을 계속 올리지 않습니다. 별도 초안은 지원을 확인한 운영자가 사용할 수 있습니다.
+Agent Optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침 전체를 검토하고 모델·도구·추론·스키마를 유지합니다. 검토한 v2를 한 번 비교하며 정식 버전을 계속 올리지 않습니다. 유지할 후보가 없으면 v1 유지 이유를 기록하고 10으로 진행합니다.
 
 결과를 공유하기 전에 인증 정보·서명된 URL·비공개 계정 정보를 제거합니다. 오류·누락을 포함해 전체 사례를 기록합니다.
 
-등록된 데이터셋은 `cleanup`만으로 모두 삭제되지 않습니다. 실습 후 [10의 보관·삭제 절차](../guide/handbook.md#cleanup)에서 등록·평가 기록과 전용/공유 프로젝트의 보존 범위를 확인합니다.
+등록된 데이터셋은 `cleanup`만으로 모두 삭제되지 않습니다. 실습 후 [10의 보관·삭제 절차](../guide/handbook.md#cleanup)에서 결과를 보관하고 자신의 전용 그룹을 정리합니다. 보존이 승인된 경우에만 실제 남은 등록·평가 기록과 비용·검토일을 기록합니다. 공유·외부 자원은 삭제하지 않습니다.

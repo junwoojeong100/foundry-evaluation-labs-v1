@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
-  <title>Operator setup, authorization, and cleanup · Foundry Lab Guide</title>
+  <title>Environment setup reference · access, authorization, and cleanup · Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html">
@@ -53,7 +53,7 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">Distinguish new and prepared environments</a></li>
+<li><a href="#start">Prepare your dedicated lab environment</a></li>
 <li><a href="#prepare">Verify model roles and actual deployments</a><ul>
 <li><a href="#throughput">Set TPM before starting model calls</a></li>
 </ul>
@@ -66,7 +66,7 @@
 <li><a href="#approval">Complete the actual authorization file</a></li>
 <li><a href="#rbac">Verify permissions and provider registration</a></li>
 <li><a href="#cost">Costs and operational boundaries</a></li>
-<li><a href="#handoff">Hand off actual values without gaps</a></li>
+<li><a href="#handoff">Record actual values and completion evidence</a></li>
 <li><a href="#cleanup">Verify deletion and retention</a></li>
 </ul>
 </div>
@@ -75,9 +75,9 @@
         <details class="related-documents">
           <summary>Reference guides and appendices</summary>
           <nav aria-label="Lab documents"><ul>
-<li><a href="index.html">Participant guide</a></li>
-<li><a href="facilitator.html">Facilitator guide</a></li>
-<li><a href="admin.html" aria-current="page">Operator setup</a></li>
+<li><a href="index.html">Hands-on guide</a></li>
+<li><a href="facilitator.html">Lab checklist</a></li>
+<li><a href="admin.html" aria-current="page">Environment setup reference</a></li>
 <li><a href="troubleshooting.html">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -103,23 +103,24 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
+        <p class="sidebar-note">Use this reference at the linked step. You perform setup, evaluation, improvement, and cleanup yourself. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
+<a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
+        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="en" aria-label="Operator setup, authorization, and cleanup">
-        <h1 id="operator-guide">Operator setup, authorization, and cleanup</h1>
-<p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Facilitator</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
-<p>Use this reference for participant steps <strong>02 provisioning authorization, 03 Agent setup, and 10 deletion</strong>. Participants preparing their own environments can use it too. Supply actual values and completion evidence rather than leaving prerequisites implicit.</p>
-<h2 id="start">Distinguish new and prepared environments</h2>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Environment setup reference · access, authorization, and cleanup">
+        <h1 id="operator-guide">Environment setup reference · access, authorization, and cleanup</h1>
+<p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Lab checklist</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
+<p>Use this reference for <strong>your own steps 02 provisioning, 03 Agent setup, and 10 cleanup</strong>. Follow the <a href="index.html#setup">hands-on guide</a> in order and open only the linked sections you need. Record actual values and completion evidence in your <code>.lab/lab-en/notes.md</code>.</p>
+<p>To read inside unchanged commands, open <a href="index.html#resources-code-portal">02 creation code/portal</a>, <a href="index.html#knowledge-code-portal">03 retrieval code/portal</a>, <a href="index.html#agent-code-portal">Agent configuration</a>, <a href="index.html#decision-code-portal">09 submission/lookup</a>, and <a href="index.html#cleanup-code-portal">10 cleanup scope</a>. Source panels are read-only, not instructions to run another program or duplicate creation in the portal.</p>
+<h2 id="start">Prepare your dedicated lab environment</h2>
 <table>
 <thead>
 <tr>
@@ -129,26 +130,26 @@
 </thead>
 <tbody>
 <tr>
-<td>No project exists</td>
-<td>Start with <a href="index.html#setup">01 account setup</a> and use the authorized <code>bootstrap plan → preflight → apply → status</code> path.</td>
+<td>Starting for the first time</td>
+<td>Begin at <a href="index.html#setup">01 account setup</a> and perform the authorized <code>bootstrap plan → preflight → apply → status</code> path yourself.</td>
 </tr>
 <tr>
-<td>The operator already prepared this lab</td>
-<td>Supply actual project, Agent, data, and access through the <a href="#handoff">handoff</a>; participants do not duplicate creation.</td>
+<td>Resuming your same lab</td>
+<td>Compare original config, manifest, receipts, and actual state with the <a href="#handoff">worksheet</a>. Do not repeat completed creation or submission.</td>
 </tr>
 <tr>
-<td>Only an existing shared project is available</td>
-<td>Bootstrap does not silently adopt existing groups. Its owner must define the preparation/change scope and approve project-specific access.</td>
+<td>Only another workload's shared project is available</td>
+<td>This lab does not adopt existing groups. Obtain subscription access and authorization to create your own dedicated environment before continuing.</td>
 </tr>
 </tbody>
 </table>
-<p>Verify CLI, SDK, and portal identities separately. Never transfer the operator's token or sign-in session to a participant. The owning operator runs bootstrap-bound creation commands. Other participants use their own assigned portal roles; SDK access requires separate configuration and permissions matching their own identity.</p>
-<p><strong>For groups new to Azure and Foundry, operator-prepared environments are recommended.</strong> Participants check their own account/computer in 01, receive completion evidence for 02–03, and continue at 04. Without participant-specific SDK configuration, the operator handles ID lookup in 06, v2 creation/reevaluation commands in 09, and owned-object cleanup in 10. Participants inspect settings/results using their own portal access.</p>
-<p>Use separate environments/Agents for individual labs. For a group sharing one Agent, designate <strong>one person to create v2 and submit paid jobs</strong>. Record that responsibility so several participants do not attempt different v2 releases or duplicate the same evaluation.</p>
-<p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the handoff.</p>
+<p>Verify CLI, SDK, and portal identities separately and use the same personal identity throughout. Never use another person's tokens, sign-in session, configuration, or ownership records. Run creation, ID lookup, v2 creation, reevaluation, and cleanup yourself.</p>
+<p><strong>Every participant uses their own dedicated environment and Agent.</strong> Do not have several people create the same Agent's v2 or submit the same paid job. The same example environment name on separate computers still produces Azure resource names with unique suffixes.</p>
+<p>Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.</p>
+<p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.</p>
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/en/00-resource-group.png" alt="Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
-<figcaption><strong>Check the isolated resource group.</strong> Open the group named in the handoff and confirm its subscription, region, and resource inventory. Verify that the Foundry project and supporting resources belong to this lab. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Foundry project and supporting resources belong to your lab. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <h2 id="prepare">Verify model roles and actual deployments</h2>
@@ -186,10 +187,10 @@
 <p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
 <p><strong>Distinguish additional monitoring resources.</strong> Application Insights can automatically add a <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">default Failure Anomalies alert and Smart Detection action group</a>. Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same <code>bootstrap status</code> again; do not edit the manifest or delete the alert to bypass the check.</p>
 <h3 id="throughput">Set TPM before starting model calls</h3>
-<p>The <a href="index.html#resources-tpm">participant step-02 recommendations</a> require <strong>100,000 TPM</strong> per Agent, Judge, and shared Optimizer/planner deployment, and <strong>10,000 TPM</strong> for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. For simultaneous English/Korean environments, sum both allocations for each model. Do not count two roles sharing one deployment as two deployments.</p>
+<p>The <a href="index.html#resources-tpm">step-02 recommendations</a> require <strong>100,000 TPM</strong> per Agent, Judge, and shared Optimizer/planner deployment, and <strong>10,000 TPM</strong> for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. Sum per-model allocations across simultaneous dedicated environments. Count the Optimizer/planner deployment shared within one environment only once.</p>
 <ol>
 <li><strong>New dedicated environment:</strong> Check generative capacity 100 and embedding capacity 10 in the updated <code>bootstrap plan</code>, then authorize and provision that exact plan. Existing plans do not change automatically. For an unprovisioned lower-capacity plan, prepare a new environment name and authorization rather than editing the hashed plan.</li>
-<li><strong>Separately managed prepared deployment:</strong> Its owner checks <strong>Tokens per Minute Rate Limit</strong> under Foundry <strong>Build → Models → Deployments → deployment name → Details</strong>. Use <strong>Edit</strong> to meet these values only when the change is authorized. If the UI uses thousands of tokens, also check the final TPM display, save, and allow propagation. <strong>Portal-only changes to a bootstrap-managed environment cause plan drift.</strong> Do not edit hashes/approvals to bypass it; prepare a newly authorized dedicated environment with sufficient capacity when necessary.</li>
+<li><strong>Inspect actual deployments:</strong> Read <strong>Tokens per Minute Rate Limit</strong> under Foundry <strong>Build → Models → Deployments → deployment name → Details</strong>. Distinguish capacity displayed in thousands of tokens from the final TPM value. <strong>Changing only the portal's Edit setting for this bootstrap environment causes plan drift.</strong> If insufficient, inspect the plan, actual limit, and authorization; prepare a newly authorized dedicated environment with sufficient capacity when needed. Never edit hashes or approvals to bypass checks.</li>
 <li><strong>Verify the setting:</strong> With that environment's <code>.env</code> and language-specific artifacts path, run the read-only check below. Inspect each <code>*_tpm</code> entry's <code>observed</code>, <code>expected</code>, and <code>reason</code>.</li>
 </ol>
 <pre><code class="language-sh">python -m lab --config .lab/lab-en/.env preflight
@@ -203,17 +204,17 @@
 </figure>
 
 <h2 id="bootstrap">Prepare an executable Agent</h2>
-<p>Prepare <strong>Python 3.11–3.14, Git, and Azure CLI</strong> using the <a href="index.html#setup-local">OS-specific installation instructions in 01</a>, then <a href="index.html#setup-verify">verify all three versions in a new terminal</a>. Do not reinstall working tools; resolve installation restrictions, administrator permissions, and proxy issues with the responsible team before class. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p>Prepare <strong>Python 3.11–3.14, Git, and Azure CLI</strong> using the <a href="index.html#setup-local">OS-specific installation instructions in 01</a>, then <a href="index.html#setup-verify">verify all three versions in a new terminal</a>. Do not reinstall working tools; resolve installation restrictions, permissions, and proxy issues first. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent <code>.venv</code> or treat fake IDs in <code>.env.example</code> as a live environment.</p>
 <p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <code>iq prepare → iq probe</code> succeeds, create a policy-connected v1:</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>
 <p><code>native-agent</code> uses <code>ensure_fixed_release</code> to allow only <strong>1 and 2</strong>, comparing local workspace ownership with remote metadata. It reuses matching configurations, rejects a different v2, and never creates v3. It also retains a model-deployment snapshot and rejects drift. Receipts <code>agents/native-v1.json</code>, <code>agents/native-v2.json</code>, and <code>agents/native-model.json</code> belong to that environment's artifacts folder.</p>
 <p><code>native_response_format()</code> projects the common schema into the supported strict-generation subset. Citation uniqueness and <code>needs_human</code>/route consistency still require post-generation checks. Valid JSON does not establish policy correctness.</p>
 <p><a id="sdk-prerequisites"></a></p>
-<p><strong>Creating v2 is not completing evaluation.</strong> The default path creates one unpublished v2 from reviewed instructions, runs the same managed evaluation, and then decides whether to accept it. Experienced operators may first test <code>draft-…</code> versions as in the historical rehearsal, but must verify subscription support. Draft validation is not an unstated prerequisite for the default path.</p>
-<pre><code class="language-bash">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
+<p><strong>Creating v2 is not completing evaluation.</strong> Create one v2 from the <a href="index.html#optimize">complete instructions reviewed in 08</a>, run <a href="index.html#decision">the same managed evaluation in 09</a>, then decide whether to accept it. Use only released v1/v2; separate <code>draft-…</code> experiments are outside this lab. Do not publish the created v2 to production.</p>
+<pre><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
 </code></pre>
-<p>Do not combine portal Promote and CLI creation. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.</p>
+<p>Do not use portal Promote in this lab; create v2 with 09's CLI. Promoting first can conflict with the CLI's local/remote ownership checks. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.</p>
 <p>Retrieve IDs with <code>native-evals --name lab-en-learning-loop</code>. The reevaluation helper copies the baseline data source and checks the <strong>remote</strong> contract. Do not replace the remote definition with a stale local <code>JUDGE_DEPLOYMENT</code>.</p>
 <h2 id="scope">Freeze the comparison conditions</h2>
 <table>
@@ -261,7 +262,7 @@
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
 <p>The standalone <code>scripts/compare_foundry_eval.py</code> selects report language and the default dev12 file using <code>LAB_LANGUAGE</code> or <code>--language ko</code>/<code>--language en</code>. Match explicitly supplied datasets to that language; do not relabel another corpus's results.</p>
 <h3 id="evaluation-mapping">Check evaluation response mappings</h3>
-<p>Participants select the <a href="index.html#prepare">two evaluators and Judge in 05</a> and preserve automatic mappings. Reading Raw JSON or guessing SDK fields is not a beginner prerequisite.</p>
+<p>Select the <a href="index.html#prepare">two evaluators and Judge in 05</a> and preserve automatic mappings. The following table supports missing-field or mismatch checks; a normal wizard flow does not require guessing SDK fields and entering them manually.</p>
 <table>
 <thead>
 <tr>
@@ -288,9 +289,9 @@
 </tr>
 </tbody>
 </table>
-<p>If a required field is <strong>Unassigned</strong>, compare the remote definition, target Agent, and data columns. Never map the reference answer as the response or copy old UI bindings. Consult the <a href="https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app">official portal evaluation guide</a> without changing this lab's fixed conditions. The helper in 09 checks the remote contract too and does not suppress errors to submit a run.</p>
+<p>If a required field is <strong>Unassigned</strong>, confirm the target is <strong>Agent</strong>, not Dataset, and inspect the query column and actual generated response mapping. Before submission, inspect the wizard; afterward, inspect the saved remote definition. Never map the reference answer as the response or copy old UI bindings. Use the <a href="https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app">official portal guide</a> and <a href="https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators#using-agent-evaluators">response-mapping explanation</a>. Do not submit until resolved. The helper in 09 checks the remote contract too.</p>
 <h2 id="approval">Complete the actual authorization file</h2>
-<p>Open <code>approval.example.json</code> and <strong>Save As approval.json</strong>. This worksheet explains fields; it is not an approved request. Keep the actual organizational authorization private. Use double quotes for JSON strings, but not for numbers, true, false, or null.</p>
+<p>Open <code>.lab/lab-en/approval.example.json</code> and <strong>Save As approval.json in the same folder</strong>. Set limits yourself only if you can authorize spending and changes; otherwise follow the organizational approval procedure. Keep actual authorization evidence private. Neither this worksheet nor the JSON file independently proves approval or a signature. Use double quotes for JSON strings, but not for numbers, true, false, or null.</p>
 <table>
 <thead>
 <tr>
@@ -309,7 +310,7 @@
 </tr>
 <tr>
 <td><code>approved_by</code></td>
-<td>The operator sign-in name matching <code>expected_user</code> in <code>config.json</code>.</td>
+<td>Your sign-in name matching <code>expected_user</code> in <code>config.json</code>. This binds the execution identity, not an organizational approver's digital signature.</td>
 </tr>
 <tr>
 <td><code>approved_at</code>, <code>expires_at</code></td>
@@ -317,7 +318,7 @@
 </tr>
 <tr>
 <td><code>currency</code>, <code>budget_amount</code>, <code>budget_policy</code></td>
-<td>Approved three-letter currency and positive numeric budget. Keep policy <code>BOUNDED</code>; the budget owner determines the amount.</td>
+<td>Approved three-letter currency and positive numeric budget. Keep policy <code>BOUNDED</code> and enter the actually authorized amount.</td>
 </tr>
 <tr>
 <td><code>acknowledge_no_monetary_cap</code></td>
@@ -333,7 +334,7 @@
 </tr>
 <tr>
 <td><code>max_calls</code>, <code>max_candidates</code></td>
-<td>Approved call/candidate limits. The candidate example is 2; consider internal Agent, Judge, and search calls when setting the call limit.</td>
+<td>Approved call/candidate limits; 08 requests 2 candidates. Account for internal Agent, Judge, and search calls. These fields do not automatically cap every portal call or charge.</td>
 </tr>
 <tr>
 <td><code>allow_global_inference</code></td>
@@ -361,30 +362,30 @@
 </tr>
 </tbody>
 </table>
-<p>Validate with <code>preflight --approval ...</code> and read <code>approval_reason</code> on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another class, an automatic retry, or deletion.</p>
-<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. The operator monitors actual usage and cancels jobs or removes resources when required.</p>
+<p>Validate with <a href="index.html#resources-approval">02's <code>bootstrap preflight --config ... --approval ...</code></a> and read <code>approval_reason</code> on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another lab, an automatic retry, or deletion.</p>
+<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.</p>
 <h2 id="rbac">Verify permissions and provider registration</h2>
 <p>Follow the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Foundry RBAC guidance</a>. <strong>Foundry User/Owner/Account Owner/Project Manager</strong> may still appear under their former <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> names.</p>
 <p>Use <strong>Access control (IAM) → Check access</strong> to inspect active assignments and Scope. Older UI versions may use View my access. The <a href="index.html#portal-check-access">actual subscription/access illustration in 01</a> demonstrates inspection of existing access, not adding roles.</p>
 <table>
 <thead>
 <tr>
-<th>Identity or task</th>
-<th>Required scope to verify</th>
+<th>Task or connection</th>
+<th>Required permissions and scope</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>New-environment operator</td>
-<td>This bootstrap checks effective subscription permissions for group/deployment/resource writes and <code>Microsoft.Authorization/roleAssignments/write</code>. An already-authorized provisioning operator performs it.</td>
+<td>Your environment creation</td>
+<td>Bootstrap checks effective subscription-scoped group/deployment/resource writes and <code>Microsoft.Authorization/roleAssignments/write</code>. Contributor alone cannot assign roles. Subscription quota-read access is also required.</td>
 </tr>
 <tr>
-<td>Portal participant</td>
-<td>Agent/evaluation operations in the assigned project; an administrator reviews the required project-scoped roles, such as Foundry User.</td>
+<td>Your Agent/evaluation operations</td>
+<td>Foundry User or the required data-plane permissions on your project. Azure Contributor/Owner alone does not grant these data actions.</td>
 </tr>
 <tr>
-<td>Policy-setup operator</td>
-<td>Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on this Search service.</td>
+<td>Your policy preparation</td>
+<td>Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on your Search service.</td>
 </tr>
 <tr>
 <td>Project managed identity</td>
@@ -395,18 +396,25 @@
 <td>Model invocation on the assigned Foundry resource.</td>
 </tr>
 <tr>
-<td>Log reader</td>
-<td>Read access to the assigned Application Insights/Log Analytics resources, not subscription-wide log access by default.</td>
+<td>Your log inspection</td>
+<td>Read access to your Application Insights/Log Analytics resources, not subscription-wide log access by default.</td>
 </tr>
 </tbody>
 </table>
-<p>In Azure Portal → <strong>Subscriptions → selected subscription → Resource providers</strong>, verify <strong>Registered</strong> for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>. An authorized subscription administrator registers missing providers through organizational procedures. Bootstrap never auto-registers providers or expands permissions.</p>
+<p><strong>Authorized bootstrap assigns runtime roles at the new resources' scopes.</strong> It does not add subscription-wide roles. After creation, distinguish your user identity from service managed identities and use 03's actual tool call to verify propagation and data-plane access.</p>
+<p>A provider registration enables a service type in your subscription. Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">official provider-registration instructions</a>:</p>
+<ol>
+<li>Open Azure Portal → <strong>Subscriptions → your subscription → Resource providers</strong>.</li>
+<li>Search for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>; confirm <strong>Registered</strong> for each.</li>
+<li>Select a missing provider and <strong>Register</strong> only with your own <code>/register/action</code> permission and authorization. Do not register unrelated providers in bulk.</li>
+<li>After registration/propagation, rerun the same preflight. If access is missing, obtain an approved execution scope before resuming. Bootstrap never auto-registers providers or expands permissions.</li>
+</ol>
 <p>Allow registration/role propagation, then rerun the same preflight. For continuing <code>403</code>, compare identity, role scope, and network access. Do not grant new subscription-wide Owner, disable network or organizational policies, or transfer tokens as a shortcut.</p>
 <h2 id="cost">Costs and operational boundaries</h2>
 <p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.</p>
-<p>In Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure organizational budget alerts where needed, but do not present them as enforced caps. Record the cost/cleanup owner and end time in the handoff.</p>
-<h2 id="handoff">Hand off actual values without gaps</h2>
-<p>Copy this table into the private class record and fill it with actual values. “The environment is ready” is not a sufficient handoff.</p>
+<p>In Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.</p>
+<h2 id="handoff">Record actual values and completion evidence</h2>
+<p>After creating the plan in 02, copy this table into your <strong><code>.lab/lab-en/notes.md</code></strong>. Mark unexecuted items <strong>not run</strong>, then fill actual values as each step completes. “The environment is ready” is not sufficient evidence.</p>
 <table>
 <thead>
 <tr>
@@ -420,12 +428,8 @@
 <td>User, tenant ID, and subscription ID; never passwords or tokens</td>
 </tr>
 <tr>
-<td>Responsibilities</td>
-<td>Owners for provisioning, 06 ID lookup, 09 v2 creation/reevaluation, portal exercises, cost, and cleanup; one paid-submission owner per shared Agent</td>
-</tr>
-<tr>
 <td>Local paths</td>
-<td>Environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code>; distinguish participant-specific configuration and which computer runs commands</td>
+<td>Your environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code>; record <code>.env</code> only after successful creation</td>
 </tr>
 <tr>
 <td>Azure environment</td>
@@ -457,7 +461,7 @@
 </tr>
 <tr>
 <td>Finish</td>
-<td>Exact deletable group/objects, deletion approver, planned time, and shared-resource retention</td>
+<td>Exact authorized deletion group/objects and planned time, or retention reason, cost responsibility, review date, and subsequent deletion plan; distinguish shared/external dependencies</td>
 </tr>
 </tbody>
 </table>
@@ -469,7 +473,7 @@
 <thead>
 <tr>
 <th>Target</th>
-<th>Deletion or handoff check</th>
+<th>Deletion or retention check</th>
 </tr>
 </thead>
 <tbody>
@@ -487,11 +491,11 @@
 </tr>
 <tr>
 <td>Dedicated resource group</td>
-<td>Review all inventory, obtain authorization, delete, and verify a successful <code>az group exists</code> returns <code>false</code></td>
+<td>Default path: verify inventory and authorization, delete, and record a successful <code>az group exists</code> result of <code>false</code></td>
 </tr>
 <tr>
-<td>Shared/external resources</td>
-<td>Retained item, reason, owner, and retention end date</td>
+<td>Retained/shared/external resources</td>
+<td>Remaining item, reason, cost responsibility, retention review date, and follow-up plan</td>
 </tr>
 <tr>
 <td>Billing/soft delete</td>
@@ -514,7 +518,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

@@ -19,6 +19,8 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
         local_links = []
         outside = []
         large_images = set()
+        prose_spans = []
+        monospace_spans = []
         for number, page in enumerate(document, start=1):
             large_images.update(image[0] for image in page.get_images(full=True) if image[2] >= 600 and image[3] >= 300)
             for link in page.get_links():
@@ -30,6 +32,8 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
             for block in page.get_text("dict")["blocks"]:
                 for line in block.get("lines", []):
                     for span in line["spans"]:
+                        target = monospace_spans if span["flags"] & pymupdf.TEXT_FONT_MONOSPACED else prose_spans
+                        target.append(span["text"])
                         x0, y0, x1, y1 = span["bbox"]
                         if span["text"].strip() and (
                             x0 < -1 or y0 < -1 or x1 > page.rect.width + 1 or y1 > page.rect.height + 1
@@ -61,7 +65,12 @@ def inspect_pdf(path: Path, *, language: str = "ko") -> dict:
             "out_of_page_text": outside,
             "large_embedded_images": len(large_images),
             "minimum_portal_images": 20,
-            "removed_sft_content_present": bool(re.search(r"\bSFT\b|Supervised Fine.Tuning", normalized, re.I)),
+            "removed_sft_content_present": bool(re.search(
+                r"\bSFT\b|Supervised Fine.Tuning", " ".join(prose_spans), re.I,
+            )) or bool(re.search(r"sft-appendix|sft\.html", normalized, re.I)),
+            "monospace_sft_reference_present": bool(re.search(
+                r"\bSFT\b|Supervised Fine.Tuning", " ".join(monospace_spans), re.I,
+            )),
         }
         result["status"] = "PASS" if (
             result["pages"] > 0

@@ -1,8 +1,10 @@
 # 실습 문제 해결 {#issue-guide}
 
-[참가자 10단계](handbook.md#setup) · [운영자 승인·인수](admin-setup.md#approval)
+[실습 10단계](handbook.md#setup) · [권한·승인·설정 참고](admin-setup.md#approval)
 
 **막힌 단계에서 증상·조치·진행 기준을 확인합니다.** 오류를 해결하기 위해 데이터·평가기·모델을 조용히 바꾸거나 새 이름으로 같은 작업을 중복 제출하지 않습니다.
+
+실제 내부 동작은 해당 단계의 **코드 ↔ 포털** 표와 구현 원문에서 확인합니다. 함수·오류 메시지는 저장소 원문이므로 가이드 문체와 다른 메시지가 있을 수 있습니다. 이를 새 명령으로 실행하거나 원문을 임의로 고쳐 오류를 숨기지 않습니다.
 
 | 현재 증상 | 확인할 곳 |
 |---|---|
@@ -28,7 +30,7 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 | Python 대신 Microsoft Store가 열리거나 `py`가 없습니다. | Windows의 일반 Python 설치에서 Launcher·pip·PATH 옵션을 확인하고 새 PowerShell에서 `py -3.13 --version`을 실행합니다. 다른 지원 버전을 설치했다면 해당 번호를 사용합니다. | Store 바로가기가 아닌 설치한 Python 3.11–3.14가 실행됩니다. |
 | Python 버전이 3.11–3.14 밖이거나 다른 Python으로 `.venv`를 만들었습니다. | 시스템 Python을 교체하지 말고 지원 버전을 별도로 선택합니다. `py -3.13` 또는 `python3.13` 등 [버전을 확인한 같은 명령](handbook.md#setup-venv)으로 실습용 환경을 준비합니다. 기존 `.venv`는 소유 작업과 보관 필요성을 먼저 확인합니다. | 가상환경의 `python --version`이 지원 범위이고 `python -m pip --version`의 경로가 그 `.venv` 안입니다. |
 | Linux에서 `No module named venv` 또는 `ensurepip is not available`입니다. | [Ubuntu 설치 순서](handbook.md#setup-linux)의 `python3-venv`를 설치합니다. 버전 지정 Python이면 해당 버전에 맞는 venv 패키지를 담당자와 확인합니다. | 선택한 Python으로 `.venv` 생성과 pip 확인이 성공합니다. |
-| 다운로드·설치가 관리자 권한·프록시·인증서 오류로 막힙니다. | 담당자에게 공식 다운로드 주소와 오류를 전달하고 승인된 설치·네트워크 설정을 요청합니다. TLS 검증·보안 도구·조직 정책을 해제하지 않습니다. | 승인된 경로로 설치하고 세 도구의 버전 확인이 성공합니다. |
+| 다운로드·설치가 설치 권한·프록시·인증서 오류로 막힙니다. | 공식 다운로드 주소·오류와 조직의 허용 설치 경로를 확인합니다. 필요한 설치·네트워크 승인을 확보하고 TLS 검증·보안 도구·조직 정책을 해제하지 않습니다. | 승인된 경로로 설치하고 세 도구의 버전 확인이 성공합니다. |
 | `.venv/bin/activate` 또는 `Activate.ps1`이 없습니다. | 저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 [설치 순서](handbook.md#setup-local)를 따릅니다. | 같은 Python의 `python -m pip --version`과 `python -m lab --help`가 성공합니다. |
 | `ModuleNotFoundError`가 나옵니다. | 사용할 가상환경을 확인하고 그 Python으로 `python -m pip install -r requirements.lock`을 실행합니다. | 같은 환경에서 필요한 import와 데이터 검사가 성공합니다. |
 | PowerShell 활성화가 정책으로 차단됩니다. | 조직 정책을 바꾸지 않고 `.\.venv\Scripts\python.exe`로 명령을 실행합니다. | 정책 변경 없이 Python을 실행할 수 있습니다. |
@@ -42,8 +44,8 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 |---|---|---|
 | plan이 `BLOCKED_AWAITING_APPROVAL`입니다. | `plan_status`와 `mutations_performed`를 확인하고 [실제 승인서](admin-setup.md#approval)를 준비합니다. | 로컬 계획 생성과 Azure 생성 완료를 구분합니다. |
 | `approved: true`인데 승인 오류입니다. | 해시·모델·승인자·유효기간·예산·동의 항목과 `approval_reason`을 확인합니다. | readiness가 READY이고 승인이 READY_FOR_APPROVED_APPLY입니다. |
-| Provider가 Registered가 아닙니다. | 구독 관리자가 조직 절차에 따라 해당 공급자를 등록합니다. | 네 공급자 등록 후 같은 preflight를 실행합니다. |
-| Contributor인데 역할 할당이 막힙니다. | 자원 생성과 역할 할당은 별도 권한입니다. 승인된 프로비저닝 담당자가 수행합니다. | 필요한 유효 권한을 확인하며 구독 Owner를 새로 부여해 우회하지 않습니다. |
+| Provider가 Registered가 아닙니다. | [공급자 등록 절차](admin-setup.md#rbac)에서 본인의 등록 권한·승인을 확인하고 필요한 공급자만 등록합니다. | 네 공급자가 Registered가 된 뒤 같은 preflight를 실행합니다. |
+| Contributor인데 역할 할당이 막힙니다. | 자원 생성과 역할 할당은 별도 권한입니다. 본인이 이 실습을 수행할 수 있도록 필요한 실행 범위의 승인을 확보합니다. | 필요한 유효 권한을 확인한 뒤 같은 계획으로 재개합니다. 구독 전체 Owner를 새로 부여해 우회하지 않습니다. |
 | 모델·SKU·버전·quota·capacity 오류입니다. | 계획의 역할별 요청과 preflight 이유를 확인합니다. 대체가 필요하면 별도 계획·승인을 받습니다. | 지원 모델과 할당량을 확인하고 실제 호출까지 확인합니다. |
 | 런타임 `*_tpm` 항목이 BLOCKED입니다. | [모델별 TPM 설정](admin-setup.md#throughput)에서 실제 배포 한도를 확인합니다. | 다섯 TPM 항목과 전체 preflight가 PASS입니다. |
 | 생성 후 `unknown resource`가 나옵니다. | 자신의 Application Insights에 연결된 기본 Smart Detection인지, 다른 업무 자원이나 변경된 수신자인지 확인합니다. 생성 중이면 연결 전파를 기다립니다. | 같은 `bootstrap status`로 확인합니다. 경고 삭제나 manifest 편집으로 우회하지 않습니다. |
@@ -87,6 +89,7 @@ Unable to create data source configuration from item schema
 | 버전 선택 뒤 체크가 사라집니다. | 명시적 v1을 선택한 뒤 체크박스를 다시 선택하고 대상 하나를 확인합니다. |
 | 데이터 미리 보기가 5행입니다. | 원본 12행·등록 버전·실제 결과 전체 건수를 대조합니다. 미리 보기만으로 판단하지 않습니다. |
 | 점수나 이유가 보이지 않습니다. | 실제 답변은 `conversation_id → User view`, 이유는 Detailed metrics result의 `Relevance.reason`·`TaskAdherence.reason`에서 읽습니다. |
+| 필수 response 칸이 Unassigned입니다. | [매핑 점검](admin-setup.md#evaluation-mapping)에서 Agent 대상·query 열·서비스 생성 응답 매핑을 대조합니다. JSONL에 정답을 response 열로 추가하지 않으며 해결 전에는 제출하지 않습니다. |
 | 결과 행·점수가 빠졌습니다. | 실패·누락을 보관하고 분모 12를 줄이지 않습니다. 점수를 0이나 통과로 만들어 넣지 않습니다. |
 
 ## Agent Optimizer·결과 해석 {#optimizer}
@@ -95,6 +98,9 @@ Unable to create data source configuration from item schema
 |---|---|
 | No custom evaluators available입니다. | **Custom only OFF** 또는 **View built-in evaluators**를 사용합니다. 필터 때문에 새 custom evaluator를 만들지 않습니다. |
 | Optimize나 지정 모델이 없습니다. | New Foundry, prompt Agent, 프로젝트 권한, Preview와 [역할별 모델 지원](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인합니다. |
+| 승인한 대기 시간이 지났는데 작업이 실행 중입니다. | Optimization runs에서 같은 job ID의 상태·오류·사용량을 확인하고 이후 조회 계획을 기록합니다. 기다림 종료는 취소가 아닙니다. 새 작업으로 다시 제출하지 않습니다. |
+| 작업이 Failed/Canceled이거나 결과가 일부만 있습니다. | 실제 상태·job ID·오류를 보관합니다. 완료한 후보가 있는 것처럼 기록하거나 같은 요청을 이름만 바꾸어 반복하지 않습니다. |
+| View changes에 일부 diff만 있고 전체 지침을 복사할 수 없습니다. | 접힌 변경 후 구간·후보 상세와 제공되는 Download/Export를 확인합니다. 전체 지침을 확보하지 못하면 v2를 만들지 않고 “v1 유지·전체 지침 확인 불가”를 기록한 뒤 10으로 진행합니다. |
 | 후보가 모델·도구 설명도 바꿉니다. | **Instruction only**와 모델 비교 끄기를 확인합니다. 지침 외 설정 변경을 같은 조건의 비교로 표시하지 않습니다. |
 | 후보에 정책 날짜·수치·평가 정답 예시가 들어갑니다. | 원본 서비스 출력을 보관하고 내장된 정답을 제거하거나 후보를 거부합니다. 직접 수정한 부분·이유·출처를 기록하고 별도로 재평가합니다. |
 | 다른 후보 없이 기준선만 선택됐습니다. | v1 유지 이유를 기록하고 10으로 이동합니다. 없는 v2를 만들거나 개선을 위해 같은 작업을 반복하지 않습니다. |
@@ -107,11 +113,11 @@ Unable to create data source configuration from item schema
 
 | 증상 | 조치와 진행 기준 |
 |---|---|
-| 리소스를 보존하도록 승인받았습니다. | 삭제 명령을 실행하지 않습니다. 실제 목록·비용 담당자·보존 검토일을 기록하고 재접속에 필요한 소유권·설정을 유지합니다. |
+| 리소스를 보존하도록 승인받았습니다. | 삭제 명령을 실행하지 않습니다. 실제 목록·보존 이유·비용 책임·보존 검토일·후속 삭제 계획을 기록하고 재접속에 필요한 소유권·설정을 유지합니다. |
 | cleanup 뒤에도 Search 비용이 남습니다. | `cleanup`은 기록된 객체만 정리하며 서비스·모델·그룹·로그는 남깁니다. [10의 승인된 정리 또는 보존](handbook.md#cleanup)을 확인합니다. |
 | `.env`나 workspace가 없습니다. | config·manifest와 실제 Azure 목록으로 대상을 확인합니다. 소유권 기록을 임의로 만들어 삭제하지 않습니다. |
 | 그룹 안의 모니터링이 다른 그룹과 연결됩니다. | 공유 Action group 등 종속성을 담당자와 확인합니다. 전용 그룹이라는 이유만으로 공유 자원을 삭제하지 않습니다. |
-| 삭제가 Locks·권한·종속성 때문에 실패합니다. | Locks·Activity log와 실패 작업을 읽고 소유 담당자에게 조치를 요청합니다. 조직 잠금을 임의로 해제하지 않습니다. |
+| 삭제가 Locks·권한·종속성 때문에 실패합니다. | Locks·Activity log와 실패 작업을 읽습니다. 본인에게 허용된 조치 범위를 확보한 뒤 재개하며 조직 잠금을 임의로 해제하지 않습니다. 삭제가 막힌 상태를 완료로 표시하지 않습니다. |
 | 삭제 요청 후에도 그룹이 남습니다. | 비동기 진행을 확인합니다. 성공한 `az group exists`가 `false`인 경우에만 부재로 기록합니다. |
 | 삭제 뒤에도 비용이 표시됩니다. | 사용 기간과 청구 반영 지연, 외부 그룹의 잔여 자원을 확인합니다. 과거 사용 요금은 사라지지 않습니다. |
 

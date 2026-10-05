@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.">
-  <title>강사 안내 · 실제 측정 결과 개선하기 · Foundry 실습 가이드</title>
+  <title>실습 체크리스트 · 실제 측정 결과 개선하기 · Foundry 실습 가이드</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
@@ -53,9 +53,9 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#prepare">수업 전</a></li>
+<li><a href="#prepare">시작 전에 확인합니다</a></li>
 <li><a href="#checkpoints">10단계의 실제 완료 기준을 확인합니다</a></li>
-<li><a href="#evaluation-sharing">실제 사례로 토론</a></li>
+<li><a href="#evaluation-sharing">실제 사례로 품질을 확인합니다</a></li>
 <li><a href="#interpret-results">개선 해석</a></li>
 <li><a href="#resume">실험 조건을 바꾸지 않는 복구</a></li>
 <li><a href="#misconceptions">흔한 오해 바로잡기</a></li>
@@ -65,11 +65,11 @@
 
         </nav>
         <details class="related-documents">
-          <summary>참고 자료 · 운영자/심화</summary>
+          <summary>참고 자료 · 설정과 점검</summary>
           <nav aria-label="실습 문서 모음"><ul>
-<li><a href="index.html">참가자 실습 가이드</a></li>
-<li><a href="facilitator.html" aria-current="page">강사용 진행 가이드</a></li>
-<li><a href="admin.html">관리자 사전 준비</a></li>
+<li><a href="index.html">실습 가이드</a></li>
+<li><a href="facilitator.html" aria-current="page">실습 체크리스트</a></li>
+<li><a href="admin.html">환경 설정 참고</a></li>
 <li><a href="troubleshooting.html">문제 해결</a></li>
 <li><a href="data-guide.html">데이터 설명</a></li>
 <li><a href="print.html">부록 포함 인쇄본</a></li></ul></nav>
@@ -95,30 +95,31 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>이전·다음 장로 이동</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">본문에서 연결한 준비·승인·문제 해결·정리에 사용하는 참고 자료입니다. 참가자 실습은 10단계입니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
+        <p class="sidebar-note">본문에서 연결한 단계에 사용하는 참고 자료입니다. 환경 준비·평가·개선·정리는 모두 본인이 수행합니다. 테마와 읽음 기록은 이 브라우저에만 저장됩니다.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="학습 목차 닫기" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← 참가자 가이드로 돌아가기</a>
+<a class="back-to-main no-print" href="index.html">← 실습 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-03">2026-10-03</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-05">2026-10-05</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환·PDF 파일은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·현재 단계 인쇄·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
-      <article id="guide-start" class="guide-content" lang="ko" aria-label="강사 안내 · 실제 측정 결과 개선하기">
-        <h1 id="facilitator-guide">강사 안내 · 실제 측정 결과 개선하기</h1>
-<p><a href="index.html#setup">참가자 10단계</a> · <a href="admin.html#handoff">운영자 인수</a> · <a href="troubleshooting.html">문제 해결</a></p>
-<p>자사 업무 과제와 실제 관리형 평가로 <strong>평가 → 학습 → 개선 → 재평가</strong>를 설명합니다. 약한 기준선을 인위적으로 만들거나 앞으로의 모든 평가가 개선된다고 약속하지 않습니다.</p>
-<h2 id="prepare">수업 전</h2>
-<p>참가자가 직접 01–03을 수행할지, 운영자가 준비한 환경을 받을지 먼저 정합니다. 직접 준비하는 수업은 권한·비용 승인과 삭제 담당자를 확보합니다. 준비된 수업은 <a href="admin.html#handoff">인수표</a>를 빠짐없이 전달하고 실제 프로젝트·Agent·검색·데이터 등록을 확인합니다.</p>
-<p><strong>초보자 수업은 환경 준비와 평가 학습을 분리합니다.</strong> 02–03은 운영자가 미리 준비하는 방식을 권장하되, 참가자가 본인의 계정·프로젝트와 완료 근거를 확인하는 과정은 생략하지 않습니다. SDK 명령을 누가 실행할지 미리 정하고 운영자의 로그인 정보나 소유권 기록을 복사해 배포하지 않습니다.</p>
-<p>수업 전에 로컬 명령을 실행할 사람에게 <a href="index.html#setup-local">01의 Windows·macOS·Linux 설치 안내</a>를 전달합니다. <strong>Python 3.11–3.14·Git·Azure CLI</strong>의 <a href="index.html#setup-verify">버전 확인</a>과 가상환경 생성을 먼저 마치고, 회사 PC의 설치 승인·PATH·프록시 문제를 해결합니다. 포털만 사용하는 참가자는 인수표에 정한 역할을 따르며 명령 실행 담당자의 설치 완료와 혼동하지 않습니다.</p>
-<p>시작할 때 <a href="index.html#basics">여섯 가지 용어</a>와 <a href="index.html#evaluation-flow">질문→응답→채점 도식</a>을 함께 읽습니다. 참가자가 <strong>“답변하는 Agent와 채점하는 Judge는 다르다”</strong>, <strong>“모델이 아니라 지침을 바꾼다”</strong>를 자기 말로 설명하는지 확인합니다. 용어 암기나 높은 점수를 출발 조건으로 삼지 않습니다.</p>
-<p>04–06은 같은 평가 생성 화면입니다. 단계마다 새 평가를 만들지 않도록 안내하고, 07에서는 점수 한 건을 함께 읽은 뒤 개별 분석으로 넘어갑니다. 조별로 Agent를 공유하면 v2 생성·유료 제출 담당은 한 명으로 정합니다.</p>
-<p>새 실습의 Agent는 <code>lab-ko-iq</code> 또는 <code>lab-en-iq</code>입니다. 환경 prefix를 바꾸었다면 명령이 출력한 실제 이름을 사용합니다. <a href="admin.html#prepare">모델 역할·신원</a>을 확인하고 수업 종료 전에 10의 정리 시간을 확보합니다.</p>
-<p>v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도구·추론·엄격한 출력 스키마는 같고 지침만 다릅니다. 개선을 만들려고 v1을 약화하지 않습니다. 기본 경로는 검토한 v2를 한 번 만들어 재평가하며, 초안 지원을 확인한 운영자만 별도 초안 절차를 사용합니다.</p>
+      <article id="guide-start" class="guide-content" lang="ko" aria-label="실습 체크리스트 · 실제 측정 결과 개선하기">
+        <h1 id="facilitator-guide">실습 체크리스트 · 실제 측정 결과 개선하기</h1>
+<p><a href="index.html#setup">실습 10단계</a> · <a href="admin.html#handoff">환경·결과 기록표</a> · <a href="troubleshooting.html">문제 해결</a></p>
+<p>본인이 진행한 실습의 <strong>평가 → 학습 → 개선 → 재평가</strong>를 점검하는 자료입니다. <a href="index.html#setup">실습 가이드</a>를 대신하는 별도 경로가 아닙니다. 약한 기준선을 인위적으로 만들거나 앞으로의 모든 평가가 개선된다고 약속하지 않습니다.</p>
+<h2 id="prepare">시작 전에 확인합니다</h2>
+<p><strong>모든 실습 참여자가 01–10을 직접 수행합니다.</strong> 본인의 계정·PC·전용 환경·Agent를 사용하며 다른 사람에게 생성·명령·정리를 맡기지 않습니다. 시작 전에 필요한 생성·역할 할당 권한과 비용·삭제/보존 범위를 확인합니다.</p>
+<p><a href="index.html#setup-local">01의 Windows·macOS·Linux 설치 안내</a>에 따라 <strong>Python 3.11–3.14·Git·Azure CLI</strong>의 <a href="index.html#setup-verify">버전 확인</a>과 가상환경 생성을 마칩니다. 설치 승인·PATH·프록시 문제를 먼저 해결합니다.</p>
+<p>02에서 계획을 만든 뒤 <a href="admin.html#handoff">기록표</a>를 자신의 <code>notes.md</code>에 복사합니다. 단계마다 실제 값·완료 근거를 추가하고 다른 사람의 설정·로그인·소유권 기록을 사용하지 않습니다. 재개할 때는 자신의 원본 기록을 확인합니다.</p>
+<p><a href="index.html#basics">여섯 가지 용어</a>와 <a href="index.html#evaluation-flow">질문→응답→채점 도식</a>을 읽고 <strong>“답변하는 Agent와 채점하는 Judge는 다르다”</strong>, <strong>“모델이 아니라 지침을 바꾼다”</strong>를 설명할 수 있는지 확인합니다. 용어 암기나 높은 점수는 시작 조건이 아닙니다.</p>
+<p>04–06은 같은 평가 생성 화면입니다. 단계마다 새 평가를 만들지 않습니다. 07에서는 한 사례의 점수·이유·정책을 연결해 읽은 뒤 전체 결과를 분석합니다.</p>
+<p>각 단계의 <strong>코드 ↔ 포털</strong> 표를 따라 <strong>입력값 → 실제 서비스 호출 → 저장된 결과 → 포털의 같은 항목</strong>을 연결합니다. 구현 패널을 기존 명령과 별개로 실행하지 않습니다. 특히 <a href="index.html#baseline-code-portal">06의 조회 코드</a>는 제출 코드가 아니며, <a href="index.html#optimizer-code-portal">08 Optimizer</a>는 실제 포털 조작으로 진행합니다.</p>
+<p>새 실습의 Agent는 <code>lab-ko-iq</code> 또는 <code>lab-en-iq</code>입니다. 환경 prefix를 바꾸었다면 명령이 출력한 실제 이름을 사용합니다. <a href="admin.html#prepare">모델 역할·신원</a>을 확인하고 10의 정리 시간을 확보합니다.</p>
+<p>v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도구·추론·엄격한 출력 스키마는 같고 지침만 다릅니다. 개선을 만들려고 v1을 약화하지 않습니다. 검토한 v2를 한 번 만들어 같은 기준으로 재평가합니다.</p>
 <p>영어·한국어 데이터와 Agent를 분리하고 각 언어의 실제 실행 결과를 독립적으로 비교합니다. 다른 언어의 결과를 번역하여 새 실행으로 표시하지 않습니다.</p>
 <h2 id="checkpoints">10단계의 실제 완료 기준을 확인합니다</h2>
 <table>
@@ -153,7 +154,7 @@
 <tr>
 <td>05 평가기</td>
 <td>Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다.</td>
-<td>원격 정의와 query 전용 입력을 확인합니다.</td>
+<td>제출 전 생성 화면의 설정과 query 전용 입력을 기록합니다.</td>
 </tr>
 <tr>
 <td>06 기준선</td>
@@ -177,15 +178,15 @@
 </tr>
 <tr>
 <td>10 정리</td>
-<td>결과와 소유권을 보관한 뒤 승인된 삭제 또는 보존을 수행합니다.</td>
-<td>삭제 승인된 그룹의 부재 또는 보존 승인된 전용·공유 자원의 인계를 확인합니다.</td>
+<td>결과와 소유권을 보관한 뒤 자신의 전용 자원을 정리합니다.</td>
+<td>승인된 그룹 삭제의 부재 확인, 또는 보존 승인된 자원의 실제 목록·비용 책임·검토일을 기록합니다.</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Individual turns / One time / Existing dataset</strong>을 사용합니다. 업로드 미리 보기가 5행이어도 실험은 12행입니다. 버전 선택으로 체크박스가 해제되면 다시 선택하고 대상 한 개를 확인합니다.</p>
-<h2 id="evaluation-sharing">실제 사례로 토론</h2>
+<h2 id="evaluation-sharing">실제 사례로 품질을 확인합니다</h2>
 <p><strong>질문 → 실제 답변 → 평가 점수·이유 → 정책·참고 답변</strong>을 연결합니다. <code>conversation_id → User view</code>는 대화이며 평가 이유는 <strong>Detailed metrics result</strong>의 <code>Relevance.reason</code>·<code>TaskAdherence.reason</code>에서 확인합니다.</p>
-<p>약한 사례와 잘한 사례를 하나 이상 토론합니다. 실패가 없다면 최저점 사례를 사용하며 실패를 관측하지 못했다고 설명합니다. v1을 약화하거나 어려운 행·참고 답변을 바꾸거나 로컬 점수로 대신하지 않습니다.</p>
+<p>약한 사례와 잘한 사례를 하나 이상 분석합니다. 실패가 없다면 최저점 사례를 사용하며 실패를 관측하지 못했다고 설명합니다. v1을 약화하거나 어려운 행·참고 답변을 바꾸거나 로컬 점수로 대신하지 않습니다. 다른 참여자와 토론할 때도 자신의 실제 결과를 사용합니다.</p>
 <p>선택한 실습의 합성 질문 12건, 실제 응답과 관리형 평가 이유를 별도 비공개 실행 기록으로 보관합니다. 실패 결과를 숨기지 않으며, 공유가 필요할 때는 토큰·쿠키·서명된 URL·비공개 계정 정보를 제외합니다.</p>
 <h2 id="interpret-results">개선 해석</h2>
 <p><a id="review"></a></p>
@@ -227,10 +228,6 @@
 <td>지침만의 비교라고 주장하지 않습니다.</td>
 </tr>
 <tr>
-<td>초안 요청이 정식 번호로 생성</td>
-<td>기대한 초안 지원이 아니므로 중단합니다.</td>
-</tr>
-<tr>
 <td>기존 v2와 소스 불일치</td>
 <td>덮어쓰기·v3 생성 없이 원본을 보존하고 확인합니다.</td>
 </tr>
@@ -245,7 +242,7 @@
 </tbody>
 </table>
 <p>Relevance는 <code>{{sample.output_text}}</code>, TaskAdherence는 <code>{{sample.output_items}}</code>를 사용합니다. 서비스 생성 매핑을 덮어쓰거나 <code>ground_truth</code>를 Agent에 주입하지 않습니다. 오래된 로컬 기본값보다 원격 평가의 실제 Judge가 우선입니다.</p>
-<p>시간 초과 시 <strong>어느 작업의 ID로 재개할지</strong>를 먼저 확인합니다. 참가자가 삭제·재생성하거나 “성공할 때까지” 유료 호출을 반복하지 않도록 <a href="troubleshooting.html">실행 이슈 기록</a>을 함께 사용합니다. 막힌 단계는 실제 완료로 체크하지 않습니다.</p>
+<p>시간 초과 시 <strong>어느 작업의 ID로 재개할지</strong>를 먼저 확인하고 <a href="troubleshooting.html">문제 해결</a>을 따릅니다. 삭제·재생성하거나 “성공할 때까지” 유료 호출을 반복하지 않습니다. 막힌 단계는 실제 완료로 체크하지 않습니다.</p>
 <h2 id="misconceptions">흔한 오해 바로잡기</h2>
 <table>
 <thead>
@@ -283,9 +280,9 @@
 </table>
 <h2 id="finish">별도 실습 기록으로 마무리</h2>
 <p><a id="next-loop"></a></p>
-<p>실제 환경·run ID·비교 조건과 최종 판단을 비공개로 인계합니다. 실행 결과나 검증 이력을 재사용 가이드에 덧붙이지 않으며, 안내가 잘못된 경우에만 절차를 수정합니다.</p>
-<p>동일 모델 비교 결과, 서비스 통계 검정, 지연·토큰 상충 관계와 합성 dev 재사용의 한계를 보고합니다. 후보 활성화는 운영자의 별도 결정이며 운영용 게시를 이번 실습에 포함하지 않습니다.</p>
-<p><strong>종료 전에 <a href="index.html#cleanup">10의 정리·보존 확인</a>을 함께 수행합니다.</strong> 승인된 삭제의 완료 또는 보존 자원의 비용 담당자·검토일을 확인합니다. 소유권·재접속에 필요한 기록을 먼저 삭제하지 않습니다.</p>
+<p>실제 환경·run ID·비교 조건과 최종 판단을 자신의 비공개 기록에 보관합니다. 실행 결과나 검증 이력을 재사용 가이드에 덧붙이지 않으며 안내가 잘못된 경우에만 절차를 수정합니다.</p>
+<p>동일 모델 비교 결과, 서비스 통계 검정, 지연·토큰 상충 관계와 합성 dev 재사용의 한계를 기록합니다. 실습의 채택 판단은 운영용 게시·활성화 승인이 아니며 운영용 게시는 이번 실습에 포함하지 않습니다.</p>
+<p><strong>마지막으로 <a href="index.html#cleanup">10의 정리·보존 확인</a>을 직접 수행합니다.</strong> 승인된 삭제의 완료 또는 보존 자원의 실제 목록·비용 책임·검토일을 확인합니다. 소유권·재접속에 필요한 기록을 먼저 삭제하지 않습니다.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -297,7 +294,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="print.html">부록 포함 인쇄본</a><a href="../Foundry-Learning-Loop-Lab-KO.pdf">통합 PDF 파일</a><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>

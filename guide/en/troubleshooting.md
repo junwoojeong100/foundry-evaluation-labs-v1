@@ -1,8 +1,10 @@
 # Lab troubleshooting {#issue-guide}
 
-[Ten participant steps](handbook.md#setup) · [Operator authorization and handoff](admin-setup.md#approval)
+[Ten lab steps](handbook.md#setup) · [Access, authorization, and setup reference](admin-setup.md#approval)
 
 **Start with the blocked step and check the symptom, action and completion criteria.** Do not silently change data, evaluators or models, or submit the same operation under a new name to bypass an error.
+
+Inspect that step's **code ↔ portal** table and original implementation for actual behavior. Source comments/messages remain as written, including Korean messages in the shared runtime. Do not execute the source panel as another command or edit runtime code to hide the error.
 
 | Symptom | Where to look |
 |---|---|
@@ -23,12 +25,12 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 
 | Symptom | Action | Completion criteria |
 |---|---|---|
-| `py`, `python3.13`, `git`, or `az` reports `command not found` or `not recognized` | Complete [OS-specific installation in 01](handbook.md#setup-local), close all terminals, and reopen them; restart VS Code too. If it still fails, check installation paths and PATH with your administrator. Inspect paths with `Get-Command py, git, az` on Windows or `command -v git az` on macOS/Linux. | [All three version checks](handbook.md#setup-verify) succeed in the same new terminal. |
+| `py`, `python3.13`, `git`, or `az` reports `command not found` or `not recognized` | Complete [OS-specific installation in 01](handbook.md#setup-local), close all terminals, and reopen them; restart VS Code too. If it still fails, check the approved installation paths and PATH. Inspect paths with `Get-Command py, git, az` on Windows or `command -v git az` on macOS/Linux. | [All three version checks](handbook.md#setup-verify) succeed in the same new terminal. |
 | `winget` or `brew` is missing | On Windows, use the [official installer path](handbook.md#setup-windows). On macOS, complete [Homebrew installation and the PATH instructions under Next steps](handbook.md#setup-macos). | Prepare and verify the tools using one installation method without bypassing organizational restrictions. |
 | Microsoft Store opens instead of Python, or `py` is missing | Check Launcher, pip, and PATH options in the regular Windows Python installer. Run `py -3.13 --version` in a new PowerShell window, substituting your installed version if different. | An installed Python 3.11–3.14 runs, not a Store shortcut. |
 | Python is outside 3.11–3.14, or `.venv` uses a different Python | Select a supported version separately rather than replacing system Python. Create the lab environment with [the same verified command](handbook.md#setup-venv), such as `py -3.13` or `python3.13`. Check ownership and retention needs before replacing an existing `.venv`. | The environment's `python --version` is supported and `python -m pip --version` points inside that `.venv`. |
-| Linux reports `No module named venv` or `ensurepip is not available` | Install `python3-venv` from the [Ubuntu setup instructions](handbook.md#setup-linux). For a version-specific Python, confirm the matching venv package with your administrator. | The selected Python creates `.venv` and its pip check succeeds. |
-| Administrator permissions, proxy, or certificate errors block installation | Send the official download URL and error to your administrator for approved installation/network configuration. Do not disable TLS checks, security tools, or organizational policies. | Installation uses an approved path and all three version checks succeed. |
+| Linux reports `No module named venv` or `ensurepip is not available` | Install `python3-venv` from the [Ubuntu setup instructions](handbook.md#setup-linux). For a version-specific Python, confirm its matching venv package and an approved installation path. | The selected Python creates `.venv` and its pip check succeeds. |
+| Installation permissions, proxy, or certificate errors block installation | Check the official download URL, error, and permitted installation path. Obtain required installation/network authorization without disabling TLS checks, security tools, or organizational policies. | Installation uses an approved path and all three version checks succeed. |
 | `.venv/bin/activate` or `Activate.ps1` is missing | Create the virtual environment in the repository and follow the [OS-specific setup order](handbook.md#setup-local). | `python -m pip --version` and `python -m lab --help` work in the same environment. |
 | `ModuleNotFoundError` | Confirm the intended environment and run `python -m pip install -r requirements.lock` with its Python. | Required imports and dataset checks work in that environment. |
 | PowerShell activation is blocked by policy | Use `.\.venv\Scripts\python.exe` without changing organizational policy. | Python runs without a policy change. |
@@ -42,8 +44,8 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 |---|---|---|
 | Plan reports `BLOCKED_AWAITING_APPROVAL` | Inspect `plan_status` and `mutations_performed`, then prepare the [actual authorization](admin-setup.md#approval). | Distinguish local planning from Azure provisioning. |
 | Approval fails despite `approved: true` | Check hashes, models, approver, validity, budget, acknowledgments and `approval_reason`. | Readiness is READY and authorization is READY_FOR_APPROVED_APPLY. |
-| Provider is not Registered | The subscription administrator registers it through organizational procedures. | Rerun the same preflight after all four providers are registered. |
-| Contributor cannot assign roles | Resource creation and role assignment are separate permissions. Use the authorized provisioning owner. | Verify effective permissions; do not add subscription Owner to bypass the issue. |
+| Provider is not Registered | Follow [provider registration](admin-setup.md#rbac), verify your registration permission/authorization, and register only the required providers. | Rerun the same preflight after all four providers are Registered. |
+| Contributor cannot assign roles | Resource creation and role assignment are separate permissions. Obtain authorization for an execution scope in which you can perform this lab yourself. | Verify effective permissions and resume the same plan. Do not add subscription-wide Owner to bypass the issue. |
 | Model, SKU, version, quota or capacity error | Inspect the planned role requirements and preflight reason. A replacement needs a separate plan and authorization. | Confirm support and capacity, then verify actual calls. |
 | Runtime `*_tpm` is BLOCKED | Check the real allocation using the [TPM setup instructions](admin-setup.md#throughput). | All five TPM checks and overall preflight report PASS. |
 | `unknown resource` after creation | Check whether this is verified default Smart Detection linked to your Application Insights, another workload, or changed receivers. Allow link propagation during creation. | Inspect the same `bootstrap status`; do not delete alerts or edit the manifest to bypass it. |
@@ -87,6 +89,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 | Changing the version clears its checkbox | Reselect explicit v1 and confirm one checked target. |
 | Dataset preview has five rows | Compare the twelve-row source, registered version and complete result count; the preview alone is insufficient. |
 | Scores or reasons are not visible | Read the response under `conversation_id → User view`; reasons are in Detailed metrics result under `Relevance.reason` and `TaskAdherence.reason`. |
+| A required response field is Unassigned | Use [mapping checks](admin-setup.md#evaluation-mapping) to compare the Agent target, query column, and service-generated response mapping. Do not add reference answers as a JSONL response column or submit before resolving the issue. |
 | Output items or scores are missing | Preserve failures/missing items and keep the denominator at twelve. Do not invent zero scores or passes. |
 
 ## Agent Optimizer and interpretation {#optimizer}
@@ -95,6 +98,9 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 |---|---|
 | No custom evaluators available | Use **Custom only OFF** or **View built-in evaluators** rather than creating a custom evaluator to bypass a filter. |
 | Optimize or the selected model is unavailable | Check New Foundry, prompt Agent, project permissions, Preview availability and [role-specific model support](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models). |
+| The authorized wait ends while the job is active | Inspect the same job ID's state, errors, and usage in Optimization runs; record follow-up checks. Stopping your wait is not cancellation. Do not submit a replacement job. |
+| The job is Failed/Canceled or results are partial | Preserve actual state, job ID, and errors. Do not claim a completed candidate or repeat the request under another name. |
+| View changes exposes only a partial diff, not complete instructions | Expand revised sections and inspect candidate details or Download/Export where provided. Without the complete text, do not create v2; record “retain v1; complete instructions unavailable” and continue to 10. |
 | A candidate changes model or tool descriptions | Select **Instruction only** and disable model comparison. Non-instruction changes are not a same-condition comparison. |
 | Candidate embeds policy dates, numbers or evaluation answers | Preserve the original service output and remove embedded answers or reject the candidate. Record manual changes, reasons and provenance, then reevaluate separately. |
 | Only the baseline is selected, with no different candidate | Record why v1 is retained and continue to 10. Do not invent v2 or repeat the job to manufacture improvement. |
@@ -107,11 +113,11 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 
 | Symptom | Action and completion criteria |
 |---|---|
-| Retention is explicitly authorized | Do not run deletion commands. Record the inventory, cost owner and review date; keep ownership/configuration needed to reopen the environment. |
+| Retention is explicitly authorized | Do not run deletion commands. Record the actual inventory, reason, cost responsibility, review date, and subsequent deletion plan; keep ownership/configuration needed to reopen the environment. |
 | Search charges remain after cleanup | `cleanup` handles recorded objects, not all hosting/models/groups/logs. Follow [authorized cleanup or retention in 10](handbook.md#cleanup). |
 | `.env` or workspace is missing | Compare the configuration, manifest and Azure inventory first. Do not fabricate ownership records to delete resources. |
 | Monitoring in the group serves another group | Review shared action-group dependencies with the owner. A dedicated group does not authorize deleting shared resources. |
-| Locks, permissions or dependencies block deletion | Read Locks, Activity log and the failed operation; request action from the owner. Do not remove organizational locks without authorization. |
+| Locks, permissions or dependencies block deletion | Read Locks, Activity log, and the failed operation. Obtain authorization for the required action before resuming; do not remove organizational locks without authorization or mark blocked deletion complete. |
 | The group remains after a deletion request | Inspect asynchronous progress. Only a successful `az group exists` result of `false` verifies absence. |
 | Costs appear after deletion | Check the usage period, billing delay and remaining resources in other groups. Earlier usage charges do not disappear. |
 

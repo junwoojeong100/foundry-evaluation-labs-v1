@@ -9,6 +9,7 @@ rebased for the output location; fenced-code contents remain unchanged. Use
 from __future__ import annotations
 
 import argparse
+import ast
 import html
 import json
 import os
@@ -25,7 +26,7 @@ from markdown import Markdown
 from markdown.extensions.toc import slugify_unicode
 from markdown.treeprocessors import Treeprocessor
 
-BUILD_DATE = "2026-10-03"
+BUILD_DATE = "2026-10-05"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIRECTORY = "docs"
 SITE_URL = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"
@@ -33,6 +34,8 @@ LANGUAGES = ("en", "ko")
 LOCALES = json.loads((PROJECT_ROOT / "web/locales.json").read_text(encoding="utf-8"))
 REQUIRED_PLACEHOLDERS = ("CONTENT", "TOC", "BUILD_DATE")
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
+SOURCE_DIRECTIVE = re.compile(r"<!-- source-code: ([A-Za-z0-9_./:-]+) -->")
+SOURCE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
 
 
 @dataclass(frozen=True)
@@ -48,14 +51,14 @@ class Document:
 
 
 DOCUMENTS = (
-    Document("guide/en/handbook.md", "index.html", "Participant guide"),
-    Document("guide/en/facilitator.md", "facilitator.html", "Facilitator guide"),
-    Document("guide/en/admin-setup.md", "admin.html", "Operator setup"),
+    Document("guide/en/handbook.md", "index.html", "Hands-on guide"),
+    Document("guide/en/facilitator.md", "facilitator.html", "Lab checklist"),
+    Document("guide/en/admin-setup.md", "admin.html", "Environment setup reference"),
     Document("guide/en/troubleshooting.md", "troubleshooting.html", "Troubleshooting"),
     Document("data/README.en.md", "data-guide.html", "Data guide"),
-    Document("guide/handbook.md", "ko/index.html", "참가자 실습 가이드", "ko"),
-    Document("guide/facilitator.md", "ko/facilitator.html", "강사용 진행 가이드", "ko"),
-    Document("guide/admin-setup.md", "ko/admin.html", "관리자 사전 준비", "ko"),
+    Document("guide/handbook.md", "ko/index.html", "실습 가이드", "ko"),
+    Document("guide/facilitator.md", "ko/facilitator.html", "실습 체크리스트", "ko"),
+    Document("guide/admin-setup.md", "ko/admin.html", "환경 설정 참고", "ko"),
     Document("guide/troubleshooting.md", "ko/troubleshooting.html", "문제 해결", "ko"),
     Document("data/README.md", "ko/data-guide.html", "데이터 설명", "ko"),
 )
@@ -174,6 +177,87 @@ class _TitleParser(HTMLParser):
             self.parts.append(data)
 
 
+def implementation_source(reference: str, *, root: Path = PROJECT_ROOT) -> tuple[str, str, str, int, int]:
+    """Read a complete source symbol without importing or executing its module."""
+    filename, separator, symbol = reference.partition(":")
+    relative = Path(filename)
+    if (
+        relative.is_absolute()
+        or not relative.parts
+        or any(part.startswith(".") for part in relative.parts)
+        or relative.parts[0] not in {"lab", "scripts", "schemas", "infra"}
+        or relative.suffix not in {".py", ".json"}
+    ):
+        raise ValueError(f"허용되지 않은 구현 코드 경로입니다: {reference}")
+    root = root.resolve()
+    path = root / relative
+    if not path.resolve().is_relative_to(root) or any(
+        root.joinpath(*relative.parts[:index]).is_symlink()
+        for index in range(1, len(relative.parts) + 1)
+    ):
+        raise ValueError(f"구현 코드 경로가 저장소 범위를 벗어납니다: {reference}")
+    source = path.read_text(encoding="utf-8")
+    lines = source.splitlines(keepends=True)
+    if not separator:
+        return filename, source, "python" if relative.suffix == ".py" else "json", 1, len(lines)
+    if relative.suffix != ".py" or not symbol:
+        raise ValueError(f"Python 구현 기호를 지정해야 합니다: {reference}")
+    node = ast.parse(source, filename=filename)
+    for part in symbol.split("."):
+        matches = [
+            child for child in getattr(node, "body", [])
+            if (
+                isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                and child.name == part
+            ) or (
+                isinstance(child, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == part for target in child.targets)
+            )
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"구현 코드 기호가 없거나 중복되었습니다: {reference}")
+        node = matches[0]
+    start = min([node.lineno, *(item.lineno for item in getattr(node, "decorator_list", []))])
+    end = node.end_lineno
+    if end is None:
+        raise ValueError(f"구현 코드의 끝을 확인할 수 없습니다: {reference}")
+    return filename, "".join(lines[start - 1:end]), "python", start, end
+
+
+def expand_implementation_sources(markdown_text: str, *, relative_base: str, language: str) -> str:
+    text = locale(language)["source"]
+    output = []
+    fence = None
+    for line in markdown_text.splitlines(keepends=True):
+        marker = SOURCE_FENCE.match(line)
+        if marker:
+            value = marker.group(1)
+            if fence is None:
+                fence = value
+            elif value[0] == fence[0] and len(value) >= len(fence) and not line.strip().strip(value[0]):
+                fence = None
+        match = SOURCE_DIRECTIVE.fullmatch(line.rstrip("\r\n")) if fence is None else None
+        if match is None:
+            output.append(line)
+            continue
+        reference = match.group(1)
+        filename, source, syntax, start, end = implementation_source(reference)
+        local = posixpath.relpath(filename, relative_base or ".") + f"#L{start}-L{end}"
+        online = f"https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/{filename}#L{start}-L{end}"
+        output.append(
+            '<details class="implementation-code" open>\n'
+            f'<summary>{html.escape(text["LABEL"])} · <code>{html.escape(reference)}</code></summary>\n'
+            f'<p class="implementation-note">{html.escape(text["NOTE"])}</p>\n'
+            '<p class="implementation-links">'
+            f'<a href="{html.escape(local, quote=True)}">{html.escape(text["FILE"])} · {start}–{end}</a> · '
+            f'<a href="{html.escape(online, quote=True)}">{html.escape(text["ONLINE"])}</a></p>\n'
+            f'<pre class="implementation-source" data-source-reference="{html.escape(reference, quote=True)}">'
+            f'<code class="language-{syntax}">{html.escape(source)}</code></pre>\n'
+            '</details>\n'
+        )
+    return "".join(output)
+
+
 def render_markdown(
     markdown_text: str,
     *,
@@ -226,7 +310,9 @@ def render_markdown(
                     self.md.htmlStash.rawHtmlBlocks[index] = "".join(parser.parts)
 
         converter.treeprocessors.register(RebaseLinks(converter), "rebase_links", 1)
-    content = converter.convert(markdown_text.lstrip("\ufeff"))
+    content = converter.convert(expand_implementation_sources(
+        markdown_text.lstrip("\ufeff"), relative_base=relative_base, language=language,
+    ))
     title_parser = _TitleParser()
     title_parser.feed(content)
     title = "".join(title_parser.parts).strip() or text["SITE_TITLE"]

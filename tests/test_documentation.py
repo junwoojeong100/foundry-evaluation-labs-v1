@@ -15,7 +15,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from urllib.parse import unquote, urlsplit
 
-from scripts.build_guide import DOCUMENTS, SITE_URL, documents_for
+from scripts.build_guide import DOCUMENTS, SITE_URL, SOURCE_DIRECTIVE, documents_for, implementation_source, render_markdown
 from scripts.package_lab import GUIDE_FILES, package_files
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -149,7 +149,7 @@ class PortalFigureParser(HTMLParser):
 
 
 class ArticleTextParser(HTMLParser):
-    def __init__(self, *, target_tag="article", target_id="guide-start"):
+    def __init__(self, *, target_tag="article", target_id="guide-start", exclude_implementation=False):
         super().__init__(convert_charrefs=True)
         self.target_tag = target_tag
         self.target_id = target_id
@@ -157,6 +157,8 @@ class ArticleTextParser(HTMLParser):
         self.in_article = False
         self.text = []
         self.alt = []
+        self.exclude_implementation = exclude_implementation
+        self.in_implementation = False
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -167,16 +169,44 @@ class ArticleTextParser(HTMLParser):
             self.depth += 1
         if self.in_article and tag == "img":
             self.alt.append(attrs.get("alt", ""))
+        if tag == "pre" and "implementation-source" in attrs.get("class", "").split():
+            self.in_implementation = True
 
     def handle_endtag(self, tag):
+        if tag == "pre":
+            self.in_implementation = False
         if self.in_article and tag == self.target_tag:
             self.depth -= 1
             if self.depth == 0:
                 self.in_article = False
 
     def handle_data(self, data):
-        if self.in_article:
+        if self.in_article and not (self.exclude_implementation and self.in_implementation):
             self.text.append(data)
+
+
+class ImplementationParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.sources = []
+        self.current = None
+        self.details = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "details" and "implementation-code" in attrs.get("class", "").split():
+            self.details.append(attrs)
+        if tag == "pre" and "implementation-source" in attrs.get("class", "").split():
+            self.current = {"reference": attrs["data-source-reference"], "text": ""}
+
+    def handle_data(self, data):
+        if self.current is not None:
+            self.current["text"] += data
+
+    def handle_endtag(self, tag):
+        if tag == "pre" and self.current is not None:
+            self.sources.append(self.current)
+            self.current = None
 
 
 class DocumentationTests(unittest.TestCase):
@@ -253,7 +283,13 @@ class DocumentationTests(unittest.TestCase):
         ]
         for path in paths:
             with self.subTest(document=path.relative_to(ROOT)):
-                self.assertNotRegex(path.read_text(encoding="utf-8"), r"(?i)\bSFT\b|sft-appendix|sft\.html|Supervised Fine.Tuning")
+                source = path.read_text(encoding="utf-8")
+                if path.suffix == ".html":
+                    source = re.sub(
+                        r'<pre class="implementation-source"[^>]*>.*?</pre>', "",
+                        source, flags=re.DOTALL,
+                    )
+                self.assertNotRegex(source, r"(?i)\bSFT\b|sft-appendix|sft\.html|Supervised Fine.Tuning")
         self.assertTrue(all(document.key != "sft" for document in DOCUMENTS))
 
     def test_tpm_requirements_and_readonly_check_are_documented_before_model_calls(self):
@@ -285,6 +321,146 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(page.overview_links, links)
                 self.assertEqual(page.next_links, links[1:])
                 self.assertIn('data-progress-revision="end-to-end-10"', (SITE / filename).read_text())
+
+    def test_all_guides_and_entry_points_are_role_neutral(self):
+        role_terms = re.compile(
+            r"\b(?:operator|facilitator|instructor|administrator)s?\b|강사|운영자|관리자|인수표",
+            re.IGNORECASE,
+        )
+        for document in DOCUMENTS:
+            with self.subTest(document=document.source):
+                self.assertNotRegex(document.label, role_terms)
+                page = ArticleTextParser(exclude_implementation=True)
+                page.feed((SITE / document.output).read_text())
+                self.assertIsNone(role_terms.search(" ".join(page.text + page.alt)))
+                book = ArticleTextParser(
+                    target_tag="section", target_id=f"book-{document.key}", exclude_implementation=True,
+                )
+                prefix = "ko/" if document.language == "ko" else ""
+                book.feed((SITE / prefix / "print.html").read_text())
+                self.assertIsNone(role_terms.search(" ".join(book.text + book.alt)))
+        for filename, language in (
+            ("README.md", "en"), ("README.en.md", "en"), ("README.ko.md", "ko"),
+            ("infra/README.md", "en"),
+        ):
+            with self.subTest(document=filename):
+                page = ArticleTextParser()
+                page.feed(
+                    '<article id="guide-start">'
+                    + render_markdown((ROOT / filename).read_text(), language=language).content
+                    + "</article>"
+                )
+                self.assertIsNone(role_terms.search(" ".join(page.text + page.alt)))
+
+    def test_self_service_path_keeps_setup_records_and_all_execution_steps(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            environment = "lab-" + language
+            with self.subTest(language=language):
+                intro = source.split("## 01.", 1)[0]
+                self.assertIn(
+                    "Every participant completes" if language == "en" else "모든 실습 참여자가",
+                    intro,
+                )
+                provisioning = source.split("{#resources}", 1)[1].split("## 03.", 1)[0]
+                self.assertIn(f".lab/{environment}/notes.md", provisioning)
+                self.assertIn("admin-setup.md#handoff", provisioning)
+                for command in (
+                    "bootstrap plan", "bootstrap preflight", "bootstrap apply", "bootstrap status",
+                    "iq prepare", "iq probe", "native-agent --version 1",
+                    "native-evals --name", "native-agent --version 2",
+                    "scripts/add_foundry_eval_run.py", "az group delete", "az group exists",
+                ):
+                    self.assertIn(command, source)
+                criteria = source.split("{#prepare}", 1)[1].split("## 06.", 1)[0]
+                self.assertIn("unsubmitted" if language == "en" else "아직 제출하지 않은", criteria)
+                self.assertIn("06", criteria)
+                cleanup = source.split("{#cleanup}", 1)[1]
+                self.assertIn("default path" if language == "en" else "기본 경로", cleanup)
+                self.assertIn("separate option" if language == "en" else "별도 선택 사항", cleanup)
+
+    def test_setup_reference_documents_participant_authorization_and_registration(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            source = (folder / "admin-setup.md").read_text()
+            with self.subTest(language=language):
+                for term in (
+                    "expected_user", "approved_by", "Microsoft.Authorization/roleAssignments/write",
+                    "/register/action", "**Register**", "Microsoft.CognitiveServices",
+                    "Microsoft.Search", "Microsoft.OperationalInsights", "Microsoft.Insights",
+                ):
+                    self.assertIn(term, source)
+                self.assertIn(
+                    "digital signature" if language == "en" else "전자서명",
+                    source,
+                )
+                self.assertIn(
+                    "not run" if language == "en" else "미실행",
+                    source,
+                )
+                self.assertIn("{#operator-guide}", source)
+                self.assertIn("{#handoff}", source)
+                self.assertIn("{#facilitator-guide}", (folder / "facilitator.md").read_text())
+
+    def test_optimizer_requires_complete_instructions_and_documents_safe_waits(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            source = self.source(language)
+            troubleshooting = (folder / "troubleshooting.md").read_text()
+            with self.subTest(language=language):
+                for term in ("Compare across models", "Token usage", "--wait-seconds", "result_counts.total: 12"):
+                    self.assertIn(term, source)
+                self.assertIn("candidate.txt.txt", source)
+                self.assertIn(
+                    "complete instructions unavailable" if language == "en" else "전체 지침 확인 불가",
+                    troubleshooting,
+                )
+                self.assertIn(
+                    "Stopping your wait does not cancel" if language == "en" else "기다림을 중단해도",
+                    source,
+                )
+
+    def test_implementation_panels_show_exact_current_source_in_both_editions(self):
+        references = None
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            expected = [
+                match.group(1) for line in self.source(language).splitlines()
+                if (match := SOURCE_DIRECTIVE.fullmatch(line))
+            ]
+            self.assertGreaterEqual(len(expected), 20)
+            if references is None:
+                references = expected
+            self.assertEqual(expected, references)
+            for filename in ("index.html", "print.html"):
+                with self.subTest(language=language, edition=filename):
+                    page = ImplementationParser()
+                    page.feed((SITE / prefix / filename).read_text())
+                    self.assertEqual([item["reference"] for item in page.sources], expected)
+                    self.assertTrue(all("open" in detail for detail in page.details))
+                    for item in page.sources:
+                        self.assertEqual(item["text"], implementation_source(item["reference"])[1])
+                    self.assertNotIn("<!-- source-code:", (SITE / prefix / filename).read_text())
+
+    def test_every_stage_maps_code_or_portal_only_actions_without_replacing_commands(self):
+        anchors = (
+            "setup", "resources", "knowledge", "agent", "dataset", "criteria",
+            "baseline", "analysis", "optimizer", "decision", "cleanup",
+        )
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            source = self.source(language)
+            for anchor in anchors:
+                self.assertIn("{#" + anchor + "-code-portal}", source)
+                self.assertIn(f'id="{anchor}-code-portal"', (SITE / prefix / "index.html").read_text())
+                self.assertIn(f'id="book-index--{anchor}-code-portal"', (SITE / prefix / "print.html").read_text())
+            optimizer = source.split("{#optimizer-code-portal}", 1)[1].split("## 09.", 1)[0]
+            self.assertIn(
+                "No local program submits" if language == "en" else "로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다",
+                optimizer,
+            )
+            baseline = source.split("{#baseline-code-portal}", 1)[1].split("## 07.", 1)[0]
+            self.assertIn("list", baseline)
+            self.assertIn("create", baseline)
+            self.assertNotRegex(source, r"python\s+examples/|examples/.*\.py")
 
     def test_native_foundry_actions_not_a_custom_local_judge_are_the_core(self):
         for language in ("en", "ko"):
@@ -519,6 +695,32 @@ class DocumentationTests(unittest.TestCase):
                     if url.fragment and target in parsed:
                         self.assertIn(unquote(url.fragment), parsed[target].ids)
 
+    def test_all_markdown_document_links_and_fragments_resolve(self):
+        paths = sorted(ROOT.glob("*.md")) + [
+            *sorted((ROOT / "guide").rglob("*.md")),
+            *sorted((ROOT / "data").rglob("*.md")),
+            ROOT / "infra/README.md",
+        ]
+        parsed = {}
+        for path in paths:
+            page = LinkParser()
+            directory = path.parent.relative_to(ROOT).as_posix()
+            page.feed(render_markdown(
+                path.read_text(), relative_base=directory, output_base=directory,
+            ).content)
+            parsed[path.resolve()] = page
+        for path, page in parsed.items():
+            for href in page.links:
+                with self.subTest(page=path.relative_to(ROOT), link=href):
+                    url = urlsplit(href)
+                    if url.scheme or url.netloc:
+                        continue
+                    target = (path.parent / unquote(url.path)).resolve() if url.path else path
+                    self.assertTrue(target.is_relative_to(ROOT))
+                    self.assertTrue(target.exists(), f"{path.relative_to(ROOT)} links to missing {href}")
+                    if url.fragment and target in parsed:
+                        self.assertIn(unquote(url.fragment), parsed[target].ids)
+
     def test_language_links_and_sections_are_reciprocal(self):
         english = {document.key: document for document in documents_for("en")}
         for korean in documents_for("ko"):
@@ -540,7 +742,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_english_content_and_accessibility_text_are_actually_english(self):
         for document in documents_for("en"):
-            page = ArticleTextParser()
+            page = ArticleTextParser(exclude_implementation=True)
             page.feed((SITE / document.output).read_text())
             text = "".join(page.text)
             self.assertGreater(len(text), 500)

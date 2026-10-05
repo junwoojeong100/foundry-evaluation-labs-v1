@@ -71,9 +71,9 @@
         <details class="related-documents">
           <summary>Reference guides and appendices</summary>
           <nav aria-label="Lab documents"><ul>
-<li><a href="index.html">Participant guide</a></li>
-<li><a href="facilitator.html">Facilitator guide</a></li>
-<li><a href="admin.html">Operator setup</a></li>
+<li><a href="index.html">Hands-on guide</a></li>
+<li><a href="facilitator.html">Lab checklist</a></li>
+<li><a href="admin.html">Environment setup reference</a></li>
 <li><a href="troubleshooting.html" aria-current="page">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
 <li><a href="print.html">Print edition with appendices</a></li></ul></nav>
@@ -99,22 +99,23 @@
             <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next chapter</dd></div>
           </dl>
         </details>
-        <p class="sidebar-note">Use this reference for the linked setup, approval, troubleshooting, or cleanup step. The participant path has ten steps. Theme and reading progress are saved only in this browser.</p>
+        <p class="sidebar-note">Use this reference at the linked step. You perform setup, evaluation, improvement, and cleanup yourself. Theme and reading progress are saved only in this browser.</p>
       </div>
     </aside>
     <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
 
     <main id="main-content" class="main-content" tabindex="-1">
-<a class="back-to-main no-print" href="index.html">← Back to the participant guide</a>
+<a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-03">2026-10-03</time></span>
+        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Lab troubleshooting">
         <h1 id="issue-guide">Lab troubleshooting</h1>
-<p><a href="index.html#setup">Ten participant steps</a> · <a href="admin.html#approval">Operator authorization and handoff</a></p>
+<p><a href="index.html#setup">Ten lab steps</a> · <a href="admin.html#approval">Access, authorization, and setup reference</a></p>
 <p><strong>Start with the blocked step and check the symptom, action and completion criteria.</strong> Do not silently change data, evaluators or models, or submit the same operation under a new name to bypass an error.</p>
+<p>Inspect that step's <strong>code ↔ portal</strong> table and original implementation for actual behavior. Source comments/messages remain as written, including Korean messages in the shared runtime. Do not execute the source panel as another command or edit runtime code to hide the error.</p>
 <table>
 <thead>
 <tr>
@@ -164,7 +165,7 @@
 <tbody>
 <tr>
 <td><code>py</code>, <code>python3.13</code>, <code>git</code>, or <code>az</code> reports <code>command not found</code> or <code>not recognized</code></td>
-<td>Complete <a href="index.html#setup-local">OS-specific installation in 01</a>, close all terminals, and reopen them; restart VS Code too. If it still fails, check installation paths and PATH with your administrator. Inspect paths with <code>Get-Command py, git, az</code> on Windows or <code>command -v git az</code> on macOS/Linux.</td>
+<td>Complete <a href="index.html#setup-local">OS-specific installation in 01</a>, close all terminals, and reopen them; restart VS Code too. If it still fails, check the approved installation paths and PATH. Inspect paths with <code>Get-Command py, git, az</code> on Windows or <code>command -v git az</code> on macOS/Linux.</td>
 <td><a href="index.html#setup-verify">All three version checks</a> succeed in the same new terminal.</td>
 </tr>
 <tr>
@@ -184,12 +185,12 @@
 </tr>
 <tr>
 <td>Linux reports <code>No module named venv</code> or <code>ensurepip is not available</code></td>
-<td>Install <code>python3-venv</code> from the <a href="index.html#setup-linux">Ubuntu setup instructions</a>. For a version-specific Python, confirm the matching venv package with your administrator.</td>
+<td>Install <code>python3-venv</code> from the <a href="index.html#setup-linux">Ubuntu setup instructions</a>. For a version-specific Python, confirm its matching venv package and an approved installation path.</td>
 <td>The selected Python creates <code>.venv</code> and its pip check succeeds.</td>
 </tr>
 <tr>
-<td>Administrator permissions, proxy, or certificate errors block installation</td>
-<td>Send the official download URL and error to your administrator for approved installation/network configuration. Do not disable TLS checks, security tools, or organizational policies.</td>
+<td>Installation permissions, proxy, or certificate errors block installation</td>
+<td>Check the official download URL, error, and permitted installation path. Obtain required installation/network authorization without disabling TLS checks, security tools, or organizational policies.</td>
 <td>Installation uses an approved path and all three version checks succeed.</td>
 </tr>
 <tr>
@@ -246,13 +247,13 @@
 </tr>
 <tr>
 <td>Provider is not Registered</td>
-<td>The subscription administrator registers it through organizational procedures.</td>
-<td>Rerun the same preflight after all four providers are registered.</td>
+<td>Follow <a href="admin.html#rbac">provider registration</a>, verify your registration permission/authorization, and register only the required providers.</td>
+<td>Rerun the same preflight after all four providers are Registered.</td>
 </tr>
 <tr>
 <td>Contributor cannot assign roles</td>
-<td>Resource creation and role assignment are separate permissions. Use the authorized provisioning owner.</td>
-<td>Verify effective permissions; do not add subscription Owner to bypass the issue.</td>
+<td>Resource creation and role assignment are separate permissions. Obtain authorization for an execution scope in which you can perform this lab yourself.</td>
+<td>Verify effective permissions and resume the same plan. Do not add subscription-wide Owner to bypass the issue.</td>
 </tr>
 <tr>
 <td>Model, SKU, version, quota or capacity error</td>
@@ -365,6 +366,10 @@
 <td>Read the response under <code>conversation_id → User view</code>; reasons are in Detailed metrics result under <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</td>
 </tr>
 <tr>
+<td>A required response field is Unassigned</td>
+<td>Use <a href="admin.html#evaluation-mapping">mapping checks</a> to compare the Agent target, query column, and service-generated response mapping. Do not add reference answers as a JSONL response column or submit before resolving the issue.</td>
+</tr>
+<tr>
 <td>Output items or scores are missing</td>
 <td>Preserve failures/missing items and keep the denominator at twelve. Do not invent zero scores or passes.</td>
 </tr>
@@ -386,6 +391,18 @@
 <tr>
 <td>Optimize or the selected model is unavailable</td>
 <td>Check New Foundry, prompt Agent, project permissions, Preview availability and <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">role-specific model support</a>.</td>
+</tr>
+<tr>
+<td>The authorized wait ends while the job is active</td>
+<td>Inspect the same job ID's state, errors, and usage in Optimization runs; record follow-up checks. Stopping your wait is not cancellation. Do not submit a replacement job.</td>
+</tr>
+<tr>
+<td>The job is Failed/Canceled or results are partial</td>
+<td>Preserve actual state, job ID, and errors. Do not claim a completed candidate or repeat the request under another name.</td>
+</tr>
+<tr>
+<td>View changes exposes only a partial diff, not complete instructions</td>
+<td>Expand revised sections and inspect candidate details or Download/Export where provided. Without the complete text, do not create v2; record “retain v1; complete instructions unavailable” and continue to 10.</td>
 </tr>
 <tr>
 <td>A candidate changes model or tool descriptions</td>
@@ -428,7 +445,7 @@
 <tbody>
 <tr>
 <td>Retention is explicitly authorized</td>
-<td>Do not run deletion commands. Record the inventory, cost owner and review date; keep ownership/configuration needed to reopen the environment.</td>
+<td>Do not run deletion commands. Record the actual inventory, reason, cost responsibility, review date, and subsequent deletion plan; keep ownership/configuration needed to reopen the environment.</td>
 </tr>
 <tr>
 <td>Search charges remain after cleanup</td>
@@ -444,7 +461,7 @@
 </tr>
 <tr>
 <td>Locks, permissions or dependencies block deletion</td>
-<td>Read Locks, Activity log and the failed operation; request action from the owner. Do not remove organizational locks without authorization.</td>
+<td>Read Locks, Activity log, and the failed operation. Obtain authorization for the required action before resuming; do not remove organizational locks without authorization or mark blocked deletion complete.</td>
 </tr>
 <tr>
 <td>The group remains after a deletion request</td>
@@ -468,7 +485,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-03">2026-10-03</time></p>
+        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
