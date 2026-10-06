@@ -234,13 +234,16 @@ class ImplementationParser(HTMLParser):
         self.sources = []
         self.current = None
         self.details = []
+        self.chapter = None
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == "h2":
+            self.chapter = attrs.get("id", "").removeprefix("book-index--")
         if tag == "details" and "implementation-code" in attrs.get("class", "").split():
             self.details.append(attrs)
         if tag == "pre" and "implementation-source" in attrs.get("class", "").split():
-            self.current = {"reference": attrs["data-source-reference"], "text": ""}
+            self.current = {"reference": attrs["data-source-reference"], "text": "", "chapter": self.chapter}
 
     def handle_data(self, data):
         if self.current is not None:
@@ -489,7 +492,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_every_stage_maps_code_or_portal_only_actions_without_replacing_commands(self):
         anchors = (
-            "setup", "resources", "knowledge", "agent", "dataset", "criteria",
+            "setup", "resources", "runtime", "sdk", "knowledge", "agent", "dataset", "criteria",
             "baseline", "analysis", "optimizer", "decision", "cleanup",
         )
         for language, prefix in (("en", ""), ("ko", "ko/")):
@@ -510,7 +513,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_all_steps_and_code_portal_sections_link_to_actual_actions(self):
         mappings = (
-            "setup", "resources", "knowledge", "agent", "dataset", "criteria",
+            "setup", "resources", "runtime", "sdk", "knowledge", "agent", "dataset", "criteria",
             "baseline", "analysis", "optimizer", "decision", "cleanup",
         )
         for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
@@ -527,10 +530,38 @@ class DocumentationTests(unittest.TestCase):
                     for href in action["links"]:
                         self.assertTrue(href.startswith("#"), href)
                         self.assertIn(href.removeprefix("#"), page.ids)
-                identity = page.execution_guides[0]
-                self.assertIn("#setup-login", identity["links"])
-                self.assertIn("#setup-language", identity["links"])
-                self.assertIn("#resources-preflight", identity["links"])
+                actions = {guide["heading"]: guide["links"] for guide in page.execution_guides}
+                self.assertEqual(actions["setup-code-portal"], ["#setup-login", "#setup-language"])
+                self.assertEqual(actions["runtime-code-portal"], ["#resources-preflight"])
+                self.assertEqual(actions["sdk-code-portal"], ["#agent-smoke"])
+
+    def test_authentication_guidance_matches_the_step_that_actually_uses_it(self):
+        expected = {
+            "lab/preflight.py:check_identity": "resources",
+            "lab/auth.py:credential_for": "agent",
+        }
+        for language, prefix in (("en", ""), ("ko", "ko/")):
+            source = self.source(language)
+            setup = source.split("## 01.", 1)[1].split("## 02.", 1)[0]
+            resources = source.split("## 02.", 1)[1].split("## 03.", 1)[0]
+            agent = source.split("## 03.", 1)[1].split("## 04.", 1)[0]
+            with self.subTest(language=language):
+                for term in ("check_identity", "credential_for", "AzureCliCredential", ".env"):
+                    self.assertNotIn(term, setup)
+                for term in ("az login", "az account set", "az account show", "LAB_LANGUAGE", "LAB_ARTIFACTS_DIR"):
+                    self.assertIn(term, setup)
+                self.assertIn("EXPECTED_AZURE_USER", resources)
+                self.assertIn("<!-- source-code: lab/preflight.py:check_identity -->", resources)
+                self.assertNotIn("<!-- source-code: lab/auth.py:credential_for -->", resources)
+                self.assertIn("<!-- source-code: lab/auth.py:credential_for -->", agent)
+                for filename in ("index.html", "print.html"):
+                    page = ImplementationParser()
+                    page.feed((SITE / prefix / filename).read_text())
+                    self.assertFalse(any(item["chapter"] == "setup" for item in page.sources))
+                    for reference, chapter in expected.items():
+                        matches = [item for item in page.sources if item["reference"] == reference]
+                        self.assertEqual(len(matches), 1, (language, filename, reference))
+                        self.assertEqual(matches[0]["chapter"], chapter)
 
     def test_every_terminal_block_is_labeled_without_javascript_and_keeps_original_commands(self):
         for document in DOCUMENTS:

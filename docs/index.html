@@ -361,75 +361,31 @@ export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-en/artifacts&quot;
 <pre class="terminal-command"><code class="language-powershell">$env:LAB_LANGUAGE = &quot;en&quot;
 $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifacts&quot;
 </code></pre>
-<p><strong>Enter the lab folder first in each new terminal</strong>, then repeat <a href="#setup-venv">virtual-environment activation</a> and these two settings. Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder. The generated <code>.env</code> is configuration, not a shell or PowerShell script; do not execute or <code>source</code> it.</p>
-<p class="note"><strong>Resuming the same lab:</strong> Recheck your virtual environment, language variables, and identity, then use your original configuration and records. Step 02 creates <code>.env</code> only after successful provisioning. If it does not exist yet, complete 02 rather than copying <code>.env.example</code> and calling the environment ready.</p>
-<h4 id="setup-code-portal">Code ↔ portal · connect with the same identity</h4>
-<p class="execution-guide"><strong>Where to act:</strong> The <a href="#setup-login">terminal sign-in commands</a> and <a href="#setup-language">language/record-folder settings</a> are just above. <code>check_identity()</code> runs inside <a href="#resources-preflight">02's runtime-check command</a>; <code>credential_for()</code> runs inside SDK actions such as <a href="#agent-smoke">03's model check</a>. Do not type either function directly into the terminal.</p>
+<p><strong>Enter the lab folder first in each new terminal</strong>, then repeat <a href="#setup-venv">virtual-environment activation</a> and these two settings. Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder.</p>
+<p class="note"><strong>Resuming the same lab:</strong> Recheck your virtual environment, language variables, and identity, then use your original execution records. Inspect provisioning with <a href="#resources-create">02's status and runtime checks</a>. Step 01 does not create Azure resources or call the SDK.</p>
+<h4 id="setup-code-portal">Code ↔ portal · verify sign-in and local settings</h4>
+<p class="execution-guide"><strong>Where to act:</strong> Run the <a href="#setup-login">terminal sign-in commands</a> and <a href="#setup-language">language/record-folder settings</a> above. In this step, compare the command output with the portal yourself.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
-<th>Command/code value</th>
-<th>Actual action</th>
+<th>Executed command/setting</th>
+<th>What to check now</th>
 <th>Portal actions and verification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Command/code value</span><code>az login</code>, <code>az account set</code>, <code>check_identity()</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Compare user, tenant, subscription, and Enabled state.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Check Directory under your Azure Portal account, then <strong>Subscriptions → intended subscription → Overview</strong> for IDs/state.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>az login</code>, <code>az account set</code>, <code>az account show</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Record the signed-in account, tenant, subscription, and <code>state: Enabled</code>.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare Directory under your Azure Portal account and the IDs/state under <strong>Subscriptions → intended subscription → Overview</strong> yourself.</td>
 </tr>
 <tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Command/code value</span><code>AzureCliCredential(subscription=...)</code> in <code>credential_for()</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Obtain SDK tokens from the verified CLI identity; do not switch to API keys or another credential.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare the signed-in Foundry account and the project's subscription. There is no action to paste tokens into the portal.</td>
-</tr>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Command/code value</span><code>LAB_LANGUAGE</code>, <code>LAB_ARTIFACTS_DIR</code>, <code>.env</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Set local corpus language, records, and connection configuration.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>These are local settings, not portal controls. Use the recorded values to select the matching Agent and dataset.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>LAB_LANGUAGE</code>, <code>LAB_ARTIFACTS_DIR</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Set corpus language and the execution-record path in this terminal.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>These are local settings, not portal controls. The English lab uses <code>en</code> and <code>.lab/lab-en/artifacts</code>.</td>
 </tr>
 </tbody>
 </table>
-<p>Expand the panels to inspect the internals. The first function checks identity; the second connects the SDK with it. Subscription selection does not replace tenant verification.</p>
-<details class="implementation-code">
-<summary>Actual implementation · read only · <code>lab/preflight.py:check_identity</code></summary>
-<p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/preflight.py#L69-L87">Full source file · 69–87</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L69-L87">View on GitHub</a></p>
-<pre class="implementation-source" data-source-reference="lab/preflight.py:check_identity"><code class="language-python">def check_identity(config: Config, run: Callable = az_json) -&gt; dict:
-    account = run([&quot;account&quot;, &quot;show&quot;, &quot;--subscription&quot;, config.subscription_id])
-    if not isinstance(account, dict):
-        raise LabError(&quot;az account show 응답 형식이 올바르지 않습니다.&quot;)
-    actual_user = account.get(&quot;user&quot;, {}).get(&quot;name&quot;, &quot;&quot;)
-    checks = {
-        &quot;subscription&quot;: account.get(&quot;id&quot;) == config.subscription_id,
-        &quot;tenant&quot;: account.get(&quot;tenantId&quot;) == config.tenant_id,
-        &quot;user&quot;: actual_user.lower() == config.expected_user.lower(),
-        &quot;enabled&quot;: account.get(&quot;state&quot;) == &quot;Enabled&quot;,
-    }
-    if not all(checks.values()):
-        failed = &quot;, &quot;.join(key for key, ok in checks.items() if not ok)
-        raise LabError(
-            f&quot;로그인 환경 불일치({failed}). 작업을 중단했습니다. &quot;
-            f&quot;az login --tenant {config.tenant_id} 후 지정 계정으로 로그인해야 합니다. &quot;
-            &quot;SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다.&quot;
-        )
-    return {&quot;user&quot;: actual_user, &quot;subscription&quot;: account[&quot;id&quot;], &quot;tenant&quot;: account[&quot;tenantId&quot;]}
-</code></pre>
-</details>
-
-<details class="implementation-code">
-<summary>Actual implementation · read only · <code>lab/auth.py:credential_for</code></summary>
-<p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/auth.py#L11-L15">Full source file · 11–15</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/auth.py#L11-L15">View on GitHub</a></p>
-<pre class="implementation-source" data-source-reference="lab/auth.py:credential_for"><code class="language-python">def credential_for(config: Config) -&gt; AzureCliCredential:
-    check_identity(config)
-    # Azure CLI rejects get-access-token when both tenant and subscription are
-    # supplied. The identity check above binds the subscription to the tenant.
-    return AzureCliCredential(subscription=config.subscription_id, process_timeout=30)
-</code></pre>
-</details>
-
 <p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Foundry environment →</a></p>
 
@@ -685,6 +641,7 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
 <p>The first command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second <code>apply</code> in another terminal. Confirm <strong>APPLIED</strong>, a generated <code>.lab/lab-en/.env</code>, and <code>status</code> showing <code>phase: succeeded</code> with the expected resources present. After a timeout, inspect <code>status</code> first and follow the <a href="troubleshooting.html#provisioning">resume procedure</a>.</p>
+<p><strong>The <code>.env</code> created here supplies connection settings for subsequent commands.</strong> It records user, tenant, subscription, and actual project/model-deployment values. It is configuration, not a script: specify it with <code>--config</code>, never execute or <code>source</code> it. If it is absent, do not copy <code>.env.example</code> and call provisioning complete.</p>
 <h4 id="resources-code-portal">Code ↔ portal · inspect created resources and deployments</h4>
 <p class="execution-guide"><strong>Where to act:</strong> After authorization, run <a href="#resources-create"><code>bootstrap apply</code> and <code>status</code> above</a>, then complete the <a href="#resources-runtime-check">portal/runtime checks below</a>. Inspect created resources in the portal rather than creating them again.</p>
 <table class="code-portal-map">
@@ -1010,6 +967,56 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env preflight
 </code></pre>
 <p>Inspect <code>agent_tpm</code>, <code>judge_tpm</code>, <code>optimizer_tpm</code>, <code>iq_planner_tpm</code>, and <code>embedding_tpm</code> under <code>checks</code>. Each <code>observed</code> value is actual deployment TPM; <code>expected</code> is the recommended minimum above. Insufficient or unverifiable token limits report <code>BLOCKED</code>: do not continue to model calls. Prepare the allocation, then rerun the same read-only preflight.</p>
+<h4 id="runtime-code-portal">Code ↔ portal · compare generated settings with the execution identity</h4>
+<p class="execution-guide"><strong>Where to act:</strong> Run the <a href="#resources-preflight">runtime-check command above</a>. It compares the generated configuration with your current CLI identity; do not type the identity-check function separately.</p>
+<table class="code-portal-map">
+<thead>
+<tr>
+<th>Command/setting</th>
+<th>Actual action</th>
+<th>Portal verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Command/setting</span><code>AZURE_SUBSCRIPTION_ID</code>, <code>AZURE_TENANT_ID</code>, and <code>EXPECTED_AZURE_USER</code> from <code>--config .lab/lab-en/.env</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Read the subscription, tenant, and user recorded for this provisioned environment.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the Azure Portal account's Directory and subscription Overview checked in 01.</td>
+</tr>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Command/setting</span><code>az account show --subscription ...</code> inside <code>check_identity()</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Automatically compare configured user, tenant, subscription, and Enabled state with the CLI. A mismatch stops execution before resource lookup.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Confirm the same account/subscription; successful sign-in does not permit a different identity.</td>
+</tr>
+</tbody>
+</table>
+<p>This function performs the command's identity check. Subscription selection does not replace tenant verification. This check is not an SDK token request or a model call.</p>
+<details class="implementation-code">
+<summary>Actual implementation · read only · <code>lab/preflight.py:check_identity</code></summary>
+<p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
+<p class="implementation-links"><a href="../lab/preflight.py#L69-L87">Full source file · 69–87</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L69-L87">View on GitHub</a></p>
+<pre class="implementation-source" data-source-reference="lab/preflight.py:check_identity"><code class="language-python">def check_identity(config: Config, run: Callable = az_json) -&gt; dict:
+    account = run([&quot;account&quot;, &quot;show&quot;, &quot;--subscription&quot;, config.subscription_id])
+    if not isinstance(account, dict):
+        raise LabError(&quot;az account show 응답 형식이 올바르지 않습니다.&quot;)
+    actual_user = account.get(&quot;user&quot;, {}).get(&quot;name&quot;, &quot;&quot;)
+    checks = {
+        &quot;subscription&quot;: account.get(&quot;id&quot;) == config.subscription_id,
+        &quot;tenant&quot;: account.get(&quot;tenantId&quot;) == config.tenant_id,
+        &quot;user&quot;: actual_user.lower() == config.expected_user.lower(),
+        &quot;enabled&quot;: account.get(&quot;state&quot;) == &quot;Enabled&quot;,
+    }
+    if not all(checks.values()):
+        failed = &quot;, &quot;.join(key for key, ok in checks.items() if not ok)
+        raise LabError(
+            f&quot;로그인 환경 불일치({failed}). 작업을 중단했습니다. &quot;
+            f&quot;az login --tenant {config.tenant_id} 후 지정 계정으로 로그인해야 합니다. &quot;
+            &quot;SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다.&quot;
+        )
+    return {&quot;user&quot;: actual_user, &quot;subscription&quot;: account[&quot;id&quot;], &quot;tenant&quot;: account[&quot;tenantId&quot;]}
+</code></pre>
+</details>
+
 <p>The following runtime <code>run_preflight()</code> reads the resources/deployments named in <code>.env</code>. Connect <code>rateLimits</code> entries with <code>key: token</code>, including the raw ARM lookup, to the portal TPM display. <strong>Subscription quota and a deployment's actual TPM are separate checks.</strong></p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/preflight.py:run_preflight</code></summary>
@@ -1174,6 +1181,37 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 </code></pre>
 <p>Confirm <strong><code>status: completed</code></strong> in the output.</p>
+<h4 id="sdk-code-portal">Code ↔ portal · connect the SDK with the verified CLI identity</h4>
+<p class="execution-guide"><strong>Where to act:</strong> Run the <a href="#agent-smoke">model-check command above</a>. The authentication function is used automatically inside actual SDK calls, not as a separate terminal command.</p>
+<table class="code-portal-map">
+<thead>
+<tr>
+<th>Actual code</th>
+<th>Actual action</th>
+<th>Portal verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual code</span><code>AzureCliCredential(subscription=...)</code> in <code>credential_for()</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Recheck the CLI identity against 02's configuration and create a credential object. The SDK requests tokens with that identity when calling the service. Do not switch to API keys or another credential.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the signed-in Foundry account and project subscription with the configuration. There is no action to paste tokens into the portal.</td>
+</tr>
+</tbody>
+</table>
+<p>The first function below creates the credential passed to the SDK; the next sends the actual model request. Authentication and response verification belong to this step.</p>
+<details class="implementation-code">
+<summary>Actual implementation · read only · <code>lab/auth.py:credential_for</code></summary>
+<p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
+<p class="implementation-links"><a href="../lab/auth.py#L11-L15">Full source file · 11–15</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/auth.py#L11-L15">View on GitHub</a></p>
+<pre class="implementation-source" data-source-reference="lab/auth.py:credential_for"><code class="language-python">def credential_for(config: Config) -&gt; AzureCliCredential:
+    check_identity(config)
+    # Azure CLI rejects get-access-token when both tenant and subscription are
+    # supplied. The identity check above binds the subscription to the tenant.
+    return AzureCliCredential(subscription=config.subscription_id, process_timeout=30)
+</code></pre>
+</details>
+
 <p><code>client.responses.create(model=config.model, ...)</code> inside <code>smoke_model()</code> is the real Sol model call. It tests a short input with at most 128 output tokens before creating an Agent. The request is recorded first so an unknown submission is not replayed.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/agents.py:smoke_model</code></summary>

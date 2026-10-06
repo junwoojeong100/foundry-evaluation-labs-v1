@@ -272,27 +272,20 @@ $env:LAB_LANGUAGE = "ko"
 $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-ko/artifacts"
 ```
 
-**새 터미널에서는 실습 폴더로 먼저 이동**한 뒤 [가상환경 활성화](#setup-venv)와 이 두 변수를 다시 지정합니다. `LAB_LANGUAGE`를 바꾸면서 기존 실행 폴더를 재사용하지 않습니다. 생성되는 `.env`는 설정 파일이며 `source`나 PowerShell 스크립트로 실행하지 않습니다.
+**새 터미널에서는 실습 폴더로 먼저 이동**한 뒤 [가상환경 활성화](#setup-venv)와 이 두 변수를 다시 지정합니다. `LAB_LANGUAGE`를 바꾸면서 기존 실행 폴더를 재사용하지 않습니다.
 
-**같은 실습을 재개하는 경우:** 가상환경·언어 변수·계정을 다시 확인하고 자신의 원래 설정과 실행 기록을 사용합니다. `.env`는 02의 생성 완료 후 만들어집니다. 아직 없다면 `.env.example`을 복사해 준비 완료로 간주하지 않고 02를 진행합니다.
+**같은 실습을 재개하는 경우:** 가상환경·언어 변수·계정을 다시 확인하고 자신의 원래 실행 기록을 사용합니다. 환경 생성 상태는 [02의 조회·검사](#resources-create)에서 확인합니다. 01에서는 Azure 환경을 생성하거나 SDK를 호출하지 않습니다.
 {: .note}
 
-#### 코드 ↔ 포털 · 같은 신원으로 연결합니다 {#setup-code-portal}
+#### 코드 ↔ 포털 · 로그인과 로컬 설정을 확인합니다 {#setup-code-portal}
 
-**실행 위치:** [터미널 로그인 명령](#setup-login)과 [언어·기록 폴더 설정](#setup-language)은 바로 위에 있습니다. `check_identity()`는 [02의 런타임 검사 명령](#resources-preflight), `credential_for()`는 [03의 모델 연결](#agent-smoke) 등에서 자동 호출됩니다. 두 함수를 터미널에 직접 입력하지 않습니다.
+**실행 위치:** 위의 [터미널 로그인 명령](#setup-login)과 [언어·기록 폴더 설정](#setup-language)을 실행합니다. 이 단계에서는 명령 출력과 포털 값을 직접 대조합니다.
 {: .execution-guide}
 
-| 명령·코드에서 보는 값 | 실제 동작 | 포털 조작·확인 위치 |
+| 실행한 명령·설정값 | 지금 확인하는 내용 | 포털 조작·확인 위치 |
 |---|---|---|
-| `az login`, `az account set`, `check_identity()` | 지정한 사용자·테넌트·구독·Enabled 상태를 대조합니다. | Azure Portal 우측 상단 계정의 Directory를 확인하고 **Subscriptions → 사용할 구독 → Overview**에서 ID·상태를 대조합니다. |
-| `credential_for()`의 `AzureCliCredential(subscription=...)` | 확인한 Azure CLI 신원으로 SDK 토큰을 얻습니다. API key나 다른 자격 증명으로 전환하지 않습니다. | Foundry 우측 상단 로그인 계정과 프로젝트의 구독을 대조합니다. 토큰을 포털에 붙여넣는 작업은 없습니다. |
-| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`, `.env` | 내 PC의 데이터 언어·실행 기록·연결 설정을 정합니다. | 포털에 없는 로컬 설정입니다. 언어에 맞는 Agent·데이터셋을 선택할 때 기록한 값을 사용합니다. |
-
-내부 동작을 확인하려면 아래 패널을 펼칩니다. 첫 함수는 신원을 확인하고, 다음 함수는 그 신원으로 SDK를 연결합니다. 구독 선택만으로 테넌트 확인을 대신하지 않습니다.
-
-<!-- source-code: lab/preflight.py:check_identity -->
-
-<!-- source-code: lab/auth.py:credential_for -->
+| `az login`, `az account set`, `az account show` | 로그인 계정·테넌트·구독을 기록하고 `state: Enabled`를 확인합니다. | Azure Portal 우측 상단 계정의 Directory와 **Subscriptions → 사용할 구독 → Overview**의 ID·상태를 직접 대조합니다. |
+| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR` | 현재 터미널의 데이터 언어와 실행 기록 경로를 지정합니다. | 포털에 없는 로컬 설정입니다. 한국어 실습은 `ko`와 `.lab/lab-ko/artifacts`를 사용합니다. |
 
 **완료 기준:** Python 3.11–3.14·Git·Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 [환경 오류 해결](troubleshooting.md#environment)을 확인합니다.
 {: .completion-check}
@@ -412,6 +405,8 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 
 첫 명령은 리소스·모델·연결·리소스 범위 역할을 실제로 생성합니다. 시간이 걸릴 수 있으므로 다른 창에서 같은 `apply`를 실행하지 않습니다. `apply`의 **APPLIED**, `.lab/lab-ko/.env` 생성, `status`의 `phase: succeeded`와 대상 리소스의 존재를 확인합니다. 대기 초과이면 `status`부터 확인하며 [재개 절차](troubleshooting.md#provisioning)를 따릅니다.
 
+**여기서 생성된 `.env`가 이후 명령의 연결 설정입니다.** 사용자·테넌트·구독과 실제 프로젝트·모델 배포 값이 들어 있습니다. 설정 파일이므로 `source`나 PowerShell 스크립트로 실행하지 않고, 명령의 `--config`로 지정합니다. 아직 없다면 `.env.example`을 복사해 생성 완료로 간주하지 않습니다.
+
 #### 코드 ↔ 포털 · 생성한 자원과 배포를 확인합니다 {#resources-code-portal}
 
 **실행 위치:** 승인 후 [위의 `bootstrap apply`·`status` 명령](#resources-create)을 실행하고 [아래의 포털·런타임 검사](#resources-runtime-check)로 확인합니다. 포털에서는 생성 결과를 조회하며 같은 자원을 다시 만들지 않습니다.
@@ -470,6 +465,20 @@ python -m lab --config .lab/lab-ko/.env preflight
 
 `checks`의 `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, `embedding_tpm`을 확인합니다. 각 항목의 `observed`가 실제 배포 TPM, `expected`가 위 최소 권장값입니다. 부족하거나 토큰 제한을 확인할 수 없으면 `BLOCKED`이며 다음 호출 단계로 진행하지 않습니다. 설정을 준비한 뒤 같은 읽기 전용 preflight를 다시 실행합니다.
 
+#### 코드 ↔ 포털 · 생성된 설정과 실행 신원을 대조합니다 {#runtime-code-portal}
+
+**실행 위치:** 위의 [런타임 검사 명령](#resources-preflight)을 실행합니다. 프로그램이 생성된 설정 파일과 현재 CLI 신원을 비교하므로, 신원 검사 함수를 별도로 입력하지 않습니다.
+{: .execution-guide}
+
+| 명령·설정값 | 실제 동작 | 포털 확인 위치 |
+|---|---|---|
+| `--config .lab/lab-ko/.env`의 `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `EXPECTED_AZURE_USER` | 생성된 환경에 기록한 구독·테넌트·사용자를 읽습니다. | 01에서 확인한 Azure Portal 계정의 Directory와 구독 Overview를 대조합니다. |
+| `check_identity()`의 `az account show --subscription ...` | 설정값과 CLI의 사용자·테넌트·구독·Enabled 상태를 자동 대조합니다. 불일치하면 자원 조회를 진행하지 않고 중단합니다. | 같은 계정·구독인지 확인합니다. 로그인 성공만으로 다른 신원을 허용하지 않습니다. |
+
+아래 함수가 이 명령 안에서 수행하는 신원 검사입니다. 구독 선택만으로 테넌트 확인을 대신하지 않습니다. 이 검사는 SDK 토큰 요청이나 모델 호출이 아닙니다.
+
+<!-- source-code: lab/preflight.py:check_identity -->
+
 아래 런타임 `run_preflight()`는 `.env`의 대상 자원·배포를 조회합니다. `rateLimits`의 `key: token`을 읽거나 원시 ARM 메타데이터를 다시 조회하는 부분을 포털의 TPM 표시와 연결합니다. **구독 할당량 확인과 배포의 실제 TPM 확인은 다른 검사**입니다.
 
 <!-- source-code: lab/preflight.py:run_preflight -->
@@ -508,6 +517,19 @@ python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
 ```
 
 출력의 **`status: completed`**를 확인합니다.
+
+#### 코드 ↔ 포털 · 확인한 CLI 신원으로 SDK를 연결합니다 {#sdk-code-portal}
+
+**실행 위치:** 위의 [모델 연결 확인 명령](#agent-smoke)을 실행합니다. 아래 인증 함수는 실제 SDK 호출 안에서 자동으로 사용되며, 별도 터미널 명령이 아닙니다.
+{: .execution-guide}
+
+| 실제 코드 | 실제 동작 | 포털 확인 위치 |
+|---|---|---|
+| `credential_for()`의 `AzureCliCredential(subscription=...)` | 02의 설정으로 CLI 신원을 다시 확인하고 자격 증명 객체를 만듭니다. SDK가 서비스를 호출할 때 그 신원으로 토큰을 요청합니다. API key나 다른 자격 증명으로 전환하지 않습니다. | Foundry 우측 상단 로그인 계정과 프로젝트의 구독을 설정값과 대조합니다. 토큰을 포털에 붙여넣는 작업은 없습니다. |
+
+아래 첫 함수는 SDK에 전달할 자격 증명을 만들고, 다음 함수는 실제 모델 요청을 보냅니다. 인증 연결과 모델 응답 확인은 이 단계에서 함께 수행합니다.
+
+<!-- source-code: lab/auth.py:credential_for -->
 
 `smoke_model()` 안의 `client.responses.create(model=config.model, ...)`가 실제 Sol 모델 호출입니다. Agent를 아직 생성하지 않고 짧은 입력·최대 출력 128토큰으로 연결을 확인하며, 호출 전에 기록을 써서 결과 불명인 요청을 반복하지 않습니다.
 

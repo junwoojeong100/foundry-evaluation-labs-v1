@@ -272,27 +272,20 @@ $env:LAB_LANGUAGE = "en"
 $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-en/artifacts"
 ```
 
-**Enter the lab folder first in each new terminal**, then repeat [virtual-environment activation](#setup-venv) and these two settings. Never change `LAB_LANGUAGE` while reusing another language's run folder. The generated `.env` is configuration, not a shell or PowerShell script; do not execute or `source` it.
+**Enter the lab folder first in each new terminal**, then repeat [virtual-environment activation](#setup-venv) and these two settings. Never change `LAB_LANGUAGE` while reusing another language's run folder.
 
-**Resuming the same lab:** Recheck your virtual environment, language variables, and identity, then use your original configuration and records. Step 02 creates `.env` only after successful provisioning. If it does not exist yet, complete 02 rather than copying `.env.example` and calling the environment ready.
+**Resuming the same lab:** Recheck your virtual environment, language variables, and identity, then use your original execution records. Inspect provisioning with [02's status and runtime checks](#resources-create). Step 01 does not create Azure resources or call the SDK.
 {: .note}
 
-#### Code ↔ portal · connect with the same identity {#setup-code-portal}
+#### Code ↔ portal · verify sign-in and local settings {#setup-code-portal}
 
-**Where to act:** The [terminal sign-in commands](#setup-login) and [language/record-folder settings](#setup-language) are just above. `check_identity()` runs inside [02's runtime-check command](#resources-preflight); `credential_for()` runs inside SDK actions such as [03's model check](#agent-smoke). Do not type either function directly into the terminal.
+**Where to act:** Run the [terminal sign-in commands](#setup-login) and [language/record-folder settings](#setup-language) above. In this step, compare the command output with the portal yourself.
 {: .execution-guide}
 
-| Command/code value | Actual action | Portal actions and verification |
+| Executed command/setting | What to check now | Portal actions and verification |
 |---|---|---|
-| `az login`, `az account set`, `check_identity()` | Compare user, tenant, subscription, and Enabled state. | Check Directory under your Azure Portal account, then **Subscriptions → intended subscription → Overview** for IDs/state. |
-| `AzureCliCredential(subscription=...)` in `credential_for()` | Obtain SDK tokens from the verified CLI identity; do not switch to API keys or another credential. | Compare the signed-in Foundry account and the project's subscription. There is no action to paste tokens into the portal. |
-| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`, `.env` | Set local corpus language, records, and connection configuration. | These are local settings, not portal controls. Use the recorded values to select the matching Agent and dataset. |
-
-Expand the panels to inspect the internals. The first function checks identity; the second connects the SDK with it. Subscription selection does not replace tenant verification.
-
-<!-- source-code: lab/preflight.py:check_identity -->
-
-<!-- source-code: lab/auth.py:credential_for -->
+| `az login`, `az account set`, `az account show` | Record the signed-in account, tenant, subscription, and `state: Enabled`. | Compare Directory under your Azure Portal account and the IDs/state under **Subscriptions → intended subscription → Overview** yourself. |
+| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR` | Set corpus language and the execution-record path in this terminal. | These are local settings, not portal controls. The English lab uses `en` and `.lab/lab-en/artifacts`. |
 
 **Completion criteria:** Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see [environment troubleshooting](troubleshooting.md#environment).
 {: .completion-check}
@@ -412,6 +405,8 @@ python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/
 
 The first command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second `apply` in another terminal. Confirm **APPLIED**, a generated `.lab/lab-en/.env`, and `status` showing `phase: succeeded` with the expected resources present. After a timeout, inspect `status` first and follow the [resume procedure](troubleshooting.md#provisioning).
 
+**The `.env` created here supplies connection settings for subsequent commands.** It records user, tenant, subscription, and actual project/model-deployment values. It is configuration, not a script: specify it with `--config`, never execute or `source` it. If it is absent, do not copy `.env.example` and call provisioning complete.
+
 #### Code ↔ portal · inspect created resources and deployments {#resources-code-portal}
 
 **Where to act:** After authorization, run [`bootstrap apply` and `status` above](#resources-create), then complete the [portal/runtime checks below](#resources-runtime-check). Inspect created resources in the portal rather than creating them again.
@@ -470,6 +465,20 @@ python -m lab --config .lab/lab-en/.env preflight
 
 Inspect `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, and `embedding_tpm` under `checks`. Each `observed` value is actual deployment TPM; `expected` is the recommended minimum above. Insufficient or unverifiable token limits report `BLOCKED`: do not continue to model calls. Prepare the allocation, then rerun the same read-only preflight.
 
+#### Code ↔ portal · compare generated settings with the execution identity {#runtime-code-portal}
+
+**Where to act:** Run the [runtime-check command above](#resources-preflight). It compares the generated configuration with your current CLI identity; do not type the identity-check function separately.
+{: .execution-guide}
+
+| Command/setting | Actual action | Portal verification |
+|---|---|---|
+| `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, and `EXPECTED_AZURE_USER` from `--config .lab/lab-en/.env` | Read the subscription, tenant, and user recorded for this provisioned environment. | Compare the Azure Portal account's Directory and subscription Overview checked in 01. |
+| `az account show --subscription ...` inside `check_identity()` | Automatically compare configured user, tenant, subscription, and Enabled state with the CLI. A mismatch stops execution before resource lookup. | Confirm the same account/subscription; successful sign-in does not permit a different identity. |
+
+This function performs the command's identity check. Subscription selection does not replace tenant verification. This check is not an SDK token request or a model call.
+
+<!-- source-code: lab/preflight.py:check_identity -->
+
 The following runtime `run_preflight()` reads the resources/deployments named in `.env`. Connect `rateLimits` entries with `key: token`, including the raw ARM lookup, to the portal TPM display. **Subscription quota and a deployment's actual TPM are separate checks.**
 
 <!-- source-code: lab/preflight.py:run_preflight -->
@@ -508,6 +517,19 @@ python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 ```
 
 Confirm **`status: completed`** in the output.
+
+#### Code ↔ portal · connect the SDK with the verified CLI identity {#sdk-code-portal}
+
+**Where to act:** Run the [model-check command above](#agent-smoke). The authentication function is used automatically inside actual SDK calls, not as a separate terminal command.
+{: .execution-guide}
+
+| Actual code | Actual action | Portal verification |
+|---|---|---|
+| `AzureCliCredential(subscription=...)` in `credential_for()` | Recheck the CLI identity against 02's configuration and create a credential object. The SDK requests tokens with that identity when calling the service. Do not switch to API keys or another credential. | Compare the signed-in Foundry account and project subscription with the configuration. There is no action to paste tokens into the portal. |
+
+The first function below creates the credential passed to the SDK; the next sends the actual model request. Authentication and response verification belong to this step.
+
+<!-- source-code: lab/auth.py:credential_for -->
 
 `client.responses.create(model=config.model, ...)` inside `smoke_model()` is the real Sol model call. It tests a short input with at most 128 output tokens before creating an Agent. The request is recorded first so an unknown submission is not replayed.
 
