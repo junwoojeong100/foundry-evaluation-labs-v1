@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -115,7 +115,7 @@
         <h1 id="issue-guide">Lab troubleshooting</h1>
 <p><a href="index.html#setup">Ten lab steps</a> · <a href="admin.html#approval">Access, authorization, and setup reference</a></p>
 <p><strong>Start with the blocked step and check the symptom, action and completion criteria.</strong> Do not silently change data, evaluators or models, or submit the same operation under a new name to bypass an error.</p>
-<p>Inspect that step's <strong>code ↔ portal</strong> table and original implementation for actual behavior. Source comments/messages remain as written, including Korean messages in the shared runtime. Do not execute the source panel as another command or edit runtime code to hide the error.</p>
+<p>Executable commands appear in <strong>Run in your terminal</strong> blocks. Use <strong>Where to act</strong> links beside <strong>code ↔ portal</strong> tables to find the command or portal procedure. Collapsed implementation panels are read-only source, not another program to execute or edit to hide an error.</p>
 <table>
 <thead>
 <tr>
@@ -124,6 +124,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>HTML shows an explanation but the execution command is hard to find</td>
+<td>Use the table's <strong>Where to act</strong> links or the step's <strong>Action order</strong>. <a href="index.html#setup-login">Sign-in commands</a> · <a href="index.html#resources-runtime-check">Runtime check</a>.</td>
+</tr>
 <tr>
 <td>Terms, installation, sign-in or file paths are unclear</td>
 <td><a href="index.html#basics">Basic terms</a> · <a href="#environment">Environment and sign-in</a></td>
@@ -210,7 +214,7 @@
 </tr>
 <tr>
 <td>Portal and CLI accounts differ</td>
-<td>These are separate sign-ins. Compare user, tenant and subscription from <code>az account show</code> with the portal; complete personal authentication yourself.</td>
+<td>These are separate sign-ins. Compare user, tenant and subscription with the portal using <a href="index.html#setup-login">01's sign-in/query commands</a>; complete personal authentication yourself.</td>
 <td>All three approved values match. Do not substitute another identity or copy tokens to bypass authentication.</td>
 </tr>
 <tr>
@@ -220,7 +224,7 @@
 </tr>
 <tr>
 <td>Artifacts go to the other language's folder</td>
-<td>Set <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> before starting Python.</td>
+<td>Set <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> before starting Python with <a href="index.html#setup-language">01's language/record-folder commands</a>.</td>
 <td>Dataset, configuration, workspace and results share the same language; existing records are not overwritten.</td>
 </tr>
 </tbody>
@@ -272,7 +276,7 @@
 </tr>
 <tr>
 <td>Apply times out or its outcome is unknown</td>
-<td>Preserve the original config, manifest and deployment ID; read <code>bootstrap status</code> and the group's Deployments.</td>
+<td>Preserve the original config, manifest and deployment ID; read <a href="index.html#resources-create">02's <code>bootstrap status</code> command</a> and the group's Deployments. Do not repeat <code>apply</code>.</td>
 <td>Wait for active work; do not resubmit an unknown outcome.</td>
 </tr>
 <tr>
@@ -298,7 +302,7 @@
 </tr>
 <tr>
 <td>Setup remains <code>created_not_retrieval_tested</code></td>
-<td>Only creation is complete. Confirm <code>retrieval_verified</code> and actual references from <code>iq probe</code>.</td>
+<td>Only creation is complete. Use <a href="index.html#agent-search-probe">03's <code>iq probe</code> command</a> to confirm <code>retrieval_verified</code> and actual references.</td>
 </tr>
 <tr>
 <td>Direct retrieval succeeds but the Agent tool returns 403</td>
@@ -325,6 +329,7 @@
 <h2 id="evaluation">Foundry evaluation and safe resumption</h2>
 <h3 id="evaluation-add-run">Add run item-schema error</h3>
 <p>If the following message appears, inspect the existing evaluation's Agent-target data source:</p>
+<p class="output-label"><strong>Example error message · do not run it.</strong></p>
 <pre><code class="language-text">Unable to create data source configuration from item schema
 </code></pre>
 <p>The <a href="index.html#decision"><code>scripts/add_foundry_eval_run.py</code> helper in 09</a> copies a completed baseline's remote data source and changes only the explicit candidate version. Confirm the same evaluation ID, registered dataset, Judge, thresholds and mappings, plus the actual version/instructions for all twelve items. Do not substitute new data or a local Judge.</p>
@@ -339,7 +344,7 @@
 <tbody>
 <tr>
 <td>Evaluation ID or run ID is unknown</td>
-<td>Read <code>native-evals --name</code>. Evaluation uses <code>eval_...</code>; the baseline is a completed version-one <code>evalrun_...</code>.</td>
+<td>Use <a href="index.html#baseline-identifiers">06's complete <code>native-evals</code> command</a>. Evaluation uses <code>eval_...</code>; the baseline is a completed version-one <code>evalrun_...</code>.</td>
 </tr>
 <tr>
 <td>Several evaluations have the same name</td>
@@ -465,7 +470,7 @@
 </tr>
 <tr>
 <td>The group remains after a deletion request</td>
-<td>Inspect asynchronous progress. Only a successful <code>az group exists</code> result of <code>false</code> verifies absence.</td>
+<td>Inspect asynchronous progress, then run <a href="index.html#cleanup-verify">10's absence check</a>. Only a successful <code>az group exists</code> result of <code>false</code> verifies absence.</td>
 </tr>
 <tr>
 <td>Costs appear after deletion</td>

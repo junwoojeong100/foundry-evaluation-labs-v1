@@ -4,6 +4,9 @@
 
 이 문서는 **본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리**의 설정 참고 자료입니다. [실습 가이드](handbook.md#setup)를 순서대로 진행하면서 필요한 절만 엽니다. 실제 값과 완료 상태는 자신의 `.lab/lab-ko/notes.md`에 기록합니다.
 
+**실행 명령 바로가기:** [CLI 로그인](handbook.md#setup-login) · [언어·기록 폴더](handbook.md#setup-language) · [환경 생성](handbook.md#resources-create) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
+{: .execution-guide}
+
 명령을 바꾸지 않고 안쪽 동작을 읽으려면 [02 생성 코드·포털](handbook.md#resources-code-portal), [03 검색 코드·포털](handbook.md#knowledge-code-portal), [Agent 구성](handbook.md#agent-code-portal), [09 제출·조회](handbook.md#decision-code-portal), [10 정리 범위](handbook.md#cleanup-code-portal)를 엽니다. 함수 원문은 읽기용이며 별도 실행이나 포털 중복 생성 지시가 아닙니다.
 
 ## 자신의 전용 실습 환경을 준비합니다 {#start}
@@ -67,7 +70,7 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 
 [01의 운영체제별 설치 안내](handbook.md#setup-local)에 따라 **Python 3.11–3.14·Git·Azure CLI**를 준비하고 [새 터미널에서 세 도구의 버전](handbook.md#setup-verify)을 확인합니다. 이미 정상인 도구는 다시 설치하지 않으며 설치 제한·권한·프록시 문제를 먼저 해결합니다. 이어서 확인한 Python으로 가상환경을 만들고 로그인·언어 변수를 설정합니다. 아직 없는 `.venv`를 활성화하거나 `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
-한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. `iq prepare → iq probe`가 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
+한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 
 ```sh
 python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
@@ -87,7 +90,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 이 실습에서는 포털 Promote를 사용하지 않고 09의 CLI로 v2를 생성합니다. 포털에서 먼저 승격하면 CLI의 로컬·원격 소유권 확인과 맞지 않을 수 있습니다. v1·v2는 Agent 전체 구성 버전이며 같은 Agent·모델·도구·출력 설정에서 지침만 달라야 합니다.
 
-평가 ID를 찾을 때는 `native-evals --name lab-ko-learning-loop`를 사용합니다. 재평가 helper는 기준선 data source를 복사하고 **원격** 계약을 검증합니다. 오래된 로컬 `JUDGE_DEPLOYMENT`로 원격 정의를 바꾸지 않습니다.
+평가 ID는 [06의 전체 조회 명령](handbook.md#baseline-identifiers)으로 찾습니다. `.env` 경로와 정확한 평가 이름을 포함한 명령을 사용합니다. 재평가 helper는 기준선 data source를 복사하고 **원격** 계약을 검증합니다. 오래된 로컬 `JUDGE_DEPLOYMENT`로 원격 정의를 바꾸지 않습니다.
 
 ## 비교 조건을 고정합니다 {#scope}
 
@@ -104,7 +107,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
 
-별도 비교 도구 `scripts/compare_foundry_eval.py`는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택합니다. 직접 지정한 데이터셋과 실행 언어를 일치시키고 다른 언어의 결과를 재표기하지 않습니다.
+**필수 비교는 [09의 Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 별도 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 이 도구를 별도로 사용할 때는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 실행 언어를 일치시킵니다.
 
 ### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
 

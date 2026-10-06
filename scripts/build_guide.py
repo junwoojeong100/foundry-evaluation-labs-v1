@@ -36,6 +36,7 @@ REQUIRED_PLACEHOLDERS = ("CONTENT", "TOC", "BUILD_DATE")
 PLACEHOLDER = re.compile(r"\{\{([A-Z_]+)\}\}")
 SOURCE_DIRECTIVE = re.compile(r"<!-- source-code: ([A-Za-z0-9_./:-]+) -->")
 SOURCE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
+COMMAND_BLOCK = re.compile(r'<pre><code class="language-(sh|bash|powershell)">')
 
 
 @dataclass(frozen=True)
@@ -245,7 +246,7 @@ def expand_implementation_sources(markdown_text: str, *, relative_base: str, lan
         local = posixpath.relpath(filename, relative_base or ".") + f"#L{start}-L{end}"
         online = f"https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/{filename}#L{start}-L{end}"
         output.append(
-            '<details class="implementation-code" open>\n'
+            '<details class="implementation-code">\n'
             f'<summary>{html.escape(text["LABEL"])} · <code>{html.escape(reference)}</code></summary>\n'
             f'<p class="implementation-note">{html.escape(text["NOTE"])}</p>\n'
             '<p class="implementation-links">'
@@ -256,6 +257,91 @@ def expand_implementation_sources(markdown_text: str, *, relative_base: str, lan
             '</details>\n'
         )
     return "".join(output)
+
+
+def add_command_labels(content: str, language: str) -> str:
+    messages = locale(language)["messages"]
+    shells = {"sh": "shellShared", "bash": "shellBash", "powershell": "shellPowerShell"}
+
+    def label(match: re.Match[str]) -> str:
+        syntax = match.group(1)
+        text = messages["commandLabel"].format(language=messages[shells[syntax]])
+        return (
+            f'<p class="command-label">{html.escape(text)}</p>\n'
+            f'<pre class="terminal-command"><code class="language-{syntax}">'
+        )
+
+    return COMMAND_BLOCK.sub(label, content)
+
+
+def add_code_portal_labels(content: str) -> str:
+    class PortalTables(HtmlRewriter):
+        def __init__(self) -> None:
+            super().__init__()
+            self.pending = False
+            self.active = False
+            self.headers: list[str] = []
+            self.header: list[str] | None = None
+            self.column = 0
+
+        def handle_starttag(self, tag: str, attrs: list) -> None:
+            attributes = dict(attrs)
+            if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+                self.pending = tag == "h4" and attributes.get("id", "").endswith("-code-portal")
+            if tag == "table":
+                self.active = self.pending
+                self.pending = False
+                self.headers = []
+                if self.active:
+                    attrs = [(name, value) for name, value in attrs if name != "class"]
+                    attrs.append(("class", (attributes.get("class", "") + " code-portal-map").strip()))
+            if self.active and tag == "tr":
+                self.column = 0
+            if self.active and tag == "th":
+                self.header = []
+            if self.active and tag == "table":
+                self.parts.append(self.start_tag(tag, attrs))
+            else:
+                super().handle_starttag(tag, attrs)
+            if self.active and tag == "td":
+                if self.column >= len(self.headers):
+                    raise ValueError("코드 ↔ 포털 표의 데이터 열에 대응하는 제목이 없습니다.")
+                self.parts.append(
+                    '<span class="mobile-cell-label" aria-hidden="true">'
+                    + html.escape(self.headers[self.column]) + "</span>"
+                )
+                self.column += 1
+
+        def handle_data(self, data: str) -> None:
+            super().handle_data(data)
+            if self.header is not None:
+                self.header.append(data)
+
+        def handle_entityref(self, name: str) -> None:
+            super().handle_entityref(name)
+            if self.header is not None:
+                self.header.append(html.unescape(f"&{name};"))
+
+        def handle_charref(self, name: str) -> None:
+            super().handle_charref(name)
+            if self.header is not None:
+                self.header.append(html.unescape(f"&#{name};"))
+
+        def handle_endtag(self, tag: str) -> None:
+            if tag == "th" and self.header is not None:
+                title = " ".join("".join(self.header).split())
+                if not title:
+                    raise ValueError("코드 ↔ 포털 표의 열 제목이 비어 있습니다.")
+                self.headers.append(title)
+                self.header = None
+            if tag == "table":
+                self.active = False
+            super().handle_endtag(tag)
+
+    parser = PortalTables()
+    parser.feed(content)
+    parser.close()
+    return "".join(parser.parts)
 
 
 def render_markdown(
@@ -313,6 +399,7 @@ def render_markdown(
     content = converter.convert(expand_implementation_sources(
         markdown_text.lstrip("\ufeff"), relative_base=relative_base, language=language,
     ))
+    content = add_code_portal_labels(add_command_labels(content, language))
     title_parser = _TitleParser()
     title_parser.feed(content)
     title = "".join(title_parser.parts).strip() or text["SITE_TITLE"]

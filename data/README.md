@@ -6,6 +6,9 @@
 
 한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
 
+**실행 위치:** [터미널에서 12행·해시 확인](../guide/handbook.md#dataset-check) → [Foundry에서 업로드·선택](../guide/handbook.md#dataset-register). 로컬 확인 명령은 파일을 업로드하거나 평가를 제출하지 않습니다.
+{: .execution-guide}
+
 비교하는 동안 파일의 바이트·SHA-256·질문·참고 답변·언어를 유지합니다. 한국어와 영어 데이터는 분리하며 한 비교 안에서 섞지 않습니다.
 
 [04의 코드 ↔ 포털 표](../guide/handbook.md#dataset-code-portal)에서 로컬 행 수·해시 확인과 실제 포털 등록을 구분합니다. [05의 원격 설정 검증 코드](../guide/handbook.md#criteria-code-portal), [09의 실제 SDK 제출 코드](../guide/handbook.md#decision-code-portal)는 같은 데이터·매핑·버전이 유지되는 과정을 보여줍니다. 읽기용 소스를 별도로 실행하지 않습니다.
@@ -49,7 +52,7 @@ Agent는 티켓 제출·구독 변경·크레딧 승인·데이터 삭제를 실
 
 ## 한 번 등록하고 같은 버전 선택 {#upload}
 
-**Foundry → Build → Evaluations → Create → Agent**에서 명시적 기준선 버전과 **Individual turns / One time / Existing dataset**을 선택합니다. 버전 선택으로 체크가 해제되면 대상을 다시 선택합니다.
+**Foundry → Build → Evaluations → Create → Agent**에서 명시적 기준선 버전과 **Individual turns / One time**을 선택합니다. 버전 선택으로 체크가 해제되면 대상을 다시 선택합니다.
 
 처음에는 **Upload new dataset → Browse**로 정확한 한국어 파일을 올려 `lab-ko-dev12` 버전 `1`을 등록합니다. 재개·Optimizer·재평가는 **Existing dataset**에서 같은 이름·버전을 선택합니다. 미리 보기가 5행이어도 실제 파일·평가 범위는 12행입니다.
 

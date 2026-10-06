@@ -95,6 +95,12 @@ class _BookContent(guide.HtmlRewriter):
 
     def handle_starttag(self, tag: str, attrs: list) -> None:
         updated = self._attributes(tag, attrs)
+        if (
+            tag == "details"
+            and "implementation-code" in dict(attrs).get("class", "").split()
+            and "open" not in dict(attrs)
+        ):
+            updated.append(("open", None))
         if tag == "a":
             attributes = dict(updated)
             href = attributes.get("href")

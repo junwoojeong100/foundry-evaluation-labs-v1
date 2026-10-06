@@ -4,6 +4,9 @@
 
 Use this reference for **your own steps 02 provisioning, 03 Agent setup, and 10 cleanup**. Follow the [hands-on guide](handbook.md#setup) in order and open only the linked sections you need. Record actual values and completion evidence in your `.lab/lab-en/notes.md`.
 
+**Command shortcuts:** [CLI sign-in](handbook.md#setup-login) · [Language/records](handbook.md#setup-language) · [Provisioning](handbook.md#resources-create) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from the lab folder's terminal; do not repeat completed work.
+{: .execution-guide}
+
 To read inside unchanged commands, open [02 creation code/portal](handbook.md#resources-code-portal), [03 retrieval code/portal](handbook.md#knowledge-code-portal), [Agent configuration](handbook.md#agent-code-portal), [09 submission/lookup](handbook.md#decision-code-portal), and [10 cleanup scope](handbook.md#cleanup-code-portal). Source panels are read-only, not instructions to run another program or duplicate creation in the portal.
 
 ## Prepare your dedicated lab environment {#start}
@@ -67,7 +70,7 @@ Use the [real response check in 03](handbook.md#agent) to verify Agent and `know
 
 Prepare **Python 3.11–3.14, Git, and Azure CLI** using the [OS-specific installation instructions in 01](handbook.md#setup-local), then [verify all three versions in a new terminal](handbook.md#setup-verify). Do not reinstall working tools; resolve installation restrictions, permissions, and proxy issues first. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent `.venv` or treat fake IDs in `.env.example` as a live environment.
 
-Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After `iq prepare → iq probe` succeeds, create a policy-connected v1:
+Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
 
 ```sh
 python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
@@ -87,7 +90,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/l
 
 Do not use portal Promote in this lab; create v2 with 09's CLI. Promoting first can conflict with the CLI's local/remote ownership checks. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.
 
-Retrieve IDs with `native-evals --name lab-en-learning-loop`. The reevaluation helper copies the baseline data source and checks the **remote** contract. Do not replace the remote definition with a stale local `JUDGE_DEPLOYMENT`.
+Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifiers), including the `.env` path and exact evaluation name. The reevaluation helper copies the baseline data source and checks the **remote** contract. Do not replace the remote definition with a stale local `JUDGE_DEPLOYMENT`.
 
 ## Freeze the comparison conditions {#scope}
 
@@ -104,7 +107,7 @@ Retrieve IDs with `native-evals --name lab-en-learning-loop`. The reevaluation h
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
 
-The standalone `scripts/compare_foundry_eval.py` selects report language and the default dev12 file using `LAB_LANGUAGE` or `--language ko`/`--language en`. Match explicitly supplied datasets to that language; do not relabel another corpus's results.
+**The required comparison uses [Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, `LAB_LANGUAGE` or `--language ko`/`--language en` selects report language and default dev12; match any explicit dataset to that language.
 
 ### Check evaluation response mappings {#evaluation-mapping}
 

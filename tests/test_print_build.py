@@ -146,6 +146,27 @@ class PrintBuildTests(unittest.TestCase):
         self.assertIn('<html lang="en">', self.rendered)
         self.assertIn('class="skip-link" href="#book-main"', self.rendered)
 
+    def test_print_expands_readonly_source_and_keeps_static_command_labels(self) -> None:
+        sources = dict(self.sources)
+        sources["guide/en/handbook.md"] += (
+            "\n```sh\npython -m lab --help\n```\n\n"
+            "<!-- source-code: lab/example.py:example -->\n"
+        )
+        code = "def example():\n    return '<original>'\n"
+        with patch.object(
+            build_guide, "implementation_source",
+            return_value=("lab/example.py", code, "python", 1, 2),
+        ):
+            rendered = build_print.render_book(sources, self.template)
+        page = BookInspector()
+        page.feed(rendered)
+        details = [attrs for tag, attrs in page.elements if tag == "details"]
+        self.assertEqual(len(details), 1)
+        self.assertIn("open", details[0])
+        self.assertIn("python -m lab --help\n", page.pre_text)
+        self.assertIn(code, page.pre_text)
+        self.assertIn('<p class="command-label">Run in your terminal', rendered)
+
     def test_print_css_starts_appendices_on_pages_without_fixed_height_spacers(self) -> None:
         css = (ROOT / "web" / "styles.css").read_text(encoding="utf-8")
         print_css = css.split("@media print", 1)[1]

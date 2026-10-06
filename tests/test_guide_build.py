@@ -111,6 +111,47 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn("{{TOC}}", self.rendered)
         self.assertIn('class="language-python"', self.rendered)
 
+    def test_terminal_commands_have_static_localized_labels_and_unchanged_contents(self) -> None:
+        commands = {
+            "sh": 'az account set --subscription "YOUR_SUBSCRIPTION_ID"\n',
+            "bash": 'export LAB_ARTIFACTS_DIR="$PWD/.lab/lab-ko/artifacts"\n',
+            "powershell": '$env:LAB_LANGUAGE = "ko"\n',
+        }
+        source = "# Commands\n\n" + "\n".join(
+            f"```{syntax}\n{command}```\n" for syntax, command in commands.items()
+        )
+        source += '\n```python\nprint("not a terminal block")\n```\n'
+        for language in ("en", "ko"):
+            with self.subTest(language=language):
+                rendered = build_guide.render_guide(source, self.template, language=language)
+                page = PageInspector()
+                page.feed(rendered)
+                self.assertEqual(page.pre_text, [*commands.values(), 'print("not a terminal block")\n'])
+                self.assertEqual(rendered.count('class="command-label"'), len(commands))
+                self.assertEqual(rendered.count('class="terminal-command"'), len(commands))
+                label = "Run in your terminal" if language == "en" else "터미널에서 실행"
+                self.assertIn(label, rendered)
+                for key in ("shellShared", "shellBash", "shellPowerShell"):
+                    self.assertIn(build_guide.locale(language)["messages"][key], rendered)
+
+    def test_command_markup_inside_fenced_code_is_not_labeled_as_a_nested_command(self) -> None:
+        code = '<pre><code class="language-sh">az login</code></pre>\n'
+        rendered = build_guide.render_guide("# Literal\n\n```html\n" + code + "```\n", self.template)
+        page = PageInspector()
+        page.feed(rendered)
+        self.assertEqual(page.pre_text, [code])
+        self.assertNotIn('class="terminal-command"', rendered)
+
+    def test_terminal_wrapping_and_print_labels_are_not_hidden_by_javascript(self) -> None:
+        self.assertIn(
+            ".guide-content pre.terminal-command code { white-space: pre-wrap; "
+            "overflow-wrap: anywhere; word-break: break-word; }",
+            self.css,
+        )
+        print_css = self.css.split("@media print", 1)[1]
+        self.assertIn(".guide-content .command-label { display: block;", print_css)
+        self.assertIn(".guide-content table.code-portal-map { display: table;", print_css)
+
     def test_relative_links_and_local_asset_paths_are_unchanged(self) -> None:
         for value in (
             'href="labs/first-step.md"',
@@ -429,12 +470,50 @@ class GuideBuildTests(unittest.TestCase):
         self.assertRegex(self.css, r"\.guide-content \.learning-path strong\s*\{[^}]*white-space: nowrap")
 
     def test_code_portal_tables_fit_mobile_with_and_without_javascript(self) -> None:
-        self.assertIn('h4[id$="-code-portal"] + table', self.css)
-        self.assertIn('h4[id$="-code-portal"] + .table-scroll table', self.css)
+        source = (
+            "# Actions\n\n#### Code and portal {#setup-code-portal}\n\n"
+            "**Where to act:** [Sign in](#setup-login).\n{: .execution-guide}\n\n"
+            "| Code & input | Portal action |\n|---|---|\n"
+            "| `check_identity()` | Check the account |\n"
+            "| `credential_for()` | Check the project |\n\n"
+            "### Sign in {#setup-login}\n\n```sh\naz login\n```\n"
+        )
+        rendered = build_guide.render_guide(source, self.template)
+        page = PageInspector()
+        page.feed(rendered)
+        self.assertTrue(any(
+            tag == "table" and attrs.get("class") == "code-portal-map"
+            for tag, attrs in page.elements
+        ))
+        labels = [
+            attrs for tag, attrs in page.elements
+            if tag == "span" and attrs.get("class") == "mobile-cell-label"
+        ]
+        self.assertEqual(len(labels), 4)
+        self.assertTrue(all(label.get("aria-hidden") == "true" for label in labels))
+        self.assertEqual(rendered.count('aria-hidden="true">Code &amp; input</span>'), 2)
+        self.assertEqual(page.pre_text, ["az login\n"])
         self.assertRegex(
             self.css,
-            r'h4\[id\$="-code-portal"\] \+ \.table-scroll table\s*\{[^}]*min-width: 0;[^}]*table-layout: fixed',
+            r'table\.code-portal-map\s*\{[^}]*display: block;[^}]*min-width: 0;[^}]*font-size: 0.88rem',
         )
+
+    def test_other_tables_and_escaped_html_do_not_receive_code_portal_labels(self) -> None:
+        source = "# Data\n\n| Name | Value |\n|---|---|\n| A | B |\n\n```html\n<table><td>literal</td></table>\n```\n"
+        rendered = build_guide.render_guide(source, self.template)
+        self.assertNotIn('class="code-portal-map"', rendered)
+        self.assertNotIn('class="mobile-cell-label"', rendered)
+        self.assertIn("&lt;table&gt;&lt;td&gt;literal", rendered)
+
+    def test_code_portal_table_without_matching_column_headers_fails_explicitly(self) -> None:
+        with self.assertRaisesRegex(ValueError, "대응하는 제목"):
+            build_guide.render_markdown(
+                '<h4 id="setup-code-portal">Actions</h4>\n\n<table><tr><td>No header</td></tr></table>'
+            )
+        with self.assertRaisesRegex(ValueError, "제목이 비어"):
+            build_guide.render_markdown(
+                '<h4 id="setup-code-portal">Actions</h4>\n\n<table><tr><th></th></tr><tr><td>A</td></tr></table>'
+            )
 
     def test_missing_or_unknown_template_placeholders_fail_clearly(self) -> None:
         for placeholder in build_guide.REQUIRED_PLACEHOLDERS:
@@ -528,7 +607,8 @@ class GuideBuildTests(unittest.TestCase):
         page = PageInspector()
         page.feed(rendered)
         self.assertEqual(page.pre_text, [source])
-        self.assertIn('<details class="implementation-code" open>', rendered)
+        self.assertIn('<details class="implementation-code">', rendered)
+        self.assertNotIn('<details class="implementation-code" open>', rendered)
         self.assertIn('href="../lab/example.py#L3-L4"', rendered)
         self.assertIn("blob/main/lab/example.py#L3-L4", rendered)
         self.assertIn("{{CONTENT}} &amp; &lt;tag&gt;", rendered)

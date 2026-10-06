@@ -4,10 +4,11 @@
 
 **막힌 단계에서 증상·조치·진행 기준을 확인합니다.** 오류를 해결하기 위해 데이터·평가기·모델을 조용히 바꾸거나 새 이름으로 같은 작업을 중복 제출하지 않습니다.
 
-실제 내부 동작은 해당 단계의 **코드 ↔ 포털** 표와 구현 원문에서 확인합니다. 함수·오류 메시지는 저장소 원문이므로 가이드 문체와 다른 메시지가 있을 수 있습니다. 이를 새 명령으로 실행하거나 원문을 임의로 고쳐 오류를 숨기지 않습니다.
+실행할 명령은 **터미널에서 실행** 상자에 있습니다. **코드 ↔ 포털** 표의 **실행 위치** 링크로 명령·포털 절차를 찾습니다. 접힌 구현 패널은 읽기용 원문이며 직접 실행하거나 오류를 숨기려고 수정하지 않습니다.
 
 | 현재 증상 | 확인할 곳 |
 |---|---|
+| HTML에서 설명만 보이고 실행 명령을 찾을 수 없습니다. | 표의 **실행 위치** 링크 또는 단계 상단의 **실행 순서**를 사용합니다. [로그인 명령](handbook.md#setup-login) · [런타임 검사](handbook.md#resources-runtime-check). |
 | 용어·설치·로그인·파일 경로가 어렵습니다. | [기본 용어](handbook.md#basics) · [환경·로그인](#environment) |
 | 승인·권한·모델 용량 때문에 생성할 수 없습니다. | [생성 준비](#provisioning) |
 | 정책 검색이나 Agent 응답이 실패합니다. | [정책·Agent](#knowledge) |
@@ -34,9 +35,9 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 | `.venv/bin/activate` 또는 `Activate.ps1`이 없습니다. | 저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 [설치 순서](handbook.md#setup-local)를 따릅니다. | 같은 Python의 `python -m pip --version`과 `python -m lab --help`가 성공합니다. |
 | `ModuleNotFoundError`가 나옵니다. | 사용할 가상환경을 확인하고 그 Python으로 `python -m pip install -r requirements.lock`을 실행합니다. | 같은 환경에서 필요한 import와 데이터 검사가 성공합니다. |
 | PowerShell 활성화가 정책으로 차단됩니다. | 조직 정책을 바꾸지 않고 `.\.venv\Scripts\python.exe`로 명령을 실행합니다. | 정책 변경 없이 Python을 실행할 수 있습니다. |
-| 포털과 CLI의 계정이 다릅니다. | 브라우저와 CLI는 별도 로그인입니다. `az account show`의 사용자·tenant·subscription을 포털과 대조하고 본인 인증은 직접 완료합니다. | 승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다. |
+| 포털과 CLI의 계정이 다릅니다. | 브라우저와 CLI는 별도 로그인입니다. [01의 로그인·조회 명령](handbook.md#setup-login)으로 사용자·tenant·subscription을 포털과 대조하고 본인 인증은 직접 완료합니다. | 승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다. |
 | `AzureCliCredential`의 tenant·subscription 동시 지정이 실패합니다. | tenant 일치를 먼저 확인한 뒤 credential에는 subscription을 지정하는 저장소 인증 경로를 사용합니다. | tenant 확인을 생략하지 않고 같은 구독으로 호출합니다. |
-| 다른 언어의 artifacts에 기록됩니다. | Python 시작 전에 `LAB_LANGUAGE`와 `LAB_ARTIFACTS_DIR`를 지정합니다. | 데이터·설정·workspace·결과의 언어가 일치합니다. 기존 기록을 덮어쓰지 않습니다. |
+| 다른 언어의 artifacts에 기록됩니다. | Python 시작 전에 [01의 언어·기록 폴더 명령](handbook.md#setup-language)으로 `LAB_LANGUAGE`와 `LAB_ARTIFACTS_DIR`를 지정합니다. | 데이터·설정·workspace·결과의 언어가 일치합니다. 기존 기록을 덮어쓰지 않습니다. |
 
 ## 생성·승인·할당량 {#provisioning}
 
@@ -49,7 +50,7 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 | 모델·SKU·버전·quota·capacity 오류입니다. | 계획의 역할별 요청과 preflight 이유를 확인합니다. 대체가 필요하면 별도 계획·승인을 받습니다. | 지원 모델과 할당량을 확인하고 실제 호출까지 확인합니다. |
 | 런타임 `*_tpm` 항목이 BLOCKED입니다. | [모델별 TPM 설정](admin-setup.md#throughput)에서 실제 배포 한도를 확인합니다. | 다섯 TPM 항목과 전체 preflight가 PASS입니다. |
 | 생성 후 `unknown resource`가 나옵니다. | 자신의 Application Insights에 연결된 기본 Smart Detection인지, 다른 업무 자원이나 변경된 수신자인지 확인합니다. 생성 중이면 연결 전파를 기다립니다. | 같은 `bootstrap status`로 확인합니다. 경고 삭제나 manifest 편집으로 우회하지 않습니다. |
-| apply가 시간 초과 또는 결과 불명입니다. | 원래 config·manifest·deployment ID를 보관하고 `bootstrap status`와 그룹의 Deployments를 읽습니다. | 진행 중이면 기다리며 결과 불명 상태에서 다시 제출하지 않습니다. |
+| apply가 시간 초과 또는 결과 불명입니다. | 원래 config·manifest·deployment ID를 보관하고 [02의 `bootstrap status` 명령](handbook.md#resources-create)과 그룹의 Deployments를 읽습니다. `apply`는 다시 실행하지 않습니다. | 진행 중이면 기다리며 결과 불명 상태에서 다시 제출하지 않습니다. |
 | 같은 로컬 환경이 이미 있습니다. | 같은 실습은 원본 config로 재개합니다. 별도 실습만 새 환경 이름과 승인을 사용합니다. | 기존 계획·설정·자원을 임의로 인수하거나 덮어쓰지 않습니다. |
 
 `--retry`는 확인된 소유 배포의 종료된 실패와 별도 재시도 승인 한도에만 사용합니다. `repair-dependencies`, `repair-trace-routing`도 일치하는 실패 근거와 해당 범위의 승인이 필요한 복구 명령입니다. `APPLIED`는 인프라 상태이며 품질·운영 승인·로그 수집 성공을 뜻하지 않습니다.
@@ -59,7 +60,7 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 | 증상 | 조치와 진행 기준 |
 |---|---|
 | 배포는 있지만 모델 호출이 실패합니다. | 카탈로그·배포와 런타임 지원은 다릅니다. API 오류와 역할별 지원을 확인하고 [03의 실제 응답](handbook.md#agent)을 확인합니다. |
-| `created_not_retrieval_tested`에서 멈춥니다. | 생성만 완료된 상태입니다. `iq probe`의 `retrieval_verified`와 실제 출처를 확인합니다. |
+| `created_not_retrieval_tested`에서 멈춥니다. | 생성만 완료된 상태입니다. [03의 `iq probe` 명령](handbook.md#agent-search-probe)에서 `retrieval_verified`와 실제 출처를 확인합니다. |
 | 직접 검색은 되지만 Agent 도구가 403입니다. | 프로젝트 관리 ID의 Search 읽기·모델 호출 권한과 연결 audience를 확인합니다. 사용자 검색 성공만으로 판단하지 않습니다. |
 | `native-agent` 실행 후 구성 불일치 오류입니다. | receipt와 원격 버전을 먼저 조회합니다. MCP 도구 목록의 동등한 표현은 정규화하지만, 다른 도구·권한·모델·출력 설정은 허용하지 않습니다. receipt를 지우거나 새 버전을 만들어 우회하지 않습니다. |
 | 기존 v2와 지침 또는 모델이 다릅니다. | 고정 비교 보호 동작입니다. v2를 덮어쓰거나 v3를 만들지 않고 원래 소유 환경·지침·모델 snapshot을 대조합니다. |
@@ -72,6 +73,9 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합
 
 다음 메시지가 나오면 기존 평가의 Agent 대상 data source 구성을 확인합니다.
 
+**오류 메시지 예시 · 실행하지 않습니다.**
+{: .output-label}
+
 ```text
 Unable to create data source configuration from item schema
 ```
@@ -82,7 +86,7 @@ Unable to create data source configuration from item schema
 
 | 증상 | 조치 |
 |---|---|
-| evaluation ID·run ID를 모릅니다. | `native-evals --name`으로 조회합니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
+| evaluation ID·run ID를 모릅니다. | [06의 전체 `native-evals` 명령](handbook.md#baseline-identifiers)으로 조회합니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
 | 같은 이름의 평가가 여러 개입니다. | 생성 시각·Agent·데이터·run을 대조합니다. 이름만으로 임의 선택하지 않습니다. |
 | helper가 Still running으로 끝났습니다. | receipt에 run ID가 있으면 같은 명령·같은 `--out`으로 수집을 재개합니다. |
 | receipt에 run ID가 없거나 같은 이름의 원격 run이 있습니다. | 원본을 보관하고 제출 수락 여부와 실제 run을 확인합니다. receipt 삭제·이름 변경·자동 재제출을 하지 않습니다. |
@@ -118,7 +122,7 @@ Unable to create data source configuration from item schema
 | `.env`나 workspace가 없습니다. | config·manifest와 실제 Azure 목록으로 대상을 확인합니다. 소유권 기록을 임의로 만들어 삭제하지 않습니다. |
 | 그룹 안의 모니터링이 다른 그룹과 연결됩니다. | 공유 Action group 등 종속성을 담당자와 확인합니다. 전용 그룹이라는 이유만으로 공유 자원을 삭제하지 않습니다. |
 | 삭제가 Locks·권한·종속성 때문에 실패합니다. | Locks·Activity log와 실패 작업을 읽습니다. 본인에게 허용된 조치 범위를 확보한 뒤 재개하며 조직 잠금을 임의로 해제하지 않습니다. 삭제가 막힌 상태를 완료로 표시하지 않습니다. |
-| 삭제 요청 후에도 그룹이 남습니다. | 비동기 진행을 확인합니다. 성공한 `az group exists`가 `false`인 경우에만 부재로 기록합니다. |
+| 삭제 요청 후에도 그룹이 남습니다. | 비동기 진행을 확인하고 [10의 부재 확인 명령](handbook.md#cleanup-verify)을 실행합니다. 성공한 `az group exists`가 `false`인 경우에만 부재로 기록합니다. |
 | 삭제 뒤에도 비용이 표시됩니다. | 사용 기간과 청구 반영 지연, 외부 그룹의 잔여 자원을 확인합니다. 과거 사용 요금은 사라지지 않습니다. |
 
 서비스별 soft-delete 보존 항목과 영구 삭제/purge는 별도 정책·승인 대상입니다. [리소스 그룹 삭제 문서](https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group)를 참고합니다.

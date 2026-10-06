@@ -24,9 +24,15 @@ PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "pri
 STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
 SUBSTEPS = {
     "setup": ["setup-account", "setup-local", "setup-login"],
-    "resources": ["resources-plan", "resources-tpm", "resources-approval", "resources-create"],
-    "agent": ["agent-knowledge", "agent-create"],
-    "cleanup": ["cleanup-records", "cleanup-scope", "cleanup-delete"],
+    "resources": ["resources-plan", "resources-tpm", "resources-approval", "resources-create", "resources-runtime-check"],
+    "agent": ["agent-knowledge", "agent-create", "agent-playground"],
+    "start": ["dataset-check", "dataset-register"],
+    "prepare": ["criteria-configure"],
+    "baseline": ["baseline-submit", "baseline-results", "baseline-identifiers"],
+    "analyze": ["analysis-details", "analysis-notes"],
+    "optimize": ["optimizer-configure", "optimizer-results", "optimizer-candidate"],
+    "decision": ["decision-agent", "decision-run", "decision-compare"],
+    "cleanup": ["cleanup-records", "cleanup-scope", "cleanup-delete", "cleanup-verify"],
 }
 ONBOARDING_IMAGES = {
     "23-resource-group.png", "24-select-project.png", "25-project-overview.png",
@@ -68,6 +74,13 @@ class LearningPathParser(LinkParser):
         self.completion_checks = []
         self.wizard_steps = []
         self.concept_figures = []
+        self.step_routes = []
+        self.execution_guides = []
+        self.command_labels = 0
+        self.terminal_commands = []
+        self.last_heading = None
+        self.active_action = None
+        self.active_command = None
         self.in_article = False
         self.in_toc = False
         self.in_overview = False
@@ -85,6 +98,26 @@ class LearningPathParser(LinkParser):
             self.chapters.append(attrs.get("id"))
         if self.in_article and tag == "h3":
             self.subchapters.append(attrs.get("id"))
+        if self.in_article and tag in {"h2", "h3", "h4"}:
+            self.last_heading = attrs.get("id")
+        classes = attrs.get("class", "").split()
+        if self.in_article and tag == "p":
+            if "step-route" in classes:
+                self.active_action = {"chapter": self.chapters[-1], "links": []}
+                self.step_routes.append(self.active_action)
+            elif "execution-guide" in classes:
+                self.active_action = {"heading": self.last_heading, "links": []}
+                self.execution_guides.append(self.active_action)
+            elif "command-label" in classes:
+                self.command_labels += 1
+        if self.in_article and tag == "pre" and "terminal-command" in classes:
+            self.active_command = {"syntax": None, "text": ""}
+            self.terminal_commands.append(self.active_command)
+        if tag == "code" and self.active_command is not None:
+            self.active_command["syntax"] = next(
+                (name.removeprefix("language-") for name in classes if name.startswith("language-")),
+                None,
+            )
         if self.in_article and "data-learning-frame" in attrs:
             self.learning_frames.append((attrs["data-learning-frame"], self.chapters[-1] if self.chapters else None))
         if self.in_article and tag == "figure" and "portal-shot" in attrs.get("class", "").split():
@@ -98,6 +131,8 @@ class LearningPathParser(LinkParser):
         if self.in_article and tag == "p" and "share-checkpoint" in attrs.get("class", "").split():
             self.sharing_checkpoints.append((attrs.get("id"), self.chapters[-1] if self.chapters else None))
         if tag == "a":
+            if self.active_action is not None:
+                self.active_action["links"].append(attrs.get("href"))
             if self.in_toc:
                 self.toc_links.append(attrs.get("href"))
             if self.in_overview:
@@ -106,12 +141,20 @@ class LearningPathParser(LinkParser):
                 self.next_links.append(attrs.get("href"))
 
     def handle_endtag(self, tag):
+        if tag == "p":
+            self.active_action = None
+        elif tag == "pre":
+            self.active_command = None
         if tag == "article":
             self.in_article = False
         elif tag == "nav":
             self.in_toc = False
         elif tag == "ol":
             self.in_overview = False
+
+    def handle_data(self, data):
+        if self.active_command is not None:
+            self.active_command["text"] += data
 
 
 class PortalFigureParser(HTMLParser):
@@ -436,7 +479,10 @@ class DocumentationTests(unittest.TestCase):
                     page = ImplementationParser()
                     page.feed((SITE / prefix / filename).read_text())
                     self.assertEqual([item["reference"] for item in page.sources], expected)
-                    self.assertTrue(all("open" in detail for detail in page.details))
+                    self.assertTrue(all(
+                        ("open" in detail) == (filename == "print.html")
+                        for detail in page.details
+                    ))
                     for item in page.sources:
                         self.assertEqual(item["text"], implementation_source(item["reference"])[1])
                     self.assertNotIn("<!-- source-code:", (SITE / prefix / filename).read_text())
@@ -461,6 +507,53 @@ class DocumentationTests(unittest.TestCase):
             self.assertIn("list", baseline)
             self.assertIn("create", baseline)
             self.assertNotRegex(source, r"python\s+examples/|examples/.*\.py")
+
+    def test_all_steps_and_code_portal_sections_link_to_actual_actions(self):
+        mappings = (
+            "setup", "resources", "knowledge", "agent", "dataset", "criteria",
+            "baseline", "analysis", "optimizer", "decision", "cleanup",
+        )
+        for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
+            with self.subTest(language=language):
+                page = LearningPathParser()
+                page.feed((SITE / filename).read_text())
+                self.assertEqual([route["chapter"] for route in page.step_routes], STEPS)
+                self.assertEqual(
+                    [guide["heading"] for guide in page.execution_guides],
+                    [name + "-code-portal" for name in mappings],
+                )
+                for action in page.step_routes + page.execution_guides:
+                    self.assertTrue(action["links"])
+                    for href in action["links"]:
+                        self.assertTrue(href.startswith("#"), href)
+                        self.assertIn(href.removeprefix("#"), page.ids)
+                identity = page.execution_guides[0]
+                self.assertIn("#setup-login", identity["links"])
+                self.assertIn("#setup-language", identity["links"])
+                self.assertIn("#resources-preflight", identity["links"])
+
+    def test_every_terminal_block_is_labeled_without_javascript_and_keeps_original_commands(self):
+        for document in DOCUMENTS:
+            with self.subTest(source=document.source):
+                source = (ROOT / document.source).read_text()
+                expected = re.findall(r"```(sh|bash|powershell)\n(.*?)```", source, re.DOTALL)
+                page = LearningPathParser()
+                page.feed((SITE / document.output).read_text())
+                self.assertEqual(
+                    [(command["syntax"], command["text"]) for command in page.terminal_commands],
+                    expected,
+                )
+                self.assertEqual(page.command_labels, len(expected))
+
+    def test_optimizer_next_actions_include_the_no_candidate_cleanup_branch(self):
+        for language in ("en", "ko"):
+            with self.subTest(language=language):
+                optimizer = self.source(language).split("{#optimize}", 1)[1].split("## 09.", 1)[0]
+                self.assertRegex(
+                    optimizer,
+                    r'<p class="step-next no-print"><a href="#decision" data-next-step>[^<]+</a> '
+                    r'<a href="#cleanup">[^<]+</a></p>',
+                )
 
     def test_native_foundry_actions_not_a_custom_local_judge_are_the_core(self):
         for language in ("en", "ko"):

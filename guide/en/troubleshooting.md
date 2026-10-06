@@ -4,10 +4,11 @@
 
 **Start with the blocked step and check the symptom, action and completion criteria.** Do not silently change data, evaluators or models, or submit the same operation under a new name to bypass an error.
 
-Inspect that step's **code ↔ portal** table and original implementation for actual behavior. Source comments/messages remain as written, including Korean messages in the shared runtime. Do not execute the source panel as another command or edit runtime code to hide the error.
+Executable commands appear in **Run in your terminal** blocks. Use **Where to act** links beside **code ↔ portal** tables to find the command or portal procedure. Collapsed implementation panels are read-only source, not another program to execute or edit to hide an error.
 
 | Symptom | Where to look |
 |---|---|
+| HTML shows an explanation but the execution command is hard to find | Use the table's **Where to act** links or the step's **Action order**. [Sign-in commands](handbook.md#setup-login) · [Runtime check](handbook.md#resources-runtime-check). |
 | Terms, installation, sign-in or file paths are unclear | [Basic terms](handbook.md#basics) · [Environment and sign-in](#environment) |
 | Authorization, permissions or model capacity blocks provisioning | [Provisioning](#provisioning) |
 | Policy retrieval or Agent responses fail | [Policies and Agent](#knowledge) |
@@ -34,9 +35,9 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 | `.venv/bin/activate` or `Activate.ps1` is missing | Create the virtual environment in the repository and follow the [OS-specific setup order](handbook.md#setup-local). | `python -m pip --version` and `python -m lab --help` work in the same environment. |
 | `ModuleNotFoundError` | Confirm the intended environment and run `python -m pip install -r requirements.lock` with its Python. | Required imports and dataset checks work in that environment. |
 | PowerShell activation is blocked by policy | Use `.\.venv\Scripts\python.exe` without changing organizational policy. | Python runs without a policy change. |
-| Portal and CLI accounts differ | These are separate sign-ins. Compare user, tenant and subscription from `az account show` with the portal; complete personal authentication yourself. | All three approved values match. Do not substitute another identity or copy tokens to bypass authentication. |
+| Portal and CLI accounts differ | These are separate sign-ins. Compare user, tenant and subscription with the portal using [01's sign-in/query commands](handbook.md#setup-login); complete personal authentication yourself. | All three approved values match. Do not substitute another identity or copy tokens to bypass authentication. |
 | `AzureCliCredential` fails with both tenant and subscription | Use the repository authentication path: verify the tenant first, then specify the subscription on the credential. | Calls use the intended subscription without dropping tenant checks. |
-| Artifacts go to the other language's folder | Set `LAB_LANGUAGE` and `LAB_ARTIFACTS_DIR` before starting Python. | Dataset, configuration, workspace and results share the same language; existing records are not overwritten. |
+| Artifacts go to the other language's folder | Set `LAB_LANGUAGE` and `LAB_ARTIFACTS_DIR` before starting Python with [01's language/record-folder commands](handbook.md#setup-language). | Dataset, configuration, workspace and results share the same language; existing records are not overwritten. |
 
 ## Provisioning, authorization and quota {#provisioning}
 
@@ -49,7 +50,7 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 | Model, SKU, version, quota or capacity error | Inspect the planned role requirements and preflight reason. A replacement needs a separate plan and authorization. | Confirm support and capacity, then verify actual calls. |
 | Runtime `*_tpm` is BLOCKED | Check the real allocation using the [TPM setup instructions](admin-setup.md#throughput). | All five TPM checks and overall preflight report PASS. |
 | `unknown resource` after creation | Check whether this is verified default Smart Detection linked to your Application Insights, another workload, or changed receivers. Allow link propagation during creation. | Inspect the same `bootstrap status`; do not delete alerts or edit the manifest to bypass it. |
-| Apply times out or its outcome is unknown | Preserve the original config, manifest and deployment ID; read `bootstrap status` and the group's Deployments. | Wait for active work; do not resubmit an unknown outcome. |
+| Apply times out or its outcome is unknown | Preserve the original config, manifest and deployment ID; read [02's `bootstrap status` command](handbook.md#resources-create) and the group's Deployments. Do not repeat `apply`. | Wait for active work; do not resubmit an unknown outcome. |
 | The local environment already exists | Resume the same lab with its original configuration. A different lab needs a new environment name and authorization. | Do not adopt or overwrite existing plans, settings or resources. |
 
 Use `--retry` only for a verified terminal owned failure and a separate retry allowance. `repair-dependencies` and `repair-trace-routing` also require matching failure evidence and scoped authorization. `APPLIED` describes infrastructure, not answer quality, production approval or confirmed trace ingestion.
@@ -59,7 +60,7 @@ Use `--retry` only for a verified terminal owned failure and a separate retry al
 | Symptom | Action and completion criteria |
 |---|---|
 | Deployment exists but model calls fail | Catalog/deployment readiness and runtime support differ. Inspect the API error and intended role, then verify the [actual response in 03](handbook.md#agent). |
-| Setup remains `created_not_retrieval_tested` | Only creation is complete. Confirm `retrieval_verified` and actual references from `iq probe`. |
+| Setup remains `created_not_retrieval_tested` | Only creation is complete. Use [03's `iq probe` command](handbook.md#agent-search-probe) to confirm `retrieval_verified` and actual references. |
 | Direct retrieval succeeds but the Agent tool returns 403 | Check Search-read/model-call permissions and connection audience for the project's managed identity. User retrieval alone is insufficient. |
 | `native-agent` reports a configuration mismatch | Inspect the receipt and remote version first. Equivalent MCP allowlist representations are normalized, but different tools, permissions, models or output settings remain blocked. Do not delete the receipt or create another version to bypass it. |
 | Existing v2 has different instructions or model | Fixed-comparison protection is working. Compare the original owned environment, instructions and model snapshot; do not overwrite v2 or create v3. |
@@ -72,6 +73,9 @@ Use `--retry` only for a verified terminal owned failure and a separate retry al
 
 If the following message appears, inspect the existing evaluation's Agent-target data source:
 
+**Example error message · do not run it.**
+{: .output-label}
+
 ```text
 Unable to create data source configuration from item schema
 ```
@@ -82,7 +86,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 
 | Symptom | Action |
 |---|---|
-| Evaluation ID or run ID is unknown | Read `native-evals --name`. Evaluation uses `eval_...`; the baseline is a completed version-one `evalrun_...`. |
+| Evaluation ID or run ID is unknown | Use [06's complete `native-evals` command](handbook.md#baseline-identifiers). Evaluation uses `eval_...`; the baseline is a completed version-one `evalrun_...`. |
 | Several evaluations have the same name | Compare creation time, Agent, dataset and runs; do not select by name alone. |
 | Helper exits with Still running | If the receipt has a run ID, resume collection with the identical command and `--out`. |
 | Receipt has no run ID, or a remote run with the same name exists | Preserve the original and check submission acceptance and the actual run. Do not delete receipts, rename or automatically resubmit. |
@@ -118,7 +122,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 | `.env` or workspace is missing | Compare the configuration, manifest and Azure inventory first. Do not fabricate ownership records to delete resources. |
 | Monitoring in the group serves another group | Review shared action-group dependencies with the owner. A dedicated group does not authorize deleting shared resources. |
 | Locks, permissions or dependencies block deletion | Read Locks, Activity log, and the failed operation. Obtain authorization for the required action before resuming; do not remove organizational locks without authorization or mark blocked deletion complete. |
-| The group remains after a deletion request | Inspect asynchronous progress. Only a successful `az group exists` result of `false` verifies absence. |
+| The group remains after a deletion request | Inspect asynchronous progress, then run [10's absence check](handbook.md#cleanup-verify). Only a successful `az group exists` result of `false` verifies absence. |
 | Costs appear after deletion | Check the usage period, billing delay and remaining resources in other groups. Earlier usage charges do not disappear. |
 
 Service-specific soft-delete retention and permanent deletion/purge require separate policy and authorization. See the [resource-group deletion documentation](https://learn.microsoft.com/azure/azure-resource-manager/management/delete-resource-group).

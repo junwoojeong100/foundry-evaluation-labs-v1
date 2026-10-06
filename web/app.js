@@ -392,28 +392,40 @@
     return success;
   }
 
-  $$("pre", article).forEach((pre, index) => {
+  let copyBlockIndex = 0;
+  $$("pre", article).forEach((pre) => {
     const code = $("code", pre);
     if (!code) return;
+    if (pre.classList.contains("implementation-source")) {
+      pre.tabIndex = 0;
+      pre.setAttribute("aria-label", t("implementationLabel"));
+      return;
+    }
     if (pre.previousElementSibling?.classList.contains("output-label")) {
       pre.tabIndex = 0;
       pre.setAttribute("aria-label", t("exampleLabel"));
       return;
     }
+    const index = copyBlockIndex++;
+    const isCommand = pre.classList.contains("terminal-command");
+    const copyLabel = isCommand ? "copyCommand" : "copyCode";
     const wrapper = document.createElement("div");
-    wrapper.className = "code-block";
+    wrapper.className = isCommand ? "code-block is-command" : "code-block";
     const toolbar = document.createElement("div");
     toolbar.className = "code-toolbar no-print";
     const language = document.createElement("span");
     language.className = "code-language";
     const syntax = (Array.from(code.classList).find((name) => name.startsWith("language-")) || "language-code").slice(9);
     const shellLabels = new Map([["sh", "shellShared"], ["bash", "shellBash"], ["powershell", "shellPowerShell"]]);
-    language.textContent = shellLabels.has(syntax) ? t(shellLabels.get(syntax)) : syntax;
+    const syntaxLabel = shellLabels.has(syntax) ? t(shellLabels.get(syntax)) : syntax;
+    language.textContent = isCommand ? t("commandLabel", { language: syntaxLabel }) : syntaxLabel;
     const button = document.createElement("button");
     button.className = "copy-button";
     button.type = "button";
-    button.textContent = t("copyCode");
-    button.setAttribute("aria-label", t("copyCodeLabel", { index: index + 1, language: language.textContent }));
+    button.textContent = t(copyLabel);
+    button.setAttribute("aria-label", t(isCommand ? "copyCommandLabel" : "copyCodeLabel", {
+      index: index + 1, language: syntaxLabel,
+    }));
     const feedback = document.createElement("span");
     feedback.id = `copy-feedback-${index + 1}`;
     feedback.className = "copy-feedback no-print";
@@ -425,7 +437,7 @@
     pre.before(wrapper);
     wrapper.append(toolbar, pre, feedback);
     pre.tabIndex = 0;
-    pre.setAttribute("aria-label", t("codeLabel", { language: language.textContent }));
+    pre.setAttribute("aria-label", t(isCommand ? "commandCodeLabel" : "codeLabel", { language: syntaxLabel }));
     let feedbackTimer;
     button.addEventListener("click", async () => {
       if (button.getAttribute("aria-busy") === "true") return;
@@ -439,7 +451,7 @@
       feedback.textContent = t(success ? "copySuccess" : "copyError");
       if (success) {
         feedbackTimer = window.setTimeout(() => {
-          button.textContent = t("copyCode");
+          button.textContent = t(copyLabel);
           button.removeAttribute("data-copy-state");
           feedback.textContent = "";
         }, 3000);

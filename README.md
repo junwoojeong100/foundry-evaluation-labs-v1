@@ -16,7 +16,7 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
 
-**Existing lab commands and runtime code are unchanged.** Each step now connects **the command → its actual implementation → matching portal actions and checks**. The guide displays complete source functions/settings directly from repository files, rather than replacing helpers with a different program or abbreviated SDK examples. Source panels are read-only: run the existing command once. Dataset registration, baseline submission, and Optimizer execution remain portal actions where the lab already uses that UI.
+**Existing lab commands and runtime code are unchanged.** Each step starts with **Action order** links, and every **code ↔ portal** table links to the actual command or portal procedure. **Run in your terminal** blocks have OS labels and command-copy buttons; long commands wrap visually without changing copied text. Code/portal maps become labeled cards on mobile, while desktop and print retain tables. Complete source functions/settings remain available in collapsed, read-only panels and are expanded in the print edition. Labels and action links also work without JavaScript. Dataset registration, baseline submission, and Optimizer execution remain portal actions, not additional terminal commands.
 
 ## Fixed model roles and comparison conditions
 

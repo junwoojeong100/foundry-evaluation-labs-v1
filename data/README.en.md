@@ -6,6 +6,9 @@
 
 Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Foundry Evaluation, Agent Optimizer, and reevaluation. In the project you created, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.
 
+**Where to act:** [Terminal · check all 12 rows/hash](../guide/en/handbook.md#dataset-check) → [Foundry · upload/select](../guide/en/handbook.md#dataset-register). The local check uploads nothing and submits no evaluation.
+{: .execution-guide}
+
 Keep its exact bytes, SHA-256, questions, references, and language fixed throughout the comparison. Keep Korean and English data separate rather than mixing them in one comparison.
 
 Use [04's code ↔ portal table](../guide/en/handbook.md#dataset-code-portal) to distinguish local count/hash checks from portal registration. [05's remote-settings verification](../guide/en/handbook.md#criteria-code-portal) and [09's actual SDK submission](../guide/en/handbook.md#decision-code-portal) show how data, mappings, and versions stay fixed. Do not run read-only source panels independently.
@@ -49,7 +52,7 @@ The Agent cannot actually submit tickets, change subscriptions, approve credits 
 
 ## Register once; pin the same version {#upload}
 
-Use **Foundry → Build → Evaluations → Create → Agent**, an explicit baseline version, **Individual turns / One time / Existing dataset**. Reselect the target checkbox if version selection clears it.
+Use **Foundry → Build → Evaluations → Create → Agent**, an explicit baseline version, and **Individual turns / One time**. Reselect the target checkbox if version selection clears it.
 
 On the first attempt, use **Upload new dataset → Browse** to register the exact English file as `lab-en-dev12` version `1`. For resumption, Optimizer, and reevaluation, use **Existing dataset** with the same name/version. The preview may show five rows; the file and evaluation scope still contain 12.
 

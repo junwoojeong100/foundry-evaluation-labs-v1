@@ -16,7 +16,7 @@
 
 04–06은 같은 평가 생성 화면입니다. 단계마다 새 평가를 만들지 않습니다. 07에서는 한 사례의 점수·이유·정책을 연결해 읽은 뒤 전체 결과를 분석합니다.
 
-각 단계의 **코드 ↔ 포털** 표를 따라 **입력값 → 실제 서비스 호출 → 저장된 결과 → 포털의 같은 항목**을 연결합니다. 구현 패널을 기존 명령과 별개로 실행하지 않습니다. 특히 [06의 조회 코드](handbook.md#baseline-code-portal)는 제출 코드가 아니며, [08 Optimizer](handbook.md#optimizer-code-portal)는 실제 포털 조작으로 진행합니다.
+각 단계의 **실행 순서·실행 위치** 링크로 실제 명령이나 포털 화면을 먼저 엽니다. **코드 ↔ 포털** 표와 접힌 구현 패널은 동작을 이해할 때 읽으며, 추가로 실행하지 않습니다. 특히 [06의 ID 조회 명령](handbook.md#baseline-identifiers)은 제출 명령이 아니며, [08 Optimizer](handbook.md#optimizer-configure)는 포털에서 수행합니다.
 
 새 실습의 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸었다면 명령이 출력한 실제 이름을 사용합니다. [모델 역할·신원](admin-setup.md#prepare)을 확인하고 10의 정리 시간을 확보합니다.
 
@@ -28,18 +28,18 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 
 | 단계 | 필수 동작 | 완료 근거 |
 |---|---|---|
-| 01 환경 확인 | 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI·언어 변수를 확인합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
-| 02 환경 생성 | 계획·승인·preflight·apply·status를 순서대로 수행합니다. | APPLIED, 생성된 `.env`, 런타임 preflight PASS를 확인합니다. |
-| 03 Agent 준비 | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
-| 04 데이터셋 | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 기록합니다. |
-| 05 평가기 | Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 기록합니다. |
-| 06 기준선 | 고정 v1에 Foundry Evaluation을 실행합니다. | 완료된 실제 run ID와 전체 12건을 확인합니다. |
-| 07 분석 | 실제 답변·점수·이유·정책을 읽습니다. | 실패를 포함한 구체적인 개선 가설을 기록합니다. |
-| 08 최적화 | Instruction only로 실행하고 지침 diff를 검토합니다. | job/candidate ID·후보 파일·출처를 기록하거나 다른 후보가 없어 v1을 유지할 이유를 기록합니다. |
-| 09 재평가 | 검토한 후보가 있을 때 같은 조건의 v2를 실행하고 Compare runs를 엽니다. | 전체 행 대응과 유지·채택·보류 이유를 기록합니다. 다른 후보가 없으면 10으로 이동합니다. |
-| 10 정리 | 결과와 소유권을 보관한 뒤 자신의 전용 자원을 정리합니다. | 승인된 그룹 삭제의 부재 확인, 또는 보존 승인된 자원의 실제 목록·비용 책임·검토일을 기록합니다. |
+| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI·언어 변수를 확인합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
+| [02 환경 생성](handbook.md#resources) | 계획·승인·preflight·apply·status를 순서대로 수행합니다. | APPLIED, 생성된 `.env`, 런타임 preflight PASS를 확인합니다. |
+| [03 Agent 준비](handbook.md#agent) | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
+| [04 데이터셋](handbook.md#start) | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 기록합니다. |
+| [05 평가기](handbook.md#prepare) | Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 기록합니다. |
+| [06 기준선](handbook.md#baseline) | 고정 v1에 Foundry Evaluation을 실행합니다. | 완료된 실제 run ID와 전체 12건을 확인합니다. |
+| [07 분석](handbook.md#analyze) | 실제 답변·점수·이유·정책을 읽습니다. | 실패를 포함한 구체적인 개선 가설을 기록합니다. |
+| [08 최적화](handbook.md#optimize) | Instruction only로 실행하고 지침 diff를 검토합니다. | job/candidate ID·후보 파일·출처를 기록하거나 다른 후보가 없어 v1을 유지할 이유를 기록합니다. |
+| [09 재평가](handbook.md#decision) | 검토한 후보가 있을 때 같은 조건의 v2를 실행하고 Compare runs를 엽니다. | 전체 행 대응과 유지·채택·보류 이유를 기록합니다. 다른 후보가 없으면 10으로 이동합니다. |
+| [10 정리](handbook.md#cleanup) | 결과와 소유권을 보관한 뒤 자신의 전용 자원을 정리합니다. | 승인된 그룹 삭제의 부재 확인, 또는 보존 승인된 자원의 실제 목록·비용 책임·검토일을 기록합니다. |
 
-**Individual turns / One time / Existing dataset**을 사용합니다. 업로드 미리 보기가 5행이어도 실험은 12행입니다. 버전 선택으로 체크박스가 해제되면 다시 선택하고 대상 한 개를 확인합니다.
+**Individual turns / One time**을 사용합니다. 처음 등록할 때는 **Upload new dataset**, 재개·재사용할 때는 **Existing dataset**을 선택합니다. 업로드 미리 보기가 5행이어도 실험은 12행입니다. 버전 선택으로 체크박스가 해제되면 다시 선택하고 대상 한 개를 확인합니다.
 
 ## 실제 사례로 품질을 확인합니다 {#evaluation-sharing}
 
@@ -55,7 +55,7 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 
 **Relevance 4/5는 정확도 80%가 아닙니다. TaskAdherence 1은 통과이지 5점 중 1점이 아닙니다.** 지표별 점수·통과 건수, 전체 기준 통과, 오류·평가 범위를 구분합니다.
 
-`scripts/compare_foundry_eval.py`는 전체 사례 대응, 데이터·모델·도구·설정 일치, 실제 행별 버전·지침, 통과 건수·평균의 비회귀와 하나 이상의 명확한 관측 개선을 요구합니다. 잘못된 JSON을 고쳐 통과로 바꾸지 않고 실패로 남깁니다.
+[09의 필수 비교](handbook.md#decision-compare)는 Foundry에서 수행합니다. 선택 사항인 `scripts/compare_foundry_eval.py`도 전체 사례 대응, 데이터·모델·도구·설정 일치, 실제 행별 버전·지침, 통과 건수·평균의 비회귀와 하나 이상의 명확한 관측 개선을 요구합니다. 잘못된 JSON을 고쳐 통과로 바꾸지 않고 실패로 남깁니다.
 
 범용 평가기가 통과시켜도 근거 없는 확신, 정책 계산 오류, 실행 완료 주장과 잘못된 분류를 직접 읽습니다. 불가능한 확답을 요구한다고 사실을 만들어내면 안 됩니다.
 

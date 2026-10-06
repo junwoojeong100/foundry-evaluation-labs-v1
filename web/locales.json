@@ -55,7 +55,7 @@
       "FALLBACK_TOC": "Read the guide"
     },
     "source": {
-      "LABEL": "Actual implementation",
+      "LABEL": "Actual implementation · read only",
       "NOTE": "Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.",
       "FILE": "Full source file",
       "ONLINE": "View on GitHub"
@@ -86,6 +86,11 @@
       "shellShared": "Shared terminal",
       "shellBash": "macOS/Linux",
       "shellPowerShell": "Windows PowerShell",
+      "commandLabel": "Run in your terminal · {language}",
+      "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.",
+      "implementationLabel": "Read-only implementation reference, not a command to run.",
+      "copyCommand": "Copy commands",
+      "copyCommandLabel": "Copy terminal command block {index}: {language}",
       "copyCode": "Copy code",
       "copyCodeLabel": "Copy {language} code block {index}",
       "codeLabel": "{language} code. Scroll horizontally to read long lines.",
@@ -177,7 +182,7 @@
       "FALLBACK_TOC": "본문 읽기"
     },
     "source": {
-      "LABEL": "실제 구현 코드",
+      "LABEL": "실제 구현 코드 · 읽기 전용",
       "NOTE": "읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.",
       "FILE": "전체 구현 파일",
       "ONLINE": "GitHub에서 보기"
@@ -208,6 +213,11 @@
       "shellShared": "공통 터미널",
       "shellBash": "macOS/Linux",
       "shellPowerShell": "Windows PowerShell",
+      "commandLabel": "터미널에서 실행 · {language}",
+      "commandCodeLabel": "{language} 명령입니다. 긴 줄은 화면에서만 줄바꿈되며 복사한 명령은 원래 줄을 유지합니다.",
+      "implementationLabel": "읽기 전용 구현 참고 자료이며 실행할 명령이 아닙니다.",
+      "copyCommand": "명령 복사",
+      "copyCommandLabel": "{index}번째 터미널 명령 복사: {language}",
       "copyCode": "코드 복사",
       "copyCodeLabel": "{index}번째 {language} 코드 복사",
       "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.",

@@ -16,7 +16,7 @@ Read the [six basic terms](handbook.md#basics) and [question → answer → scor
 
 Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.
 
-Use each **code ↔ portal** table to connect **inputs → actual service call → saved result → the same portal object**. Do not execute implementation panels separately from the existing command. In particular, [06's lookup code](handbook.md#baseline-code-portal) does not submit, and [08 Optimizer](handbook.md#optimizer-code-portal) runs through actual portal actions.
+Use **Action order / Where to act** links to find the actual command or portal screen first. Read **code ↔ portal** tables and collapsed implementation panels when you need the internals; do not execute them separately. In particular, [06's ID lookup](handbook.md#baseline-identifiers) does not submit, and [08 Optimizer](handbook.md#optimizer-configure) runs in the portal.
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare) and reserve time for cleanup in 10.
 
@@ -28,18 +28,18 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| 01 Environment | Check account, subscription, permissions, Python 3.11–3.14, Git, Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
-| 02 Provisioning | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
-| 03 Agent setup | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
-| 04 Dataset | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
-| 05 Criteria | Relevance 4, TaskAdherence 1, and the actual Judge | Record the unsubmitted wizard settings and query-only input |
-| 06 Baseline | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
-| 07 Analysis | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
-| 08 Optimization | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
-| 09 Reevaluation | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |
-| 10 Cleanup | Preserve results and ownership, then clean up your dedicated resources | Verified authorized group absence, or the actual inventory, cost responsibility, and review date for approved retention |
+| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
+| [02 Provisioning](handbook.md#resources) | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
+| [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
+| [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
+| [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Record the unsubmitted wizard settings and query-only input |
+| [06 Baseline](handbook.md#baseline) | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
+| [07 Analysis](handbook.md#analyze) | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
+| [08 Optimization](handbook.md#optimize) | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
+| [09 Reevaluation](handbook.md#decision) | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |
+| [10 Cleanup](handbook.md#cleanup) | Preserve results and ownership, then clean up your dedicated resources | Verified authorized group absence, or the actual inventory, cost responsibility, and review date for approved retention |
 
-Use **Individual turns / One time / Existing dataset**. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.
+Use **Individual turns / One time**. Select **Upload new dataset** on first registration and **Existing dataset** for reuse/resumption. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.
 
 ## Check quality using actual cases {#evaluation-sharing}
 
@@ -55,7 +55,7 @@ Keep the selected lab's twelve synthetic questions, actual responses and managed
 
 **Relevance 4/5 is not 80% accuracy. TaskAdherence 1 is Pass, not a poor one-out-of-five score.** Report each evaluator separately, all-criteria passes, errors and coverage.
 
-`scripts/compare_foundry_eval.py` requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.
+The [required comparison in 09](handbook.md#decision-compare) uses Foundry. The optional `scripts/compare_foundry_eval.py` also requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.
 
 Read answers for unsupported certainty, incorrect policy arithmetic, action claims and wrong routing even if the generic evaluator passed them. A request demanding an impossible certainty must not be satisfied with invented facts.
 
