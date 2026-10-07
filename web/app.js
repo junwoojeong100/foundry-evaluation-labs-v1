@@ -27,7 +27,6 @@
   const chapterIds = new Set(chapters.map((chapter) => chapter.id));
   let currentChapter = chapters[0] || null;
   let currentTocId = null;
-  let printState = null;
   const sidebar = $("#guide-sidebar");
   const header = $(".site-header");
   const main = $("#main-content");
@@ -328,7 +327,6 @@
   let readingFrame = 0;
   function updateReadingPosition() {
     readingFrame = 0;
-    if (printState) return;
     const threshold = header.getBoundingClientRect().bottom + 40;
     let chapter = chapters[0];
     for (const candidate of chapters) {
@@ -512,71 +510,9 @@
       if (target) { event.preventDefault(); navigateToHeading(target.id); }
     }
   });
-  function restorePrint() {
-    if (!printState) return;
-    printState.excluded.forEach((element) => element.classList.remove("print-excluded"));
-    printState.links.forEach(({ link, href }) => link.setAttribute("href", href));
-    printState.details.forEach((details) => { details.open = false; });
-    printState = null;
-    delete document.body.dataset.print;
-    requestReadingUpdate();
-  }
-
-  function preparePrint(mode) {
-    restorePrint();
-    closeDrawer(false);
-    printState = { excluded: [], links: [], details: [] };
-    document.body.dataset.print = mode;
-    const next = chapters[chapters.indexOf(currentChapter) + 1];
-    let included = !currentChapter;
-    Array.from(article.children).forEach((element) => {
-      if (element === currentChapter?.heading) included = true;
-      if (element === next?.heading) included = false;
-      if (mode === "one" && !included) {
-        element.classList.add("print-excluded");
-        printState.excluded.push(element);
-      }
-    });
-    $$("details:not([open])", article).forEach((details) => {
-      printState.details.push(details);
-      details.open = true;
-    });
-    $$("a[href]", article).forEach((link) => {
-      const href = link.getAttribute("href");
-      const fragment = idFromLink(link);
-      const target = fragment ? document.getElementById(fragment) : null;
-      if (target && article.contains(target) && !target.closest(".print-excluded")) return;
-      const url = new URL(href, window.location.href);
-      const local = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"].includes(url.hostname) || url.hostname.endsWith(".localhost");
-      if (/^(?:https?:)?\/\//i.test(href) && ["http:", "https:"].includes(url.protocol) && !local) return;
-      printState.links.push({ link, href });
-      link.removeAttribute("href");
-    });
-  }
-
-  function requestPrint(mode) {
-    preparePrint(mode);
-    try {
-      window.print();
-    } catch (error) {
-      restorePrint();
-      announce(t("printError"));
-      console.error("Guide printing failed:", error);
-    }
-  }
-
-  $("[data-print-one]").addEventListener("click", () => requestPrint("one"));
-  $("[data-print-all]").addEventListener("click", () => requestPrint("all"));
-  window.addEventListener("beforeprint", () => {
-    if (!printState) preparePrint("one");
-  });
-  window.addEventListener("afterprint", restorePrint);
-
   document.documentElement.classList.add("js");
   menuToggle.hidden = false;
   menuClose.hidden = false;
-  $("[data-print-one]").hidden = chapters.length === 0;
-  $("[data-print-all]").hidden = false;
   $("[data-keyboard-help]").hidden = false;
   $("[data-progress-panel]").hidden = chapters.length === 0;
   $("[data-chapter-completion]").hidden = chapters.length === 0;

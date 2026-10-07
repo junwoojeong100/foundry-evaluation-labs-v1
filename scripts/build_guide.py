@@ -455,9 +455,8 @@ def render_guide(
     for document in documents_for(language):
         current = ' aria-current="page"' if document.output == document_id else ""
         navigation.append(f'<li><a href="{site_href(document.output)}"{current}>{document.label}</a></li>')
-    print_href = site_href(localized_filename("print.html", language))
+    navigation.append("</ul>")
     home_href = site_href(localized_filename("index.html", language))
-    navigation.append(f'<li><a href="{print_href}">{text["PRINT_BOOK"]}</a></li></ul>')
     replacements = {
         **{
             key: html.escape(value.replace("{unit}", chapter_unit), quote=True)
@@ -467,8 +466,6 @@ def render_guide(
         "TOC": rendered.toc,
         "BUILD_DATE": BUILD_DATE,
         "WEB_PATH": html.escape(output_relative("web", output_base), quote=True),
-        "PRINT_HREF": print_href,
-        "PDF_HREF": site_href(f"Foundry-Learning-Loop-Lab-{language.upper()}.pdf"),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(filename, quote=True),
         "PROGRESS_REVISION": "" if auxiliary else "end-to-end-10",
@@ -510,13 +507,9 @@ def require_sources(sources: Mapping[str, str]) -> None:
         raise ValueError("필수 원문이 없습니다: " + ", ".join(missing))
 
 
-def render_site(sources: Mapping[str, str], template: str, print_template: str) -> dict[str, str]:
+def render_site(sources: Mapping[str, str], template: str) -> dict[str, str]:
     """Render every document before any output is written."""
     require_sources(sources)
-    if __package__:
-        from .build_print import render_book
-    else:
-        from build_print import render_book
     pages = {
         posixpath.join(SITE_DIRECTORY, document.output): render_guide(
             sources[document.source],
@@ -529,10 +522,6 @@ def render_site(sources: Mapping[str, str], template: str, print_template: str) 
         )
         for document in DOCUMENTS
     }
-    for language in LANGUAGES:
-        pages[posixpath.join(SITE_DIRECTORY, localized_filename("print.html", language))] = render_book(
-            sources, print_template, language=language
-        )
     pages[posixpath.join(SITE_DIRECTORY, "english.html")] = render_english_redirect()
     return pages
 
@@ -579,7 +568,7 @@ def check_or_write(pages: Mapping[Path, str], *, check: bool) -> int:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="가이드·보조 문서·통합 인쇄본을 함께 빌드합니다.")
+    parser = argparse.ArgumentParser(description="가이드와 보조 문서를 함께 빌드합니다.")
     parser.add_argument("--source", type=Path, help="단일 문서 모드의 원문 (--output과 함께 사용)")
     parser.add_argument("--template", type=Path, default=PROJECT_ROOT / "web" / "template.html")
     parser.add_argument("--output", type=Path, help="단일 문서 모드의 HTML 경로 (--source와 함께 사용)")
@@ -606,7 +595,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             rendered_pages = render_site(
                 sources,
                 args.template.read_text(encoding="utf-8"),
-                (PROJECT_ROOT / "web" / "print-template.html").read_text(encoding="utf-8"),
             )
             pages = {PROJECT_ROOT / name: content for name, content in rendered_pages.items()}
         return check_or_write(pages, check=args.check)

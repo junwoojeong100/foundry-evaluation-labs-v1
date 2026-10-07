@@ -279,23 +279,6 @@ summary { cursor: pointer; }
 .document-footer a { min-height: 2.75rem; align-content: center; flex-shrink: 0; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
 
-.book-screen-tools { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; max-width: 65rem; margin: auto; padding: 1rem 1.5rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; }
-.book-screen-tools a { min-height: 2.75rem; align-content: center; }
-.book-screen-tools > span { align-content: center; }
-.book-main { max-width: 65rem; margin: auto; padding: 2.5rem 1.5rem 4rem; }
-.book-cover h1 { margin: 0.65rem 0 1rem; color: var(--ink); font-size: clamp(1.7rem, 3vw, 2.3rem); line-height: 1.45; letter-spacing: -0.035em; }
-.book-cover p:not(.eyebrow) { max-width: 55rem; color: var(--muted); font-size: 0.95rem; line-height: 1.85; }
-.book-cover .book-date { font-size: 0.78rem; }
-.book-toc { margin: 1.5rem 0 2.5rem; padding: 1.1rem 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
-.book-toc h2 { margin: 0 0 0.7rem; color: var(--ink); font-size: 1rem; }
-.book-toc ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.25rem 2rem; margin: 0; padding-left: 1.2rem; font-size: 0.85rem; }
-.book-toc a { display: inline-block; min-height: 2.75rem; padding: 0.5rem 0; }
-.book-section { margin-top: 2.5rem; }
-.book-appendix { margin-top: 4rem; padding-top: 2rem; border-top: 2px solid var(--line); }
-.guide-content .book-part-label { margin: 0 0 0.85rem; color: var(--teal); font-size: 0.8rem; font-weight: 750; }
-.book-file-label { color: var(--muted); font-size: 0.85em; overflow-wrap: anywhere; }
-.book-file-label code { overflow-wrap: anywhere; word-break: break-word; }
-
 dialog { max-width: calc(100vw - 2rem); max-height: calc(100vh - 3rem); max-height: calc(100dvh - 3rem); margin: auto; padding: 1.75rem; overflow-y: auto; border: 1px solid #d1dce7; border-radius: 1rem; background: #fff; color: var(--body-ink); box-shadow: 0 24px 90px #14223830; }
 dialog:not([open]) { display: none; }
 dialog::backdrop { background: #10213980; }
@@ -379,9 +362,6 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .chapter-link { padding: 1rem 0.8rem; }
   .chapter-link strong { font-size: 0.85rem; }
   .document-footer { align-items: flex-start; flex-direction: column; gap: 0.3rem; }
-  .book-main { padding: 1.5rem 1.1rem 3rem; }
-  .book-screen-tools { padding: 0.75rem 1.1rem; }
-  .book-toc ol { grid-template-columns: minmax(0, 1fr); }
   dialog { max-width: calc(100vw - 1.2rem); max-height: calc(100dvh - 1.5rem); padding: 1.25rem; border-radius: 0.8rem; }
 }
 
@@ -456,8 +436,6 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   html { scroll-behavior: auto; scroll-padding-top: 0; }
   body { background: #fff !important; color: #111 !important; font-size: 10pt; }
   .site-header, .guide-sidebar, .drawer-backdrop, .skip-link, .no-print, .code-toolbar, .copy-feedback, .diagram-source, dialog, .noscript-note, #announcements { display: none !important; }
-  body[data-print="one"] .print-excluded { display: none !important; }
-  body[data-print="one"] .guide-content h2 { margin-top: 0; padding-top: 0; border-top: 0; }
   .workspace { display: block; max-width: none; padding: 0; margin: 0; }
   .main-content { width: 100%; max-width: none; padding: 0; }
   .guide-content { font-size: 10pt; line-height: 1.7; color: #111; overflow-wrap: anywhere; }
@@ -519,16 +497,4 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .portal-shot figcaption { margin: 2mm 1mm 0; color: #222; font-size: 8pt; line-height: 1.55; }
   .document-footer { padding: 5mm 0 0; margin-top: 7mm; color: #444; font-size: 8pt; }
   .document-footer a { display: none; }
-  .book-main { max-width: none; width: 100%; margin: 0; padding: 0; }
-  .book-cover { margin: 0 0 4mm; }
-  .book-cover h1 { margin: 0 0 3mm; color: #111; font-size: 18pt; line-height: 1.4; break-after: avoid-page; }
-  .book-cover p:not(.eyebrow) { margin: 2mm 0; color: #333; font-size: 9pt; line-height: 1.65; }
-  .book-toc { margin: 4mm 0 6mm; padding: 3mm 4mm; border-color: #aaa; border-radius: 0; background: #fff; }
-  .book-toc h2 { margin: 0 0 2mm; color: #111; font-size: 10pt; break-after: avoid-page; }
-  .book-toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1mm 7mm; padding-left: 4mm; font-size: 9pt; }
-  .book-toc a { min-height: 0; padding: 0; color: #164e81; }
-  .book-section { margin: 6mm 0 0; }
-  .book-appendix { break-before: page; page-break-before: always; margin: 0; padding: 0; border: 0; }
-  .guide-content .book-part-label { margin: 0 0 2mm; font-size: 9pt; color: #333; break-after: avoid-page; page-break-after: avoid; }
-  .book-file-label { color: #333; font-size: 8pt; }
 }

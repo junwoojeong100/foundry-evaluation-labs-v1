@@ -16,7 +16,7 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
 
-**Existing lab commands and runtime code are unchanged.** Each step starts with **Action order** links, and every **code ↔ portal** table links to the actual command or portal procedure. **Run in your terminal** blocks have OS labels and command-copy buttons; long commands wrap visually without changing copied text. Code/portal maps become labeled cards on mobile, while desktop and print retain tables. Complete source functions/settings remain available in collapsed, read-only panels and are expanded in the print edition. Labels and action links also work without JavaScript. Dataset registration, baseline submission, and Optimizer execution remain portal actions, not additional terminal commands.
+**Existing lab commands and runtime code are unchanged.** Each step starts with **Action order** links, and every **code ↔ portal** table links to the actual command or portal procedure. **Run in your terminal** blocks have OS labels and command-copy buttons; long commands wrap visually without changing copied text. Code/portal maps become labeled cards on mobile, while desktop retains tables. Complete source functions/settings remain available in collapsed, read-only panels. Labels and action links also work without JavaScript. Dataset registration, baseline submission, and Optimizer execution remain portal actions, not additional terminal commands.
 
 ## Fixed model roles and comparison conditions
 
@@ -52,8 +52,6 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 | Lab checklist | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [체크리스트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
 | Data contract | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |
 | Troubleshooting | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) | [문제 해결](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) |
-| Complete print edition | [Open](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) | [인쇄본](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) |
-| PDF | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) |
 | CLI/SDK lab replay | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) |
 | Actual portal walkthrough | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
 
@@ -89,16 +87,9 @@ python -m unittest discover -s tests -q
 
 English sources are `guide/en/*.md` and `data/README.en.md`; Korean sources are `guide/*.md` and `data/README.md`. Generated HTML belongs in `docs/` and `docs/ko/`. Preserve corresponding section IDs and separate language corpora.
 
-`<!-- source-code: lab/agents.py:create_native_agent -->` includes the complete named symbol; `<!-- source-code: schemas/response.schema.json -->` includes the complete file. The guide builder reads and escapes source without importing/executing it, preserving original comments, identifiers, and messages. Keep source directives reciprocal across languages and rebuild web/print/PDF output after relevant implementation changes. Do not copy source into independent runnable examples or edit original code just to simplify its presentation.
+`<!-- source-code: lab/agents.py:create_native_agent -->` includes the complete named symbol; `<!-- source-code: schemas/response.schema.json -->` includes the complete file. The guide builder reads and escapes source without importing/executing it, preserving original comments, identifiers, and messages. Keep source directives reciprocal across languages and rebuild the web guide after relevant implementation changes. Do not copy source into independent runnable examples or edit original code just to simplify its presentation.
 
 Korean documentation, guidance, and error messages use a consistent formal register. Preserve verbatim measured responses, evaluator reasons, and evaluation-data quotations rather than editing evidence for prose style.
-
-Render both print editions as A4 PDFs with background graphics. With the dependencies in `requirements-verification.lock`, verify the actual PDF paths:
-
-```bash
-python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-EN.pdf --language en --out .lab/guide-checks/pdf-en.json
-python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko --out .lab/guide-checks/pdf-ko.json
-```
 
 Build the allowlisted ZIP with `python scripts/package_lab.py`.
 

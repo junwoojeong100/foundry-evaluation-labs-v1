@@ -16,7 +16,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 
 시작 화면에서 실습의 정의·중요성·진행 방식·완료 산출물을 설명합니다. 각 단계는 **하는 일 → 중요한 이유 → 방법·위치 → 실제 화면과 실행 → 완료 기준**으로 읽을 수 있도록 구성합니다.
 
-**기존 실습 명령과 실행 코드는 바꾸지 않았습니다.** 단계 상단의 **실행 순서**와 **코드 ↔ 포털** 표의 **실행 위치** 링크로 실제 명령·화면을 찾습니다. **터미널에서 실행** 상자는 OS·명령 복사를 표시하며 긴 명령은 화면에서만 줄바꿈됩니다. 코드·포털 대응 표는 모바일에서 열 제목을 붙인 카드로 표시하고 PC·인쇄본에서는 표를 유지합니다. 구현 패널은 기본으로 접혀 있고 필요한 경우에만 읽습니다. 인쇄본에는 함수·설정 원문 전체를 펼쳐 표시합니다. 명령 표시·실행 링크는 JavaScript 없이도 보이며, 데이터 등록·기준선 제출·Optimizer 실행은 기존 포털 경로를 유지합니다.
+**기존 실습 명령과 실행 코드는 바꾸지 않았습니다.** 단계 상단의 **실행 순서**와 **코드 ↔ 포털** 표의 **실행 위치** 링크로 실제 명령·화면을 찾습니다. **터미널에서 실행** 상자는 OS·명령 복사를 표시하며 긴 명령은 화면에서만 줄바꿈됩니다. 코드·포털 대응 표는 모바일에서 열 제목을 붙인 카드로 표시하고 PC에서는 표를 유지합니다. 구현 패널은 기본으로 접혀 있고 필요한 경우에만 읽습니다. 명령 표시·실행 링크는 JavaScript 없이도 보이며, 데이터 등록·기준선 제출·Optimizer 실행은 기존 포털 경로를 유지합니다.
 
 ## 고정된 모델 역할과 비교 조건
 
@@ -52,8 +52,6 @@ SDK helper는 기존 Foundry 정의에 실제 run을 추가합니다. 원격 Jud
 | 실습 체크리스트 | [체크리스트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Lab checklist](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
 | 데이터 계약 | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) | [Data](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) |
 | 문제 해결 | [문제 해결](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) | [Troubleshooting](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) |
-| 통합 인쇄본 | [열기](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/print.html) | [Print](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/print.html) |
-| PDF | [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-KO.pdf) | [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/Foundry-Learning-Loop-Lab-EN.pdf) |
 | CLI/SDK 실습 요약영상 | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) |
 | 실제 포털 화면 녹화 | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) |
 
@@ -89,16 +87,9 @@ python -m unittest discover -s tests -q
 
 영어 원문은 `guide/en/*.md`·`data/README.en.md`, 한국어는 `guide/*.md`·`data/README.md`입니다. HTML은 `docs/`와 `docs/ko/`에 생성합니다. 대응 절 ID·별도 언어 원본을 유지합니다.
 
-`<!-- source-code: lab/agents.py:create_native_agent -->`는 지정한 함수 전체, `<!-- source-code: schemas/response.schema.json -->`는 파일 전체를 포함합니다. 빌더는 소스를 import·실행하지 않고 읽어서 표시하며 원래 주석·변수·메시지를 유지합니다. 언어별 지시문을 맞추고 관련 구현이 바뀌면 웹·인쇄본·PDF를 다시 생성합니다. 표시를 간단히 만들기 위해 실행 코드를 바꾸거나 원문을 별도 실행 예제로 복제하지 않습니다.
+`<!-- source-code: lab/agents.py:create_native_agent -->`는 지정한 함수 전체, `<!-- source-code: schemas/response.schema.json -->`는 파일 전체를 포함합니다. 빌더는 소스를 import·실행하지 않고 읽어서 표시하며 원래 주석·변수·메시지를 유지합니다. 언어별 지시문을 맞추고 관련 구현이 바뀌면 웹 가이드를 다시 생성합니다. 표시를 간단히 만들기 위해 실행 코드를 바꾸거나 원문을 별도 실행 예제로 복제하지 않습니다.
 
 한국어 문서·안내·오류 메시지는 ‘합니다·입니다’ 문체를 사용합니다. 과거 실측 응답·채점 이유와 평가 데이터의 원문 인용은 문체 정리를 위해 바꾸지 않습니다.
-
-통합 인쇄본을 배경 그래픽 포함 A4 PDF로 생성합니다. `requirements-verification.lock` 환경에서 실제 PDF 경로를 지정하여 검사합니다.
-
-```bash
-python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-EN.pdf --language en --out .lab/guide-checks/pdf-en.json
-python -m scripts.verify_pdf docs/Foundry-Learning-Loop-Lab-KO.pdf --language ko --out .lab/guide-checks/pdf-ko.json
-```
 
 ZIP은 `python scripts/package_lab.py`로 만듭니다.
 

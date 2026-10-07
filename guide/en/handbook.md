@@ -44,7 +44,7 @@ Here, **learning means reading evaluation results and improving instructions**, 
 
 **How to read a step:** Use its **Action order** links, perform each action, then check **completion criteria**. Enter only **Run in your terminal** blocks on your computer; perform portal actions in the named screen. Keep Azure Portal and Foundry in separate tabs. **Use your own account/project values, not the names in the illustrations.**
 
-**Expand implementation only when needed.** **Actual implementation · read only** panels show the command's original functions/settings, not programs to run separately. You can complete the lab with these panels closed. Use **Where to act** links beside each **code ↔ portal** table to find the command or screen; read source when you need the internal behavior. The print edition expands the complete source.
+**Expand implementation only when needed.** **Actual implementation · read only** panels show the command's original functions/settings, not programs to run separately. You can complete the lab with these panels closed. Use **Where to act** links beside each **code ↔ portal** table to find the command or screen; read source when you need the internal behavior.
 
 **Do not recreate code-created objects in the portal.** Inspect their results there. For evaluation and Optimizer stages that submit through the portal, submit once in that UI. Do not substitute invented SDK code for the portal's internal implementation.
 
@@ -102,7 +102,7 @@ Install [Python](https://www.python.org/downloads/) **3.11–3.14**, [Git](https
 
 First open **your computer's terminal**. Search for **PowerShell** in Windows Start, **Terminal** in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Azure Portal's Cloud Shell or the Python prompt showing `>>>`.
 
-**Reading commands:** Run **one command at a time** and wait for it to finish. A long command can wrap across screen/PDF lines; do not insert a line break within that command.
+**Reading commands:** Run **one command at a time** and wait for it to finish. A long command can wrap across screen lines; do not insert a line break within that command.
 
 Copy buttons copy the **whole block**. If it contains several commands, paste into an editor first and run them individually. Replace `YOUR_...` with your value, preserving the surrounding double quotes.
 

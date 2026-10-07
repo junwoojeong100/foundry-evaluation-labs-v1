@@ -16,7 +16,6 @@ dependencies = [
 
 [project.optional-dependencies]
 guide = ["Markdown==3.11"]
-verify = ["PyMuPDF==1.28.2"]
 
 [project.scripts]
 foundry-lab = "lab.cli:main"

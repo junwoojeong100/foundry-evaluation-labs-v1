@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "printError": "The print dialog could not be opened. Use your browser's print command or the full PDF linked below.", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -33,9 +33,6 @@
 <a href="ko/troubleshooting.html" lang="ko" hreflang="ko" data-language-link>한국어</a></nav>
       <div class="header-actions">
         <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
-        <button class="toolbar-button" type="button" data-print-one title="Print the current chapter only" hidden>Print section</button>
-        <button class="toolbar-button" type="button" data-print-all title="Print this document or save it as a PDF" hidden>Save PDF</button>
-        <noscript><a class="toolbar-button" href="Foundry-Learning-Loop-Lab-EN.pdf">Save PDF</a></noscript>
       </div>
     </div>
   </header>
@@ -76,7 +73,7 @@
 <li><a href="admin.html">Environment setup reference</a></li>
 <li><a href="troubleshooting.html" aria-current="page">Troubleshooting</a></li>
 <li><a href="data-guide.html">Data guide</a></li>
-<li><a href="print.html">Print edition with appendices</a></li></ul></nav>
+</ul></nav>
         </details>
 
         <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
@@ -110,7 +107,7 @@
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
         <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
       </div>
-      <noscript><p class="noscript-note">Content, navigation, language links, and PDF files work without JavaScript. Enable JavaScript for theme switching, section printing, reading progress, and copy buttons.</p></noscript>
+      <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Lab troubleshooting">
         <h1 id="issue-guide">Lab troubleshooting</h1>
 <p><a href="index.html#setup">Ten lab steps</a> · <a href="admin.html#approval">Access, authorization, and setup reference</a></p>
@@ -491,7 +488,7 @@
       </nav>
       <footer class="document-footer">
         <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
-        <div class="footer-links"><a href="print.html">Print edition with appendices</a><a href="Foundry-Learning-Loop-Lab-EN.pdf">Download full PDF</a><a href="#guide-start">Back to top ↑</a></div>
+        <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
   </div>

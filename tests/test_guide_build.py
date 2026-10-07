@@ -231,7 +231,6 @@ class GuideBuildTests(unittest.TestCase):
             'href="ko/facilitator.html#start"', 'href="../data/knowledge/documents.json"',
             'src="../web/assets/portal/01-project-overview.png"',
             'src="../web/theme.js"', 'href="../web/styles.css"', 'src="../web/app.js"',
-            'href="Foundry-Learning-Loop-Lab-EN.pdf"',
         ):
             self.assertIn(value, rendered)
         self.assertIn("python -m lab validate", rendered)
@@ -269,8 +268,7 @@ class GuideBuildTests(unittest.TestCase):
         }
 
     def _site_pages(self) -> dict[str, str]:
-        print_template = (ROOT / "web" / "print-template.html").read_text(encoding="utf-8")
-        return build_guide.render_site(self._site_sources(), self.template, print_template)
+        return build_guide.render_site(self._site_sources(), self.template)
 
     def test_full_site_is_deterministic_and_namespaces_document_progress(self) -> None:
         pages = self._site_pages()
@@ -278,7 +276,7 @@ class GuideBuildTests(unittest.TestCase):
         self.assertEqual(
             set(pages),
             {"docs/" + document.output for document in build_guide.DOCUMENTS}
-            | {"docs/print.html", "docs/ko/print.html", "docs/english.html"},
+            | {"docs/english.html"},
         )
         identities = []
         for document in build_guide.DOCUMENTS:
@@ -303,7 +301,7 @@ class GuideBuildTests(unittest.TestCase):
         sources = self._site_sources()
         del sources["guide/troubleshooting.md"]
         with self.assertRaisesRegex(ValueError, "guide/troubleshooting.md"):
-            build_guide.render_site(sources, self.template, "unused")
+            build_guide.render_site(sources, self.template)
 
     def test_single_path_progress_is_separate_from_old_chapters_and_reference_pages(self) -> None:
         pages = self._site_pages()
@@ -325,8 +323,7 @@ class GuideBuildTests(unittest.TestCase):
 
     def test_default_check_validates_all_outputs_and_does_not_write(self) -> None:
         pages = self._site_pages()
-        print_template = (ROOT / "web" / "print-template.html").read_text(encoding="utf-8")
-        for stale in (None, "admin.html", "print.html", "missing:troubleshooting.html"):
+        for stale in (None, "admin.html", "data-guide.html", "missing:troubleshooting.html"):
             with self.subTest(stale=stale):
                 def read_output(path: Path) -> bytes:
                     if stale == "missing:" + path.name:
@@ -335,7 +332,7 @@ class GuideBuildTests(unittest.TestCase):
                     return b"stale\n" if path.name == stale else pages[path.relative_to(ROOT).as_posix()].encode("utf-8")
 
                 with patch.object(build_guide, "read_sources", return_value=self._site_sources()), \
-                     patch.object(Path, "read_text", autospec=True, side_effect=lambda path, **kwargs: print_template if path.name == "print-template.html" else self.template), \
+                     patch.object(Path, "read_text", autospec=True, return_value=self.template), \
                      patch.object(Path, "read_bytes", autospec=True, side_effect=read_output) as reads, \
                      patch.object(Path, "open") as output_open, \
                      redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
@@ -417,21 +414,32 @@ class GuideBuildTests(unittest.TestCase):
                 for target in (attrs.get(attribute) or "").split():
                     self.assertIn(target, elements, f"{attribute}: {target}")
 
-    def test_header_has_theme_current_print_and_full_pdf_in_reference_order(self) -> None:
-        expected = ["data-theme-toggle", "data-print-one", "data-print-all"]
-        controls = [
-            attribute for tag, attrs in self.page.elements if tag == "button"
-            for attribute in expected if attribute in attrs
-        ]
-        self.assertEqual(controls, expected)
+    def test_guides_keep_theme_without_print_controls_or_pdf_links(self) -> None:
+        for language in build_guide.LANGUAGES:
+            with self.subTest(language=language):
+                rendered = build_guide.render_guide(FIXTURE, self.template, language=language)
+                page = PageInspector()
+                page.feed(rendered)
+                controls = [
+                    attribute for tag, attrs in page.elements if tag == "button"
+                    for attribute in ("data-theme-toggle", "data-print-one", "data-print-all")
+                    if attribute in attrs
+                ]
+                self.assertEqual(controls, ["data-theme-toggle"])
+                for _, attrs in page.elements:
+                    self.assertNotRegex(
+                        attrs.get("href") or "",
+                        r"(?:\.pdf|(?:^|/)print\.html)(?:[?#]|$)",
+                    )
         self.assertNotIn("본문 검색", self.rendered)
         self.assertNotIn("data-search-open", self.rendered)
-        self.assertNotIn("data-print ", self.rendered)
         self.assertLess(self.rendered.index('src="web/theme.js"'), self.rendered.index('href="web/styles.css"'))
         self.assertIn(':root[data-theme="dark"]', self.css)
-        self.assertIn('body[data-print="one"] .print-excluded', self.css)
         app = (ROOT / "web/app.js").read_text(encoding="utf-8")
-        self.assertIn('window.addEventListener("afterprint", restorePrint)', app)
+        self.assertNotIn("data-print-", app)
+        self.assertNotIn("window.print(", app)
+        self.assertNotIn("beforeprint", app)
+        self.assertNotIn("afterprint", app)
         self.assertNotIn("openSearch", app)
 
     def test_runtime_dependencies_are_local(self) -> None:
@@ -537,12 +545,11 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn('<html lang="ko">', rendered)
         self.assertIn("실습 순서", rendered)
         self.assertIn('aria-label="학습 목차 열기"', rendered)
-        self.assertIn('href="../Foundry-Learning-Loop-Lab-KO.pdf"', rendered)
         self.assertIn('href="../index.html" lang="en" hreflang="en" data-language-link', rendered)
         self.assertIn('href="index.html" lang="ko" hreflang="ko" data-language-link aria-current="page"', rendered)
 
     def test_translations_have_matching_keys_and_reject_unknown_languages(self) -> None:
-        for section in ("shell", "source", "messages", "book"):
+        for section in ("shell", "source", "messages"):
             self.assertEqual(
                 set(build_guide.LOCALES["en"][section]),
                 set(build_guide.LOCALES["ko"][section]),

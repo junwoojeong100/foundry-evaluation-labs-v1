@@ -81,12 +81,7 @@ class BrandingTests(unittest.TestCase):
     def test_artwork_matches_the_official_source_hash(self) -> None:
         self.assertEqual(hashlib.sha256(self.icon_bytes).hexdigest(), ICON_SHA256)
 
-    def test_print_favicon_uses_the_same_asset_without_legacy_copies(self) -> None:
-        page = BrandingParser()
-        page.feed(
-            (ROOT / "web/print-template.html").read_text(encoding="utf-8").replace("{{WEB_PATH}}", "web")
-        )
-        self.assertEqual([icon.get("href") for icon in page.favicons], [ICON_PATH])
+    def test_legacy_asset_copies_are_absent(self) -> None:
         for name in ("favicon.svg", "architecture.svg", "decision-map.svg", "learning-loop.svg"):
             self.assertFalse((ROOT / "web/assets" / name).exists(), name)
 

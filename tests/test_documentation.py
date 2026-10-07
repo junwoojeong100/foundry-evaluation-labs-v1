@@ -20,7 +20,7 @@ from scripts.package_lab import GUIDE_FILES, package_files
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "docs"
-PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html", "print.html", "ko/print.html")
+PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html",)
 STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
 SUBSTEPS = {
     "setup": ["setup-account", "setup-local", "setup-login"],
@@ -239,7 +239,7 @@ class ImplementationParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "h2":
-            self.chapter = attrs.get("id", "").removeprefix("book-index--")
+            self.chapter = attrs.get("id", "")
         if tag == "details" and "implementation-code" in attrs.get("class", "").split():
             self.details.append(attrs)
         if tag == "pre" and "implementation-source" in attrs.get("class", "").split():
@@ -273,6 +273,17 @@ class DocumentationTests(unittest.TestCase):
         self.assertIn(".nojekyll", packaged)
         for name in PAGES:
             self.assertTrue((SITE / name).is_file(), name)
+
+    def test_guides_do_not_publish_print_or_pdf_artifacts(self):
+        self.assertFalse(list(SITE.rglob("*.pdf")))
+        for name in ("print.html", "ko/print.html"):
+            self.assertFalse((SITE / name).exists(), name)
+        for name in PAGES:
+            with self.subTest(document=name):
+                page = LinkParser()
+                page.feed((SITE / name).read_text())
+                for link in page.links:
+                    self.assertNotRegex(urlsplit(link).path, r"(?:\.pdf|(?:^|/)print\.html)$")
 
     def test_run_specific_verification_reports_are_not_published(self):
         for name in (
@@ -379,12 +390,6 @@ class DocumentationTests(unittest.TestCase):
                 page = ArticleTextParser(exclude_implementation=True)
                 page.feed((SITE / document.output).read_text())
                 self.assertIsNone(role_terms.search(" ".join(page.text + page.alt)))
-                book = ArticleTextParser(
-                    target_tag="section", target_id=f"book-{document.key}", exclude_implementation=True,
-                )
-                prefix = "ko/" if document.language == "ko" else ""
-                book.feed((SITE / prefix / "print.html").read_text())
-                self.assertIsNone(role_terms.search(" ".join(book.text + book.alt)))
         for filename, language in (
             ("README.md", "en"), ("README.en.md", "en"), ("README.ko.md", "ko"),
             ("infra/README.md", "en"),
@@ -466,7 +471,7 @@ class DocumentationTests(unittest.TestCase):
                     source,
                 )
 
-    def test_implementation_panels_show_exact_current_source_in_both_editions(self):
+    def test_implementation_panels_show_exact_current_source_in_both_languages(self):
         references = None
         for language, prefix in (("en", ""), ("ko", "ko/")):
             expected = [
@@ -477,18 +482,14 @@ class DocumentationTests(unittest.TestCase):
             if references is None:
                 references = expected
             self.assertEqual(expected, references)
-            for filename in ("index.html", "print.html"):
-                with self.subTest(language=language, edition=filename):
-                    page = ImplementationParser()
-                    page.feed((SITE / prefix / filename).read_text())
-                    self.assertEqual([item["reference"] for item in page.sources], expected)
-                    self.assertTrue(all(
-                        ("open" in detail) == (filename == "print.html")
-                        for detail in page.details
-                    ))
-                    for item in page.sources:
-                        self.assertEqual(item["text"], implementation_source(item["reference"])[1])
-                    self.assertNotIn("<!-- source-code:", (SITE / prefix / filename).read_text())
+            with self.subTest(language=language):
+                page = ImplementationParser()
+                page.feed((SITE / prefix / "index.html").read_text())
+                self.assertEqual([item["reference"] for item in page.sources], expected)
+                self.assertTrue(all("open" not in detail for detail in page.details))
+                for item in page.sources:
+                    self.assertEqual(item["text"], implementation_source(item["reference"])[1])
+                self.assertNotIn("<!-- source-code:", (SITE / prefix / "index.html").read_text())
 
     def test_every_stage_maps_code_or_portal_only_actions_without_replacing_commands(self):
         anchors = (
@@ -500,7 +501,6 @@ class DocumentationTests(unittest.TestCase):
             for anchor in anchors:
                 self.assertIn("{#" + anchor + "-code-portal}", source)
                 self.assertIn(f'id="{anchor}-code-portal"', (SITE / prefix / "index.html").read_text())
-                self.assertIn(f'id="book-index--{anchor}-code-portal"', (SITE / prefix / "print.html").read_text())
             optimizer = source.split("{#optimizer-code-portal}", 1)[1].split("## 09.", 1)[0]
             self.assertIn(
                 "No local program submits" if language == "en" else "로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다",
@@ -554,14 +554,13 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("<!-- source-code: lab/preflight.py:check_identity -->", resources)
                 self.assertNotIn("<!-- source-code: lab/auth.py:credential_for -->", resources)
                 self.assertIn("<!-- source-code: lab/auth.py:credential_for -->", agent)
-                for filename in ("index.html", "print.html"):
-                    page = ImplementationParser()
-                    page.feed((SITE / prefix / filename).read_text())
-                    self.assertFalse(any(item["chapter"] == "setup" for item in page.sources))
-                    for reference, chapter in expected.items():
-                        matches = [item for item in page.sources if item["reference"] == reference]
-                        self.assertEqual(len(matches), 1, (language, filename, reference))
-                        self.assertEqual(matches[0]["chapter"], chapter)
+                page = ImplementationParser()
+                page.feed((SITE / prefix / "index.html").read_text())
+                self.assertFalse(any(item["chapter"] == "setup" for item in page.sources))
+                for reference, chapter in expected.items():
+                    matches = [item for item in page.sources if item["reference"] == reference]
+                    self.assertEqual(len(matches), 1, (language, reference))
+                    self.assertEqual(matches[0]["chapter"], chapter)
 
     def test_every_terminal_block_is_labeled_without_javascript_and_keeps_original_commands(self):
         for document in DOCUMENTS:
@@ -614,11 +613,12 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("--baseline", source)
                 self.assertIn("--version", source)
 
-    def test_beginner_landmarks_and_completion_checks_survive_web_and_print(self):
+    def test_beginner_landmarks_and_completion_checks_survive_web_build(self):
         for language, prefix in (("en", ""), ("ko", "ko/")):
             with self.subTest(language=language):
                 page = LearningPathParser()
-                page.feed((SITE / prefix / "index.html").read_text())
+                rendered = (SITE / prefix / "index.html").read_text()
+                page.feed(rendered)
                 self.assertIn("basics", page.ids)
                 self.assertEqual(page.completion_checks, STEPS)
                 self.assertEqual(page.wizard_steps, [
@@ -627,12 +627,7 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(page.concept_figures, [
                     ("resource-map", "resources"), ("evaluation-flow", "start"),
                 ])
-                book = (SITE / prefix / "print.html").read_text()
-                for anchor in ("basics", "resource-map", "evaluation-flow"):
-                    self.assertIn(f'id="book-index--{anchor}"', book)
-                self.assertEqual(book.count('class="completion-check"'), len(STEPS))
-                self.assertEqual(book.count('data-wizard-step="'), 3)
-                self.assertNotIn("{: .completion-check}", book)
+                self.assertNotIn("{: .completion-check}", rendered)
 
     def test_tool_installation_and_verification_precede_download_and_venv(self):
         anchors = (
@@ -680,18 +675,14 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotIn("az login", checks)
                 venv = source.split("{#setup-venv}", 1)[1].split("### ", 1)[0]
                 self.assertLess(venv.index("python -m pip --version"), venv.index("python -m pip install"))
-                for edition in ("index.html", "print.html"):
-                    text = (SITE / prefix / edition).read_text()
-                    anchor_prefix = "book-index--" if edition == "print.html" else ""
-                    for anchor in anchors:
-                        self.assertIn(f'id="{anchor_prefix}{anchor}"', text)
-                    article = ArticleTextParser() if edition == "index.html" else ArticleTextParser(
-                        target_tag="section", target_id="book-index",
-                    )
-                    article.feed(text)
-                    visible = "".join(article.text)
-                    for command in commands:
-                        self.assertIn(command, visible)
+                text = (SITE / prefix / "index.html").read_text()
+                for anchor in anchors:
+                    self.assertIn(f'id="{anchor}"', text)
+                article = ArticleTextParser()
+                article.feed(text)
+                visible = "".join(article.text)
+                for command in commands:
+                    self.assertIn(command, visible)
 
     def test_setup_references_cover_all_three_tools_and_link_to_verification(self):
         for language in ("en", "ko"):
@@ -931,7 +922,7 @@ class DocumentationTests(unittest.TestCase):
         self.assertTrue(hashes["en"].isdisjoint(hashes["ko"]))
         self.assertTrue(hashes["not_applicable"].isdisjoint(hashes["en"] | hashes["ko"]))
 
-    def test_screenshots_use_the_document_language_in_sources_pages_and_print(self):
+    def test_screenshots_use_the_document_language_in_sources_and_pages(self):
         required = {
             "en": {
                 "00-resource-group.png", "02-model-deployments.png",
@@ -953,12 +944,12 @@ class DocumentationTests(unittest.TestCase):
         shared = json.loads((SHARED_CAPTURES / "captures.json").read_text())
         shared_records = {item["file"]: item for item in shared["screenshots"]}
         self.assertEqual(set(shared_records), SHARED_IMAGES)
-        for language, prefix in (("en", ""), ("ko", "ko/")):
+        for language in ("en", "ko"):
             directory = ROOT / "web/assets/portal" / ("en" if language == "en" else "")
             manifest = json.loads((directory / "captures.json").read_text())
             captures = {**shared_records, **{item["file"]: item for item in manifest["screenshots"]}}
 
-            def inspect(path, *, full_size_links=True):
+            def inspect(path):
                 text = path.read_text()
                 links = LinkParser()
                 links.feed(text)
@@ -990,12 +981,10 @@ class DocumentationTests(unittest.TestCase):
                         record = captures[image_path.name]
                         self.assertEqual((int(image["width"]), int(image["height"])), (record["width"], record["height"]))
                         self.assertGreater(len(image["alt"]), 15)
-                        if full_size_links:
-                            self.assertIn(image["src"], figure["links"])
+                        self.assertIn(image["src"], figure["links"])
                         self.assertGreater(len(figure["caption"]), 60)
                 return page.figures
 
-            book_ids = set()
             used = []
             for document in documents_for(language):
                 path = SITE / document.output
@@ -1006,12 +995,8 @@ class DocumentationTests(unittest.TestCase):
                     [(figure["id"], (source_path.parent / figure["images"][0]["src"]).resolve()) for figure in source_figures],
                     [(figure["id"], (path.parent / figure["images"][0]["src"]).resolve()) for figure in page_figures],
                 )
-                book_ids.update(f'book-{document.key}--{figure["id"]}' for figure in page_figures)
                 used.extend(Path(figure["images"][0]["src"]).name for figure in page_figures)
             self.assertCountEqual(required[language], used)
-            book = inspect(SITE / prefix / "print.html", full_size_links=False)
-            self.assertEqual({figure["id"] for figure in book}, book_ids)
-            self.assertCountEqual([Path(figure["images"][0]["src"]).name for figure in book], used)
 
     def test_every_step_explains_what_why_how_and_new_steps_have_real_images(self):
         expected_figures = {
@@ -1034,7 +1019,7 @@ class DocumentationTests(unittest.TestCase):
             ):
                 self.assertIn(term, intro)
 
-    def test_learner_content_omits_production_history_in_web_and_print(self):
+    def test_learner_content_omits_production_history(self):
         production_notes = re.compile(
             r"Playwright|Headless|촬영|캡처|리허설|현재 실행|최신 보고서|"
             r"rehearsal|historical|during capture|capture account|masked|cropped|"
@@ -1042,7 +1027,6 @@ class DocumentationTests(unittest.TestCase):
             re.IGNORECASE,
         )
         for language in ("en", "ko"):
-            book = (SITE / ("ko/print.html" if language == "ko" else "print.html")).read_text()
             for document in documents_for(language):
                 figures = PortalFigureParser()
                 figures.feed((SITE / document.output).read_text())
@@ -1053,13 +1037,10 @@ class DocumentationTests(unittest.TestCase):
                     continue
                 page = ArticleTextParser()
                 page.feed((SITE / document.output).read_text())
-                print_section = ArticleTextParser(target_tag="section", target_id=f"book-{document.key}")
-                print_section.feed(book)
-                for edition, parsed in (("web", page), ("print", print_section)):
-                    with self.subTest(language=language, document=document.key, edition=edition):
-                        visible = "".join(parsed.text + parsed.alt)
-                        self.assertGreater(len(visible), 500)
-                        self.assertNotRegex(visible, production_notes)
+                with self.subTest(language=language, document=document.key):
+                    visible = "".join(page.text + page.alt)
+                    self.assertGreater(len(visible), 500)
+                    self.assertNotRegex(visible, production_notes)
                 source = (ROOT / document.source).read_text()
                 self.assertNotIn("portal-screenshots-note", source)
                 self.assertNotIn("verification.md", source)
@@ -1111,10 +1092,9 @@ class DocumentationTests(unittest.TestCase):
             self.assertNotIn("한국어 화면 캡처 미제공", source)
             korean_ids = {figure["id"] for figure in ko_page.figures}
             self.assertEqual({figure["id"] for figure in en_page.figures}, korean_ids)
-            for output, prefix in ((document.output, ""), ("ko/print.html", f"book-{document.key}--")):
-                page = LinkParser()
-                page.feed((SITE / output).read_text())
-                self.assertTrue({prefix + anchor for anchor in korean_ids}.issubset(page.ids))
+            page = LinkParser()
+            page.feed((SITE / document.output).read_text())
+            self.assertTrue(korean_ids.issubset(page.ids))
 
     def test_documented_native_add_run_command_is_parseable(self):
         for language in ("en", "ko"):
