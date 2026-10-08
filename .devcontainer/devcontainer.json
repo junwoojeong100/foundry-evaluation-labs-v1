@@ -1,0 +1,17 @@
+{
+  "name": "Microsoft Foundry Evaluation Lab",
+  "image": "mcr.microsoft.com/devcontainers/python:3.2.3-3.12-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {}
+  },
+  "postCreateCommand": "python -m venv .venv && .venv/bin/python -m pip install -r requirements.lock",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}

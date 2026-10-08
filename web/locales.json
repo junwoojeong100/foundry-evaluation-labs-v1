@@ -1,8 +1,8 @@
 {
   "en": {
     "shell": {
-      "SITE_TITLE": "Foundry Lab Guide",
-      "DESCRIPTION": "A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.",
+      "SITE_TITLE": "Microsoft Foundry Lab Guide",
+      "DESCRIPTION": "A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.",
       "SKIP_LINK": "Skip to content",
       "MENU_OPEN": "Open contents",
       "MENU_CLOSE": "Close contents",
@@ -78,7 +78,7 @@
       "previousSection": "← Previous {unit}: {label}",
       "exampleLabel": "Illustrative output, not a command or evidence of a successful run.",
       "shellShared": "Shared terminal",
-      "shellBash": "macOS/Linux",
+      "shellBash": "Codespaces/macOS/Linux",
       "shellPowerShell": "Windows PowerShell",
       "commandLabel": "Run in your terminal · {language}",
       "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.",
@@ -109,8 +109,8 @@
   },
   "ko": {
     "shell": {
-      "SITE_TITLE": "Foundry 실습 가이드",
-      "DESCRIPTION": "Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.",
+      "SITE_TITLE": "Microsoft Foundry 실습 가이드",
+      "DESCRIPTION": "GitHub Codespaces와 안내형 Microsoft Azure 환경 생성부터 Microsoft Foundry 평가·최적화·비교·삭제까지 따라 하는 한국어·영어 실습 가이드입니다.",
       "SKIP_LINK": "본문으로 바로 가기",
       "MENU_OPEN": "학습 목차 열기",
       "MENU_CLOSE": "학습 목차 닫기",
@@ -186,7 +186,7 @@
       "previousSection": "← 이전 {unit}: {label}",
       "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.",
       "shellShared": "공통 터미널",
-      "shellBash": "macOS/Linux",
+      "shellBash": "Codespaces/macOS/Linux",
       "shellPowerShell": "Windows PowerShell",
       "commandLabel": "터미널에서 실행 · {language}",
       "commandCodeLabel": "{language} 명령입니다. 긴 줄은 화면에서만 줄바꿈되며 복사한 명령은 원래 줄을 유지합니다.",

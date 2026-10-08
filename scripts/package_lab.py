@@ -18,7 +18,7 @@ GUIDE_FILES = (
 )
 ROOT_FILES = (
     "README.md", "README.en.md", "README.ko.md", "index.html", "pyproject.toml", "requirements.lock",
-    ".env.example", ".gitignore", ".nojekyll",
+    ".env.example", ".gitignore", ".nojekyll", ".devcontainer/devcontainer.json",
     *GUIDE_FILES,
 )
 SOURCE_DIRS = ("guide", "web", "lab", "scripts", "tests", "data", "prompts", "config", "schemas", "infra", "docs/media")
@@ -47,7 +47,7 @@ def build_archive(root: Path, destination: Path) -> dict:
     files = package_files(root)
     required = (
         "README.md", "README.en.md", "README.ko.md", "index.html", *GUIDE_FILES,
-        ".env.example", "requirements.lock", "guide/handbook.md",
+        ".env.example", "requirements.lock", "guide/handbook.md", ".devcontainer/devcontainer.json",
     )
     missing = [name for name in required if root / name not in files]
     if missing:

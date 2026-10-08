@@ -355,7 +355,7 @@ def render_markdown(
 ) -> RenderedMarkdown:
     text = locale(language)["shell"]
     converter = Markdown(
-        extensions=["fenced_code", "tables", "toc", "attr_list"],
+        extensions=["fenced_code", "tables", "toc", "attr_list", "md_in_html"],
         extension_configs={
             "toc": {"slugify": slugify_unicode, "toc_depth": toc_depth},
         },
@@ -532,7 +532,7 @@ def render_english_redirect() -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Foundry Lab Guide · English</title>
+  <title>Microsoft Foundry Lab Guide · English</title>
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
   <script>window.location.replace("index.html" + window.location.search + window.location.hash);</script>
   <noscript><meta http-equiv="refresh" content="0; url=index.html"></noscript>

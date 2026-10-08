@@ -4,7 +4,7 @@
 
 이 문서는 **본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리**의 설정 참고 자료입니다. [실습 가이드](handbook.md#setup)를 순서대로 진행하면서 필요한 절만 엽니다. 실제 값과 완료 상태는 자신의 `.lab/lab-ko/notes.md`에 기록합니다.
 
-**실행 명령 바로가기:** [CLI 로그인](handbook.md#setup-login) · [언어·기록 폴더](handbook.md#setup-language) · [환경 생성](handbook.md#resources-create) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
+**실행 명령 바로가기:** [Codespaces 준비](handbook.md#setup-codespaces) · [CLI 로그인](handbook.md#setup-login) · [언어·기록 폴더](handbook.md#setup-language) · [빠른 환경 생성](handbook.md#resources-quickstart) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 선택한 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
 {: .execution-guide}
 
 명령을 바꾸지 않고 안쪽 동작을 읽으려면 [02 생성 코드·포털](handbook.md#resources-code-portal), [03 검색 코드·포털](handbook.md#knowledge-code-portal), [Agent 구성](handbook.md#agent-code-portal), [09 제출·조회](handbook.md#decision-code-portal), [10 정리 범위](handbook.md#cleanup-code-portal)를 엽니다. 함수 원문은 읽기용이며 별도 실행이나 포털 중복 생성 지시가 아닙니다.
@@ -13,21 +13,21 @@
 
 | 상황 | 진행 방법 |
 |---|---|
-| 처음 시작합니다. | [01 계정 준비](handbook.md#setup)부터 진행하고 본인에게 허용된 `bootstrap plan → preflight → apply → status` 경로로 생성합니다. |
+| 처음 시작합니다. | [01 계정·Codespaces 준비](handbook.md#setup) 후 [02의 `bootstrap setup`](handbook.md#resources-quickstart)으로 생성합니다. 계획·검사·승인·생성을 한 명령이 안내합니다. |
 | 본인의 같은 실습을 재개합니다. | 원래 config·manifest·receipt와 실제 상태를 [기록표](#handoff)로 대조합니다. 완료한 생성·제출을 반복하지 않습니다. |
 | 다른 업무의 공유 프로젝트만 있습니다. | 이 실습은 기존 그룹을 인수하지 않습니다. 본인이 전용 환경을 만들 수 있는 구독·권한·비용 범위를 확보한 뒤 진행합니다. |
 
 CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본인 신원으로 진행합니다. 다른 사람의 토큰·로그인 세션·설정·소유권 기록을 사용하지 않습니다. 생성부터 ID 조회·v2 생성·재평가·정리까지 본인이 실행합니다.
 
-**모든 실습 참여자는 자신의 전용 환경과 Agent를 사용합니다.** 여러 사람이 같은 Agent의 v2를 만들거나 같은 유료 작업을 제출하는 경로는 사용하지 않습니다. 각 PC에서 같은 예시 환경 이름을 써도 생성되는 Azure 자원 이름에는 고유 suffix가 붙습니다.
+**모든 실습 참여자는 자신의 전용 환경과 Agent를 사용합니다.** 여러 사람이 같은 Agent의 v2를 만들거나 같은 유료 작업을 제출하는 경로는 사용하지 않습니다. 각 PC에서 같은 예시 환경 이름을 써도 생성되는 Microsoft Azure 자원 이름에는 고유 suffix가 붙습니다.
 
 권한·비용 승인은 생략할 수 없는 시작 조건입니다. 부족하면 조직 절차에 따라 본인에게 허용된 범위를 확보합니다. 이것은 이후 실습을 다른 사람에게 맡기는 별도 경로가 아닙니다.
 
 기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 기록표에 적습니다.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../web/assets/portal/01-project-overview.png" alt="Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Azure Portal의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../web/assets/portal/01-project-overview.png" alt="Microsoft Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
+<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Microsoft Azure Portal의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## 모델 역할과 실제 배포를 확인합니다 {#prepare}
@@ -39,7 +39,7 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 | Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 GlobalStandard 100 배포를 사용합니다. |
 | 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10입니다. |
 
-숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
+숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
 
 **관측 리소스의 추가 항목을 구분합니다.** Application Insights는 [기본 Failure Anomalies 경고와 Smart Detection Action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation)을 자동으로 추가할 수 있습니다. bootstrap은 경고가 자신의 Application Insights만 대상으로 하는지, 연결된 Action group이 기본 역할 수신자만 사용하는지 읽기 전용으로 확인합니다. 이름만 같은 항목을 인수하지 않으며, 다른 그룹의 공유 Action group도 변경·삭제하지 않습니다. 생성 중 연결이 아직 확인되지 않으면 같은 `bootstrap status`로 다시 확인하고 manifest를 편집하거나 경고를 삭제하여 우회하지 않습니다.
 
@@ -48,7 +48,7 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 [02의 최소 권장값](handbook.md#resources-tpm)은 Agent·Judge·Optimizer/planner 배포별 **100,000 TPM**, embedding **10,000 TPM**입니다. 한 환경에서 작업을 순차 실행하는 기준이며 모델·SKU·지역별 할당량은 별개입니다. 여러 전용 환경을 함께 준비한다면 모델별 총 할당량을 합산합니다. 같은 환경에서 Optimizer와 planner가 공유하는 배포는 한 번만 계산합니다.
 
 1. **새 전용 환경:** 최신 코드의 `bootstrap plan`에서 생성 배포 용량 100·embedding 10을 확인하고 그 정확한 계획으로 승인·생성을 진행합니다. 과거 계획은 자동 변경되지 않습니다. 아직 생성하지 않은 낮은 용량의 계획이 있다면 직접 편집하지 말고 새 환경 이름으로 계획·승인을 준비합니다.
-2. **실제 배포 확인:** Foundry **Build → Models → Deployments → 배포 이름 → Details**에서 **Tokens per Minute Rate Limit**을 읽습니다. 천 토큰 단위의 용량과 최종 TPM 표시를 구분합니다. **이 실습의 bootstrap 환경은 포털의 Edit으로만 용량을 바꾸면 계획과 불일치합니다.** 부족하면 계획·실제 한도·승인 범위를 확인하고, 필요한 경우 충분한 용량으로 새로 승인한 전용 환경을 준비합니다. 해시·승인서 편집으로 우회하지 않습니다.
+2. **실제 배포 확인:** Microsoft Foundry **Build → Models → Deployments → 배포 이름 → Details**에서 **Tokens per Minute Rate Limit**을 읽습니다. 천 토큰 단위의 용량과 최종 TPM 표시를 구분합니다. **이 실습의 bootstrap 환경은 포털의 Edit으로만 용량을 바꾸면 계획과 불일치합니다.** 부족하면 계획·실제 한도·승인 범위를 확인하고, 필요한 경우 충분한 용량으로 새로 승인한 전용 환경을 준비합니다. 해시·승인서 편집으로 우회하지 않습니다.
 3. **설정 확인:** 해당 환경의 `.env`와 언어별 artifacts 경로로 다음 읽기 전용 검사를 실행합니다. `*_tpm`의 `observed`·`expected`와 `reason`을 확인합니다.
 
 ```sh
@@ -62,13 +62,13 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 [03의 실제 응답 확인](handbook.md#agent)으로 Agent와 `knowledge_base_retrieve` 호출을 확인합니다. Optimizer는 별도 [지원 모델 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 따릅니다. Agent나 Judge로 동작한다고 최적화 생성 모델로 지원된다고 가정하지 않습니다.
 
 <figure class="portal-shot" id="portal-models">
-<img src="../web/assets/portal/02-model-deployments.png" alt="Foundry 모델 배포 목록의 배포 이름·모델·버전·상태를 확인하는 화면입니다." width="1270" height="750" loading="lazy">
+<img src="../web/assets/portal/02-model-deployments.png" alt="Microsoft Foundry 모델 배포 목록의 배포 이름·모델·버전·상태를 확인하는 화면입니다." width="1270" height="750" loading="lazy">
 <figcaption><strong>모델·버전·상태를 확인합니다.</strong> 각 배포를 역할 표의 Agent·Judge·Optimizer·embedding과 대조합니다. 배포 이름은 <code>.env</code>와 같아야 하며, 준비된 배포의 실제 호출도 확인합니다. <a href="../web/assets/portal/02-model-deployments.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## Agent를 실제로 준비합니다 {#bootstrap}
 
-[01의 운영체제별 설치 안내](handbook.md#setup-local)에 따라 **Python 3.11–3.14·Git·Azure CLI**를 준비하고 [새 터미널에서 세 도구의 버전](handbook.md#setup-verify)을 확인합니다. 이미 정상인 도구는 다시 설치하지 않으며 설치 제한·권한·프록시 문제를 먼저 해결합니다. 이어서 확인한 Python으로 가상환경을 만들고 로그인·언어 변수를 설정합니다. 아직 없는 `.venv`를 활성화하거나 `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
+[01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Microsoft Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 준비 후 로그인·언어 변수를 설정하고 [빠른 생성](handbook.md#resources-quickstart)을 완료합니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
 한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 
@@ -107,7 +107,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
 
-**필수 비교는 [09의 Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 별도 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 이 도구를 별도로 사용할 때는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 실행 언어를 일치시킵니다.
+**필수 비교는 [09의 Microsoft Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 별도 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 이 도구를 별도로 사용할 때는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 실행 언어를 일치시킵니다.
 
 ### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
 
@@ -123,6 +123,8 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 필수 항목이 **Unassigned**이면 대상이 Dataset이 아닌 **Agent**인지, query 열과 실제 Agent 응답의 연결이 맞는지 대조합니다. 제출 전에는 생성 화면을 확인하고, 제출 후에는 저장된 원격 정의를 확인합니다. 참고 답변을 response에 넣거나 이전 UI의 매핑을 복사하지 않습니다. [공식 포털 평가 안내](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app)와 [응답 매핑 설명](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators#using-agent-evaluators)을 참고합니다. 해결 전에는 제출하지 않습니다. 09의 helper도 원격 계약을 검사합니다.
 
 ## 실제 승인에 맞춰 승인서를 작성합니다 {#approval}
+
+**빠른 `bootstrap setup`은 같은 승인 파일을 입력 안내로 만듭니다.** 이미 생성했다면 아래 표는 검토용이며 파일을 다시 만들거나 수정할 필요가 없습니다. 개별 명령 경로를 선택했거나 다른 실제 승인 한도가 필요할 때만 직접 작성합니다.
 
 `.lab/lab-ko/approval.example.json`을 편집기에서 열어 **같은 폴더의 approval.json으로 따로 저장**합니다. 본인에게 지출·변경을 결정할 권한이 있으면 한도를 직접 정하고, 조직 구독은 승인 절차를 따릅니다. 실제 승인 근거를 비공개로 보관합니다. 다음 표나 JSON 파일 자체가 독립적인 승인·서명 증명은 아닙니다. JSON 문자열에는 큰따옴표를 사용하고 숫자·true·false·null에는 따옴표를 붙이지 않습니다.
 
@@ -146,28 +148,28 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 [02의 `bootstrap preflight --config ... --approval ...`](handbook.md#resources-approval)로 파일을 검증합니다. 오류가 있으면 `approval_reason`을 확인합니다. 한 파일의 승인은 정확한 계획 해시·모델·보존 범위에만 적용되며 다른 실습·재시도·삭제 승인을 포함하지 않습니다.
 
-**강제 범위를 구분합니다.** bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Azure Portal·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.
+**강제 범위를 구분합니다.** bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Microsoft Azure Portal·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.
 
 ## 권한과 공급자 등록을 확인합니다 {#rbac}
 
-[현재 Foundry RBAC 안내](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry)를 기준으로 권한을 확인합니다. **Foundry User/Owner/Account Owner/Project Manager**는 이전 **Azure AI User/Owner/Account Owner/Project Manager** 이름으로 보일 수 있습니다.
+[현재 Microsoft Foundry RBAC 안내](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry)를 기준으로 권한을 확인합니다. **Foundry User/Owner/Account Owner/Project Manager**는 이전 **Azure AI User/Owner/Account Owner/Project Manager** 이름으로 보일 수 있습니다.
 
 포털의 **Access control (IAM) → Check access**에서 활성 할당과 Scope를 확인합니다. 이전 UI의 View my access와 위치가 다를 수 있습니다. [01의 실제 구독·권한 그림](handbook.md#portal-check-access)은 기존 권한을 읽는 예시이며 역할 추가 안내가 아닙니다.
 
 | 작업·연결 | 확인할 권한과 범위 |
 |---|---|
 | 본인의 새 환경 생성 | bootstrap은 구독 범위의 그룹·배포·자원 생성과 `Microsoft.Authorization/roleAssignments/write` 유효 권한을 확인합니다. Contributor만으로는 역할 할당이 안 됩니다. 구독 quota 조회 권한도 필요합니다. |
-| 본인의 Agent·평가 실행 | 자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. Azure의 Contributor/Owner만으로 이 권한이 생기지는 않습니다. |
+| 본인의 Agent·평가 실행 | 자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. Microsoft Azure의 Contributor/Owner만으로 이 권한이 생기지는 않습니다. |
 | 본인의 정책 준비 | 자신의 Search에 Search Service Contributor와 Search Index Data Contributor 등 스키마·업로드 권한이 필요합니다. |
 | 프로젝트 관리 ID | 해당 Search의 Search Index Data Reader, 모델 호출과 해당 관측 리소스 전송 권한입니다. |
-| Search 관리 ID | 해당 Foundry 리소스의 모델 호출 권한입니다. |
+| Search 관리 ID | 해당 Microsoft Foundry 리소스의 모델 호출 권한입니다. |
 | 본인의 로그 확인 | 자신의 Application Insights·Log Analytics를 읽는 권한입니다. 구독 전체 로그 접근을 기본으로 요구하지 않습니다. |
 
 **새 자원의 실행 권한은 승인된 bootstrap이 해당 자원 범위에 할당합니다.** 구독 전체 역할을 새로 부여하지 않습니다. 생성 후에는 본인과 서비스의 관리 ID가 서로 다른 신원임을 구분하고 03의 실제 도구 호출로 전파·데이터 평면 접근을 확인합니다.
 
-공급자는 Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. [공식 공급자 등록 안내](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal)에 따라 다음을 확인합니다.
+공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. [공식 공급자 등록 안내](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal)에 따라 다음을 확인합니다.
 
-1. Azure Portal → **Subscriptions → 사용할 구독 → Resource providers**를 엽니다.
+1. Microsoft Azure Portal → **Subscriptions → 사용할 구독 → Resource providers**를 엽니다.
 2. `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, `Microsoft.Insights`를 각각 검색하여 **Registered**인지 확인합니다.
 3. 미등록 항목은 본인에게 해당 `/register/action` 권한과 등록 승인이 있는 경우에만 선택하여 **Register**를 누릅니다. 필요한 네 항목 외 공급자를 일괄 등록하지 않습니다.
 4. 등록 완료·전파 후 같은 preflight를 다시 실행합니다. 등록 권한이 없으면 승인된 실행 범위를 확보한 뒤 재개합니다. bootstrap은 공급자를 자동 등록하거나 권한을 확대하지 않습니다.
@@ -178,7 +180,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 평가는 Agent·Judge를 호출하고 최적화에는 추가 내부 호출이 있습니다. Search·모니터링은 실습 화면을 닫아도 비용이 남을 수 있습니다. 관측 토큰·예상 비용·실제 청구를 구분하고 미확인 비용을 0원으로 표시하지 않습니다.
 
-Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획을 기록표에 적습니다.
+Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획을 기록표에 적습니다.
 
 ## 실제 값과 완료 근거를 기록합니다 {#handoff}
 
@@ -188,7 +190,7 @@ Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 �
 |---|---|
 | 로그인 범위 | 사용자, tenant ID, subscription ID입니다. 비밀번호·토큰은 포함하지 않습니다. |
 | 로컬 경로 | 본인의 환경 이름, bootstrap config 경로, 런타임 `.env` 경로, `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`입니다. `.env`는 생성 완료 후 기록합니다. |
-| Azure 환경 | 리소스 그룹·Foundry account·project·project endpoint·Search 이름입니다. |
+| Microsoft Azure 환경 | 리소스 그룹·Microsoft Foundry account·project·project endpoint·Search 이름입니다. |
 | 모델 | 네 배포의 실제 이름·제품명·버전·SKU·용량입니다. |
 | 정책 검색 | 정책 원본·언어, 업로드 8건, knowledge base·connection 이름, `retrieval_verified`입니다. |
 | Agent | 실제 이름, 고정 버전 1, 엄격한 출력 형식, 실제 Agent 도구 호출 확인입니다. |

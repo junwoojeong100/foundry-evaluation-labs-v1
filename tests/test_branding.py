@@ -31,6 +31,8 @@ class BrandingParser(HTMLParser):
         self.brand_elements: list[tuple[str, dict[str, str | None]]] = []
         self.brand_label: str | None = None
         self.in_brand = False
+        self.in_brand_title = False
+        self.brand_title: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
@@ -41,10 +43,18 @@ class BrandingParser(HTMLParser):
             self.brand_label = attributes.get("aria-label")
         if self.in_brand:
             self.brand_elements.append((tag, attributes))
+            if tag == "strong":
+                self.in_brand_title = True
 
     def handle_endtag(self, tag: str) -> None:
+        if tag == "strong":
+            self.in_brand_title = False
         if tag == "a":
             self.in_brand = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_brand_title:
+            self.brand_title.append(data)
 
 
 class BrandingTests(unittest.TestCase):
@@ -77,6 +87,7 @@ class BrandingTests(unittest.TestCase):
         self.assertEqual(image.get("width"), image.get("height"))
         self.assertEqual(image.get("width"), "42")
         self.assertIn("Microsoft Foundry", self.page.brand_label or "")
+        self.assertEqual("".join(self.page.brand_title), "Microsoft Foundry")
 
     def test_artwork_matches_the_official_source_hash(self) -> None:
         self.assertEqual(hashlib.sha256(self.icon_bytes).hexdigest(), ICON_SHA256)

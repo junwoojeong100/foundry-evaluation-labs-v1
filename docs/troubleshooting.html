@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
-  <title>Lab troubleshooting · Foundry Lab Guide</title>
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <title>Lab troubleshooting · Microsoft Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "Codespaces/macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -26,7 +26,7 @@
       </button>
       <a class="brand" href="index.html" aria-label="Microsoft Foundry lab guide home">
         <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>Evaluation and improvement labs</span></span>
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>Evaluation and improvement labs</span></span>
       </a>
       <span class="header-context">English · Offline-ready</span>
       <nav class="language-switcher" aria-label="Guide language"><a href="troubleshooting.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
@@ -52,9 +52,10 @@
 <ul>
 <li><a href="#start">How to use this guide</a></li>
 <li><a href="#environment">Environment, sign-in and local files</a></li>
+<li><a href="#codespaces">GitHub Codespaces</a></li>
 <li><a href="#provisioning">Provisioning, authorization and quota</a></li>
 <li><a href="#knowledge">Policy retrieval and Agent setup</a></li>
-<li><a href="#evaluation">Foundry evaluation and safe resumption</a><ul>
+<li><a href="#evaluation">Microsoft Foundry evaluation and safe resumption</a><ul>
 <li><a href="#evaluation-add-run">Add run item-schema error</a></li>
 <li><a href="#evaluation-resume">IDs and duplicate submissions</a></li>
 </ul>
@@ -112,7 +113,7 @@
         <h1 id="issue-guide">Lab troubleshooting</h1>
 <p><a href="index.html#setup">Ten lab steps</a> · <a href="admin.html#approval">Access, authorization, and setup reference</a></p>
 <p><strong>Start with the blocked step and check the symptom, action and completion criteria.</strong> Do not silently change data, evaluators or models, or submit the same operation under a new name to bypass an error.</p>
-<p>Executable commands appear in <strong>Run in your terminal</strong> blocks. Use <strong>Where to act</strong> links beside <strong>code ↔ portal</strong> tables to find the command or portal procedure. Collapsed implementation panels are read-only source, not another program to execute or edit to hide an error.</p>
+<p>Executable commands appear in <strong>Run in your terminal</strong> blocks. Use each step's <strong>Action order</strong> links to find the command or portal procedure. Code/portal tables and source under <strong>Optional · how it works</strong> are references, not another program to execute or edit to hide an error.</p>
 <table>
 <thead>
 <tr>
@@ -123,11 +124,11 @@
 <tbody>
 <tr>
 <td>HTML shows an explanation but the execution command is hard to find</td>
-<td>Use the table's <strong>Where to act</strong> links or the step's <strong>Action order</strong>. <a href="index.html#setup-login">Sign-in commands</a> · <a href="index.html#resources-runtime-check">Runtime check</a>.</td>
+<td>Use the step's <strong>Action order</strong>; there is no need to open optional explanations. <a href="index.html#setup-login">Sign-in commands</a> · <a href="index.html#resources-runtime-check">Runtime check</a>.</td>
 </tr>
 <tr>
 <td>Terms, installation, sign-in or file paths are unclear</td>
-<td><a href="index.html#basics">Basic terms</a> · <a href="#environment">Environment and sign-in</a></td>
+<td><a href="index.html#basics">Basic terms</a> · <a href="#codespaces">Codespaces</a> · <a href="#environment">Environment and sign-in</a></td>
 </tr>
 <tr>
 <td>Authorization, permissions or model capacity blocks provisioning</td>
@@ -154,7 +155,7 @@
 <h2 id="start">How to use this guide</h2>
 <p>Keep timestamps, steps, commands, target IDs, error codes and actions in your private lab record. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.</p>
 <h2 id="environment">Environment, sign-in and local files</h2>
-<p>Resolve Python, Git, and Azure CLI installation and PATH issues before signing in to Azure.</p>
+<p>Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before signing in to Microsoft Azure.</p>
 <table>
 <thead>
 <tr>
@@ -210,6 +211,16 @@
 <td>Python runs without a policy change.</td>
 </tr>
 <tr>
+<td>Previous settings are missing in a new terminal</td>
+<td>Follow <a href="index.html#setup-resume">terminal resumption</a> to restore the existing virtual environment, language, and record-folder variables. Do not repeat clone, plan, or apply.</td>
+<td>Confirm the original identity and last completed step in <code>notes.md</code>, then continue with the same records.</td>
+</tr>
+<tr>
+<td>Cannot find <code>agents/</code> or <code>knowledge/</code> execution records</td>
+<td>Follow the <a href="index.html#resources-notes">record-folder explanation</a> and look under your <code>LAB_ARTIFACTS_DIR</code>. <code>data/</code> and <code>scripts/</code> are under the repository folder instead.</td>
+<td>Open your own language/environment's records, not an example path.</td>
+</tr>
+<tr>
 <td>Portal and CLI accounts differ</td>
 <td>These are separate sign-ins. Compare user, tenant and subscription with the portal using <a href="index.html#setup-login">01's sign-in/query commands</a>; complete personal authentication yourself.</td>
 <td>All three approved values match. Do not substitute another identity or copy tokens to bypass authentication.</td>
@@ -226,6 +237,45 @@
 </tr>
 </tbody>
 </table>
+<h2 id="codespaces">GitHub Codespaces</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action and completion criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create codespace is unavailable or usage is exhausted</td>
+<td>Check account/organization policy and Codespaces spending limits. If unavailable, use the <a href="index.html#setup-local-install">local-computer path</a>, not a policy bypass.</td>
+</tr>
+<tr>
+<td>Initial setup lacks <code>az</code>, <code>.venv</code>, or packages</td>
+<td>Inspect the creation log for <code>.devcontainer/devcontainer.json</code> and dependency-installation failures. Do not provision until setup finishes. To apply the new configuration to an existing codespace, preserve private records first, then use <strong>Codespaces: Rebuild Container</strong> in the command palette. Do not delete <code>.lab</code>.</td>
+</tr>
+<tr>
+<td>Device-code sign-in is blocked</td>
+<td>Use an approved authentication/execution environment. On an authorized local computer, you can use <code>az login</code> with browser sign-in. Never send codes to someone else or change security policy to bypass the block.</td>
+</tr>
+<tr>
+<td>Portal Browse cannot find <code>dev.jsonl</code></td>
+<td>Browse selects your computer's files. Choose the unchanged file <a href="index.html#dataset-download">downloaded from Codespaces Explorer</a>.</td>
+</tr>
+<tr>
+<td><code>candidate.txt</code> exists but the command cannot find it</td>
+<td>Use the <a href="index.html#optimizer-candidate">candidate-saving steps</a> to verify it is under <code>.lab</code> in <strong>the same codespace as the lab terminal</strong>, not only on your computer.</td>
+</tr>
+<tr>
+<td>Private-network resources are unreachable</td>
+<td>Do not assume Codespaces is connected to the required VNet/VPN. Use an approved network environment without disabling public-access restrictions or firewalls.</td>
+</tr>
+<tr>
+<td>Unsure which codespace to resume or delete</td>
+<td>Match the original repository/codespace and <code>notes.md</code>. Follow <a href="index.html#cleanup-codespaces">backup, stop, and deletion</a>; do not create another codespace and duplicate Microsoft Azure provisioning.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="provisioning">Provisioning, authorization and quota</h2>
 <table>
 <thead>
@@ -237,9 +287,24 @@
 </thead>
 <tbody>
 <tr>
+<td><code>setup</code> was canceled or stopped on invalid input</td>
+<td>Before resource creation, rerun <code>bootstrap setup</code> with the same environment name to reuse its plan. Supply actual approved values, not invented amounts, durations, or empty evidence.</td>
+<td>No Microsoft Azure changes occur before the final <code>CREATE ...</code> confirmation; prior creation records are inspected only.</td>
+</tr>
+<tr>
+<td><code>setup requires an interactive terminal</code></td>
+<td>Run it directly in VS Code <strong>Terminal → New Terminal</strong>. Pipes and automation use the <a href="index.html#resources-plan">individual plan/approval path</a>.</td>
+<td>Noninteractive execution never becomes automatic authorization.</td>
+</tr>
+<tr>
+<td>Existing <code>approval.json</code> expired or differs in scope</td>
+<td>Preserve it and use the <a href="admin.html#approval">approval worksheet</a> to verify actual reauthorization and timestamps. Setup does not overwrite approvals or extend expiry.</td>
+<td>Use only current authorization bound to the exact plan.</td>
+</tr>
+<tr>
 <td>Plan reports <code>BLOCKED_AWAITING_APPROVAL</code></td>
 <td>Inspect <code>plan_status</code> and <code>mutations_performed</code>, then prepare the <a href="admin.html#approval">actual authorization</a>.</td>
-<td>Distinguish local planning from Azure provisioning.</td>
+<td>Distinguish local planning from Microsoft Azure provisioning.</td>
 </tr>
 <tr>
 <td>Approval fails despite <code>approved: true</code></td>
@@ -273,7 +338,7 @@
 </tr>
 <tr>
 <td>Apply times out or its outcome is unknown</td>
-<td>Preserve the original config, manifest and deployment ID; read <a href="index.html#resources-create">02's <code>bootstrap status</code> command</a> and the group's Deployments. Do not repeat <code>apply</code>.</td>
+<td>Preserve the original config, manifest and deployment ID; read <a href="index.html#resources-status">02's <code>bootstrap status</code> command</a> and the group's Deployments. Do not repeat <code>apply</code>.</td>
 <td>Wait for active work; do not resubmit an unknown outcome.</td>
 </tr>
 <tr>
@@ -323,7 +388,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="evaluation">Foundry evaluation and safe resumption</h2>
+<h2 id="evaluation">Microsoft Foundry evaluation and safe resumption</h2>
 <h3 id="evaluation-add-run">Add run item-schema error</h3>
 <p>If the following message appears, inspect the existing evaluation's Agent-target data source:</p>
 <p class="output-label"><strong>Example error message · do not run it.</strong></p>
@@ -455,7 +520,7 @@
 </tr>
 <tr>
 <td><code>.env</code> or workspace is missing</td>
-<td>Compare the configuration, manifest and Azure inventory first. Do not fabricate ownership records to delete resources.</td>
+<td>Compare the configuration, manifest and Microsoft Azure inventory first. Do not fabricate ownership records to delete resources.</td>
 </tr>
 <tr>
 <td>Monitoring in the group serves another group</td>
@@ -487,7 +552,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

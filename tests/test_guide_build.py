@@ -96,11 +96,11 @@ class GuideBuildTests(unittest.TestCase):
     def test_all_shell_placeholders_are_replaced(self) -> None:
         rendered = build_guide.render_guide("# 임시 가이드\n\n## 첫 장\n\n본문입니다.", self.template)
         self.assertNotRegex(rendered, r"\{\{[A-Z_]+\}\}")
-        self.assertIn("<title>임시 가이드 · Foundry Lab Guide</title>", rendered)
+        self.assertIn("<title>임시 가이드 · Microsoft Foundry Lab Guide</title>", rendered)
 
     def test_title_is_escaped_and_inline_markup_is_not_in_the_title(self) -> None:
         rendered = build_guide.render_guide('# 평가 & <em>검증</em> "안내"\n\n## 본문', self.template)
-        self.assertIn("<title>평가 &amp; 검증 &quot;안내&quot; · Foundry Lab Guide</title>", rendered)
+        self.assertIn("<title>평가 &amp; 검증 &quot;안내&quot; · Microsoft Foundry Lab Guide</title>", rendered)
         self.assertIn('aria-label="평가 &amp; 검증 &quot;안내&quot;"', rendered)
 
     def test_fenced_code_is_escaped_without_changing_code_or_template_literals(self) -> None:
@@ -179,6 +179,60 @@ class GuideBuildTests(unittest.TestCase):
         self.assertIn(".guide-content .hero-summary", self.css)
         self.assertIn(".guide-content div.hero-summary { display: grid;", self.css)
         self.assertIn(".guide-content .hero-summary > div > strong", self.css)
+
+    def test_collapsible_reference_keeps_rendered_markdown_links_and_source(self) -> None:
+        source = """# Guide
+
+[Optional explanation](#example-code-portal)
+
+<details class="guide-details implementation-notes" markdown="1">
+<summary>Optional explanation</summary>
+
+#### Code and portal {#example-code-portal}
+
+**Where to act:** [Continue](#next).
+{: .execution-guide}
+
+| Code | Portal |
+|---|---|
+| `{{item.query}}` | [File](../data/cases.jsonl) |
+
+<!-- source-code: lab/example.py:explain -->
+
+</details>
+
+## Next {#next}
+
+```sh
+python -m lab --help
+```
+"""
+        code = 'def explain():\n    return "<unchanged> {{item.query}}"\n'
+        with patch.object(
+            build_guide, "implementation_source",
+            return_value=("lab/example.py", code, "python", 1, 2),
+        ):
+            rendered = build_guide.render_guide(
+                source, self.template, relative_base="guide", output_base="docs",
+            )
+        page = PageInspector()
+        page.feed(rendered)
+        self.assertEqual(page.pre_text, [code, "python -m lab --help\n"])
+        details = [
+            attrs for tag, attrs in page.elements
+            if tag == "details"
+            and {"implementation-notes", "implementation-code"} & set(attrs.get("class", "").split())
+        ]
+        self.assertEqual(len(details), 2)
+        self.assertTrue(all("open" not in attrs and "markdown" not in attrs for attrs in details))
+        self.assertIn('id="example-code-portal"', rendered)
+        self.assertIn('<p class="execution-guide"><strong>Where to act:</strong>', rendered)
+        self.assertIn('<table class="code-portal-map">', rendered)
+        self.assertIn('href="../data/cases.jsonl"', rendered)
+        self.assertIn('href="../lab/example.py#L1-L2"', rendered)
+        self.assertIn("<code>{{item.query}}</code>", rendered)
+        self.assertNotIn("<!-- source-code:", rendered)
+        self.assertNotIn("{: .execution-guide}", rendered)
 
     def test_beginner_reference_anchors_clear_the_sticky_header(self) -> None:
         self.assertIn(

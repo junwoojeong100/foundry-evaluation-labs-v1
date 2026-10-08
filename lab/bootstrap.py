@@ -2122,9 +2122,127 @@ def status(
     return result
 
 
+def setup(
+    environment: str, *, root: Path | str = Path(".lab"), run: Run = az_json,
+    read: Callable[[str], str] = input, write: Callable[[str], None] = print,
+) -> dict:
+    """Guide a participant through the existing exact-scope bootstrap, without retries."""
+    from lab.config import LabError
+    from lab.content import selected_language, text
+
+    try:
+        selected_language()
+    except LabError as exc:
+        raise BootstrapError(str(exc)) from exc
+    if not re.fullmatch(r"[a-z][a-z0-9-]{2,23}", environment):
+        raise BootstrapError("Environment must be a lowercase 3–24 character lab prefix.")
+    directory = Path(root) / environment
+    if any(path.is_symlink() for path in (directory, *directory.parents)):
+        raise BootstrapError("Environment root must not traverse symlinks.")
+    config_path = directory / "config.json"
+    if not directory.exists():
+        account = run(["account", "show"])
+        if (
+            not isinstance(account, dict) or account.get("state") != "Enabled"
+            or not isinstance(account.get("user"), dict)
+            or str(account["user"].get("type", "")).lower() != "user"
+            or not isinstance(account["user"].get("name"), str)
+            or not _uuid(account.get("id")) or not _uuid(account.get("tenantId"))
+        ):
+            raise BootstrapError("Sign in to Microsoft Azure with your own user and select an Enabled subscription first.")
+        plan(
+            subscription_id=account.get("id"), tenant_id=account.get("tenantId"),
+            expected_user=account["user"].get("name", ""), environment=environment, root=root,
+        )
+    directory, config, manifest = _load(config_path)
+    config_path = directory / "config.json"
+    approval_path = directory / "approval.json"
+    if manifest["phase"] != "planned" or manifest["attempts"]:
+        write(text(
+            "기존 생성 기록이 있습니다. 새 배포를 제출하지 않고 같은 환경의 상태만 조회합니다.",
+            "A creation record already exists. Inspecting the same environment without submitting another deployment.",
+        ))
+        return status(config_path, run=run, approval_path=approval_path if approval_path.exists() else None)
+
+    write(text(
+        "권한·모델·할당량을 읽기 전용으로 검사합니다. 아직 Microsoft Azure 자원을 생성하지 않습니다.",
+        "Checking permissions, models, and quota read-only. No Microsoft Azure resources are being created yet.",
+    ))
+    report = preflight(config_path, run=run)
+    if report["readiness_status"] != "READY":
+        return report
+    write(_json({
+        "config_path": str(config_path), "user": config["expected_user"],
+        "subscription": config["subscription_id"], "tenant": config["tenant_id"],
+        "location": config["location"], "resources": config["names"], "models": config["models"],
+        "log_retention_days": config["retention_days"],
+    }))
+    write(text(
+        "이 계획은 전용 그룹, Microsoft Foundry 프로젝트·4개 모델 배포, Search·로그 및 자원 범위 역할을 만듭니다.\n"
+        "GlobalStandard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n"
+        "예산·호출 한도는 기록이며 포털 과금을 자동 차단하지 않습니다. 삭제·학습·재시도는 승인하지 않습니다.",
+        "This plan creates a dedicated group, Microsoft Foundry project/four model deployments, Search/logging, and resource-scoped roles.\n"
+        "Continue only with authorization for GlobalStandard worldwide processing, continuous hosting, and an unconfirmed total cost.\n"
+        "Budget/call limits are records, not automatic portal spending cutoffs. Deletion, training, and retries are not authorized.",
+    ))
+    existing_approval = approval_path.exists()
+    try:
+        if existing_approval:
+            approval = _approved_record(config, approval_path)
+            write(text("기존의 유효한 승인을 재사용합니다. 한도·만료를 늘리지 않습니다.", "Reusing valid existing authorization without extending limits or expiry."))
+        else:
+            approval = approval_template(config)
+            currency = read(text("승인 통화 (예: USD, KRW): ", "Approved currency (for example USD, KRW): ")).strip().upper()
+            try:
+                amount = float(read(text("승인 예산 금액 (양수): ", "Approved budget amount (positive number): ")).strip())
+                hours = int(read(text("승인된 최대 사용 시간 (양의 정수, 시간): ", "Approved maximum hosting duration (positive integer hours): ")).strip())
+                calls = int(read(text("승인된 모델 호출 한도 (양의 정수): ", "Approved model-call allowance (positive integer): ")).strip())
+            except ValueError as exc:
+                raise BootstrapError("Enter a numeric budget and positive integer hosting/call limits; no approval was saved.") from exc
+            evidence = read(text("실제 승인 근거 (비공개 메모, 비밀번호·토큰 제외): ", "Actual authorization reference (private note, no passwords/tokens): ")).strip()
+            if not _integer(hours, 1) or not _integer(calls, 1) or not evidence:
+                raise BootstrapError("Positive hosting/call limits and actual authorization evidence are required.")
+            start = _now()
+            try:
+                end = start + timedelta(hours=hours)
+            except OverflowError as exc:
+                raise BootstrapError("The hosting duration is too large.") from exc
+            approval.update(
+                approved=True, approved_by=config["expected_user"], approved_at=_stamp(start), expires_at=_stamp(end),
+                currency=currency, budget_amount=amount, max_hosting_hours=hours, max_calls=calls,
+                max_candidates=2, max_wait_seconds=3600, request_evidence=evidence,
+                allow_global_inference=True, allow_resource_creation=True, allow_rbac_assignments=True,
+                acknowledge_continuous_hosting=True, acknowledge_unknown_cost=True,
+            )
+        validate_approval(config, approval)
+        write(_json({key: approval[key] for key in (
+            "currency", "budget_amount", "expires_at", "max_hosting_hours", "max_calls",
+            "max_candidates", "max_wait_seconds", "retention_days",
+        )}))
+        confirmation = f"CREATE {environment}"
+        answer = read(text(
+            f"위 자원 생성·역할 할당·처리/비용 범위를 실제로 승인했다면 {confirmation} 입력, 아니면 Enter로 취소합니다: ",
+            f"If you actually authorize the resources, role assignments, processing and cost scope above, type {confirmation}; otherwise press Enter to cancel: ",
+        ))
+        if answer.strip() != confirmation:
+            return {"status": "CANCELLED_LOCAL_ONLY", "config_path": str(config_path), "mutations_performed": False}
+    except (EOFError, KeyboardInterrupt):
+        return {"status": "CANCELLED_LOCAL_ONLY", "config_path": str(config_path), "mutations_performed": False}
+    if not existing_approval:
+        _write(approval_path, approval)
+    write(text(
+        "승인된 계획을 생성합니다. 다른 터미널에서 같은 작업을 실행하지 않습니다. 중단되면 status로 조회합니다.",
+        "Applying the authorized plan. Do not start the same work in another terminal; inspect status if interrupted.",
+    ))
+    return apply(config_path, approval_path, run=run)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    guided = commands.add_parser("setup", help="Interactive plan, readiness, bounded authorization, and one-time provisioning")
+    guided.add_argument("--environment", required=True)
+    guided.add_argument("--root", type=Path, default=Path(".lab"))
     create = commands.add_parser("plan", help="Local, SDK-free plan; no Azure calls")
     create.add_argument("--subscription", required=True)
     create.add_argument("--tenant", required=True)
@@ -2165,7 +2283,11 @@ def main(argv: list[str] | None = None) -> int:
     trace_repair.add_argument("--failed-operations", type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command == "plan":
+        if args.command == "setup":
+            if not sys.stdin.isatty():
+                raise BootstrapError("setup requires an interactive terminal. Use plan/preflight/apply with an explicit approval file for automation.")
+            result = setup(args.environment, root=args.root)
+        elif args.command == "plan":
             result = plan(
                 subscription_id=args.subscription, tenant_id=args.tenant, expected_user=args.expected_user,
                 environment=args.environment, root=args.root, location=args.location,
@@ -2195,7 +2317,10 @@ def main(argv: list[str] | None = None) -> int:
         else:
             result = {"preflight": preflight, "status": status}[args.command](args.config, approval_path=args.approval)
         print(_json(result), end="")
-        return 2 if result["status"].startswith("BLOCKED") and args.command not in {"plan", "prepare-group", "confirm-group"} else 0
+        return 2 if (
+            result["status"] == "CANCELLED_LOCAL_ONLY"
+            or result["status"].startswith("BLOCKED") and args.command not in {"plan", "prepare-group", "confirm-group"}
+        ) else 0
     except ApprovalError as exc:
         print(_json({
             "status": AWAITING_APPROVAL, "reason": str(exc),

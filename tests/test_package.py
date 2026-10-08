@@ -19,12 +19,15 @@ class PackageTests(unittest.TestCase):
                 "docs/print.html", "docs/ko/print.html",
                 ".env", ".venv/private.txt", "artifacts/secret.json", "lab/code.py",
                 "lab/__pycache__/code.pyc", "lab/.secret", "guide/.hidden",
+                ".devcontainer/private.env",
             ):
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("test fixture", encoding="utf-8")
             selected = {str(p.relative_to(root)) for p in package_files(root)}
             self.assertIn(".env.example", selected)
+            self.assertIn(".devcontainer/devcontainer.json", selected)
+            self.assertNotIn(".devcontainer/private.env", selected)
             self.assertIn("lab/code.py", selected)
             self.assertIn("docs/index.html", selected)
             for name in (

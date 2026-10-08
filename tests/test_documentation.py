@@ -24,7 +24,7 @@ PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html",)
 STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
 SUBSTEPS = {
     "setup": ["setup-account", "setup-local", "setup-login"],
-    "resources": ["resources-plan", "resources-tpm", "resources-approval", "resources-create", "resources-runtime-check"],
+    "resources": ["resources-quickstart", "resources-plan", "resources-tpm", "resources-approval", "resources-create", "resources-runtime-check"],
     "agent": ["agent-knowledge", "agent-create", "agent-playground"],
     "start": ["dataset-check", "dataset-register"],
     "prepare": ["criteria-configure"],
@@ -84,6 +84,11 @@ class LearningPathParser(LinkParser):
         self.in_article = False
         self.in_toc = False
         self.in_overview = False
+        self.detail_stack = []
+        self.reference_details = []
+        self.reference_headings = []
+        self.hidden_required_actions = []
+        self.optional_anchors = set()
 
     def handle_starttag(self, tag, attrs):
         super().handle_starttag(tag, attrs)
@@ -94,13 +99,28 @@ class LearningPathParser(LinkParser):
             self.in_toc = True
         if tag == "ol" and "learning-path" in attrs.get("class", "").split():
             self.in_overview = True
+        classes = attrs.get("class", "").split()
+        if tag == "details":
+            self.detail_stack.append(classes)
+            if "implementation-notes" in classes:
+                self.reference_details.append(attrs)
+        in_reference = any("implementation-notes" in entry for entry in self.detail_stack)
+        in_optional = any("optional-path" in entry for entry in self.detail_stack)
+        if in_optional and "id" in attrs:
+            self.optional_anchors.add(attrs["id"])
+        if self.in_article and tag == "h4" and attrs.get("id", "").endswith("-code-portal"):
+            self.reference_headings.append((attrs["id"], in_reference))
+        if self.in_article and self.detail_stack:
+            if tag == "h2" or (tag == "h3" and not in_optional) or {"step-route", "completion-check", "portal-shot"} & set(classes):
+                self.hidden_required_actions.append(attrs.get("id") or classes)
+            if in_reference and "terminal-command" in classes:
+                self.hidden_required_actions.append("terminal-command")
         if self.in_article and tag == "h2":
             self.chapters.append(attrs.get("id"))
         if self.in_article and tag == "h3":
             self.subchapters.append(attrs.get("id"))
         if self.in_article and tag in {"h2", "h3", "h4"}:
             self.last_heading = attrs.get("id")
-        classes = attrs.get("class", "").split()
         if self.in_article and tag == "p":
             if "step-route" in classes:
                 self.active_action = {"chapter": self.chapters[-1], "links": []}
@@ -111,7 +131,7 @@ class LearningPathParser(LinkParser):
             elif "command-label" in classes:
                 self.command_labels += 1
         if self.in_article and tag == "pre" and "terminal-command" in classes:
-            self.active_command = {"syntax": None, "text": ""}
+            self.active_command = {"syntax": None, "text": "", "optional": in_optional}
             self.terminal_commands.append(self.active_command)
         if tag == "code" and self.active_command is not None:
             self.active_command["syntax"] = next(
@@ -141,6 +161,8 @@ class LearningPathParser(LinkParser):
                 self.next_links.append(attrs.get("href"))
 
     def handle_endtag(self, tag):
+        if tag == "details":
+            self.detail_stack.pop()
         if tag == "p":
             self.active_action = None
         elif tag == "pre":
@@ -511,6 +533,80 @@ class DocumentationTests(unittest.TestCase):
             self.assertIn("create", baseline)
             self.assertNotRegex(source, r"python\s+examples/|examples/.*\.py")
 
+    def test_optional_explanations_do_not_hide_the_required_participant_path(self):
+        for filename in ("index.html", "ko/index.html"):
+            with self.subTest(filename=filename):
+                page = LearningPathParser()
+                page.feed((SITE / filename).read_text())
+                self.assertEqual(len(page.reference_details), 13)
+                self.assertTrue(all("open" not in attrs for attrs in page.reference_details))
+                self.assertEqual(
+                    [anchor for anchor, in_reference in page.reference_headings if in_reference],
+                    [guide["heading"] for guide in page.execution_guides],
+                )
+                self.assertEqual(page.hidden_required_actions, [])
+                self.assertEqual(page.detail_stack, [])
+
+    def test_comparison_worksheet_keeps_three_columns_without_a_markup_row(self):
+        for filename in ("index.html", "ko/index.html"):
+            with self.subTest(filename=filename):
+                rendered = (SITE / filename).read_text()
+                table = re.search(
+                    r'<div class="worked-comparison">\s*(<table>.*?</table>)\s*</div>',
+                    rendered, re.DOTALL,
+                )
+                self.assertIsNotNone(table)
+                self.assertEqual(table.group(1).count("<th>"), 3)
+                self.assertEqual(table.group(1).count("<tr>"), 7)
+                self.assertNotIn("{: .worked-comparison}", rendered)
+
+    def test_default_setup_path_uses_codespaces_and_one_guided_creation_command(self):
+        for language, filename in (("en", "index.html"), ("ko", "ko/index.html")):
+            with self.subTest(language=language):
+                page = LearningPathParser()
+                page.feed((SITE / filename).read_text())
+                for anchor in ("setup-codespaces", "resources-quickstart", "resources-notes", "resources-runtime-check"):
+                    self.assertIn(anchor, page.ids)
+                    self.assertNotIn(anchor, page.optional_anchors)
+                for anchor in ("setup-local-install", "setup-windows", "resources-plan", "resources-approval", "resources-create"):
+                    self.assertIn(anchor, page.optional_anchors)
+                commands = "".join(command["text"] for command in page.terminal_commands if not command["optional"])
+                self.assertIn(f"python -m lab bootstrap setup --environment lab-{language}\n", commands)
+                self.assertIn("az login --use-device-code\n", commands)
+                for manual in ("bootstrap plan", "bootstrap apply", "pip install", "git clone"):
+                    self.assertNotIn(manual, commands)
+                source = self.source(language)
+                for anchor in ("dataset-download", "optimizer-candidate", "cleanup-codespaces"):
+                    self.assertIn(anchor, page.ids)
+                self.assertIn(f"python -m zipfile -c .lab/lab-{language}-records.zip .lab/lab-{language}", source)
+                self.assertIn("troubleshooting.md#codespaces", source)
+                self.assertIn(f"CREATE lab-{language}", source)
+
+    def test_codespaces_lifecycle_prepares_dependencies_without_cloud_actions(self):
+        configuration = json.loads((ROOT / ".devcontainer/devcontainer.json").read_text())
+        command = configuration["postCreateCommand"]
+        syntax = subprocess.run(["bash", "-n"], input=command, text=True, capture_output=True, check=False)
+        self.assertEqual(syntax.returncode, 0, syntax.stderr)
+        self.assertIn("-m venv .venv", command)
+        self.assertIn(".venv/bin/python -m pip install -r requirements.lock", command)
+        hooks = "\n".join(str(value) for key, value in configuration.items() if key.endswith("Command"))
+        self.assertNotRegex(hooks, r"\baz\s+|bootstrap|--confirm|AZURE_CLIENT_SECRET|access.token")
+        self.assertIn(".devcontainer/devcontainer.json", {path.relative_to(ROOT).as_posix() for path in package_files(ROOT)})
+
+    def test_learner_prose_uses_full_product_names_except_exact_ui_and_roles(self):
+        short_name = re.compile(r"(?<!Microsoft )(?<!New )(?<![A-Za-z0-9_])(?:Azure|Foundry)(?![A-Za-z0-9_/-])")
+        role_name = re.compile(r"(?:Foundry|Azure AI) (?:Account Owner|Project Manager|User|Owner)(?![A-Za-z0-9_])")
+        for filename in ("index.html", "docs/english.html"):
+            self.assertIn("<title>Microsoft Foundry Lab Guide", (ROOT / filename).read_text())
+        for document in DOCUMENTS:
+            with self.subTest(document=document.output):
+                page = ArticleTextParser(exclude_implementation=True)
+                page.feed((SITE / document.output).read_text())
+                prose = role_name.sub("", " ".join(page.text + page.alt))
+                matches = [prose[max(0, match.start() - 25):match.end() + 45] for match in short_name.finditer(prose)]
+                self.assertEqual(matches, [])
+                self.assertNotIn("Microsoft Microsoft", prose)
+
     def test_all_steps_and_code_portal_sections_link_to_actual_actions(self):
         mappings = (
             "setup", "resources", "runtime", "sdk", "knowledge", "agent", "dataset", "criteria",
@@ -877,6 +973,9 @@ class DocumentationTests(unittest.TestCase):
             links = re.findall(r"\]\(([^)\s]+\.html[^)\s]*)\)", source)
             self.assertTrue(links, name)
             for href in links:
+                if href == "https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html":
+                    self.assertIn(href, (ROOT / "web/assets/NOTICE.txt").read_text())
+                    continue
                 self.assertTrue(href.startswith(SITE_URL), (name, href))
                 link = urlsplit(href.removeprefix(SITE_URL))
                 target = ROOT / link.path

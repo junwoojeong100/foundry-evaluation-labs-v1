@@ -1,29 +1,31 @@
-# Foundry Learning Loop Lab v1
+# Microsoft Foundry Learning Loop Lab v1
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
-**Follow ten steps from your first Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
+**Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
 
-> Account, tools, and access → Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
+> Account, tools, and access → Microsoft Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
 
 The sample Contoso policies and questions are synthetic. The lesson is **evaluate → learn → improve → reevaluate**, not a public benchmark leaderboard or production certification.
 
-**Every participant builds and runs the complete lab with their own account and computer.** Start at 01: install tools, create a dedicated environment, connect policies, create the Agent, register data, evaluate, optimize, compare, and clean up. The guide includes OS-specific commands, actual input locations, authorization fields, and completion checks. When resuming your own lab, verify its original records instead of duplicating completed work.
+**Recommended start: GitHub Codespaces → Microsoft Azure sign-in → one provisioning command.** Open the browser environment with [01's Codespaces instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-codespaces), then run [02's `python -m lab bootstrap setup --environment lab-en`](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#resources-quickstart). Review the active identity/subscription and pinned models, enter actual authorization limits, and let the command prepare the plan, approval record, and environment. No hand-edited JSON is required and no resources are created before confirmation.
 
-**Local prerequisites: Python 3.11–3.14, Git, and Azure CLI.** [Step 01 installation instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local) cover Windows WinGet/official installers, macOS Homebrew, and Ubuntu 24.04 LTS, with version checks before creating the virtual environment. Reuse supported tools already installed; resolve PATH or installation restrictions before signing in to Azure.
+**Codespaces prepares Python, Git, Microsoft Azure CLI, and lab dependencies without PC installation.** Only the local-computer path requires **Python 3.11–3.14, Git, and Microsoft Azure CLI** from [01's local setup instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local). Both paths require your own subscription, permissions, and spending authorization. GitHub Codespaces and Microsoft Azure charges are separate.
 
-**New to Azure or Foundry? Read the hands-on guide first.** It explains accounts, subscriptions, projects, and opening a terminal before using them. Steps 04–06 form one evaluation wizard, with ordered actions and score-reading examples. Setup references and checklists support the same path; they do not assign exercises to separate workshop roles. Obtain the required provisioning, role-assignment, and spending authorization before creating Azure resources.
+**New to Microsoft Azure or Microsoft Foundry? Read the hands-on guide first.** It explains accounts, subscriptions, projects, and opening a terminal before using them. Steps 04–06 form one evaluation wizard, with ordered actions and score-reading examples. Setup references and checklists support the same path; they do not assign exercises to separate workshop roles. Obtain the required provisioning, role-assignment, and spending authorization before creating Microsoft Azure resources.
 
 The opening explains what the lab is, why it matters, how it proceeds, and what evidence remains. Each step follows **what → why → how/where → actual screen and execution → completion criteria**.
 
-**Existing lab commands and runtime code are unchanged.** Each step starts with **Action order** links, and every **code ↔ portal** table links to the actual command or portal procedure. **Run in your terminal** blocks have OS labels and command-copy buttons; long commands wrap visually without changing copied text. Code/portal maps become labeled cards on mobile, while desktop retains tables. Complete source functions/settings remain available in collapsed, read-only panels. Labels and action links also work without JavaScript. Dataset registration, baseline submission, and Optimizer execution remain portal actions, not additional terminal commands.
+**On your first pass, follow the expanded instructions.** Each step provides **Action order → commands/portal actions → completion criteria**. Code/portal maps and original source are folded under **Optional · how it works**, separate from required actions. **Run in your terminal** blocks identify the OS and provide copy buttons; read-only implementation panels are not executable instructions. Commands and explanations remain readable without JavaScript.
+
+The guide includes [resume instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-resume), a [copyable lab record](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#resources-notes), and a [v1/v2 comparison worksheet](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#decision-compare). Continue with the same records instead of recreating or resubmitting completed work.
 
 ## Fixed model roles and comparison conditions
 
 | Role | Planned model/version |
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
-| Foundry Evaluation Judge | **gpt-6-luna / 2026-09-22** |
+| Microsoft Foundry Evaluation Judge | **gpt-6-luna / 2026-09-22** |
 | Agent Optimizer generator | **gpt-5.5 / 2026-04-24** |
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. Never weaken v1 to manufacture improvement.
@@ -39,7 +41,7 @@ Use unchanged **`data/en/optimizer/dev.jsonl`** for English and **`data/optimize
 | Relevance | 1–5, threshold **4** |
 | TaskAdherence | Binary 0/1 Pass/Fail, pass **1** |
 
-The SDK helper adds a real run to the existing Foundry definition. It checks the remote Judge, thresholds and response mappings, prevents duplicate submissions, and verifies each output's actual pinned version and instructions. It is **not a local Judge**.
+The SDK helper adds a real run to the existing Microsoft Foundry definition. It checks the remote Judge, thresholds and response mappings, prevents duplicate submissions, and verifies each output's actual pinned version and instructions. It is **not a local Judge**.
 
 `scripts/compare_foundry_eval.py` requires complete matched cases, no lower quality pass counts/means, and at least one strict measured improvement. It does not hide malformed responses or claim that stochastic future results are guaranteed. Native statistical conclusions, latency and token tradeoffs are reported separately.
 
@@ -55,7 +57,7 @@ The SDK helper adds a real run to the existing Foundry definition. It checks the
 | CLI/SDK lab replay | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) |
 | Actual portal walkthrough | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
 
-Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay execution records. The portal walkthroughs record the authenticated Azure/Foundry UI, with personal fields redacted, using existing resources and completed runs without resubmitting evaluations or optimization. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
+Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay execution records. The portal walkthroughs record the authenticated Microsoft Azure/Microsoft Foundry UI, with personal fields redacted, using existing resources and completed runs without resubmitting evaluations or optimization. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
 
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
@@ -90,6 +92,8 @@ English sources are `guide/en/*.md` and `data/README.en.md`; Korean sources are 
 `<!-- source-code: lab/agents.py:create_native_agent -->` includes the complete named symbol; `<!-- source-code: schemas/response.schema.json -->` includes the complete file. The guide builder reads and escapes source without importing/executing it, preserving original comments, identifiers, and messages. Keep source directives reciprocal across languages and rebuild the web guide after relevant implementation changes. Do not copy source into independent runnable examples or edit original code just to simplify its presentation.
 
 Korean documentation, guidance, and error messages use a consistent formal register. Preserve verbatim measured responses, evaluator reasons, and evaluation-data quotations rather than editing evidence for prose style.
+
+Quick setup follows the **create → verify your project/deployments** structure of [labs 01 and 02 in the reference guide](https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html). This repository retains its own models, permissions, ownership checks, and comparison contract; do not mix the other guide's commands or model settings into this lab.
 
 Build the allowlisted ZIP with `python scripts/package_lab.py`.
 

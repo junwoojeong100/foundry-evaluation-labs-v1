@@ -114,10 +114,30 @@
     menuClose.focus({ preventScroll: true });
   }
 
+  function revealDetails(target) {
+    let revealed = false;
+    for (let parent = target.parentElement; parent && parent !== article; parent = parent.parentElement) {
+      if (parent.tagName === "DETAILS" && !parent.open) {
+        parent.open = true;
+        revealed = true;
+      }
+    }
+    return revealed;
+  }
+
+  function revealHashTarget() {
+    const id = idFromHash(window.location.hash);
+    const target = id && document.getElementById(id);
+    if (target && article.contains(target) && revealDetails(target)) {
+      target.scrollIntoView({ block: "start" });
+    }
+  }
+
   function navigateToHeading(id) {
     const heading = document.getElementById(id);
     if (!heading) return;
     closeDrawer(false);
+    revealDetails(heading);
     if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
     const hash = `#${encodeURIComponent(id)}`;
     if (window.location.hash !== hash) {
@@ -355,6 +375,7 @@
   }
   window.addEventListener("scroll", requestReadingUpdate, { passive: true });
   window.addEventListener("resize", requestReadingUpdate, { passive: true });
+  window.addEventListener("hashchange", revealHashTarget);
   window.addEventListener("hashchange", requestReadingUpdate);
   window.addEventListener("load", requestReadingUpdate);
 
@@ -518,6 +539,7 @@
   $("[data-chapter-completion]").hidden = chapters.length === 0;
   $("[data-chapter-pagination]").hidden = chapters.length < 2;
   closeDrawer(false);
+  revealHashTarget();
   if (currentChapter) updateChapter(currentChapter);
   updateProgress();
   requestReadingUpdate();

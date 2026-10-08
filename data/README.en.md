@@ -4,9 +4,9 @@
 
 ## One unchanged dataset for the comparison {#start}
 
-Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Foundry Evaluation, Agent Optimizer, and reevaluation. In the project you created, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.
+Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Microsoft Foundry Evaluation, Agent Optimizer, and reevaluation. In the project you created, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.
 
-**Where to act:** [Terminal · check all 12 rows/hash](../guide/en/handbook.md#dataset-check) → [Foundry · upload/select](../guide/en/handbook.md#dataset-register). The local check uploads nothing and submits no evaluation.
+**Where to act:** [Terminal · check all 12 rows/hash](../guide/en/handbook.md#dataset-check) → [Microsoft Foundry · upload/select](../guide/en/handbook.md#dataset-register). The local check uploads nothing and submits no evaluation.
 {: .execution-guide}
 
 Keep its exact bytes, SHA-256, questions, references, and language fixed throughout the comparison. Keep Korean and English data separate rather than mixing them in one comparison.
@@ -15,7 +15,7 @@ Use [04's code ↔ portal table](../guide/en/handbook.md#dataset-code-portal) to
 
 ## Purpose and limits {#scope}
 
-Contoso Atlas Cloud is fictional. Its policies, inquiries and reference answers are synthetic—not private customer data or the terms of Microsoft, Azure or a real provider.
+Contoso Atlas Cloud is fictional. Its policies, inquiries and reference answers are synthetic—not private customer data or the terms of Microsoft, Microsoft Azure or a real provider.
 
 The purpose is **evaluation against your own business tasks and criteria**, not a public benchmark alone. Representative tasks expose policy-date boundaries, ambiguity, unsupported certainty and action claims. A 12-case development set demonstrates the learning loop; it does not certify production or independent generalization.
 
@@ -35,7 +35,7 @@ Each JSONL line has exactly three columns:
 | `context` | String | Source-policy reference for supported evaluators and case review |
 | `ground_truth` | JSON **string** | Structured reference answer, not a generation prompt |
 
-There is no prefilled `response`. Foundry invokes the pinned Agent to obtain one. Do not turn the file into a JSON array, rename columns, append references to the user message or precompute answers.
+There is no prefilled `response`. Microsoft Foundry invokes the pinned Agent to obtain one. Do not turn the file into a JSON array, rename columns, append references to the user message or precompute answers.
 
 The reference answer and Agent response use exactly four keys:
 
@@ -52,9 +52,11 @@ The Agent cannot actually submit tickets, change subscriptions, approve credits 
 
 ## Register once; pin the same version {#upload}
 
-Use **Foundry → Build → Evaluations → Create → Agent**, an explicit baseline version, and **Individual turns / One time**. Reselect the target checkbox if version selection clears it.
+Use **Microsoft Foundry → Build → Evaluations → Create → Agent**, an explicit baseline version, and **Individual turns / One time**. Reselect the target checkbox if version selection clears it.
 
 On the first attempt, use **Upload new dataset → Browse** to register the exact English file as `lab-en-dev12` version `1`. For resumption, Optimizer, and reevaluation, use **Existing dataset** with the same name/version. The preview may show five rows; the file and evaluation scope still contain 12.
+
+In Codespaces, [Download the source from Explorer](../guide/en/handbook.md#dataset-download) to your computer before selecting it in Browse. Do not edit or convert the file.
 
 Leave the custom prompt override unset. Use `query → query` if a field-mapping screen appears. Service mappings are **Relevance `response={{sample.output_text}}`** and **TaskAdherence `response={{sample.output_items}}`**. These are not extra JSONL columns.
 

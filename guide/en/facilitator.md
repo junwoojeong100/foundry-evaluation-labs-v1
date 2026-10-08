@@ -8,15 +8,15 @@ Use this checklist to review your own **evaluate → learn → improve → reeva
 
 **Every participant performs 01–10 directly.** Use your own account, computer, dedicated environment, and Agent; do not delegate creation, commands, or cleanup. Confirm provisioning and role-assignment access, spending authorization, and deletion/retention scope before starting.
 
-Follow [01's Windows/macOS/Linux installation](handbook.md#setup-local), complete [version checks](handbook.md#setup-verify) for **Python 3.11–3.14, Git, and Azure CLI**, and create the virtual environment. Resolve installation approvals, PATH, and proxy issues first.
+The default path is [GitHub Codespaces in 01](handbook.md#setup-codespaces). Follow [local installation](handbook.md#setup-local-install) and [version checks](handbook.md#setup-verify) only when installing **Python 3.11–3.14, Git, and Microsoft Azure CLI** on your computer. Confirm sign-in and the virtual environment in your selected lab environment.
 
-After planning in 02, copy the [worksheet](admin-setup.md#handoff) into your `notes.md`. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records; use your originals when resuming.
+After planning in 02, copy the [template in the main guide](handbook.md#resources-notes) into your `notes.md`. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records. In a new terminal, follow the [resume procedure](handbook.md#setup-resume) to continue with the same environment and records.
 
 Read the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Check that you can explain **the Agent answers and the Judge scores**, and **instructions, not model weights, will change**. Memorized terms and high scores are not starting conditions.
 
 Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.
 
-Use **Action order / Where to act** links to find the actual command or portal screen first. Read **code ↔ portal** tables and collapsed implementation panels when you need the internals; do not execute them separately. In particular, [06's ID lookup](handbook.md#baseline-identifiers) does not submit, and [08 Optimizer](handbook.md#optimizer-configure) runs in the portal.
+Use **Action order** links to find the actual command or portal screen first. Read code/portal tables and source panels under **Optional · how it works** only when needed; do not execute them separately. In particular, [06's ID lookup](handbook.md#baseline-identifiers) does not submit, and [08 Optimizer](handbook.md#optimizer-configure) runs in the portal.
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare) and reserve time for cleanup in 10.
 
@@ -28,12 +28,12 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
-| [02 Provisioning](handbook.md#resources) | Plan, authorize, preflight, apply, and inspect status | APPLIED, generated `.env`, and runtime preflight PASS |
+| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, Microsoft Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
+| [02 Provisioning](handbook.md#resources) | Complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
 | [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Record the unsubmitted wizard settings and query-only input |
-| [06 Baseline](handbook.md#baseline) | Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
+| [06 Baseline](handbook.md#baseline) | Microsoft Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | [07 Analysis](handbook.md#analyze) | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
 | [08 Optimization](handbook.md#optimize) | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
 | [09 Reevaluation](handbook.md#decision) | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |
@@ -55,7 +55,7 @@ Keep the selected lab's twelve synthetic questions, actual responses and managed
 
 **Relevance 4/5 is not 80% accuracy. TaskAdherence 1 is Pass, not a poor one-out-of-five score.** Report each evaluator separately, all-criteria passes, errors and coverage.
 
-The [required comparison in 09](handbook.md#decision-compare) uses Foundry. The optional `scripts/compare_foundry_eval.py` also requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.
+The [required comparison in 09](handbook.md#decision-compare) uses Microsoft Foundry. The optional `scripts/compare_foundry_eval.py` also requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.
 
 Read answers for unsupported certainty, incorrect policy arithmetic, action claims and wrong routing even if the generic evaluator passed them. A request demanding an impossible certainty must not be satisfied with invented facts.
 
@@ -98,4 +98,4 @@ Keep the actual environment, run IDs, comparison conditions, and final decision 
 
 Record the same-model result, native statistical comparison, latency/token tradeoffs, and limits of a reused synthetic dev set. A lab adoption decision is not authorization to publish or activate in production; publication is outside this lab.
 
-**Finally, perform [the cleanup/retention checks in 10](handbook.md#cleanup) yourself.** Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. Do not delete records needed to establish ownership or reopen the environment.
+**Finally, perform [the cleanup/retention checks in 10](handbook.md#cleanup) yourself.** Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. [Back up private records, then stop/delete Codespaces separately](handbook.md#cleanup-codespaces). Do not delete records needed to establish ownership or reopen the environment.

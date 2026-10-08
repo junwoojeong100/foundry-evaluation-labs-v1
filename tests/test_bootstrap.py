@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
+import io
 import json
 from pathlib import Path
 import shutil
@@ -292,6 +293,143 @@ class BootstrapTests(unittest.TestCase):
         with self.assertRaises(b.BootstrapError):
             b.plan(subscription_id=SUB, tenant_id=TENANT, expected_user=USER, environment="lab-unit", root=self.root)
         self.assertEqual((self.root / ".env").read_text(), "unrelated")
+
+    def test_setup_derives_identity_and_uses_the_existing_approved_apply(self):
+        root = self.root / "guided"
+        config_path = root / "lab-guided" / "config.json"
+        clouds = []
+
+        def run(args):
+            if not config_path.exists():
+                self.assertEqual(args, ["account", "show"])
+                return deepcopy(self.azure.account)
+            if not clouds:
+                clouds.append(FakeAzure(config_path))
+            return clouds[0](args)
+
+        answers = iter(["USD", "20", "4", "100", "Private test authorization", "CREATE lab-guided"])
+        result = b.setup("lab-guided", root=root, run=run, read=lambda _: next(answers), write=lambda _: None)
+        self.assertEqual(result["status"], "APPLIED")
+        config = b._read(config_path)
+        approval_path = config_path.parent / "approval.json"
+        approval = b._read(approval_path)
+        b.validate_approval(config, approval)
+        self.assertEqual((config["subscription_id"], config["tenant_id"], config["expected_user"]), (SUB, TENANT, USER))
+        self.assertEqual((approval["budget_amount"], approval["max_calls"], approval["max_candidates"]), (20, 100, 2))
+        self.assertFalse(approval["allow_training"])
+        self.assertNotIn("max_provisioning_retries", approval)
+        self.assertEqual(approval_path.stat().st_mode & 0o777, 0o600)
+        self.assertTrue((config_path.parent / ".env").is_file())
+        self.assertTrue(clouds[0].mutations)
+
+    def test_setup_cancel_and_closed_input_never_save_approval_or_create_resources(self):
+        answers = iter(["USD", "20", "4", "100", "Private test authorization", "no"])
+        result = b.setup("lab-unit", root=self.root, run=self.azure, read=lambda _: next(answers), write=lambda _: None)
+        self.assertEqual(result["status"], "CANCELLED_LOCAL_ONLY")
+
+        def closed_input(_):
+            raise EOFError
+
+        result = b.setup("lab-unit", root=self.root, run=self.azure, read=closed_input, write=lambda _: None)
+        self.assertEqual(result["status"], "CANCELLED_LOCAL_ONLY")
+        self.assertFalse((self.path.parent / "approval.json").exists())
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_setup_rejects_invalid_or_non_user_identity_before_writing_a_plan(self):
+        for changes in (
+            {"state": "Disabled"},
+            {"id": None},
+            {"user": {"type": "servicePrincipal", "name": "application"}},
+            {"user": {"type": "user", "name": None}},
+        ):
+            with self.subTest(changes=changes):
+                account = {**self.azure.account, **changes}
+                root = self.root / "not-created"
+                with self.assertRaises(b.BootstrapError):
+                    b.setup(
+                        "lab-guided", root=root, run=lambda _: account,
+                        read=lambda _: self.fail("Must not ask for an invalid identity"), write=lambda _: None,
+                    )
+                self.assertFalse(root.exists())
+
+    def test_setup_rejects_invalid_bounds_without_saving_approval(self):
+        for currency, amount, hours, calls, evidence in (
+            ("USD", "nan", "4", "100", "Approved"),
+            ("USD", "inf", "4", "100", "Approved"),
+            ("USD", "0", "4", "100", "Approved"),
+            ("USD", "20", "0", "100", "Approved"),
+            ("USD", "20", "4", "-1", "Approved"),
+            ("US", "20", "4", "100", "Approved"),
+            ("USD", "20", "4", "100", ""),
+        ):
+            with self.subTest(currency=currency, amount=amount, hours=hours, calls=calls, evidence=evidence):
+                answers = iter([currency, amount, hours, calls, evidence, "CREATE lab-unit"])
+                with self.assertRaises(b.BootstrapError):
+                    b.setup("lab-unit", root=self.root, run=self.azure, read=lambda _: next(answers), write=lambda _: None)
+                self.assertFalse((self.path.parent / "approval.json").exists())
+                self.assertEqual(self.azure.mutations, [])
+
+    def test_setup_blocks_before_asking_for_approval_when_readiness_fails(self):
+        self.azure.permissions = {"value": []}
+        result = b.setup(
+            "lab-unit", root=self.root, run=self.azure,
+            read=lambda _: self.fail("Must not prompt after failed readiness"), write=lambda _: None,
+        )
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_setup_reuses_valid_approval_without_extending_or_overwriting_it(self):
+        approval_path = self.path.parent / "approval.json"
+        b._write(approval_path, b._read(self.approve()))
+        original = approval_path.read_bytes()
+        result = b.setup(
+            "lab-unit", root=self.root, run=self.azure,
+            read=lambda _: "CREATE lab-unit", write=lambda _: None,
+        )
+        self.assertEqual(result["status"], "APPLIED")
+        self.assertEqual(approval_path.read_bytes(), original)
+        mutations = deepcopy(self.azure.mutations)
+        result = b.setup(
+            "lab-unit", root=self.root, run=self.azure,
+            read=lambda _: self.fail("Must only inspect a completed environment"), write=lambda _: None,
+        )
+        self.assertEqual(result["phase"], "succeeded")
+        self.assertEqual(self.azure.mutations, mutations)
+
+    def test_setup_rejects_expired_approval_without_renewing_it(self):
+        approval_path = self.path.parent / "approval.json"
+        expired = b._read(self.approve(
+            approved_at=(datetime.now(timezone.utc) - timedelta(hours=2)).isoformat(),
+            expires_at=(datetime.now(timezone.utc) - timedelta(hours=1)).isoformat(),
+        ))
+        b._write(approval_path, expired)
+        original = approval_path.read_bytes()
+        with self.assertRaises(b.ApprovalError):
+            b.setup(
+                "lab-unit", root=self.root, run=self.azure,
+                read=lambda _: self.fail("Expired approval needs separate reauthorization"), write=lambda _: None,
+            )
+        self.assertEqual(approval_path.read_bytes(), original)
+        self.assertEqual(self.azure.mutations, [])
+
+    def test_setup_only_inspects_an_unknown_prior_submission(self):
+        self.azure.fail_after_submit = True
+        with self.assertRaises(b.BootstrapError):
+            self.apply()
+        mutations = deepcopy(self.azure.mutations)
+        result = b.setup(
+            "lab-unit", root=self.root, run=self.azure,
+            read=lambda _: self.fail("Must not ask to resubmit an unknown outcome"), write=lambda _: None,
+        )
+        self.assertFalse(result["mutations_performed"])
+        self.assertEqual(self.azure.mutations, mutations)
+
+    def test_setup_cli_requires_a_terminal_before_any_azure_lookup(self):
+        with patch("sys.stdin.isatty", return_value=False), patch.object(b, "setup") as guided, \
+                patch("sys.stderr", new_callable=io.StringIO) as stderr:
+            self.assertEqual(b.main(["setup", "--environment", "lab-unit"]), 2)
+        guided.assert_not_called()
+        self.assertIn("interactive terminal", stderr.getvalue())
 
     def test_standalone_help_works_without_site_packages(self):
         result = subprocess.run(

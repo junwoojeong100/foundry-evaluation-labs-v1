@@ -4,9 +4,9 @@
 
 ## 비교에는 변경 없는 데이터셋 하나 {#start}
 
-한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
+한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Microsoft Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
 
-**실행 위치:** [터미널에서 12행·해시 확인](../guide/handbook.md#dataset-check) → [Foundry에서 업로드·선택](../guide/handbook.md#dataset-register). 로컬 확인 명령은 파일을 업로드하거나 평가를 제출하지 않습니다.
+**실행 위치:** [터미널에서 12행·해시 확인](../guide/handbook.md#dataset-check) → [Microsoft Foundry에서 업로드·선택](../guide/handbook.md#dataset-register). 로컬 확인 명령은 파일을 업로드하거나 평가를 제출하지 않습니다.
 {: .execution-guide}
 
 비교하는 동안 파일의 바이트·SHA-256·질문·참고 답변·언어를 유지합니다. 한국어와 영어 데이터는 분리하며 한 비교 안에서 섞지 않습니다.
@@ -15,7 +15,7 @@
 
 ## 목적과 한계 {#scope}
 
-Contoso Atlas Cloud의 정책·질문·참고 답변은 합성 자료입니다. 실제 고객 데이터나 Microsoft·Azure·실제 공급자의 약관이 아닙니다.
+Contoso Atlas Cloud의 정책·질문·참고 답변은 합성 자료입니다. 실제 고객 데이터나 Microsoft·Microsoft Azure·실제 공급자의 약관이 아닙니다.
 
 공개 벤치마크만 보는 대신 **자사 업무와 기준으로 평가**하는 방법을 익힙니다. 정책 날짜 경계, 모호성, 근거 없는 확신과 실행 완료 주장을 대표 사례로 확인합니다. dev 12건은 학습 루프의 예시이지 운영 안전·독립적 일반화의 인증이 아닙니다.
 
@@ -35,7 +35,7 @@ JSONL 한 행에는 정확히 세 열이 있습니다.
 | `context` | 문자열 | 지원되는 평가기와 사례 검토용 정책 참고 자료 |
 | `ground_truth` | JSON **문자열** | 구조화 참고 답변이며 생성 프롬프트가 아닙니다. |
 
-미리 채운 `response`는 없습니다. Foundry가 고정 Agent를 호출해 실제 응답을 얻습니다. JSON 배열로 바꾸거나 열 이름을 바꾸거나 참고 자료를 질문에 붙이거나 응답을 미리 만들지 않습니다.
+미리 채운 `response`는 없습니다. Microsoft Foundry가 고정 Agent를 호출해 실제 응답을 얻습니다. JSON 배열로 바꾸거나 열 이름을 바꾸거나 참고 자료를 질문에 붙이거나 응답을 미리 만들지 않습니다.
 
 참고 답변과 Agent 응답은 네 키를 사용합니다.
 
@@ -52,9 +52,11 @@ Agent는 티켓 제출·구독 변경·크레딧 승인·데이터 삭제를 실
 
 ## 한 번 등록하고 같은 버전 선택 {#upload}
 
-**Foundry → Build → Evaluations → Create → Agent**에서 명시적 기준선 버전과 **Individual turns / One time**을 선택합니다. 버전 선택으로 체크가 해제되면 대상을 다시 선택합니다.
+**Microsoft Foundry → Build → Evaluations → Create → Agent**에서 명시적 기준선 버전과 **Individual turns / One time**을 선택합니다. 버전 선택으로 체크가 해제되면 대상을 다시 선택합니다.
 
 처음에는 **Upload new dataset → Browse**로 정확한 한국어 파일을 올려 `lab-ko-dev12` 버전 `1`을 등록합니다. 재개·Optimizer·재평가는 **Existing dataset**에서 같은 이름·버전을 선택합니다. 미리 보기가 5행이어도 실제 파일·평가 범위는 12행입니다.
+
+Codespaces 사용자는 [Explorer의 Download](../guide/handbook.md#dataset-download)로 원본 파일을 내 PC에 받은 뒤 Browse에서 선택합니다. 파일을 편집하거나 다른 형식으로 변환하지 않습니다.
 
 custom prompt override는 비워 둡니다. 필드 매핑 화면이 나타나면 `query → query`를 사용합니다. 서비스 매핑은 **Relevance `response={{sample.output_text}}`**, **TaskAdherence `response={{sample.output_items}}`**이며 추가 JSONL 열이 아닙니다.
 

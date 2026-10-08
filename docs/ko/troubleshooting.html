@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Azure 계정 확인·리소스 생성부터 Microsoft Foundry 평가·최적화·비교와 삭제 확인까지 따라 하는 한국어·영어 실습 가이드입니다.">
-  <title>실습 문제 해결 · Foundry 실습 가이드</title>
+  <meta name="description" content="GitHub Codespaces와 안내형 Microsoft Azure 환경 생성부터 Microsoft Foundry 평가·최적화·비교·삭제까지 따라 하는 한국어·영어 실습 가이드입니다.">
+  <title>실습 문제 해결 · Microsoft Foundry 실습 가이드</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 10단계의 읽음 표시는 이전 가이드 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화합니다. 본문과 실습 파일은 유지합니다.", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.", "shellShared": "공통 터미널", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "터미널에서 실행 · {language}", "commandCodeLabel": "{language} 명령입니다. 긴 줄은 화면에서만 줄바꿈되며 복사한 명령은 원래 줄을 유지합니다.", "implementationLabel": "읽기 전용 구현 참고 자료이며 실행할 명령이 아닙니다.", "copyCommand": "명령 복사", "copyCommandLabel": "{index}번째 터미널 명령 복사: {language}", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사합니다.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "학습 목차 열기", "menuClose": "학습 목차 닫기", "step": "단계", "chapter": "장", "progressMigrated": "새 10단계의 읽음 표시는 이전 가이드 기록과 따로 저장합니다. 기존 실행 결과는 바뀌지 않습니다.", "storageReadError": "저장된 기록을 읽을 수 없습니다. 이 창에서는 계속 읽음 표시를 사용할 수 있습니다.", "storageSaved": "이 문서의 읽음 표시는 이 브라우저에만 저장됩니다.", "storageWriteError": "저장할 수 없어 현재 창에만 기록합니다. 창을 닫으면 이번 변경 사항이 사라집니다.", "progressSummary": "읽음 {completed} / {total}", "markUnread": "읽음 표시 취소", "markUnitRead": "이 {unit} 읽음 표시", "markRead": "읽음 표시", "markedRead": "읽음으로 표시했습니다.", "markedUnread": "읽음 표시를 취소했습니다.", "currentWindowOnly": " 브라우저 저장이 불가능하여 현재 창에만 적용됩니다.", "progressReset": "이 문서의 모든 읽음 표시를 초기화했습니다.", "progressResetError": "현재 창의 읽음 표시를 초기화했습니다. 저장된 기록은 지우지 못했습니다.", "confirmReset": "이 문서의 모든 읽음 표시를 한국어·영어 모두에서 초기화합니다. 본문과 실습 파일은 유지합니다.", "sectionNavigation": "{label} — {unit} 이동", "nextSection": "다음 {unit}: {label} →", "previousSection": "← 이전 {unit}: {label}", "exampleLabel": "설명용 출력 예시입니다. 실행 명령이나 실제 성공 기록이 아닙니다.", "shellShared": "공통 터미널", "shellBash": "Codespaces/macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "터미널에서 실행 · {language}", "commandCodeLabel": "{language} 명령입니다. 긴 줄은 화면에서만 줄바꿈되며 복사한 명령은 원래 줄을 유지합니다.", "implementationLabel": "읽기 전용 구현 참고 자료이며 실행할 명령이 아닙니다.", "copyCommand": "명령 복사", "copyCommandLabel": "{index}번째 터미널 명령 복사: {language}", "copyCode": "코드 복사", "copyCodeLabel": "{index}번째 {language} 코드 복사", "codeLabel": "{language} 코드입니다. 긴 줄은 가로로 스크롤할 수 있습니다.", "copied": "복사됨 ✓", "copyFailed": "복사 실패", "copySuccess": "코드를 클립보드에 복사했습니다.", "copyError": "자동 복사가 지원되지 않습니다. 코드를 선택한 뒤 직접 복사합니다.", "tableLabel": "{index}번째 표", "tableScroll": "{label}. 넓은 표는 가로로 스크롤할 수 있습니다.", "diagram": "도식", "diagramScroll": "{label}. 가로로 스크롤하여 볼 수 있습니다.", "diagramSource": "도식 원본 보기 ↗", "diagramSourceLabel": "{label} 원본 보기 (새 탭)", "themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
   <script src="../../web/theme.js"></script>
   <link rel="stylesheet" href="../../web/styles.css">
   <script src="../../web/app.js" defer></script>
@@ -26,7 +26,7 @@
       </button>
       <a class="brand" href="index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
         <img class="brand-symbol" src="../../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>평가·개선 실습 가이드</span></span>
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>평가·개선 실습 가이드</span></span>
       </a>
       <span class="header-context">한국어 · 오프라인 지원</span>
       <nav class="language-switcher" aria-label="가이드 언어"><a href="../troubleshooting.html" lang="en" hreflang="en" data-language-link>English</a>
@@ -52,9 +52,10 @@
 <ul>
 <li><a href="#start">사용 방법</a></li>
 <li><a href="#environment">환경·로그인·로컬 파일</a></li>
+<li><a href="#codespaces">GitHub Codespaces</a></li>
 <li><a href="#provisioning">생성·승인·할당량</a></li>
 <li><a href="#knowledge">정책 검색·Agent 준비</a></li>
-<li><a href="#evaluation">Foundry 평가·재개</a><ul>
+<li><a href="#evaluation">Microsoft Foundry 평가·재개</a><ul>
 <li><a href="#evaluation-add-run">Add run의 item-schema 오류</a></li>
 <li><a href="#evaluation-resume">ID와 중복 제출</a></li>
 </ul>
@@ -112,7 +113,7 @@
         <h1 id="issue-guide">실습 문제 해결</h1>
 <p><a href="index.html#setup">실습 10단계</a> · <a href="admin.html#approval">권한·승인·설정 참고</a></p>
 <p><strong>막힌 단계에서 증상·조치·진행 기준을 확인합니다.</strong> 오류를 해결하기 위해 데이터·평가기·모델을 조용히 바꾸거나 새 이름으로 같은 작업을 중복 제출하지 않습니다.</p>
-<p>실행할 명령은 <strong>터미널에서 실행</strong> 상자에 있습니다. <strong>코드 ↔ 포털</strong> 표의 <strong>실행 위치</strong> 링크로 명령·포털 절차를 찾습니다. 접힌 구현 패널은 읽기용 원문이며 직접 실행하거나 오류를 숨기려고 수정하지 않습니다.</p>
+<p>실행할 명령은 <strong>터미널에서 실행</strong> 상자에 있습니다. 각 단계의 <strong>실행 순서</strong> 링크로 명령·포털 절차를 찾습니다. <strong>선택 · 내부 동작</strong> 안의 코드·포털 대응표와 구현 원문은 참고용이며 직접 실행하거나 오류를 숨기려고 수정하지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -123,11 +124,11 @@
 <tbody>
 <tr>
 <td>HTML에서 설명만 보이고 실행 명령을 찾을 수 없습니다.</td>
-<td>표의 <strong>실행 위치</strong> 링크 또는 단계 상단의 <strong>실행 순서</strong>를 사용합니다. <a href="index.html#setup-login">로그인 명령</a> · <a href="index.html#resources-runtime-check">런타임 검사</a>.</td>
+<td>단계 상단의 <strong>실행 순서</strong>를 사용합니다. 선택 설명을 펼칠 필요는 없습니다. <a href="index.html#setup-login">로그인 명령</a> · <a href="index.html#resources-runtime-check">런타임 검사</a>.</td>
 </tr>
 <tr>
 <td>용어·설치·로그인·파일 경로가 어렵습니다.</td>
-<td><a href="index.html#basics">기본 용어</a> · <a href="#environment">환경·로그인</a></td>
+<td><a href="index.html#basics">기본 용어</a> · <a href="#codespaces">Codespaces</a> · <a href="#environment">환경·로그인</a></td>
 </tr>
 <tr>
 <td>승인·권한·모델 용량 때문에 생성할 수 없습니다.</td>
@@ -154,7 +155,7 @@
 <h2 id="start">사용 방법</h2>
 <p>오류 시각·단계·명령·대상 ID·오류 코드와 조치를 자신의 비공개 실습 기록에 남깁니다. 원본 응답·receipt를 보관하고 실패를 성공으로 고쳐 쓰지 않습니다. 실행별 검증 로그와 결과는 재사용 가이드에 추가하지 않습니다.</p>
 <h2 id="environment">환경·로그인·로컬 파일</h2>
-<p>Python·Git·Azure CLI 설치와 PATH 문제는 Azure 로그인 전에 해결합니다.</p>
+<p>Python·Git·Microsoft Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그인 전에 해결합니다.</p>
 <table>
 <thead>
 <tr>
@@ -210,6 +211,16 @@
 <td>정책 변경 없이 Python을 실행할 수 있습니다.</td>
 </tr>
 <tr>
+<td>새 터미널을 열었더니 이전 설정이 적용되지 않습니다.</td>
+<td><a href="index.html#setup-resume">새 터미널 재개 절차</a>로 기존 가상환경과 언어·기록 폴더 변수를 복원합니다. clone·plan·apply부터 반복하지 않습니다.</td>
+<td>원래 신원과 <code>notes.md</code>의 마지막 완료 단계를 확인하고 같은 기록으로 이어갑니다.</td>
+</tr>
+<tr>
+<td><code>agents/</code>·<code>knowledge/</code> 실행 기록 파일을 찾을 수 없습니다.</td>
+<td><a href="index.html#resources-notes">기록 폴더 안내</a>에 따라 자신의 <code>LAB_ARTIFACTS_DIR</code> 아래에서 찾습니다. <code>data/</code>·<code>scripts/</code>는 저장소 폴더 아래입니다.</td>
+<td>예시 경로가 아닌 자신의 언어·환경 기록을 엽니다.</td>
+</tr>
+<tr>
 <td>포털과 CLI의 계정이 다릅니다.</td>
 <td>브라우저와 CLI는 별도 로그인입니다. <a href="index.html#setup-login">01의 로그인·조회 명령</a>으로 사용자·tenant·subscription을 포털과 대조하고 본인 인증은 직접 완료합니다.</td>
 <td>승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다.</td>
@@ -226,6 +237,45 @@
 </tr>
 </tbody>
 </table>
+<h2 id="codespaces">GitHub Codespaces</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>조치와 진행 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create codespace가 없거나 사용 한도를 초과했습니다.</td>
+<td>계정·조직의 허용 정책과 Codespaces 비용 한도를 확인합니다. 허용되지 않으면 <a href="index.html#setup-local-install">내 PC 경로</a>를 사용하며 조직 정책을 우회하지 않습니다.</td>
+</tr>
+<tr>
+<td>초기 준비 중 <code>az</code>·<code>.venv</code>·패키지가 없습니다.</td>
+<td>컨테이너의 생성 로그에서 <code>.devcontainer/devcontainer.json</code>과 의존성 설치 실패를 확인합니다. 준비가 완료될 때까지 생성 명령을 실행하지 않습니다. 기존 Codespace에 새 구성을 적용해야 한다면 비공개 기록을 보관한 뒤 명령 팔레트의 <strong>Codespaces: Rebuild Container</strong>를 사용합니다. <code>.lab</code>을 지우지 않습니다.</td>
+</tr>
+<tr>
+<td>device-code 로그인이 차단됩니다.</td>
+<td>조직이 허용한 인증·실행 환경을 확인합니다. 승인된 내 PC에서 <code>az login</code>의 브라우저 로그인으로 진행할 수 있으며, 코드를 타인에게 보내거나 보안 정책을 바꾸지 않습니다.</td>
+</tr>
+<tr>
+<td>포털 Browse에서 <code>dev.jsonl</code>이 보이지 않습니다.</td>
+<td>Browse는 내 PC 파일을 고릅니다. <a href="index.html#dataset-download">Codespaces Explorer에서 Download</a>한 원본 파일을 선택합니다.</td>
+</tr>
+<tr>
+<td><code>candidate.txt</code>를 만들었는데 찾을 수 없습니다.</td>
+<td>내 PC가 아니라 <strong>실습 터미널과 같은 Codespace</strong>의 <code>.lab</code> 아래에 저장했는지 <a href="index.html#optimizer-candidate">후보 저장 절차</a>로 확인합니다.</td>
+</tr>
+<tr>
+<td>사설망 자원에 연결할 수 없습니다.</td>
+<td>Codespaces가 해당 VNet/VPN에 연결됐다고 가정하지 않습니다. 승인된 네트워크의 실행 환경을 사용하며 public access나 방화벽을 임의로 바꾸지 않습니다.</td>
+</tr>
+<tr>
+<td>재개 또는 삭제할 Codespace를 모르겠습니다.</td>
+<td>원래 저장소·Codespace와 <code>notes.md</code>를 대조합니다. <a href="index.html#cleanup-codespaces">백업·중지·삭제 순서</a>를 따르며 새 Codespace를 만들고 Microsoft Azure 자원까지 중복 생성하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="provisioning">생성·승인·할당량</h2>
 <table>
 <thead>
@@ -237,9 +287,24 @@
 </thead>
 <tbody>
 <tr>
+<td><code>setup</code>을 취소했거나 입력 오류로 끝났습니다.</td>
+<td>자원이 생성되기 전이라면 같은 환경 이름으로 <code>bootstrap setup</code>을 다시 실행해 원래 계획을 사용합니다. 실제 승인값을 입력하며 잘못된 금액·시간·빈 승인 근거를 임의로 채우지 않습니다.</td>
+<td>마지막 <code>CREATE ...</code> 확인 전에 Microsoft Azure 변경은 없습니다. 기존 생성 기록이 있으면 조회만 수행합니다.</td>
+</tr>
+<tr>
+<td><code>setup requires an interactive terminal</code>입니다.</td>
+<td>VS Code의 <strong>Terminal → New Terminal</strong>에서 직접 실행합니다. 셸 파이프·자동 작업은 <a href="index.html#resources-plan">개별 계획·승인 경로</a>를 사용합니다.</td>
+<td>비대화형 실행이 자동으로 승인되지 않습니다.</td>
+</tr>
+<tr>
+<td>기존 <code>approval.json</code>이 만료됐거나 범위가 다릅니다.</td>
+<td>원본을 보존하고 <a href="admin.html#approval">승인 작성표</a>로 실제 재승인 범위와 시각을 확인합니다. setup은 승인 파일을 덮어쓰거나 만료를 연장하지 않습니다.</td>
+<td>현재 유효하고 정확한 계획에 연결된 승인만 사용합니다.</td>
+</tr>
+<tr>
 <td>plan이 <code>BLOCKED_AWAITING_APPROVAL</code>입니다.</td>
 <td><code>plan_status</code>와 <code>mutations_performed</code>를 확인하고 <a href="admin.html#approval">실제 승인서</a>를 준비합니다.</td>
-<td>로컬 계획 생성과 Azure 생성 완료를 구분합니다.</td>
+<td>로컬 계획 생성과 Microsoft Azure 생성 완료를 구분합니다.</td>
 </tr>
 <tr>
 <td><code>approved: true</code>인데 승인 오류입니다.</td>
@@ -273,7 +338,7 @@
 </tr>
 <tr>
 <td>apply가 시간 초과 또는 결과 불명입니다.</td>
-<td>원래 config·manifest·deployment ID를 보관하고 <a href="index.html#resources-create">02의 <code>bootstrap status</code> 명령</a>과 그룹의 Deployments를 읽습니다. <code>apply</code>는 다시 실행하지 않습니다.</td>
+<td>원래 config·manifest·deployment ID를 보관하고 <a href="index.html#resources-status">02의 <code>bootstrap status</code> 명령</a>과 그룹의 Deployments를 읽습니다. <code>apply</code>는 다시 실행하지 않습니다.</td>
 <td>진행 중이면 기다리며 결과 불명 상태에서 다시 제출하지 않습니다.</td>
 </tr>
 <tr>
@@ -323,7 +388,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="evaluation">Foundry 평가·재개</h2>
+<h2 id="evaluation">Microsoft Foundry 평가·재개</h2>
 <h3 id="evaluation-add-run">Add run의 item-schema 오류</h3>
 <p>다음 메시지가 나오면 기존 평가의 Agent 대상 data source 구성을 확인합니다.</p>
 <p class="output-label"><strong>오류 메시지 예시 · 실행하지 않습니다.</strong></p>
@@ -455,7 +520,7 @@
 </tr>
 <tr>
 <td><code>.env</code>나 workspace가 없습니다.</td>
-<td>config·manifest와 실제 Azure 목록으로 대상을 확인합니다. 소유권 기록을 임의로 만들어 삭제하지 않습니다.</td>
+<td>config·manifest와 실제 Microsoft Azure 목록으로 대상을 확인합니다. 소유권 기록을 임의로 만들어 삭제하지 않습니다.</td>
 </tr>
 <tr>
 <td>그룹 안의 모니터링이 다른 그룹과 연결됩니다.</td>
@@ -487,7 +552,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>

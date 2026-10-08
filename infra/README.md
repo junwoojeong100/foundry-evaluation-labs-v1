@@ -1,4 +1,4 @@
-# Isolated Foundry lab infrastructure
+# Isolated Microsoft Foundry lab infrastructure
 
 This directory contains the reproducible infrastructure contract used to prepare
 an isolated lab environment. It supports steps **01–03** of the end-to-end
@@ -10,12 +10,19 @@ Use the [environment setup reference](../guide/en/admin-setup.md) or
 [한국어 환경 설정 참고](../guide/admin-setup.md) for the current prerequisites.
 The template also provisions the read-only knowledge and monitoring connections
 used by the Contoso sample agent. The participant guide connects this setup to
-**Foundry Evaluation → Agent Optimizer → same-criteria reevaluation → cleanup**.
+**Microsoft Foundry Evaluation → Agent Optimizer → same-criteria reevaluation → cleanup**.
 Creating only an empty portal project does not prepare this complete sample.
+
+The recommended participant path is GitHub Codespaces and
+[`bootstrap setup`](../guide/en/handbook.md#resources-quickstart). It derives the
+selected CLI identity, reuses the same plan/preflight/apply implementation, and
+requires actual bounded authorization and a typed creation confirmation. Prior
+creation attempts are inspected, not resubmitted. The individual commands below
+remain available for advanced inspection and explicit automation.
 
 ## What bootstrap does
 
-`lab.bootstrap` uses Python's standard library and an authenticated Azure CLI.
+`lab.bootstrap` uses Python's standard library and an authenticated Microsoft Azure CLI.
 It separates local planning, read-only readiness checks, scope-bound approval,
 resource creation, ownership records, and runtime verification.
 
@@ -56,7 +63,7 @@ The current defaults are candidates that require a fresh availability check:
 | Role | Model | Version | Deployment type | Requested ARM capacity |
 |---|---|---|---|---:|
 | Prepared sample agent | gpt-6-sol | 2026-09-22 | GlobalStandard | 100 |
-| Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 100 |
+| Microsoft Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 100 |
 | Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | GlobalStandard | 100 |
 | Read-only knowledge embeddings | text-embedding-3-small | 1 | GlobalStandard | 10 |
 

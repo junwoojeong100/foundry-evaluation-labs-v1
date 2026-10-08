@@ -21,7 +21,7 @@ def parser() -> argparse.ArgumentParser:
     commands = result.add_subparsers(dest="command", required=True)
     demo = commands.add_parser("demo", help="Free authored examples; no SDK, credentials, login or network")
     demo.add_argument("--out", type=Path)
-    bootstrap = commands.add_parser("bootstrap", help="SDK-free new-environment plan/preflight/apply/status", add_help=False)
+    bootstrap = commands.add_parser("bootstrap", help="Guided Microsoft Foundry setup or advanced plan/preflight/apply/status", add_help=False)
     bootstrap.add_argument("bootstrap_args", nargs=argparse.REMAINDER)
     commands.add_parser("validate", help="Validate synthetic data and export freshness locally")
     commands.add_parser("preflight", help="Read-only Azure identity, region and deployment checks")

@@ -4,7 +4,7 @@
 
 Use this reference for **your own steps 02 provisioning, 03 Agent setup, and 10 cleanup**. Follow the [hands-on guide](handbook.md#setup) in order and open only the linked sections you need. Record actual values and completion evidence in your `.lab/lab-en/notes.md`.
 
-**Command shortcuts:** [CLI sign-in](handbook.md#setup-login) · [Language/records](handbook.md#setup-language) · [Provisioning](handbook.md#resources-create) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from the lab folder's terminal; do not repeat completed work.
+**Command shortcuts:** [Codespaces](handbook.md#setup-codespaces) · [CLI sign-in](handbook.md#setup-login) · [Language/records](handbook.md#setup-language) · [Quick provisioning](handbook.md#resources-quickstart) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from your selected lab folder's terminal; do not repeat completed work.
 {: .execution-guide}
 
 To read inside unchanged commands, open [02 creation code/portal](handbook.md#resources-code-portal), [03 retrieval code/portal](handbook.md#knowledge-code-portal), [Agent configuration](handbook.md#agent-code-portal), [09 submission/lookup](handbook.md#decision-code-portal), and [10 cleanup scope](handbook.md#cleanup-code-portal). Source panels are read-only, not instructions to run another program or duplicate creation in the portal.
@@ -13,21 +13,21 @@ To read inside unchanged commands, open [02 creation code/portal](handbook.md#re
 
 | Situation | Action |
 |---|---|
-| Starting for the first time | Begin at [01 account setup](handbook.md#setup) and perform the authorized `bootstrap plan → preflight → apply → status` path yourself. |
+| Starting for the first time | Complete [01 account/Codespaces setup](handbook.md#setup), then use [02's `bootstrap setup`](handbook.md#resources-quickstart). One command guides planning, checks, authorization, and provisioning. |
 | Resuming your same lab | Compare original config, manifest, receipts, and actual state with the [worksheet](#handoff). Do not repeat completed creation or submission. |
 | Only another workload's shared project is available | This lab does not adopt existing groups. Obtain subscription access and authorization to create your own dedicated environment before continuing. |
 
 Verify CLI, SDK, and portal identities separately and use the same personal identity throughout. Never use another person's tokens, sign-in session, configuration, or ownership records. Run creation, ID lookup, v2 creation, reevaluation, and cleanup yourself.
 
-**Every participant uses their own dedicated environment and Agent.** Do not have several people create the same Agent's v2 or submit the same paid job. The same example environment name on separate computers still produces Azure resource names with unique suffixes.
+**Every participant uses their own dedicated environment and Agent.** Do not have several people create the same Agent's v2 or submit the same paid job. The same example environment name on separate computers still produces Microsoft Azure resource names with unique suffixes.
 
 Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.
 
 Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../../web/assets/portal/en/00-resource-group.png" alt="Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
-<figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Foundry project and supporting resources belong to your lab. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../../web/assets/portal/en/00-resource-group.png" alt="Microsoft Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
+<figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Microsoft Foundry project and supporting resources belong to your lab. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 ## Verify model roles and actual deployments {#prepare}
@@ -39,7 +39,7 @@ Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Kore
 | Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared GlobalStandard 100 deployment |
 | Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10 |
 
-Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
+Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
 
 **Distinguish additional monitoring resources.** Application Insights can automatically add a [default Failure Anomalies alert and Smart Detection action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation). Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same `bootstrap status` again; do not edit the manifest or delete the alert to bypass the check.
 
@@ -48,7 +48,7 @@ Numbers are requested ARM capacity units, not a universal TPM conversion. These 
 The [step-02 recommendations](handbook.md#resources-tpm) require **100,000 TPM** per Agent, Judge, and shared Optimizer/planner deployment, and **10,000 TPM** for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. Sum per-model allocations across simultaneous dedicated environments. Count the Optimizer/planner deployment shared within one environment only once.
 
 1. **New dedicated environment:** Check generative capacity 100 and embedding capacity 10 in the updated `bootstrap plan`, then authorize and provision that exact plan. Existing plans do not change automatically. For an unprovisioned lower-capacity plan, prepare a new environment name and authorization rather than editing the hashed plan.
-2. **Inspect actual deployments:** Read **Tokens per Minute Rate Limit** under Foundry **Build → Models → Deployments → deployment name → Details**. Distinguish capacity displayed in thousands of tokens from the final TPM value. **Changing only the portal's Edit setting for this bootstrap environment causes plan drift.** If insufficient, inspect the plan, actual limit, and authorization; prepare a newly authorized dedicated environment with sufficient capacity when needed. Never edit hashes or approvals to bypass checks.
+2. **Inspect actual deployments:** Read **Tokens per Minute Rate Limit** under Microsoft Foundry **Build → Models → Deployments → deployment name → Details**. Distinguish capacity displayed in thousands of tokens from the final TPM value. **Changing only the portal's Edit setting for this bootstrap environment causes plan drift.** If insufficient, inspect the plan, actual limit, and authorization; prepare a newly authorized dedicated environment with sufficient capacity when needed. Never edit hashes or approvals to bypass checks.
 3. **Verify the setting:** With that environment's `.env` and language-specific artifacts path, run the read-only check below. Inspect each `*_tpm` entry's `observed`, `expected`, and `reason`.
 
 ```sh
@@ -62,13 +62,13 @@ TPM accounting uses estimates rather than average billed tokens; **RPM and short
 Use the [real response check in 03](handbook.md#agent) to verify Agent and `knowledge_base_retrieve` calls. Optimizer has a separate [supported-model list](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models); Agent/Judge availability does not establish generator support.
 
 <figure class="portal-shot" id="portal-models">
-<img src="../../web/assets/portal/en/02-model-deployments.png" alt="Foundry model deployment list showing deployment names, models, versions, and readiness." width="1271" height="820" loading="lazy">
+<img src="../../web/assets/portal/en/02-model-deployments.png" alt="Microsoft Foundry model deployment list showing deployment names, models, versions, and readiness." width="1271" height="820" loading="lazy">
 <figcaption><strong>Check model, version, and status.</strong> Map each deployment to the Agent, Judge, Optimizer, and embedding roles. Deployment names must match <code>.env</code>; verify actual calls to the prepared deployments as well. <a href="../../web/assets/portal/en/02-model-deployments.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 ## Prepare an executable Agent {#bootstrap}
 
-Prepare **Python 3.11–3.14, Git, and Azure CLI** using the [OS-specific installation instructions in 01](handbook.md#setup-local), then [verify all three versions in a new terminal](handbook.md#setup-verify). Do not reinstall working tools; resolve installation restrictions, permissions, and proxy issues first. Then create the virtual environment with the verified Python, sign in, and set the language variables. Do not activate a nonexistent `.venv` or treat fake IDs in `.env.example` as a live environment.
+[01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Then sign in, set language variables, and finish [quick provisioning](handbook.md#resources-quickstart). Do not treat fake IDs in `.env.example` as a live environment.
 
 Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
 
@@ -107,7 +107,7 @@ Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifier
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
 
-**The required comparison uses [Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, `LAB_LANGUAGE` or `--language ko`/`--language en` selects report language and default dev12; match any explicit dataset to that language.
+**The required comparison uses [Microsoft Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, `LAB_LANGUAGE` or `--language ko`/`--language en` selects report language and default dev12; match any explicit dataset to that language.
 
 ### Check evaluation response mappings {#evaluation-mapping}
 
@@ -123,6 +123,8 @@ Select the [two evaluators and Judge in 05](handbook.md#prepare) and preserve au
 If a required field is **Unassigned**, confirm the target is **Agent**, not Dataset, and inspect the query column and actual generated response mapping. Before submission, inspect the wizard; afterward, inspect the saved remote definition. Never map the reference answer as the response or copy old UI bindings. Use the [official portal guide](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app) and [response-mapping explanation](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators#using-agent-evaluators). Do not submit until resolved. The helper in 09 checks the remote contract too.
 
 ## Complete the actual authorization file {#approval}
+
+**Quick `bootstrap setup` creates the same approval file through guided inputs.** If already created, this table is for inspection; do not recreate or edit the file unnecessarily. Fill it manually only for the individual-command path or different actually authorized limits.
 
 Open `.lab/lab-en/approval.example.json` and **Save As approval.json in the same folder**. Set limits yourself only if you can authorize spending and changes; otherwise follow the organizational approval procedure. Keep actual authorization evidence private. Neither this worksheet nor the JSON file independently proves approval or a signature. Use double quotes for JSON strings, but not for numbers, true, false, or null.
 
@@ -146,28 +148,28 @@ Open `.lab/lab-en/approval.example.json` and **Save As approval.json in the same
 
 Validate with [02's `bootstrap preflight --config ... --approval ...`](handbook.md#resources-approval) and read `approval_reason` on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another lab, an automatic retry, or deletion.
 
-**Enforcement boundary:** Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Azure Portal or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.
+**Enforcement boundary:** Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Microsoft Azure Portal or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.
 
 ## Verify permissions and provider registration {#rbac}
 
-Follow the [current Foundry RBAC guidance](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry). **Foundry User/Owner/Account Owner/Project Manager** may still appear under their former **Azure AI User/Owner/Account Owner/Project Manager** names.
+Follow the [current Microsoft Foundry RBAC guidance](https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry). **Foundry User/Owner/Account Owner/Project Manager** may still appear under their former **Azure AI User/Owner/Account Owner/Project Manager** names.
 
 Use **Access control (IAM) → Check access** to inspect active assignments and Scope. Older UI versions may use View my access. The [actual subscription/access illustration in 01](handbook.md#portal-check-access) demonstrates inspection of existing access, not adding roles.
 
 | Task or connection | Required permissions and scope |
 |---|---|
 | Your environment creation | Bootstrap checks effective subscription-scoped group/deployment/resource writes and `Microsoft.Authorization/roleAssignments/write`. Contributor alone cannot assign roles. Subscription quota-read access is also required. |
-| Your Agent/evaluation operations | Foundry User or the required data-plane permissions on your project. Azure Contributor/Owner alone does not grant these data actions. |
+| Your Agent/evaluation operations | Foundry User or the required data-plane permissions on your project. Microsoft Azure Contributor/Owner alone does not grant these data actions. |
 | Your policy preparation | Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on your Search service. |
 | Project managed identity | Search Index Data Reader on this Search service, model invocation, and telemetry submission to the assigned monitoring resource. |
-| Search managed identity | Model invocation on the assigned Foundry resource. |
+| Search managed identity | Model invocation on the assigned Microsoft Foundry resource. |
 | Your log inspection | Read access to your Application Insights/Log Analytics resources, not subscription-wide log access by default. |
 
 **Authorized bootstrap assigns runtime roles at the new resources' scopes.** It does not add subscription-wide roles. After creation, distinguish your user identity from service managed identities and use 03's actual tool call to verify propagation and data-plane access.
 
 A provider registration enables a service type in your subscription. Follow the [official provider-registration instructions](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal):
 
-1. Open Azure Portal → **Subscriptions → your subscription → Resource providers**.
+1. Open Microsoft Azure Portal → **Subscriptions → your subscription → Resource providers**.
 2. Search for `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, and `Microsoft.Insights`; confirm **Registered** for each.
 3. Select a missing provider and **Register** only with your own `/register/action` permission and authorization. Do not register unrelated providers in bulk.
 4. After registration/propagation, rerun the same preflight. If access is missing, obtain an approved execution scope before resuming. Bootstrap never auto-registers providers or expands permissions.
@@ -178,7 +180,7 @@ Allow registration/role propagation, then rerun the same preflight. For continui
 
 Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.
 
-In Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.
+In Microsoft Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.
 
 ## Record actual values and completion evidence {#handoff}
 
@@ -188,7 +190,7 @@ After creating the plan in 02, copy this table into your **`.lab/lab-en/notes.md
 |---|---|
 | Identity | User, tenant ID, and subscription ID; never passwords or tokens |
 | Local paths | Your environment name, bootstrap config, runtime `.env`, `LAB_LANGUAGE`, and `LAB_ARTIFACTS_DIR`; record `.env` only after successful creation |
-| Azure environment | Resource group, Foundry account/project, project endpoint, and Search service |
+| Microsoft Azure environment | Resource group, Microsoft Foundry account/project, project endpoint, and Search service |
 | Models | Actual names, product/version, SKU, and capacity for all four deployments |
 | Policy search | Source/language, eight uploaded documents, knowledge-base/connection names, and `retrieval_verified` |
 | Agent | Actual name, pinned v1, strict output, and a successful real Agent tool call |

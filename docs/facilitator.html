@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A step-by-step English and Korean Foundry lab from Azure account setup and resource creation through managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
-  <title>Lab checklist · improve the measured result · Foundry Lab Guide</title>
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <title>Lab checklist · improve the measured result · Microsoft Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html">
   <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html">
   <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
-  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "Codespaces/macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
   <script src="../web/theme.js"></script>
   <link rel="stylesheet" href="../web/styles.css">
   <script src="../web/app.js" defer></script>
@@ -26,7 +26,7 @@
       </button>
       <a class="brand" href="index.html" aria-label="Microsoft Foundry lab guide home">
         <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
-        <span class="brand-text"><strong>Foundry</strong><span>Evaluation and improvement labs</span></span>
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>Evaluation and improvement labs</span></span>
       </a>
       <span class="header-context">English · Offline-ready</span>
       <nav class="language-switcher" aria-label="Guide language"><a href="facilitator.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
@@ -110,11 +110,11 @@
 <p>Use this checklist to review your own <strong>evaluate → learn → improve → reevaluate</strong> lab. It is not an alternative to the <a href="index.html#setup">hands-on guide</a>. Do not manufacture a weak baseline or promise that every future evaluation will improve.</p>
 <h2 id="prepare">Check before starting</h2>
 <p><strong>Every participant performs 01–10 directly.</strong> Use your own account, computer, dedicated environment, and Agent; do not delegate creation, commands, or cleanup. Confirm provisioning and role-assignment access, spending authorization, and deletion/retention scope before starting.</p>
-<p>Follow <a href="index.html#setup-local">01's Windows/macOS/Linux installation</a>, complete <a href="index.html#setup-verify">version checks</a> for <strong>Python 3.11–3.14, Git, and Azure CLI</strong>, and create the virtual environment. Resolve installation approvals, PATH, and proxy issues first.</p>
-<p>After planning in 02, copy the <a href="admin.html#handoff">worksheet</a> into your <code>notes.md</code>. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records; use your originals when resuming.</p>
+<p>The default path is <a href="index.html#setup-codespaces">GitHub Codespaces in 01</a>. Follow <a href="index.html#setup-local-install">local installation</a> and <a href="index.html#setup-verify">version checks</a> only when installing <strong>Python 3.11–3.14, Git, and Microsoft Azure CLI</strong> on your computer. Confirm sign-in and the virtual environment in your selected lab environment.</p>
+<p>After planning in 02, copy the <a href="index.html#resources-notes">template in the main guide</a> into your <code>notes.md</code>. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records. In a new terminal, follow the <a href="index.html#setup-resume">resume procedure</a> to continue with the same environment and records.</p>
 <p>Read the <a href="index.html#basics">six basic terms</a> and <a href="index.html#evaluation-flow">question → answer → scoring diagram</a>. Check that you can explain <strong>the Agent answers and the Judge scores</strong>, and <strong>instructions, not model weights, will change</strong>. Memorized terms and high scores are not starting conditions.</p>
 <p>Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.</p>
-<p>Use <strong>Action order / Where to act</strong> links to find the actual command or portal screen first. Read <strong>code ↔ portal</strong> tables and collapsed implementation panels when you need the internals; do not execute them separately. In particular, <a href="index.html#baseline-identifiers">06's ID lookup</a> does not submit, and <a href="index.html#optimizer-configure">08 Optimizer</a> runs in the portal.</p>
+<p>Use <strong>Action order</strong> links to find the actual command or portal screen first. Read code/portal tables and source panels under <strong>Optional · how it works</strong> only when needed; do not execute them separately. In particular, <a href="index.html#baseline-identifiers">06's ID lookup</a> does not submit, and <a href="index.html#optimizer-configure">08 Optimizer</a> runs in the portal.</p>
 <p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. If the environment prefix differs, use the actual name printed by the command. Verify <a href="admin.html#prepare">model roles and identity</a> and reserve time for cleanup in 10.</p>
 <p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. Create one reviewed v2 and reevaluate under the same criteria.</p>
 <p>Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.</p>
@@ -130,13 +130,13 @@
 <tbody>
 <tr>
 <td><a href="index.html#setup">01 Environment</a></td>
-<td>Check account, subscription, permissions, Python 3.11–3.14, Git, Azure CLI, and language variables</td>
+<td>Check account, subscription, permissions, Python 3.11–3.14, Git, Microsoft Azure CLI, and language variables</td>
 <td>Matching identity, all three version checks, and successful local commands in the virtual environment</td>
 </tr>
 <tr>
 <td><a href="index.html#resources">02 Provisioning</a></td>
-<td>Plan, authorize, preflight, apply, and inspect status</td>
-<td>APPLIED, generated <code>.env</code>, and runtime preflight PASS</td>
+<td>Complete <code>bootstrap setup</code> readiness checks, actual authorization inputs, and creation confirmation</td>
+<td>APPLIED, generated <code>.env</code>, portal deployments, and runtime preflight PASS</td>
 </tr>
 <tr>
 <td><a href="index.html#agent">03 Agent setup</a></td>
@@ -155,7 +155,7 @@
 </tr>
 <tr>
 <td><a href="index.html#baseline">06 Baseline</a></td>
-<td>Foundry Evaluation against pinned v1</td>
+<td>Microsoft Foundry Evaluation against pinned v1</td>
 <td>Completed actual run ID and all 12 items</td>
 </tr>
 <tr>
@@ -188,7 +188,7 @@
 <h2 id="interpret-results">Interpret improvements correctly</h2>
 <p><a id="review"></a></p>
 <p><strong>Relevance 4/5 is not 80% accuracy. TaskAdherence 1 is Pass, not a poor one-out-of-five score.</strong> Report each evaluator separately, all-criteria passes, errors and coverage.</p>
-<p>The <a href="index.html#decision-compare">required comparison in 09</a> uses Foundry. The optional <code>scripts/compare_foundry_eval.py</code> also requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.</p>
+<p>The <a href="index.html#decision-compare">required comparison in 09</a> uses Microsoft Foundry. The optional <code>scripts/compare_foundry_eval.py</code> also requires complete matched cases, identical data/model/tools/settings, per-item version/instruction attestation, no lower pass counts or means, and at least one strict measured quality improvement. Malformed responses remain failures; the helper never repairs them into a pass.</p>
 <p>Read answers for unsupported certainty, incorrect policy arithmetic, action claims and wrong routing even if the generic evaluator passed them. A request demanding an impossible certainty must not be satisfied with invented facts.</p>
 <p>Optimizer ranking is internal selection evidence, not the direct managed reevaluation mean or pass rate. A higher ranking alone does not establish a better v2.</p>
 <h2 id="resume">Recover without changing the experiment</h2>
@@ -279,7 +279,7 @@
 <p><a id="next-loop"></a></p>
 <p>Keep the actual environment, run IDs, comparison conditions, and final decision in your private records. Do not append execution results or validation history to reusable guides; correct instructions only when they are wrong.</p>
 <p>Record the same-model result, native statistical comparison, latency/token tradeoffs, and limits of a reused synthetic dev set. A lab adoption decision is not authorization to publish or activate in production; publication is outside this lab.</p>
-<p><strong>Finally, perform <a href="index.html#cleanup">the cleanup/retention checks in 10</a> yourself.</strong> Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. Do not delete records needed to establish ownership or reopen the environment.</p>
+<p><strong>Finally, perform <a href="index.html#cleanup">the cleanup/retention checks in 10</a> yourself.</strong> Confirm authorized deletion, or the actual retained inventory, cost responsibility, and review date. <a href="index.html#cleanup-codespaces">Back up private records, then stop/delete Codespaces separately</a>. Do not delete records needed to establish ownership or reopen the environment.</p>
       </article>
 
       <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
@@ -291,7 +291,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
