@@ -25,7 +25,7 @@ class OptimizerResultTests(unittest.TestCase):
 
     def test_full_native_pair_is_joined_by_query_without_new_inference(self):
         cases = read_jsonl(ROOT / "data/splits/dev.jsonl")
-        with TemporaryDirectory() as temporary, patch("lab.optimizer.ARTIFACTS", Path(temporary)):
+        with TemporaryDirectory() as temporary, patch("lab.optimizer.artifacts_dir", return_value=Path(temporary)):
             root = Path(temporary)
             save_json(root / "agents/iq.json", {
                 "model_deployment": "unit-model", "knowledge_sha256": "a" * 64, "prompt_sha256": "b" * 64,
@@ -49,7 +49,7 @@ class OptimizerResultTests(unittest.TestCase):
 
     def test_response_import_does_not_claim_evaluation_or_fabricate_job_id(self):
         config = load_config(ROOT / ".env.example")
-        with TemporaryDirectory() as temporary, patch("lab.optimizer.ARTIFACTS", Path(temporary)):
+        with TemporaryDirectory() as temporary, patch("lab.optimizer.artifacts_dir", return_value=Path(temporary)):
             request, response = Path(temporary) / "request.json", Path(temporary) / "response.json"
             save_json(request, {"query": "optimizePromptResolver", "params": {
                 "resourceId": config.project_id, "payload": {"developer_message": "original", "model_deployment_name": config.model},
@@ -65,7 +65,7 @@ class OptimizerResultTests(unittest.TestCase):
 
     def test_different_project_cannot_be_imported_as_this_run(self):
         config = load_config(ROOT / ".env.example")
-        with TemporaryDirectory() as temporary, patch("lab.optimizer.ARTIFACTS", Path(temporary)):
+        with TemporaryDirectory() as temporary, patch("lab.optimizer.artifacts_dir", return_value=Path(temporary)):
             request, response = Path(temporary) / "request.json", Path(temporary) / "response.json"
             save_json(request, {"query": "optimizePromptResolver", "params": {"resourceId": "other", "payload": {"developer_message": "original"}}})
             save_json(response, {"new_developer_message": "candidate", "comments": []})

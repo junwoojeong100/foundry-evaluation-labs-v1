@@ -12,6 +12,8 @@ Follow **Action order → commands/portal actions → completion criteria**. Tec
 
 Use [GitHub Codespaces](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-codespaces) to avoid local tool installation, then [guided provisioning](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#resources-quickstart). Only the local path requires installing **Python 3.11–3.14, Git, and Microsoft Azure CLI** with the [step-01 instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local). Subscription access and spending authorization remain required; Codespaces billing is separate from Microsoft Azure billing.
 
+The `lab-en` setup name also saves English and the environment's record location. Later commands read `--config` automatically; no language or record-folder variables need to be entered.
+
 Compare a reviewed candidate with its fixed v1 under the same conditions. If no different candidate is worth retaining, keep v1 instead of inventing an improvement. Keep actual responses, scores and reasons privately, not in the reusable guide.
 
 See [troubleshooting](guide/en/troubleshooting.md) for recovery procedures. Separate narrated CLI/SDK replay videos: [English](docs/media/Foundry-Lab-Replay-EN.mp4) · [한국어](docs/media/Foundry-Lab-Replay-KO.mp4). These are execution-record summaries, not portal screen recordings.

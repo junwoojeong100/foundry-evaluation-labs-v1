@@ -24,7 +24,7 @@ class ExplanationTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
-        patched = patch("lab.files.ARTIFACTS", self.root)
+        patched = patch("lab.files.artifacts_dir", return_value=self.root)
         patched.start()
         self.addCleanup(patched.stop)
         self.dataset = ROOT / "data/splits/dev.jsonl"
@@ -249,12 +249,12 @@ class ExplanationTests(unittest.TestCase):
         self.assertIn("````text\n```\n<script>", text)
         self.assertIn("\n```\n````", text)
 
-    def test_cli_does_not_load_environment_or_create_cloud_clients(self):
+    def test_cli_without_config_does_not_load_environment_or_create_cloud_clients(self):
         self.make_run("local")
         output = io.StringIO()
         with redirect_stdout(output), patch("lab.cli.load_config", side_effect=AssertionError("no credentials")), \
              patch("lab.batch.AIProjectClient", side_effect=AssertionError("no cloud client")):
-            self.assertEqual(main(["--config", "does-not-exist.env", "explain", "--run-id", "local"]), 0)
+            self.assertEqual(main(["explain", "--run-id", "local"]), 0)
         self.assertIn("평가 결과 해설", output.getvalue())
 
     def test_missing_summary_and_bad_ids_fail_explicitly(self):

@@ -50,7 +50,10 @@
         <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">
           <div class="toc">
 <ul>
-<li><a href="#start">Prepare your dedicated lab environment</a></li>
+<li><a href="#start">Prepare your dedicated lab environment</a><ul>
+<li><a href="#runtime-settings">The program reads language and record settings</a></li>
+</ul>
+</li>
 <li><a href="#prepare">Verify model roles and actual deployments</a><ul>
 <li><a href="#throughput">Set TPM before starting model calls</a></li>
 </ul>
@@ -116,7 +119,7 @@
         <h1 id="operator-guide">Environment setup reference · access, authorization, and cleanup</h1>
 <p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Lab checklist</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
 <p>Use this reference for <strong>your own steps 02 provisioning, 03 Agent setup, and 10 cleanup</strong>. Follow the <a href="index.html#setup">hands-on guide</a> in order and open only the linked sections you need. Record actual values and completion evidence in your <code>.lab/lab-en/notes.md</code>.</p>
-<p class="execution-guide"><strong>Command shortcuts:</strong> <a href="index.html#setup-codespaces">Codespaces</a> · <a href="index.html#setup-login">CLI sign-in</a> · <a href="index.html#setup-language">Language/records</a> · <a href="index.html#resources-quickstart">Quick provisioning</a> · <a href="index.html#agent-knowledge">Policies/Agent</a> · <a href="index.html#baseline-identifiers">Evaluation IDs</a> · <a href="index.html#decision-run">Reevaluation</a> · <a href="index.html#cleanup-delete">Group deletion/verification</a>. Run commands from your selected lab folder's terminal; do not repeat completed work.</p>
+<p class="execution-guide"><strong>Command shortcuts:</strong> <a href="index.html#setup-codespaces">Codespaces</a> · <a href="index.html#setup-login">CLI sign-in</a> · <a href="index.html#resources-quickstart">Quick provisioning</a> · <a href="index.html#agent-knowledge">Policies/Agent</a> · <a href="index.html#baseline-identifiers">Evaluation IDs</a> · <a href="index.html#decision-run">Reevaluation</a> · <a href="index.html#cleanup-delete">Group deletion/verification</a>. Run commands from your selected lab folder's terminal; do not repeat completed work.</p>
 <p>To read inside unchanged commands, open <a href="index.html#resources-code-portal">02 creation code/portal</a>, <a href="index.html#knowledge-code-portal">03 retrieval code/portal</a>, <a href="index.html#agent-code-portal">Agent configuration</a>, <a href="index.html#decision-code-portal">09 submission/lookup</a>, and <a href="index.html#cleanup-code-portal">10 cleanup scope</a>. Source panels are read-only, not instructions to run another program or duplicate creation in the portal.</p>
 <h2 id="start">Prepare your dedicated lab environment</h2>
 <table>
@@ -145,6 +148,10 @@
 <p><strong>Every participant uses their own dedicated environment and Agent.</strong> Do not have several people create the same Agent's v2 or submit the same paid job. The same example environment name on separate computers still produces Microsoft Azure resource names with unique suffixes.</p>
 <p>Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.</p>
 <p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.</p>
+<h3 id="runtime-settings">The program reads language and record settings</h3>
+<p>The default lab requires no environment-variable commands. <code>bootstrap setup --environment lab-en</code> saves English in the plan; <code>lab-ko</code> saves Korean. Names such as <code>lab-en-02</code> and <code>lab-ko-02</code> are supported too. Subsequent commands read <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> from the generated <code>.env</code> through <code>--config</code>. Relative record paths resolve beside the configuration file.</p>
+<p>If an older <code>.env</code> lacks language, it is inferred from the <code>lab-en</code>/<code>lab-ko</code> rule in <code>LAB_PREFIX</code> without rewriting the file or plan hash. Only legacy custom names outside that rule and separate tools with no selected configuration keep their existing environment-variable/default behavior. Those variables are not additional setup for the default lab.</p>
+<p><strong>Existing records are never moved or merged automatically.</strong> If earlier work used shared <code>artifacts/</code> or another location, first compare the original configuration with the project, prefix, and language in <code>workspace.json</code>. Do not launch paid work against a different record folder or edit the original <code>.env</code>/manifest to bypass ownership checks.</p>
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/en/00-resource-group.png" alt="Microsoft Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
 <figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Microsoft Foundry project and supporting resources belong to your lab. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
@@ -203,7 +210,7 @@
 </figure>
 
 <h2 id="bootstrap">Prepare an executable Agent</h2>
-<p><a href="index.html#setup-codespaces">01's Codespaces path</a> prepares <strong>Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI</strong>, and the virtual environment. Only the local-computer path needs <a href="index.html#setup-local-install">OS-specific installation</a> and <a href="index.html#setup-verify">new-terminal version checks</a>. Then sign in, set language variables, and finish <a href="index.html#resources-quickstart">quick provisioning</a>. Do not treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p><a href="index.html#setup-codespaces">01's Codespaces path</a> prepares <strong>Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI</strong>, and the virtual environment. Only the local-computer path needs <a href="index.html#setup-local-install">OS-specific installation</a> and <a href="index.html#setup-verify">new-terminal version checks</a>. Sign in, then run <a href="index.html#resources-quickstart">quick provisioning</a>; language and record location are set automatically too. Do not treat fake IDs in <code>.env.example</code> as a live environment.</p>
 <p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <a href="index.html#agent-search-prepare">policy upload</a> and <a href="index.html#agent-search-probe">retrieval verification</a> succeed, create a policy-connected v1:</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
@@ -261,7 +268,7 @@
 </tbody>
 </table>
 <p>Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.</p>
-<p><strong>The required comparison uses <a href="index.html#decision-compare">Microsoft Foundry Compare runs in 09</a>.</strong> <code>scripts/compare_foundry_eval.py</code> is an optional standalone tool, not another command required in this path. When using it separately, <code>LAB_LANGUAGE</code> or <code>--language ko</code>/<code>--language en</code> selects report language and default dev12; match any explicit dataset to that language.</p>
+<p><strong>The required comparison uses <a href="index.html#decision-compare">Microsoft Foundry Compare runs in 09</a>.</strong> <code>scripts/compare_foundry_eval.py</code> is an optional standalone tool, not another command required in this path. When using it separately, its <code>--language ko</code>/<code>--language en</code> option selects report language and default dev12; match any explicit dataset to that language.</p>
 <h3 id="evaluation-mapping">Check evaluation response mappings</h3>
 <p>Select the <a href="index.html#prepare">two evaluators and Judge in 05</a> and preserve automatic mappings. The following table supports missing-field or mismatch checks; a normal wizard flow does not require guessing SDK fields and entering them manually.</p>
 <table>
@@ -431,7 +438,7 @@
 </tr>
 <tr>
 <td>Local paths</td>
-<td>Your environment name, bootstrap config, runtime <code>.env</code>, <code>LAB_LANGUAGE</code>, and <code>LAB_ARTIFACTS_DIR</code>; record <code>.env</code> only after successful creation</td>
+<td>Your environment name, bootstrap config, and runtime <code>.env</code>; language/record location are automatic. Record <code>.env</code> only after successful creation.</td>
 </tr>
 <tr>
 <td>Microsoft Azure environment</td>

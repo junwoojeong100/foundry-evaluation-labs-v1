@@ -59,10 +59,10 @@ Steps 01–03 prepare the environment, 04–09 evaluate and improve, and 10 clea
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>What:</strong> Confirm the Microsoft Azure subscription, access, and local execution environment.</p>
 <p><strong>Why:</strong> Different browser and CLI identities can cause access failures or create resources in the wrong environment.</p>
-<p><strong>How · where:</strong> Check subscription/access in Microsoft Azure Portal, then compare tools, login, and language settings in the terminal. No Microsoft Azure resources are created yet.</p>
+<p><strong>How · where:</strong> Check subscription/access in Microsoft Azure Portal, then compare tools and the signed-in account in the terminal. No Microsoft Azure resources are created yet.</p>
 </div>
 
-**Action order:** [Check account/access](#setup-account) → [Open Codespaces · recommended](#setup-codespaces) → [Terminal · sign in](#setup-login) → [Select language](#setup-language). If Codespaces is unavailable, use [local installation](#setup-local-install).
+**Action order:** [Check account/access](#setup-account) → [Open Codespaces · recommended](#setup-codespaces) → [Terminal · sign in](#setup-login). If Codespaces is unavailable, use [local installation](#setup-local-install).
 {: .step-route}
 
 <details class="guide-details optional-path" markdown="1">
@@ -275,7 +275,7 @@ Confirm that the command list appears and the dataset check succeeds. For `Modul
 
 </details>
 
-### Pin the CLI identity and lab language {#setup-login}
+### Verify the CLI sign-in identity {#setup-login}
 
 Run these commands in Codespaces or your selected local terminal. `--use-device-code` displays a Microsoft sign-in URL and a one-time code to enter yourself in your browser. **Do not share the code or tokens.** Sign in with the same Microsoft Azure account as the portal, then replace `YOUR_SUBSCRIPTION_ID` with your subscription ID.
 
@@ -288,25 +288,11 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 Confirm **`state` is `Enabled`** and compare `user`, `tenant`, and `subscription` with the portal. Browser and CLI sign-ins are separate. For another authorized directory, use `az login --use-device-code --tenant "YOUR_TENANT_ID"`. If your organization blocks device-code sign-in, follow [sign-in troubleshooting](troubleshooting.md#codespaces), not a policy bypass.
 
-#### Set the language and execution-record folder {#setup-language}
+#### Language and record location are applied automatically {#setup-language}
 
-Use **`lab-en`** as this English lab's environment name. If that local plan already exists, resume its original records rather than creating it again. For a separate class, choose a new name such as `lab-en-02` and change every subsequent path and prefix consistently.
+**There is no separate settings command to run.** Step 02's `--environment lab-en` automatically saves English and that environment's record location. The Korean guide uses `lab-ko`. Subsequent commands read the same settings through their `--config` argument, including in a new terminal; no environment-variable setup is needed.
 
-**In Codespaces/macOS/Linux, set:**
-
-```bash
-export LAB_LANGUAGE=en
-export LAB_ARTIFACTS_DIR="$PWD/.lab/lab-en/artifacts"
-```
-
-**In Windows PowerShell, set:**
-
-```powershell
-$env:LAB_LANGUAGE = "en"
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-en/artifacts"
-```
-
-These variables apply only to the current terminal. **Use the resume procedure below in a new terminal.** Never change `LAB_LANGUAGE` while reusing another language's run folder.
+Resume the existing environment for the same lab. For a separate English lab, use a name **starting with `lab-en-`**, such as `lab-en-02`, and update subsequent paths consistently. Records are saved automatically; do not delete them before cleanup.
 
 <details class="guide-details optional-path" markdown="1">
 <summary>Resuming only · restore your terminal settings</summary>
@@ -319,16 +305,12 @@ First enter your **existing lab folder**. Your `.venv` already exists; do not re
 
 ```bash
 source .venv/bin/activate
-export LAB_LANGUAGE=en
-export LAB_ARTIFACTS_DIR="$PWD/.lab/lab-en/artifacts"
 ```
 
 **Windows PowerShell:**
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-$env:LAB_LANGUAGE = "en"
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-en/artifacts"
 ```
 
 If PowerShell activation is blocked, leave organizational policy unchanged and replace subsequent `python` commands with `.\.venv\Scripts\python.exe`.
@@ -341,6 +323,8 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 Confirm Python 3.11–3.14, the command list, and your original user, tenant, subscription, and `Enabled` state. If sign-in expired or differs, [sign in with the same account](#setup-login) and check again.
 
+**Do not repeat language or record-folder setup.** Keep the original `--config` path in subsequent commands to apply the saved settings automatically.
+
 Find your last completed step in `notes.md`. Check provisioning with [02's read-only status](#resources-status), submitted evaluation IDs/states with [06's lookup](#baseline-identifiers), and candidate result collection with [09's same-receipt resume](#decision-run). **Do not resubmit completed work; inspect running work by its existing ID.** Step 01 does not create Microsoft Azure resources or call the SDK.
 
 </details>
@@ -350,13 +334,13 @@ Find your last completed step in `notes.md`. Check provisioning with [02's read-
 
 #### Code ↔ portal · verify sign-in and local settings {#setup-code-portal}
 
-**Where to act:** Run the [terminal sign-in commands](#setup-login) and [language/record-folder settings](#setup-language) above. In this step, compare the command output with the portal yourself.
+**Where to act:** Run the [terminal sign-in commands](#setup-login). The [automatic language/record settings](#setup-language) are an explanation, not an additional command.
 {: .execution-guide}
 
 | Executed command/setting | What to check now | Portal actions and verification |
 |---|---|---|
 | `az login`, `az account set`, `az account show` | Record the signed-in account, tenant, subscription, and `state: Enabled`. | Compare Directory under your Microsoft Azure Portal account and the IDs/state under **Subscriptions → intended subscription → Overview** yourself. |
-| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR` | Set corpus language and the execution-record path in this terminal. | These are local settings, not portal controls. The English lab uses `en` and `.lab/lab-en/artifacts`. |
+| `--environment lab-en` → subsequent `--config` | Step 02 saves language/record settings; later commands read them. No shell-variable setup is needed. | This is separate from portal display language. Use the English corpus and that environment's records. |
 
 </details>
 
@@ -380,11 +364,13 @@ Find your last completed step in `notes.md`. Check provisioning with [02's read-
 
 ### Prepare the environment with one provisioning command {#resources-quickstart}
 
-After 01's sign-in and language settings, run this command. **It reads your selected CLI subscription, tenant, and user, then generates resource names and configuration files.** You do not need to hand-edit an approval JSON file.
+After signing in during 01, run this command. **It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.** No separate environment variables, language flag, or hand-edited approval JSON is required.
 
 ```sh
 python -m lab bootstrap setup --environment lab-en
 ```
+
+`lab-en` selects English; `lab-ko` selects Korean. Separate names such as `lab-en-02` and `lab-ko-02` follow the same rule. English command results are saved under `.lab/lab-en/artifacts/`.
 
 The program guides **plan → permission/model/quota checks → actual authorization inputs → provision**. It uses `northcentralus` and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.
 
@@ -407,6 +393,8 @@ No Microsoft Azure resources are created before confirmation. After it, provisio
 **Success reports `status: APPLIED` and creates `.lab/lab-en/.env`.** The same folder preserves `config.json`, `approval.json`, and `manifest.json`. Do not edit these to bypass checks. For errors, follow [provisioning troubleshooting](troubleshooting.md#provisioning).
 
 **`.env` holds the project connection address (Project endpoint) and model deployment names**, unlike `.venv`, the Python package folder. Subsequent commands read it with `--config`; do not execute or `source` it. If provisioning failed, do not substitute a copy of `.env.example`.
+
+The program also reads language and record location from that file. **Selected configuration takes precedence over stale shell variables.** Existing `lab-en`/`lab-ko` environments from older versions work without editing their files or recreating them. Records from another language are never relabeled or overwritten.
 
 Rerunning the same environment continues preparation **only for a plan with no creation attempt**. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use [status lookup](#resources-status) when resuming.
 

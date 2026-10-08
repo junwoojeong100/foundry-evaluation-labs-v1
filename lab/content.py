@@ -3,14 +3,15 @@
 import os
 from pathlib import Path
 
-from lab.config import LabError
+from lab.config import LabError, active_config
 
 
 LANGUAGES = ("ko", "en")
 
 
 def selected_language() -> str:
-    value = os.environ.get("LAB_LANGUAGE", "ko")
+    config = active_config()
+    value = config.language if config and config.language is not None else os.environ.get("LAB_LANGUAGE", "ko")
     if value not in LANGUAGES:
         raise LabError(f"Unsupported LAB_LANGUAGE={value!r}; choose ko or en before starting the CLI.")
     return value
@@ -53,5 +54,8 @@ def dataset_files(root: Path) -> list[Path]:
     ]
 
 
-def text(korean: str, english: str) -> str:
-    return english if selected_language() == "en" else korean
+def text(korean: str, english: str, *, language: str | None = None) -> str:
+    value = selected_language() if language is None else language
+    if value not in LANGUAGES:
+        raise LabError(f"Unsupported language={value!r}; choose ko or en.")
+    return english if value == "en" else korean

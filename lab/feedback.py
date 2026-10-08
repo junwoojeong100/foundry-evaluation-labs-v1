@@ -5,7 +5,7 @@ import hashlib
 import json
 
 from lab.config import LabError
-from lab.files import ARTIFACTS, read_json, read_jsonl, safe_run_dir, sha256_file, write_once_json
+from lab.files import artifacts_dir, read_json, read_jsonl, safe_run_dir, sha256_file, write_once_json
 
 
 def prepare_feedback(run_id: str, feedback_id: str) -> dict:
@@ -51,5 +51,5 @@ def prepare_feedback(run_id: str, feedback_id: str) -> dict:
         "automatic_dataset_promotion": False, "human_operational_approval": "NOT_GRANTED",
         "next": "Human review, data consent and duplicate/group checks are required before a new dev version. Final tests remain excluded.",
     }
-    write_once_json(ARTIFACTS / "feedback" / f"{feedback_id}.json", result)
+    write_once_json(artifacts_dir() / "feedback" / f"{feedback_id}.json", result)
     return result

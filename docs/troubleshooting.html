@@ -212,12 +212,12 @@
 </tr>
 <tr>
 <td>Previous settings are missing in a new terminal</td>
-<td>Follow <a href="index.html#setup-resume">terminal resumption</a> to restore the existing virtual environment, language, and record-folder variables. Do not repeat clone, plan, or apply.</td>
+<td>Follow <a href="index.html#setup-resume">resumption</a>, activate the existing virtual environment, and keep the original <code>--config</code> path. Do not repeat language/record variables, clone, plan, or apply.</td>
 <td>Confirm the original identity and last completed step in <code>notes.md</code>, then continue with the same records.</td>
 </tr>
 <tr>
 <td>Cannot find <code>agents/</code> or <code>knowledge/</code> execution records</td>
-<td>Follow the <a href="index.html#resources-notes">record-folder explanation</a> and look under your <code>LAB_ARTIFACTS_DIR</code>. <code>data/</code> and <code>scripts/</code> are under the repository folder instead.</td>
+<td>Follow the <a href="index.html#resources-notes">record-folder explanation</a> and look under that environment's <code>artifacts/</code>. <code>data/</code> and <code>scripts/</code> are under the repository folder instead.</td>
 <td>Open your own language/environment's records, not an example path.</td>
 </tr>
 <tr>
@@ -231,9 +231,14 @@
 <td>Calls use the intended subscription without dropping tenant checks.</td>
 </tr>
 <tr>
-<td>Artifacts go to the other language's folder</td>
-<td>Set <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> before starting Python with <a href="index.html#setup-language">01's language/record-folder commands</a>.</td>
-<td>Dataset, configuration, workspace and results share the same language; existing records are not overwritten.</td>
+<td>Another language or environment's records are selected</td>
+<td>Check that <code>--config</code> points to your original <code>.lab/lab-en/.env</code>. <a href="index.html#setup-language">Language and record location come from that configuration</a>, not a shell-variable change.</td>
+<td>Dataset, configuration, workspace, and results belong to the same environment; existing records are not overwritten.</td>
+</tr>
+<tr>
+<td>Earlier records are under the repository's shared <code>artifacts/</code></td>
+<td>Preserve them and verify the original configuration, language, and ownership. Do not automatically move or replace them; see the <a href="admin.html#runtime-settings">configuration reference</a>.</td>
+<td>Do not resubmit paid work before locating its original records.</td>
 </tr>
 </tbody>
 </table>

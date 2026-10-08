@@ -10,6 +10,8 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 
 **권장 시작 경로는 GitHub Codespaces → Microsoft Azure 로그인 → 환경 생성 명령 한 개입니다.** [01의 Codespaces 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces)로 브라우저에서 개발환경을 열고, [02의 `python -m lab bootstrap setup --environment lab-ko`](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-quickstart)를 실행합니다. 현재 계정·구독과 고정 모델을 확인하고 실제 승인값을 입력하면 계획·승인 파일과 환경을 준비합니다. JSON을 직접 작성하지 않으며 생성 확인 전에는 자원을 만들지 않습니다.
 
+**언어와 실행 기록 위치도 자동 설정됩니다.** `lab-ko`는 한국어, `lab-en`은 영어이며 `lab-ko-02` 같은 이름도 지원합니다. 이후 명령은 기존 `--config`에서 설정을 읽으므로 두 환경 변수를 직접 입력하거나 새 터미널마다 다시 지정하지 않습니다.
+
 **Codespaces는 Python·Git·Microsoft Azure CLI·실습 의존성을 준비하므로 PC 설치를 생략합니다.** 내 PC에서 진행할 때만 **Python 3.11–3.14·Git·Microsoft Azure CLI**를 [01의 로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)로 준비합니다. 어느 경로든 본인의 구독·권한·비용 승인은 필요하며 GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
 
 **Microsoft Azure·Microsoft Foundry를 처음 접한다면 실습 가이드부터 읽습니다.** 계정·구독·프로젝트의 차이와 터미널 여는 방법부터 설명합니다. 04–06은 한 번의 평가 생성 과정이며 클릭 순서와 점수 해석 예시를 제공합니다. 환경 설정 참고와 체크리스트도 같은 실습 경로를 돕는 자료이며 별도 역할로 작업을 나누지 않습니다. Microsoft Azure 자원을 만들기 전에 본인에게 필요한 생성·역할 할당 권한과 비용 승인을 확보합니다.

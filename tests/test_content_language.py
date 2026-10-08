@@ -117,7 +117,7 @@ class ContentLanguageTests(unittest.TestCase):
             model="unit-agent", judge="unit-judge", optimizer="unit-planner",
             prefix="unit-lab", planner="unit-planner",
         )
-        with tempfile.TemporaryDirectory() as directory, patch("lab.files.ARTIFACTS", Path(directory)):
+        with tempfile.TemporaryDirectory() as directory, patch("lab.files.artifacts_dir", return_value=Path(directory)):
             with patch.dict(os.environ, {"LAB_LANGUAGE": "en"}):
                 state = workspace(config, create=True)
                 self.assertEqual(state["language"], "en")
@@ -178,8 +178,8 @@ class ContentLanguageTests(unittest.TestCase):
     def test_english_training_preparation_uses_only_english_train_and_validation(self):
         with tempfile.TemporaryDirectory() as directory, \
              patch.dict(os.environ, {"LAB_LANGUAGE": "en"}), \
-             patch("lab.handoffs.ARTIFACTS", Path(directory)), \
-             patch("lab.governance.ARTIFACTS", Path(directory)):
+             patch("lab.handoffs.artifacts_dir", return_value=Path(directory)), \
+             patch("lab.governance.artifacts_dir", return_value=Path(directory)):
             target = prepare_tuning("sft")
             manifest = json.loads((target / "manifest.json").read_text())
             self.assertEqual(manifest["language"], "en")

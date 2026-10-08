@@ -171,10 +171,10 @@
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>What:</strong> Confirm the Microsoft Azure subscription, access, and local execution environment.</p>
 <p><strong>Why:</strong> Different browser and CLI identities can cause access failures or create resources in the wrong environment.</p>
-<p><strong>How · where:</strong> Check subscription/access in Microsoft Azure Portal, then compare tools, login, and language settings in the terminal. No Microsoft Azure resources are created yet.</p>
+<p><strong>How · where:</strong> Check subscription/access in Microsoft Azure Portal, then compare tools and the signed-in account in the terminal. No Microsoft Azure resources are created yet.</p>
 </div>
 
-<p class="step-route"><strong>Action order:</strong> <a href="#setup-account">Check account/access</a> → <a href="#setup-codespaces">Open Codespaces · recommended</a> → <a href="#setup-login">Terminal · sign in</a> → <a href="#setup-language">Select language</a>. If Codespaces is unavailable, use <a href="#setup-local-install">local installation</a>.</p>
+<p class="step-route"><strong>Action order:</strong> <a href="#setup-account">Check account/access</a> → <a href="#setup-codespaces">Open Codespaces · recommended</a> → <a href="#setup-login">Terminal · sign in</a>. If Codespaces is unavailable, use <a href="#setup-local-install">local installation</a>.</p>
 <details class="guide-details optional-path">
 <summary>New terms only · accounts, subscriptions, and projects</summary>
 <div aria-label="Microsoft Azure terms for first-time participants" class="concept-primer" id="basics" role="group">
@@ -379,7 +379,7 @@ python scripts/build_datasets.py --language en --check
 </code></pre>
 <p>Confirm that the command list appears and the dataset check succeeds. For <code>ModuleNotFoundError</code>, use <code>python -m pip --version</code> to check that Python and pip belong to <code>.venv</code>. Do not install packages into an unrelated system interpreter.</p>
 </details>
-<h3 id="setup-login">Pin the CLI identity and lab language</h3>
+<h3 id="setup-login">Verify the CLI sign-in identity</h3>
 <p>Run these commands in Codespaces or your selected local terminal. <code>--use-device-code</code> displays a Microsoft sign-in URL and a one-time code to enter yourself in your browser. <strong>Do not share the code or tokens.</strong> Sign in with the same Microsoft Azure account as the portal, then replace <code>YOUR_SUBSCRIPTION_ID</code> with your subscription ID.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">az login --use-device-code
@@ -388,19 +388,9 @@ az account set --subscription &quot;YOUR_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
 </code></pre>
 <p>Confirm <strong><code>state</code> is <code>Enabled</code></strong> and compare <code>user</code>, <code>tenant</code>, and <code>subscription</code> with the portal. Browser and CLI sign-ins are separate. For another authorized directory, use <code>az login --use-device-code --tenant "YOUR_TENANT_ID"</code>. If your organization blocks device-code sign-in, follow <a href="troubleshooting.html#codespaces">sign-in troubleshooting</a>, not a policy bypass.</p>
-<h4 id="setup-language">Set the language and execution-record folder</h4>
-<p>Use <strong><code>lab-en</code></strong> as this English lab's environment name. If that local plan already exists, resume its original records rather than creating it again. For a separate class, choose a new name such as <code>lab-en-02</code> and change every subsequent path and prefix consistently.</p>
-<p><strong>In Codespaces/macOS/Linux, set:</strong></p>
-<p class="command-label">Run in your terminal · Codespaces/macOS/Linux</p>
-<pre class="terminal-command"><code class="language-bash">export LAB_LANGUAGE=en
-export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-en/artifacts&quot;
-</code></pre>
-<p><strong>In Windows PowerShell, set:</strong></p>
-<p class="command-label">Run in your terminal · Windows PowerShell</p>
-<pre class="terminal-command"><code class="language-powershell">$env:LAB_LANGUAGE = &quot;en&quot;
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifacts&quot;
-</code></pre>
-<p>These variables apply only to the current terminal. <strong>Use the resume procedure below in a new terminal.</strong> Never change <code>LAB_LANGUAGE</code> while reusing another language's run folder.</p>
+<h4 id="setup-language">Language and record location are applied automatically</h4>
+<p><strong>There is no separate settings command to run.</strong> Step 02's <code>--environment lab-en</code> automatically saves English and that environment's record location. The Korean guide uses <code>lab-ko</code>. Subsequent commands read the same settings through their <code>--config</code> argument, including in a new terminal; no environment-variable setup is needed.</p>
+<p>Resume the existing environment for the same lab. For a separate English lab, use a name <strong>starting with <code>lab-en-</code></strong>, such as <code>lab-en-02</code>, and update subsequent paths consistently. Records are saved automatically; do not delete them before cleanup.</p>
 <details class="guide-details optional-path">
 <summary>Resuming only · restore your terminal settings</summary>
 <h4 id="setup-resume">Resume the same lab in a new terminal</h4>
@@ -408,14 +398,10 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifac
 <p><strong>Codespaces/macOS/Linux:</strong></p>
 <p class="command-label">Run in your terminal · Codespaces/macOS/Linux</p>
 <pre class="terminal-command"><code class="language-bash">source .venv/bin/activate
-export LAB_LANGUAGE=en
-export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-en/artifacts&quot;
 </code></pre>
 <p><strong>Windows PowerShell:</strong></p>
 <p class="command-label">Run in your terminal · Windows PowerShell</p>
 <pre class="terminal-command"><code class="language-powershell">.\.venv\Scripts\Activate.ps1
-$env:LAB_LANGUAGE = &quot;en&quot;
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-en/artifacts&quot;
 </code></pre>
 <p>If PowerShell activation is blocked, leave organizational policy unchanged and replace subsequent <code>python</code> commands with <code>.\.venv\Scripts\python.exe</code>.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
@@ -424,12 +410,13 @@ python -m lab --help
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
 </code></pre>
 <p>Confirm Python 3.11–3.14, the command list, and your original user, tenant, subscription, and <code>Enabled</code> state. If sign-in expired or differs, <a href="#setup-login">sign in with the same account</a> and check again.</p>
+<p><strong>Do not repeat language or record-folder setup.</strong> Keep the original <code>--config</code> path in subsequent commands to apply the saved settings automatically.</p>
 <p>Find your last completed step in <code>notes.md</code>. Check provisioning with <a href="#resources-status">02's read-only status</a>, submitted evaluation IDs/states with <a href="#baseline-identifiers">06's lookup</a>, and candidate result collection with <a href="#decision-run">09's same-receipt resume</a>. <strong>Do not resubmit completed work; inspect running work by its existing ID.</strong> Step 01 does not create Microsoft Azure resources or call the SDK.</p>
 </details>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: sign-in and local settings</summary>
 <h4 id="setup-code-portal">Code ↔ portal · verify sign-in and local settings</h4>
-<p class="execution-guide"><strong>Where to act:</strong> Run the <a href="#setup-login">terminal sign-in commands</a> and <a href="#setup-language">language/record-folder settings</a> above. In this step, compare the command output with the portal yourself.</p>
+<p class="execution-guide"><strong>Where to act:</strong> Run the <a href="#setup-login">terminal sign-in commands</a>. The <a href="#setup-language">automatic language/record settings</a> are an explanation, not an additional command.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -445,9 +432,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare Directory under your Microsoft Azure Portal account and the IDs/state under <strong>Subscriptions → intended subscription → Overview</strong> yourself.</td>
 </tr>
 <tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>LAB_LANGUAGE</code>, <code>LAB_ARTIFACTS_DIR</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Set corpus language and the execution-record path in this terminal.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>These are local settings, not portal controls. The English lab uses <code>en</code> and <code>.lab/lab-en/artifacts</code>.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>--environment lab-en</code> → subsequent <code>--config</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Step 02 saves language/record settings; later commands read them. No shell-variable setup is needed.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>This is separate from portal display language. Use the English corpus and that environment's records.</td>
 </tr>
 </tbody>
 </table>
@@ -465,10 +452,11 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 
 <p class="step-route"><strong>Action order:</strong> <a href="#resources-quickstart">Terminal · quick setup</a> → <a href="#resources-notes">Lab record</a> → <a href="#resources-runtime-check">Portal/runtime checks</a>.</p>
 <h3 id="resources-quickstart">Prepare the environment with one provisioning command</h3>
-<p>After 01's sign-in and language settings, run this command. <strong>It reads your selected CLI subscription, tenant, and user, then generates resource names and configuration files.</strong> You do not need to hand-edit an approval JSON file.</p>
+<p>After signing in during 01, run this command. <strong>It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.</strong> No separate environment variables, language flag, or hand-edited approval JSON is required.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap setup --environment lab-en
 </code></pre>
+<p><code>lab-en</code> selects English; <code>lab-ko</code> selects Korean. Separate names such as <code>lab-en-02</code> and <code>lab-ko-02</code> follow the same rule. English command results are saved under <code>.lab/lab-en/artifacts/</code>.</p>
 <p>The program guides <strong>plan → permission/model/quota checks → actual authorization inputs → provision</strong>. It uses <code>northcentralus</code> and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.</p>
 <p>The four roles are <strong>Agent (answers), Judge (scoring), Optimizer/search planner (instruction improvement and retrieval planning), and embeddings (numerical representations for search)</strong>. You prepare an environment that calls existing models; you do not build a model from scratch.</p>
 <p>After readiness passes, enter the following five values from <strong>your actual authorization in 01</strong>. If they are not established, <strong>stop with Ctrl+C</strong> and obtain authorization first. At the final creation confirmation, Enter also cancels.</p>
@@ -506,6 +494,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p>No Microsoft Azure resources are created before confirmation. After it, provisioning and charges can begin. <strong>Budget, call counts, and hosting hours are not automatic spending cutoffs</strong>, nor authorization for deletion, training, or automatic retries.</p>
 <p><strong>Success reports <code>status: APPLIED</code> and creates <code>.lab/lab-en/.env</code>.</strong> The same folder preserves <code>config.json</code>, <code>approval.json</code>, and <code>manifest.json</code>. Do not edit these to bypass checks. For errors, follow <a href="troubleshooting.html#provisioning">provisioning troubleshooting</a>.</p>
 <p><strong><code>.env</code> holds the project connection address (Project endpoint) and model deployment names</strong>, unlike <code>.venv</code>, the Python package folder. Subsequent commands read it with <code>--config</code>; do not execute or <code>source</code> it. If provisioning failed, do not substitute a copy of <code>.env.example</code>.</p>
+<p>The program also reads language and record location from that file. <strong>Selected configuration takes precedence over stale shell variables.</strong> Existing <code>lab-en</code>/<code>lab-ko</code> environments from older versions work without editing their files or recreating them. Records from another language are never relabeled or overwritten.</p>
 <p>Rerunning the same environment continues preparation <strong>only for a plan with no creation attempt</strong>. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use <a href="#resources-status">status lookup</a> when resuming.</p>
 <p>If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.</p>
 <h4 id="resources-notes">Create your lab record</h4>
@@ -602,7 +591,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:plan</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L657-L726">Full source file · 657–726</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L657-L726">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L660-L736">Full source file · 660–736</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L660-L736">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:plan"><code class="language-python">def plan(
     *, subscription_id: str, tenant_id: str, expected_user: str,
     environment: str | None = None, root: Path | str = Path(&quot;.lab&quot;),
@@ -610,10 +599,17 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     resource_group: str | None = None, agent_sku: str | None = None,
 ) -&gt; dict:
     &quot;&quot;&quot;Create a private local plan only; never query Azure or overwrite .env/artifacts.&quot;&quot;&quot;
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language
+
     instance = uuid4()
     suffix = instance.hex[:8]
     date = _now().strftime(&quot;%Y%m%d&quot;)
     environment = environment or f&quot;lab-{date}-{suffix}&quot;
+    try:
+        language = environment_language(environment) or selected_language()
+    except LabError as exc:
+        raise BootstrapError(str(exc)) from exc
     root = Path(root)
     if root.is_symlink() or any(parent.is_symlink() for parent in root.parents):
         raise BootstrapError(&quot;Environment root must not traverse symlinks.&quot;)
@@ -630,7 +626,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         model.setdefault(&quot;deployment&quot;, f&quot;lab-{model.get(&#x27;roles&#x27;, [&#x27;model&#x27;])[0]}-{suffix}&quot;)
     config = {
         &quot;schema_version&quot;: SCHEMA_VERSION, &quot;instance_id&quot;: str(instance), &quot;created_at&quot;: _stamp(),
-        &quot;environment&quot;: environment, &quot;environment_dir&quot;: str(directory),
+        &quot;environment&quot;: environment, &quot;environment_dir&quot;: str(directory), &quot;language&quot;: language,
         &quot;subscription_id&quot;: subscription_id, &quot;tenant_id&quot;: tenant_id, &quot;expected_user&quot;: expected_user,
         &quot;location&quot;: location, &quot;retention_days&quot;: retention_days, &quot;models&quot;: selected,
         &quot;deployment_name&quot;: f&quot;lab-bootstrap-{suffix}&quot;,
@@ -722,7 +718,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:_preflight</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1307-L1339">Full source file · 1307–1339</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1307-L1339">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1317-L1349">Full source file · 1317–1349</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1317-L1349">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_preflight"><code class="language-python">def _preflight(config: dict, manifest: dict, run: Run) -&gt; tuple[dict, dict, dict]:
     identity = _identity(config, manifest, run)
     prerequisites = _prerequisites(config, run)
@@ -830,7 +826,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:apply</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1901-L2092">Full source file · 1901–2092</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1901-L2092">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1916-L2107">Full source file · 1916–2107</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1916-L2107">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:apply"><code class="language-python">def apply(
     config_path: Path | str, approval_path: Path | str | None = None, *,
     run: Run = az_json, what_if: bool = False, retry: bool = False,
@@ -1029,7 +1025,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:_parameters</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1391-L1400">Full source file · 1391–1400</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1391-L1400">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1401-L1410">Full source file · 1401–1410</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1401-L1410">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_parameters"><code class="language-python">def _parameters(config: dict, principal: str) -&gt; dict:
     return {
         &quot;$schema&quot;: &quot;https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#&quot;,
@@ -1046,7 +1042,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:status</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L2095-L2122">Full source file · 2095–2122</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2095-L2122">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L2110-L2137">Full source file · 2110–2137</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2110-L2137">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:status"><code class="language-python">def status(
     config_path: Path | str, *, run: Run = az_json, approval_path: Path | str | None = None,
 ) -&gt; dict:
@@ -1081,17 +1077,17 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:setup</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L2125-L2237">Full source file · 2125–2237</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2125-L2237">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L2140-L2255">Full source file · 2140–2255</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2140-L2255">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:setup"><code class="language-python">def setup(
     environment: str, *, root: Path | str = Path(&quot;.lab&quot;), run: Run = az_json,
     read: Callable[[str], str] = input, write: Callable[[str], None] = print,
 ) -&gt; dict:
     &quot;&quot;&quot;Guide a participant through the existing exact-scope bootstrap, without retries.&quot;&quot;&quot;
-    from lab.config import LabError
-    from lab.content import selected_language, text
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language, text as localized_text
 
     try:
-        selected_language()
+        language = environment_language(environment) or selected_language()
     except LabError as exc:
         raise BootstrapError(str(exc)) from exc
     if not re.fullmatch(r&quot;[a-z][a-z0-9-]{2,23}&quot;, environment):
@@ -1115,6 +1111,8 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             expected_user=account[&quot;user&quot;].get(&quot;name&quot;, &quot;&quot;), environment=environment, root=root,
         )
     directory, config, manifest = _load(config_path)
+    language = config.get(&quot;language&quot;, language)
+    text = partial(localized_text, language=language)
     config_path = directory / &quot;config.json&quot;
     approval_path = directory / &quot;approval.json&quot;
     if manifest[&quot;phase&quot;] != &quot;planned&quot; or manifest[&quot;attempts&quot;]:
@@ -1135,6 +1133,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         &quot;config_path&quot;: str(config_path), &quot;user&quot;: config[&quot;expected_user&quot;],
         &quot;subscription&quot;: config[&quot;subscription_id&quot;], &quot;tenant&quot;: config[&quot;tenant_id&quot;],
         &quot;location&quot;: config[&quot;location&quot;], &quot;resources&quot;: config[&quot;names&quot;], &quot;models&quot;: config[&quot;models&quot;],
+        &quot;language&quot;: language, &quot;artifacts_dir&quot;: str(directory / &quot;artifacts&quot;),
         &quot;log_retention_days&quot;: config[&quot;retention_days&quot;],
     }))
     write(text(
@@ -1683,7 +1682,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     documents_path = content_path(ROOT, &quot;data/knowledge/documents.json&quot;)
     documents = read_json(documents_path)
     content_hash = sha256_file(documents_path)
-    setup_path = ARTIFACTS / &quot;knowledge/setup.json&quot;
+    setup_path = artifacts_dir() / &quot;knowledge/setup.json&quot;
     previous = None
     if setup_path.exists():
         previous = read_json(setup_path)
@@ -1727,13 +1726,13 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             },
         }
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / &quot;knowledge/config-snapshot.json&quot;, payloads)
+        save_json(artifacts_dir() / &quot;knowledge/config-snapshot.json&quot;, payloads)
         search = JsonHttp(credential, scope=SEARCH_SCOPE, allowed_origin=config.search_endpoint)
         index_url = search_url(config, &quot;indexes&quot;, names[&quot;index&quot;])
         _ensure_created(config, search, &quot;search_index&quot;, names[&quot;index&quot;], index_url, payloads[&quot;index&quot;])
         embedding = embed(
             config, [f&quot;{doc[&#x27;title&#x27;]}\n{doc[&#x27;content&#x27;]}&quot; for doc in documents],
-            ARTIFACTS / &quot;knowledge/document-embeddings.json&quot;,
+            artifacts_dir() / &quot;knowledge/document-embeddings.json&quot;,
         )
         vectors = validate_vectors(embedding[&quot;response&quot;], len(documents))
         uploaded = [{
@@ -1743,9 +1742,9 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             &quot;effective_date&quot;: doc[&quot;effective_date&quot;],
             &quot;content_vector&quot;: vector,
         } for doc, vector in zip(documents, vectors, strict=True)]
-        upload_path = ARTIFACTS / &quot;knowledge/upload-response.json&quot;
+        upload_path = artifacts_dir() / &quot;knowledge/upload-response.json&quot;
         upload_contract = {&quot;documents_sha256&quot;: content_hash, &quot;payload_sha256&quot;: payload_hash,
-                           &quot;embedding_sha256&quot;: sha256_file(ARTIFACTS / &quot;knowledge/document-embeddings.json&quot;)}
+                           &quot;embedding_sha256&quot;: sha256_file(artifacts_dir() / &quot;knowledge/document-embeddings.json&quot;)}
         if upload_path.exists():
             upload_record = read_json(upload_path)
             if upload_record.get(&quot;contract&quot;) != upload_contract or upload_record.get(&quot;status&quot;) != &quot;completed&quot;:
@@ -1764,7 +1763,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             or {item.get(&quot;key&quot;) for item in statuses} != {doc[&quot;id&quot;] for doc in documents}
             or any(item.get(&quot;status&quot;) is not True for item in statuses)
         ):
-            save_json(ARTIFACTS / &quot;knowledge/upload-error.json&quot;, upload_body)
+            save_json(artifacts_dir() / &quot;knowledge/upload-error.json&quot;, upload_body)
             raise LabError(&quot;일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.&quot;)
         save_json(upload_path, {&quot;status&quot;: &quot;completed&quot;, &quot;contract&quot;: upload_contract, &quot;response&quot;: upload_body})
         _ensure_created(
@@ -1787,7 +1786,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         setup[&quot;uploaded_documents&quot;] = len(uploaded)
         setup[&quot;embedding_usage&quot;] = embedding[&quot;response&quot;].get(&quot;usage&quot;)
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / &quot;knowledge/documents-snapshot.json&quot;, documents)
+        save_json(artifacts_dir() / &quot;knowledge/documents-snapshot.json&quot;, documents)
         return setup
 </code></pre>
 </details>
@@ -1882,7 +1881,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         }],
     }
     key = hashlib.sha256(query.encode(&quot;utf-8&quot;)).hexdigest()[:16]
-    directory = ARTIFACTS / &quot;knowledge/probes&quot; / key
+    directory = artifacts_dir() / &quot;knowledge/probes&quot; / key
     intent_path, response_path = directory / &quot;iq-request.json&quot;, directory / &quot;iq-response.json&quot;
     if response_path.exists():
         if read_json(intent_path) != request:
@@ -1899,13 +1898,13 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             )
         body = result.body
         save_json(response_path, body)
-    if not (ARTIFACTS / &quot;knowledge/retrieve-response.json&quot;).exists():
-        save_json(ARTIFACTS / &quot;knowledge/retrieve-response.json&quot;, body)
+    if not (artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;).exists():
+        save_json(artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;, body)
     if not body.get(&quot;response&quot;) or not body.get(&quot;references&quot;) or not body.get(&quot;activity&quot;):
         raise LabError(&quot;검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.&quot;)
     setup[&quot;status&quot;] = &quot;retrieval_verified&quot;
     setup[&quot;probe_scope&quot;] = &quot;Human CLI identity; deployed-agent managed identity must still be verified by an agent call.&quot;
-    save_json(ARTIFACTS / &quot;knowledge/setup.json&quot;, setup)
+    save_json(artifacts_dir() / &quot;knowledge/setup.json&quot;, setup)
     return {&quot;status&quot;: setup[&quot;status&quot;], &quot;references&quot;: body[&quot;references&quot;], &quot;activity&quot;: body[&quot;activity&quot;], &quot;scope&quot;: setup[&quot;probe_scope&quot;]}
 </code></pre>
 </details>
@@ -1989,7 +1988,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     state = workspace(config)
     tool = knowledge_tool(config)
     snapshot = model_snapshot(config, config.model)
-    snapshot_path = ARTIFACTS / &quot;agents/native-model.json&quot;
+    snapshot_path = artifacts_dir() / &quot;agents/native-model.json&quot;
     if snapshot_path.exists():
         if read_json(snapshot_path) != snapshot:
             raise LabError(&quot;The Agent model deployment changed after setup; preserve the original comparison.&quot;)
@@ -2004,7 +2003,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         &quot;tools&quot;: [tool.as_dict()],
         &quot;text&quot;: native_response_format(),
     }
-    receipt = ARTIFACTS / &quot;agents&quot; / f&quot;native-v{version}.json&quot;
+    receipt = artifacts_dir() / &quot;agents&quot; / f&quot;native-v{version}.json&quot;
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             result = ensure_fixed_release(
@@ -3302,7 +3301,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         else:
             raise LabError(f&quot;자동 정리를 지원하지 않는 기록 유형: {kind}&quot;)
         actions.append(dict(record))
-    for metadata_path in (ARTIFACTS / &quot;runs&quot;).glob(&quot;*/metadata.json&quot;):
+    for metadata_path in (artifacts_dir() / &quot;runs&quot;).glob(&quot;*/metadata.json&quot;):
         metadata = read_json(metadata_path)
         if metadata.get(&quot;workspace_id&quot;) != state[&quot;workspace_id&quot;]:
             continue
@@ -3399,7 +3398,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                         transport = arm if kind == &quot;project_connection&quot; else search
                         transport.request(&quot;DELETE&quot;, action[&quot;url&quot;], etag=action.get(&quot;current_etag&quot;))
                     completed.append({**action, &quot;result&quot;: &quot;delete_request_succeeded&quot;})
-                    save_json(ARTIFACTS / &quot;cleanup.json&quot;, {**plan, &quot;mode&quot;: &quot;DELETING&quot;, &quot;completed&quot;: completed})
+                    save_json(artifacts_dir() / &quot;cleanup.json&quot;, {**plan, &quot;mode&quot;: &quot;DELETING&quot;, &quot;completed&quot;: completed})
                 remaining = []
                 for action in inspected:
                     kind = action[&quot;kind&quot;]
@@ -3428,7 +3427,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         &quot;completed&quot;: completed,
         &quot;remaining&quot;: remaining,
     }
-    save_json(ARTIFACTS / &quot;cleanup.json&quot;, result)
+    save_json(artifacts_dir() / &quot;cleanup.json&quot;, result)
     return result
 </code></pre>
 </details>

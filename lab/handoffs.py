@@ -8,7 +8,7 @@ import sys
 
 from lab.config import LabError
 from lab.content import content_path, language_metadata, require_content_language, selected_language
-from lab.files import ARTIFACTS, ROOT, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
+from lab.files import ROOT, artifacts_dir, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.preflight import save_json
 
 
@@ -42,7 +42,7 @@ def prepare_optimizer(run_id: str) -> Path:
     prompt = ROOT / metadata["prompt_snapshot"]
     if sha256_file(prompt) != metadata["prompt_sha256"]:
         raise LabError("기록된 기준선 프롬프트와 실제 스냅샷이 다릅니다.")
-    target = ARTIFACTS / "optimizer"
+    target = artifacts_dir() / "optimizer"
     if (target / "handoff.json").exists():
         raise LabError("Optimizer 준비 기록이 이미 있습니다. 기존 실험을 보존하고 새 패키지에서 준비해야 합니다.")
     target.mkdir(parents=True, exist_ok=True)
@@ -74,7 +74,7 @@ def prepare_tuning(kind: str) -> Path:
     if kind not in {"frontier", "sft"}:
         raise LabError("지원하는 준비 유형은 frontier 또는 sft입니다.")
     validate_generated_data()
-    target = ARTIFACTS / "tuning" / kind
+    target = artifacts_dir() / "tuning" / kind
     if target.exists():
         raise LabError(f"이미 존재하는 학습 준비 기록은 덮어쓰지 않습니다: {target}")
     target.mkdir(parents=True, exist_ok=True)

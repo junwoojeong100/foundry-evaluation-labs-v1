@@ -4,7 +4,7 @@
 
 이 문서는 **본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리**의 설정 참고 자료입니다. [실습 가이드](handbook.md#setup)를 순서대로 진행하면서 필요한 절만 엽니다. 실제 값과 완료 상태는 자신의 `.lab/lab-ko/notes.md`에 기록합니다.
 
-**실행 명령 바로가기:** [Codespaces 준비](handbook.md#setup-codespaces) · [CLI 로그인](handbook.md#setup-login) · [언어·기록 폴더](handbook.md#setup-language) · [빠른 환경 생성](handbook.md#resources-quickstart) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 선택한 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
+**실행 명령 바로가기:** [Codespaces 준비](handbook.md#setup-codespaces) · [CLI 로그인](handbook.md#setup-login) · [빠른 환경 생성](handbook.md#resources-quickstart) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 선택한 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
 {: .execution-guide}
 
 명령을 바꾸지 않고 안쪽 동작을 읽으려면 [02 생성 코드·포털](handbook.md#resources-code-portal), [03 검색 코드·포털](handbook.md#knowledge-code-portal), [Agent 구성](handbook.md#agent-code-portal), [09 제출·조회](handbook.md#decision-code-portal), [10 정리 범위](handbook.md#cleanup-code-portal)를 엽니다. 함수 원문은 읽기용이며 별도 실행이나 포털 중복 생성 지시가 아닙니다.
@@ -24,6 +24,14 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 권한·비용 승인은 생략할 수 없는 시작 조건입니다. 부족하면 조직 절차에 따라 본인에게 허용된 범위를 확보합니다. 이것은 이후 실습을 다른 사람에게 맡기는 별도 경로가 아닙니다.
 
 기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 기록표에 적습니다.
+
+### 언어·기록 설정은 프로그램이 읽습니다 {#runtime-settings}
+
+기본 실습에는 환경 변수 입력이 없습니다. `bootstrap setup --environment lab-ko`는 한국어, `lab-en`은 영어를 계획에 저장하며 `lab-ko-02`·`lab-en-02`도 지원합니다. 생성된 `.env`의 `LAB_LANGUAGE`·`LAB_ARTIFACTS_DIR`를 이후 명령의 `--config`가 읽습니다. 상대 기록 경로는 설정 파일이 있는 폴더 기준입니다.
+
+이전 `.env`에 언어 항목이 없으면 `LAB_PREFIX`의 `lab-ko`·`lab-en` 규칙으로 판별하며 파일·계획 해시를 다시 쓰지 않습니다. 그 규칙에 해당하지 않는 기존 사용자 지정 환경과 설정 파일을 사용하지 않는 별도 도구만 기존 환경 변수·기본값을 유지합니다. 기본 실습에 해당 변수 설정을 추가할 필요는 없습니다.
+
+**기존 기록은 자동으로 이동하거나 합치지 않습니다.** 과거에 공통 `artifacts/` 또는 별도 경로를 사용했다면 원래 설정과 `workspace.json`의 프로젝트·prefix·언어를 먼저 대조합니다. 경로가 다른 상태에서 유료 작업을 새로 실행하지 않으며, 원본 `.env`·manifest를 편집해 소유권 검사를 우회하지 않습니다.
 
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/01-project-overview.png" alt="Microsoft Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
@@ -68,7 +76,7 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 
 ## Agent를 실제로 준비합니다 {#bootstrap}
 
-[01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Microsoft Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 준비 후 로그인·언어 변수를 설정하고 [빠른 생성](handbook.md#resources-quickstart)을 완료합니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
+[01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Microsoft Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 로그인 후 [빠른 생성](handbook.md#resources-quickstart)을 실행하면 언어·기록 위치도 자동으로 정해집니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
 한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 
@@ -107,7 +115,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
 
-**필수 비교는 [09의 Microsoft Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 별도 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 이 도구를 별도로 사용할 때는 `LAB_LANGUAGE` 또는 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 실행 언어를 일치시킵니다.
+**필수 비교는 [09의 Microsoft Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 독립 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 별도로 사용할 때는 이 도구의 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 언어를 일치시킵니다.
 
 ### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
 
@@ -189,7 +197,7 @@ Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·�
 | 필수 항목 | 기록할 실제 값·완료 근거 |
 |---|---|
 | 로그인 범위 | 사용자, tenant ID, subscription ID입니다. 비밀번호·토큰은 포함하지 않습니다. |
-| 로컬 경로 | 본인의 환경 이름, bootstrap config 경로, 런타임 `.env` 경로, `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR`입니다. `.env`는 생성 완료 후 기록합니다. |
+| 로컬 경로 | 본인의 환경 이름, bootstrap config 경로, 런타임 `.env` 경로입니다. 언어·기록 폴더는 자동 설정되며 `.env`는 생성 완료 후 기록합니다. |
 | Microsoft Azure 환경 | 리소스 그룹·Microsoft Foundry account·project·project endpoint·Search 이름입니다. |
 | 모델 | 네 배포의 실제 이름·제품명·버전·SKU·용량입니다. |
 | 정책 검색 | 정책 원본·언어, 업로드 8건, knowledge base·connection 이름, `retrieval_verified`입니다. |

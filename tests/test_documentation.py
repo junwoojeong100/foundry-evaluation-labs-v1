@@ -644,7 +644,7 @@ class DocumentationTests(unittest.TestCase):
             with self.subTest(language=language):
                 for term in ("check_identity", "credential_for", "AzureCliCredential", ".env"):
                     self.assertNotIn(term, setup)
-                for term in ("az login", "az account set", "az account show", "LAB_LANGUAGE", "LAB_ARTIFACTS_DIR"):
+                for term in ("az login", "az account set", "az account show", "--environment", "--config"):
                     self.assertIn(term, setup)
                 self.assertIn("EXPECTED_AZURE_USER", resources)
                 self.assertIn("<!-- source-code: lab/preflight.py:check_identity -->", resources)
@@ -695,7 +695,7 @@ class DocumentationTests(unittest.TestCase):
                 for required in (
                     "az login", "az account show", "bootstrap plan",
                     "bootstrap preflight", "bootstrap apply", "bootstrap status",
-                    "LAB_LANGUAGE", "LAB_ARTIFACTS_DIR", "iq prepare", "iq probe",
+                    "bootstrap setup", "--config", "iq prepare", "iq probe",
                     "native-agent --version 1", "native-agent --version 2",
                     "native-evals --name", "az group delete", "az group exists",
                     "OWNED_OBJECTS_ABSENT", "troubleshooting.md",
@@ -805,13 +805,13 @@ class DocumentationTests(unittest.TestCase):
                 shared = "\n".join(text for syntax, text in blocks if syntax == "sh")
                 for command in (
                     "brew install", "sudo apt install", "python3.13 --version", "python3 --version",
-                    "python3.13 -m venv", "python3 -m venv", "source .venv/bin/activate", "export LAB_LANGUAGE=",
+                    "python3.13 -m venv", "python3 -m venv", "source .venv/bin/activate",
                 ):
                     self.assertIn(command, bash)
                     self.assertNotIn(command, shared + powershell)
                 for command in (
                     "winget install", "py -3.13 --version", "py -3.13 -m venv",
-                    ".venv\\Scripts\\Activate.ps1", "$env:LAB_LANGUAGE",
+                    ".venv\\Scripts\\Activate.ps1",
                 ):
                     self.assertIn(command, powershell)
                     self.assertNotIn(command, shared + bash)
@@ -819,6 +819,21 @@ class DocumentationTests(unittest.TestCase):
                     self.assertIn(command, shared)
                 self.assertNotIn("source .venv", shared)
                 self.assertNotIn("$env:", shared)
+
+    def test_setup_and_resume_do_not_require_language_or_record_folder_exports(self):
+        for language in ("en", "ko"):
+            with self.subTest(language=language):
+                source = self.source(language)
+                commands = "\n".join(re.findall(r"```(?:sh|bash|powershell)\n(.*?)```", source, re.DOTALL))
+                self.assertNotIn("LAB_LANGUAGE", commands)
+                self.assertNotIn("LAB_ARTIFACTS_DIR", commands)
+                setup = source.split("{#setup-language}", 1)[1].split("<details", 1)[0]
+                self.assertNotIn("```", setup)
+                self.assertIn(f"--environment lab-{language}", setup)
+                self.assertIn("--config", setup)
+                self.assertIn("automatically" if language == "en" else "자동", setup)
+                self.assertIn(f"python -m lab bootstrap setup --environment lab-{language}\n", commands)
+                self.assertIn(f"python -m lab --config .lab/lab-{language}/.env preflight", commands)
 
     def test_advanced_mapping_checks_have_a_linked_operator_home(self):
         for language in ("en", "ko"):

@@ -31,8 +31,8 @@ class GovernanceTests(unittest.TestCase):
             shutil.copyfile(SOURCE_ROOT / "lab" / name, self.package / "lab" / name)
         for target in ("lab.governance.ROOT", "lab.calibration.ROOT", "lab.batch.ROOT"):
             self.patch(target, self.package)
-        for target in ("lab.governance.ARTIFACTS", "lab.calibration.ARTIFACTS", "lab.files.ARTIFACTS"):
-            self.patch(target, self.artifacts)
+        for target in ("lab.governance.artifacts_dir", "lab.calibration.artifacts_dir", "lab.files.artifacts_dir"):
+            self.patch(target, return_value=self.artifacts)
         self.config = SimpleNamespace(judge="unit-only-judge", project_endpoint="https://unit-test.invalid/project")
         self.prompt = self.artifacts / "agents/prompts/candidate.txt"
         self.prompt.parent.mkdir(parents=True)

@@ -24,7 +24,7 @@ from uuid import uuid4
 from lab.config import LabError
 from lab.content import content_path, language_metadata, require_content_language, selected_language
 from lab.evidence import observed_model_drift, strict_json_loads, validate_case
-from lab.files import ARTIFACTS, ROOT, code_provenance, safe_run_dir, sha256_file
+from lab.files import ROOT, artifacts_dir, code_provenance, safe_run_dir, sha256_file
 
 
 CONTRACT_VERSION = "atlas-evaluation-v1"
@@ -546,7 +546,7 @@ def run_calibration(config, calibration_id: str, *, confirm: bool = False,
     safe_id(calibration_id, "calibration-id")
     path = content_path(ROOT, "data/calibration/fixtures.jsonl") if fixtures_path is None else Path(fixtures_path)
     fixtures, contract = load_fixtures(path), evaluator_contract()
-    directory = ARTIFACTS / "calibration" / calibration_id
+    directory = artifacts_dir() / "calibration" / calibration_id
     try:
         directory.mkdir(parents=True, exist_ok=False)
     except FileExistsError as exc:

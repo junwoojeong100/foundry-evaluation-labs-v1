@@ -7,7 +7,7 @@ from pathlib import Path
 
 from lab.config import Config, LabError
 from lab.content import content_path, language_metadata, require_content_language
-from lab.files import ARTIFACTS, ROOT, artifact_reference, read_json, read_jsonl, sha256_file, write_once_json
+from lab.files import ROOT, artifacts_dir, artifact_reference, read_json, read_jsonl, sha256_file, write_once_json
 
 
 def collect_prompt(config: Config, request_path: Path, response_path: Path) -> dict:
@@ -26,7 +26,7 @@ def collect_prompt(config: Config, request_path: Path, response_path: Path) -> d
         raise LabError("현재 프로젝트의 실제 Prompt Optimizer 요청/응답 계약을 확인할 수 없습니다.")
     if original == candidate:
         raise LabError("최적화 응답의 원본과 후보가 같습니다. 개선 후보라고 등록하지 않습니다.")
-    directory = ARTIFACTS / "prompt-optimizer"
+    directory = artifacts_dir() / "prompt-optimizer"
     record = {
         **language_metadata(),
         "kind": "PROMPT_OPTIMIZER_PORTAL_RESPONSE_IMPORT",
@@ -72,7 +72,7 @@ def collect_agent(config: Config, result_path: Path, candidate_path: Path) -> di
     source = inputs.get("agent", {})
     options = inputs.get("options", {})
     prompt = candidate.get("system_prompt")
-    directory = ARTIFACTS / "optimizer"
+    directory = artifacts_dir() / "optimizer"
     handoff = read_json(directory / "handoff.json")
     require_content_language(handoff)
     if (
@@ -156,8 +156,8 @@ def check_native_pair(baseline_items: Path, candidate_items: Path) -> dict:
     from lab.evidence import score_row, summarize
 
     cases = read_jsonl(content_path(ROOT, "data/splits/dev.jsonl"))
-    agent = read_json(ARTIFACTS / "agents/iq.json")
-    selected = read_json(ARTIFACTS / "optimizer/selected-candidate.json")
+    agent = read_json(artifacts_dir() / "agents/iq.json")
+    selected = read_json(artifacts_dir() / "optimizer/selected-candidate.json")
     require_content_language(agent)
     require_content_language(selected)
     by_query = {case["query"]: case for case in cases}
@@ -211,5 +211,5 @@ def check_native_pair(baseline_items: Path, candidate_items: Path) -> dict:
             "metrics": summary["metrics"], "response_mapping": response_records,
         }
     result["interpretation"] = "Same original dev questions and deterministic lab rules; not a fresh holdout, calibrated semantic pass, or operational approval."
-    write_once_json(ARTIFACTS / "optimizer/native-rule-comparison.json", result)
+    write_once_json(artifacts_dir() / "optimizer/native-rule-comparison.json", result)
     return result

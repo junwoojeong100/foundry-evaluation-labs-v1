@@ -1,12 +1,20 @@
 """Explicit, tenant-bound configuration; no ambient credential fallback."""
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
 import re
+from typing import Iterator
 from uuid import UUID
 
 class LabError(Exception):
     """An actionable workshop error that is safe to show on the CLI."""
+
+
+def environment_language(environment: str) -> str | None:
+    match = re.match(r"^lab-(ko|en)(?:-|$)", environment)
+    return match.group(1) if match else None
 
 
 @dataclass(frozen=True)
@@ -30,6 +38,8 @@ class Config:
     tuned_model: str = ""
     embedding: str = ""
     bootstrap_config: str = ""
+    language: str | None = None
+    artifacts_dir: Path | None = None
 
     @property
     def account_id(self) -> str:
@@ -57,6 +67,8 @@ class Config:
         return f"{self.prefix}-{stage}"
 
     def validate(self) -> None:
+        if self.language is not None and self.language not in {"ko", "en"}:
+            raise LabError("LAB_LANGUAGE must be ko or en in the selected configuration.")
         for name, value in (
             ("AZURE_SUBSCRIPTION_ID", self.subscription_id),
             ("AZURE_TENANT_ID", self.tenant_id),
@@ -103,6 +115,22 @@ class Config:
             raise LabError("embedding에 실제 모델 배포 이름을 지정해야 합니다.")
 
 
+_ACTIVE_CONFIG: ContextVar[Config | None] = ContextVar("lab_config", default=None)
+
+
+def active_config() -> Config | None:
+    return _ACTIVE_CONFIG.get()
+
+
+@contextmanager
+def use_config(config: Config) -> Iterator[None]:
+    token = _ACTIVE_CONFIG.set(config)
+    try:
+        yield
+    finally:
+        _ACTIVE_CONFIG.reset(token)
+
+
 def load_config(path: Path) -> Config:
     from dotenv import dotenv_values
 
@@ -134,11 +162,27 @@ def load_config(path: Path) -> Config:
     if missing:
         raise LabError("설정값 누락: " + ", ".join(missing))
     kwargs = {field: str(values[env]).strip() for field, env in names.items()}
+    language = environment_language(kwargs["prefix"])
+    if "LAB_LANGUAGE" in values:
+        language = (values["LAB_LANGUAGE"] or "").strip()
+        if language not in {"ko", "en"}:
+            raise LabError("LAB_LANGUAGE must be ko or en in the selected configuration.")
+    artifacts_dir = None
+    if "LAB_ARTIFACTS_DIR" in values:
+        value = (values["LAB_ARTIFACTS_DIR"] or "").strip()
+        if not value:
+            raise LabError("LAB_ARTIFACTS_DIR is empty in the selected configuration.")
+        artifacts_dir = Path(value).expanduser()
+        if not artifacts_dir.is_absolute():
+            artifacts_dir = path.parent / artifacts_dir
+        artifacts_dir = artifacts_dir.resolve()
     config = Config(
         **kwargs,
         tuned_model=(values.get("TUNED_MODEL_DEPLOYMENT") or "").strip(),
         embedding=(values.get("EMBEDDING_DEPLOYMENT") or "").strip(),
         bootstrap_config=(values.get("BOOTSTRAP_CONFIG") or "").strip(),
+        language=language,
+        artifacts_dir=artifacts_dir,
     )
     config.validate()
     return config

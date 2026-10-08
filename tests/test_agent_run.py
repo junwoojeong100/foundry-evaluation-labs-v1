@@ -50,7 +50,7 @@ class AgentRunTests(unittest.TestCase):
     def test_model_drift_blocks_paid_calls_before_capture(self):
         project, client = self._project()
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.files.ARTIFACTS", Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)), \
              patch("lab.batch.load_agent", return_value=self.agent), \
              patch("lab.batch.credential_for", return_value=nullcontext(None)), \
              patch("lab.batch.AIProjectClient", return_value=nullcontext(project)), \
@@ -62,7 +62,7 @@ class AgentRunTests(unittest.TestCase):
     def test_mid_run_model_drift_preserves_capture_but_invalidates_comparison(self):
         project, client = self._project()
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.files.ARTIFACTS", Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)), \
              patch("lab.batch.load_agent", return_value=self.agent), \
              patch("lab.batch.credential_for", return_value=nullcontext(None)), \
              patch("lab.batch.AIProjectClient", return_value=nullcontext(project)), \
@@ -79,7 +79,7 @@ class AgentRunTests(unittest.TestCase):
     def test_complete_run_exports_plain_answers_and_versioned_evidence(self):
         project, client = self._project()
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.files.ARTIFACTS", Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)), \
              patch("lab.batch.load_agent", return_value=self.agent), \
              patch("lab.batch.credential_for", return_value=nullcontext(None)), \
              patch("lab.batch.AIProjectClient", return_value=nullcontext(project)), \

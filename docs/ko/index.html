@@ -171,10 +171,10 @@
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>이 단계에서 하는 일:</strong> 사용할 Microsoft Azure 구독·권한과 로컬 실행 환경을 확인합니다.</p>
 <p><strong>중요한 이유:</strong> 브라우저와 CLI가 다른 계정이나 구독을 사용하면 권한 오류가 나거나 잘못된 환경에 자원을 만들 수 있습니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구·로그인·언어 설정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
+<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구와 로그인 계정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
 </div>
 
-<p class="step-route"><strong>실행 순서:</strong> <a href="#setup-account">계정·권한 확인</a> → <a href="#setup-codespaces">Codespaces 열기 · 권장</a> → <a href="#setup-login">터미널 · 로그인</a> → <a href="#setup-language">언어 설정</a>. Codespaces를 사용할 수 없으면 <a href="#setup-local-install">내 PC 설치</a>를 선택합니다.</p>
+<p class="step-route"><strong>실행 순서:</strong> <a href="#setup-account">계정·권한 확인</a> → <a href="#setup-codespaces">Codespaces 열기 · 권장</a> → <a href="#setup-login">터미널 · 로그인</a>. Codespaces를 사용할 수 없으면 <a href="#setup-local-install">내 PC 설치</a>를 선택합니다.</p>
 <details class="guide-details optional-path">
 <summary>처음 보는 용어가 있을 때만 · 계정·구독·프로젝트 구분</summary>
 <div aria-label="처음 사용하는 Microsoft Azure 용어" class="concept-primer" id="basics" role="group">
@@ -379,7 +379,7 @@ python scripts/build_datasets.py --language ko --check
 </code></pre>
 <p>명령 목록과 데이터 검사 성공을 확인합니다. <code>ModuleNotFoundError</code>가 나오면 <code>python -m pip --version</code>으로 <code>.venv</code>의 Python을 사용하는지 확인합니다. 시스템 Python에 임의로 패키지를 설치하지 않습니다.</p>
 </details>
-<h3 id="setup-login">CLI 로그인과 언어를 고정합니다</h3>
+<h3 id="setup-login">CLI 로그인 계정을 확인합니다</h3>
 <p>Codespaces 또는 선택한 내 PC 터미널에서 실행합니다. <code>--use-device-code</code>는 터미널에 표시된 Microsoft 로그인 주소를 브라우저에서 열고 일회용 코드를 직접 입력하는 방식입니다. <strong>코드·토큰을 다른 사람에게 전달하지 않습니다.</strong> 포털과 같은 Microsoft Azure 계정으로 로그인한 뒤 아래 <code>YOUR_SUBSCRIPTION_ID</code>를 자신의 구독 ID로 바꿉니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">az login --use-device-code
@@ -388,19 +388,9 @@ az account set --subscription &quot;YOUR_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
 </code></pre>
 <p>마지막 출력의 <strong><code>state</code>가 <code>Enabled</code>인지 확인</strong>하고 <code>user</code>, <code>tenant</code>, <code>subscription</code>을 포털과 대조합니다. 브라우저와 CLI의 로그인은 별개입니다. 다른 디렉터리가 선택됐다면 <code>az login --use-device-code --tenant "YOUR_TENANT_ID"</code>로 승인된 디렉터리를 지정합니다. 조직에서 device-code 로그인을 차단하면 우회하지 말고 <a href="troubleshooting.html#codespaces">로그인 문제 해결</a>을 확인합니다.</p>
-<h4 id="setup-language">언어와 실행 기록 폴더를 지정합니다</h4>
-<p>이 한국어 실습의 환경 이름은 <strong><code>lab-ko</code></strong>로 사용합니다. 같은 이름의 로컬 계획이 이미 있으면 새로 만들지 않고 원래 기록을 재개합니다. 별도 수업이면 <code>lab-ko-02</code>처럼 새 이름을 정하고 이후 모든 경로와 prefix도 함께 바꿉니다.</p>
-<p><strong>Codespaces/macOS/Linux에서는 다음 환경 변수를 지정합니다.</strong></p>
-<p class="command-label">터미널에서 실행 · Codespaces/macOS/Linux</p>
-<pre class="terminal-command"><code class="language-bash">export LAB_LANGUAGE=ko
-export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-ko/artifacts&quot;
-</code></pre>
-<p><strong>Windows PowerShell에서는 다음 환경 변수를 지정합니다.</strong></p>
-<p class="command-label">터미널에서 실행 · Windows PowerShell</p>
-<pre class="terminal-command"><code class="language-powershell">$env:LAB_LANGUAGE = &quot;ko&quot;
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifacts&quot;
-</code></pre>
-<p>두 변수는 현재 터미널에만 적용됩니다. <strong>새 터미널에서는 아래 재개 절차</strong>를 사용합니다. <code>LAB_LANGUAGE</code>를 바꾸면서 기존 실행 폴더를 재사용하지 않습니다.</p>
+<h4 id="setup-language">언어와 기록 위치는 자동으로 적용됩니다</h4>
+<p><strong>따로 실행할 설정 명령은 없습니다.</strong> 02의 생성 명령에서 <code>--environment lab-ko</code>를 사용하면 한국어와 해당 환경의 기록 위치를 자동으로 저장합니다. 영어 가이드는 <code>lab-en</code>을 사용합니다. 다음 단계부터는 명령에 있는 <code>--config</code>가 같은 설정을 읽으므로 새 터미널에서도 환경 변수를 다시 지정하지 않습니다.</p>
+<p>같은 실습을 재개할 때는 기존 환경을 사용합니다. 별도 한국어 실습이면 <code>lab-ko-02</code>처럼 <strong><code>lab-ko-</code>로 시작하는 이름</strong>을 사용하고 이후 경로도 함께 바꿉니다. 기록은 자동으로 저장되며 정리 전에 삭제하지 않습니다.</p>
 <details class="guide-details optional-path">
 <summary>중단 후 재개할 때만 · 터미널 설정을 복원합니다</summary>
 <h4 id="setup-resume">같은 실습을 새 터미널에서 재개합니다</h4>
@@ -408,14 +398,10 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifac
 <p><strong>Codespaces/macOS/Linux:</strong></p>
 <p class="command-label">터미널에서 실행 · Codespaces/macOS/Linux</p>
 <pre class="terminal-command"><code class="language-bash">source .venv/bin/activate
-export LAB_LANGUAGE=ko
-export LAB_ARTIFACTS_DIR=&quot;$PWD/.lab/lab-ko/artifacts&quot;
 </code></pre>
 <p><strong>Windows PowerShell:</strong></p>
 <p class="command-label">터미널에서 실행 · Windows PowerShell</p>
 <pre class="terminal-command"><code class="language-powershell">.\.venv\Scripts\Activate.ps1
-$env:LAB_LANGUAGE = &quot;ko&quot;
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path &quot;.lab/lab-ko/artifacts&quot;
 </code></pre>
 <p>PowerShell 활성화가 차단되면 조직 정책을 바꾸지 않고 이후 <code>python</code>을 <code>.\.venv\Scripts\python.exe</code>로 바꿉니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
@@ -424,12 +410,13 @@ python -m lab --help
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
 </code></pre>
 <p>Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 <code>Enabled</code>를 확인합니다. 로그인이 만료됐거나 다르면 <a href="#setup-login">같은 계정으로 로그인</a>한 뒤 다시 확인합니다.</p>
+<p><strong>언어·기록 폴더 설정은 반복하지 않습니다.</strong> 다음 명령의 원래 <code>--config</code> 경로를 유지하면 저장된 설정을 자동으로 사용합니다.</p>
 <p>자신의 <code>notes.md</code>에서 마지막 완료 단계를 찾습니다. 환경 생성 상태는 <a href="#resources-status">02의 읽기 전용 status</a>, 제출한 평가의 ID·상태는 <a href="#baseline-identifiers">06의 조회</a>, 후보 재평가 수집은 <a href="#decision-run">09의 같은 receipt 재개</a>로 확인합니다. <strong>완료한 작업은 다시 제출하지 않고, 진행 중인 작업은 같은 ID로 조회합니다.</strong> 01에서는 Microsoft Azure 환경을 생성하거나 SDK를 호출하지 않습니다.</p>
 </details>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: 로그인과 로컬 설정</summary>
 <h4 id="setup-code-portal">코드 ↔ 포털 · 로그인과 로컬 설정을 확인합니다</h4>
-<p class="execution-guide"><strong>실행 위치:</strong> 위의 <a href="#setup-login">터미널 로그인 명령</a>과 <a href="#setup-language">언어·기록 폴더 설정</a>을 실행합니다. 이 단계에서는 명령 출력과 포털 값을 직접 대조합니다.</p>
+<p class="execution-guide"><strong>실행 위치:</strong> 위의 <a href="#setup-login">터미널 로그인 명령</a>을 실행합니다. <a href="#setup-language">언어·기록 자동 설정 안내</a>는 설명이며 실행할 추가 명령이 아닙니다.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -445,9 +432,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal 우측 상단 계정의 Directory와 <strong>Subscriptions → 사용할 구독 → Overview</strong>의 ID·상태를 직접 대조합니다.</td>
 </tr>
 <tr>
-<td><span class="mobile-cell-label" aria-hidden="true">실행한 명령·설정값</span><code>LAB_LANGUAGE</code>, <code>LAB_ARTIFACTS_DIR</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">지금 확인하는 내용</span>현재 터미널의 데이터 언어와 실행 기록 경로를 지정합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>포털에 없는 로컬 설정입니다. 한국어 실습은 <code>ko</code>와 <code>.lab/lab-ko/artifacts</code>를 사용합니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">실행한 명령·설정값</span><code>--environment lab-ko</code> → 이후 명령의 <code>--config</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">지금 확인하는 내용</span>02에서 언어·기록 위치를 저장하고 이후 명령이 읽습니다. 터미널 변수 설정은 없습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>포털 언어 선택과 무관한 실습 설정입니다. 한국어 자료와 해당 환경의 기록을 사용합니다.</td>
 </tr>
 </tbody>
 </table>
@@ -465,10 +452,11 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#resources-quickstart">터미널 · 빠른 생성</a> → <a href="#resources-notes">실습 기록</a> → <a href="#resources-runtime-check">포털·런타임 확인</a>.</p>
 <h3 id="resources-quickstart">생성 명령 하나로 환경을 준비합니다</h3>
-<p>01의 로그인·언어 설정을 마쳤다면 바로 실행합니다. <strong>구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 자원 이름과 설정 파일은 자동으로 만듭니다.</strong> JSON 승인서를 직접 작성할 필요가 없습니다.</p>
+<p>01의 로그인을 마쳤다면 바로 실행합니다. <strong>구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 언어·기록 위치·자원 이름·설정 파일은 자동으로 정합니다.</strong> 별도 환경 변수나 언어 옵션을 입력하거나 JSON 승인서를 직접 작성할 필요가 없습니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap setup --environment lab-ko
 </code></pre>
+<p><code>lab-ko</code>는 한국어, <code>lab-en</code>은 영어입니다. <code>lab-ko-02</code>·<code>lab-en-02</code> 같은 별도 환경도 같은 규칙을 따릅니다. 한국어 실습의 명령 실행 결과는 <code>.lab/lab-ko/artifacts/</code>에 저장됩니다.</p>
 <p>프로그램은 <strong>계획 → 권한·모델·할당량 검사 → 실제 승인 내용 입력 → 생성</strong> 순서로 안내합니다. 지역은 <code>northcentralus</code>, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.</p>
 <p>네 배포의 역할은 <strong>Agent(답변), Judge(채점), Optimizer/검색 planner(지침 개선·검색 계획), embedding(검색용 숫자 변환)</strong>입니다. 모델을 직접 만드는 실습이 아니라 준비된 모델을 호출할 환경을 만듭니다.</p>
 <p>준비 검사가 통과하면 다음 다섯 가지를 입력합니다. <strong>01에서 실제로 승인받은 값</strong>을 사용합니다. 값이 정해지지 않았다면 <strong>Ctrl+C로 중단</strong>하고 승인을 확보합니다. 마지막 생성 확인에서는 Enter로 취소할 수 있습니다.</p>
@@ -506,6 +494,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p>확인 전에는 Microsoft Azure 자원을 생성하지 않습니다. 확인 후에는 실제 생성·과금이 시작될 수 있습니다. <strong>입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며</strong>, 삭제·학습·자동 재시도 승인도 아닙니다.</p>
 <p><strong>정상 결과는 <code>status: APPLIED</code>와 <code>.lab/lab-ko/.env</code> 생성입니다.</strong> <code>config.json</code>·<code>approval.json</code>·<code>manifest.json</code>도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다. 오류가 있으면 <a href="troubleshooting.html#provisioning">생성 문제 해결</a>로 이동합니다.</p>
 <p><strong><code>.env</code>는 프로젝트 연결 주소(Project endpoint)와 모델 배포 이름을 담은 설정 파일</strong>이며 Python 패키지 폴더인 <code>.venv</code>와 다릅니다. 이후 명령이 <code>--config</code>로 읽으므로 직접 실행하거나 <code>source</code>하지 않습니다. 생성이 실패했다면 <code>.env.example</code>을 복사하여 대신하지 않습니다.</p>
+<p>프로그램은 같은 파일의 언어·기록 위치도 자동으로 읽습니다. <strong>셸에 남아 있는 과거 환경 변수보다 선택한 설정 파일이 우선</strong>합니다. 이전 버전에서 생성한 <code>lab-ko</code>·<code>lab-en</code> 환경도 파일을 고치거나 재생성하지 않고 사용할 수 있습니다. 다른 언어의 기존 기록을 다시 표시하거나 덮어쓰지는 않습니다.</p>
 <p>같은 이름으로 다시 실행하면 <strong>아직 생성 시도가 없는 계획만 이어 준비</strong>합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 <a href="#resources-status">status 조회</a>로 확인합니다.</p>
 <p>기존의 유효한 승인 파일이 있으면 입력을 반복하지 않고 기록된 한도를 확인합니다. 기존 계획·승인값을 새 기본값으로 바꾸거나 만료 시각을 자동 연장하지 않습니다.</p>
 <h4 id="resources-notes">실습 기록 파일을 만듭니다</h4>
@@ -602,7 +591,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:plan</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L657-L726">전체 구현 파일 · 657–726</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L657-L726">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L660-L736">전체 구현 파일 · 660–736</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L660-L736">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:plan"><code class="language-python">def plan(
     *, subscription_id: str, tenant_id: str, expected_user: str,
     environment: str | None = None, root: Path | str = Path(&quot;.lab&quot;),
@@ -610,10 +599,17 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
     resource_group: str | None = None, agent_sku: str | None = None,
 ) -&gt; dict:
     &quot;&quot;&quot;Create a private local plan only; never query Azure or overwrite .env/artifacts.&quot;&quot;&quot;
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language
+
     instance = uuid4()
     suffix = instance.hex[:8]
     date = _now().strftime(&quot;%Y%m%d&quot;)
     environment = environment or f&quot;lab-{date}-{suffix}&quot;
+    try:
+        language = environment_language(environment) or selected_language()
+    except LabError as exc:
+        raise BootstrapError(str(exc)) from exc
     root = Path(root)
     if root.is_symlink() or any(parent.is_symlink() for parent in root.parents):
         raise BootstrapError(&quot;Environment root must not traverse symlinks.&quot;)
@@ -630,7 +626,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         model.setdefault(&quot;deployment&quot;, f&quot;lab-{model.get(&#x27;roles&#x27;, [&#x27;model&#x27;])[0]}-{suffix}&quot;)
     config = {
         &quot;schema_version&quot;: SCHEMA_VERSION, &quot;instance_id&quot;: str(instance), &quot;created_at&quot;: _stamp(),
-        &quot;environment&quot;: environment, &quot;environment_dir&quot;: str(directory),
+        &quot;environment&quot;: environment, &quot;environment_dir&quot;: str(directory), &quot;language&quot;: language,
         &quot;subscription_id&quot;: subscription_id, &quot;tenant_id&quot;: tenant_id, &quot;expected_user&quot;: expected_user,
         &quot;location&quot;: location, &quot;retention_days&quot;: retention_days, &quot;models&quot;: selected,
         &quot;deployment_name&quot;: f&quot;lab-bootstrap-{suffix}&quot;,
@@ -722,7 +718,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:_preflight</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L1307-L1339">전체 구현 파일 · 1307–1339</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1307-L1339">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L1317-L1349">전체 구현 파일 · 1317–1349</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1317-L1349">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_preflight"><code class="language-python">def _preflight(config: dict, manifest: dict, run: Run) -&gt; tuple[dict, dict, dict]:
     identity = _identity(config, manifest, run)
     prerequisites = _prerequisites(config, run)
@@ -830,7 +826,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:apply</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L1901-L2092">전체 구현 파일 · 1901–2092</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1901-L2092">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L1916-L2107">전체 구현 파일 · 1916–2107</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1916-L2107">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:apply"><code class="language-python">def apply(
     config_path: Path | str, approval_path: Path | str | None = None, *,
     run: Run = az_json, what_if: bool = False, retry: bool = False,
@@ -1029,7 +1025,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:_parameters</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L1391-L1400">전체 구현 파일 · 1391–1400</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1391-L1400">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L1401-L1410">전체 구현 파일 · 1401–1410</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1401-L1410">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_parameters"><code class="language-python">def _parameters(config: dict, principal: str) -&gt; dict:
     return {
         &quot;$schema&quot;: &quot;https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#&quot;,
@@ -1046,7 +1042,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:status</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L2095-L2122">전체 구현 파일 · 2095–2122</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2095-L2122">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L2110-L2137">전체 구현 파일 · 2110–2137</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2110-L2137">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:status"><code class="language-python">def status(
     config_path: Path | str, *, run: Run = az_json, approval_path: Path | str | None = None,
 ) -&gt; dict:
@@ -1081,17 +1077,17 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:setup</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/bootstrap.py#L2125-L2237">전체 구현 파일 · 2125–2237</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2125-L2237">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/bootstrap.py#L2140-L2255">전체 구현 파일 · 2140–2255</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2140-L2255">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:setup"><code class="language-python">def setup(
     environment: str, *, root: Path | str = Path(&quot;.lab&quot;), run: Run = az_json,
     read: Callable[[str], str] = input, write: Callable[[str], None] = print,
 ) -&gt; dict:
     &quot;&quot;&quot;Guide a participant through the existing exact-scope bootstrap, without retries.&quot;&quot;&quot;
-    from lab.config import LabError
-    from lab.content import selected_language, text
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language, text as localized_text
 
     try:
-        selected_language()
+        language = environment_language(environment) or selected_language()
     except LabError as exc:
         raise BootstrapError(str(exc)) from exc
     if not re.fullmatch(r&quot;[a-z][a-z0-9-]{2,23}&quot;, environment):
@@ -1115,6 +1111,8 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
             expected_user=account[&quot;user&quot;].get(&quot;name&quot;, &quot;&quot;), environment=environment, root=root,
         )
     directory, config, manifest = _load(config_path)
+    language = config.get(&quot;language&quot;, language)
+    text = partial(localized_text, language=language)
     config_path = directory / &quot;config.json&quot;
     approval_path = directory / &quot;approval.json&quot;
     if manifest[&quot;phase&quot;] != &quot;planned&quot; or manifest[&quot;attempts&quot;]:
@@ -1135,6 +1133,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         &quot;config_path&quot;: str(config_path), &quot;user&quot;: config[&quot;expected_user&quot;],
         &quot;subscription&quot;: config[&quot;subscription_id&quot;], &quot;tenant&quot;: config[&quot;tenant_id&quot;],
         &quot;location&quot;: config[&quot;location&quot;], &quot;resources&quot;: config[&quot;names&quot;], &quot;models&quot;: config[&quot;models&quot;],
+        &quot;language&quot;: language, &quot;artifacts_dir&quot;: str(directory / &quot;artifacts&quot;),
         &quot;log_retention_days&quot;: config[&quot;retention_days&quot;],
     }))
     write(text(
@@ -1683,7 +1682,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
     documents_path = content_path(ROOT, &quot;data/knowledge/documents.json&quot;)
     documents = read_json(documents_path)
     content_hash = sha256_file(documents_path)
-    setup_path = ARTIFACTS / &quot;knowledge/setup.json&quot;
+    setup_path = artifacts_dir() / &quot;knowledge/setup.json&quot;
     previous = None
     if setup_path.exists():
         previous = read_json(setup_path)
@@ -1727,13 +1726,13 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
             },
         }
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / &quot;knowledge/config-snapshot.json&quot;, payloads)
+        save_json(artifacts_dir() / &quot;knowledge/config-snapshot.json&quot;, payloads)
         search = JsonHttp(credential, scope=SEARCH_SCOPE, allowed_origin=config.search_endpoint)
         index_url = search_url(config, &quot;indexes&quot;, names[&quot;index&quot;])
         _ensure_created(config, search, &quot;search_index&quot;, names[&quot;index&quot;], index_url, payloads[&quot;index&quot;])
         embedding = embed(
             config, [f&quot;{doc[&#x27;title&#x27;]}\n{doc[&#x27;content&#x27;]}&quot; for doc in documents],
-            ARTIFACTS / &quot;knowledge/document-embeddings.json&quot;,
+            artifacts_dir() / &quot;knowledge/document-embeddings.json&quot;,
         )
         vectors = validate_vectors(embedding[&quot;response&quot;], len(documents))
         uploaded = [{
@@ -1743,9 +1742,9 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
             &quot;effective_date&quot;: doc[&quot;effective_date&quot;],
             &quot;content_vector&quot;: vector,
         } for doc, vector in zip(documents, vectors, strict=True)]
-        upload_path = ARTIFACTS / &quot;knowledge/upload-response.json&quot;
+        upload_path = artifacts_dir() / &quot;knowledge/upload-response.json&quot;
         upload_contract = {&quot;documents_sha256&quot;: content_hash, &quot;payload_sha256&quot;: payload_hash,
-                           &quot;embedding_sha256&quot;: sha256_file(ARTIFACTS / &quot;knowledge/document-embeddings.json&quot;)}
+                           &quot;embedding_sha256&quot;: sha256_file(artifacts_dir() / &quot;knowledge/document-embeddings.json&quot;)}
         if upload_path.exists():
             upload_record = read_json(upload_path)
             if upload_record.get(&quot;contract&quot;) != upload_contract or upload_record.get(&quot;status&quot;) != &quot;completed&quot;:
@@ -1764,7 +1763,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
             or {item.get(&quot;key&quot;) for item in statuses} != {doc[&quot;id&quot;] for doc in documents}
             or any(item.get(&quot;status&quot;) is not True for item in statuses)
         ):
-            save_json(ARTIFACTS / &quot;knowledge/upload-error.json&quot;, upload_body)
+            save_json(artifacts_dir() / &quot;knowledge/upload-error.json&quot;, upload_body)
             raise LabError(&quot;일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.&quot;)
         save_json(upload_path, {&quot;status&quot;: &quot;completed&quot;, &quot;contract&quot;: upload_contract, &quot;response&quot;: upload_body})
         _ensure_created(
@@ -1787,7 +1786,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         setup[&quot;uploaded_documents&quot;] = len(uploaded)
         setup[&quot;embedding_usage&quot;] = embedding[&quot;response&quot;].get(&quot;usage&quot;)
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / &quot;knowledge/documents-snapshot.json&quot;, documents)
+        save_json(artifacts_dir() / &quot;knowledge/documents-snapshot.json&quot;, documents)
         return setup
 </code></pre>
 </details>
@@ -1882,7 +1881,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         }],
     }
     key = hashlib.sha256(query.encode(&quot;utf-8&quot;)).hexdigest()[:16]
-    directory = ARTIFACTS / &quot;knowledge/probes&quot; / key
+    directory = artifacts_dir() / &quot;knowledge/probes&quot; / key
     intent_path, response_path = directory / &quot;iq-request.json&quot;, directory / &quot;iq-response.json&quot;
     if response_path.exists():
         if read_json(intent_path) != request:
@@ -1899,13 +1898,13 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
             )
         body = result.body
         save_json(response_path, body)
-    if not (ARTIFACTS / &quot;knowledge/retrieve-response.json&quot;).exists():
-        save_json(ARTIFACTS / &quot;knowledge/retrieve-response.json&quot;, body)
+    if not (artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;).exists():
+        save_json(artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;, body)
     if not body.get(&quot;response&quot;) or not body.get(&quot;references&quot;) or not body.get(&quot;activity&quot;):
         raise LabError(&quot;검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.&quot;)
     setup[&quot;status&quot;] = &quot;retrieval_verified&quot;
     setup[&quot;probe_scope&quot;] = &quot;Human CLI identity; deployed-agent managed identity must still be verified by an agent call.&quot;
-    save_json(ARTIFACTS / &quot;knowledge/setup.json&quot;, setup)
+    save_json(artifacts_dir() / &quot;knowledge/setup.json&quot;, setup)
     return {&quot;status&quot;: setup[&quot;status&quot;], &quot;references&quot;: body[&quot;references&quot;], &quot;activity&quot;: body[&quot;activity&quot;], &quot;scope&quot;: setup[&quot;probe_scope&quot;]}
 </code></pre>
 </details>
@@ -1989,7 +1988,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
     state = workspace(config)
     tool = knowledge_tool(config)
     snapshot = model_snapshot(config, config.model)
-    snapshot_path = ARTIFACTS / &quot;agents/native-model.json&quot;
+    snapshot_path = artifacts_dir() / &quot;agents/native-model.json&quot;
     if snapshot_path.exists():
         if read_json(snapshot_path) != snapshot:
             raise LabError(&quot;The Agent model deployment changed after setup; preserve the original comparison.&quot;)
@@ -2004,7 +2003,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         &quot;tools&quot;: [tool.as_dict()],
         &quot;text&quot;: native_response_format(),
     }
-    receipt = ARTIFACTS / &quot;agents&quot; / f&quot;native-v{version}.json&quot;
+    receipt = artifacts_dir() / &quot;agents&quot; / f&quot;native-v{version}.json&quot;
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             result = ensure_fixed_release(
@@ -3302,7 +3301,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         else:
             raise LabError(f&quot;자동 정리를 지원하지 않는 기록 유형: {kind}&quot;)
         actions.append(dict(record))
-    for metadata_path in (ARTIFACTS / &quot;runs&quot;).glob(&quot;*/metadata.json&quot;):
+    for metadata_path in (artifacts_dir() / &quot;runs&quot;).glob(&quot;*/metadata.json&quot;):
         metadata = read_json(metadata_path)
         if metadata.get(&quot;workspace_id&quot;) != state[&quot;workspace_id&quot;]:
             continue
@@ -3399,7 +3398,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
                         transport = arm if kind == &quot;project_connection&quot; else search
                         transport.request(&quot;DELETE&quot;, action[&quot;url&quot;], etag=action.get(&quot;current_etag&quot;))
                     completed.append({**action, &quot;result&quot;: &quot;delete_request_succeeded&quot;})
-                    save_json(ARTIFACTS / &quot;cleanup.json&quot;, {**plan, &quot;mode&quot;: &quot;DELETING&quot;, &quot;completed&quot;: completed})
+                    save_json(artifacts_dir() / &quot;cleanup.json&quot;, {**plan, &quot;mode&quot;: &quot;DELETING&quot;, &quot;completed&quot;: completed})
                 remaining = []
                 for action in inspected:
                     kind = action[&quot;kind&quot;]
@@ -3428,7 +3427,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
         &quot;completed&quot;: completed,
         &quot;remaining&quot;: remaining,
     }
-    save_json(ARTIFACTS / &quot;cleanup.json&quot;, result)
+    save_json(artifacts_dir() / &quot;cleanup.json&quot;, result)
     return result
 </code></pre>
 </details>

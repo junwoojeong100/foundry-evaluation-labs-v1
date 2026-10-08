@@ -14,7 +14,7 @@ from azure.core.exceptions import ResourceNotFoundError
 from lab.auth import credential_for
 from lab.config import Config, LabError
 from lab.content import content_path, language_metadata, require_content_language
-from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, record_created, safe_run_dir, sha256_file, workspace, write_once_json
+from lab.files import ROOT, artifacts_dir, artifact_reference, code_provenance, read_json, record_created, safe_run_dir, sha256_file, workspace, write_once_json
 from lab.preflight import model_snapshot, save_json
 
 
@@ -132,7 +132,7 @@ def create_native_agent(config: Config, version: str, prompt: Path) -> dict:
     state = workspace(config)
     tool = knowledge_tool(config)
     snapshot = model_snapshot(config, config.model)
-    snapshot_path = ARTIFACTS / "agents/native-model.json"
+    snapshot_path = artifacts_dir() / "agents/native-model.json"
     if snapshot_path.exists():
         if read_json(snapshot_path) != snapshot:
             raise LabError("The Agent model deployment changed after setup; preserve the original comparison.")
@@ -147,7 +147,7 @@ def create_native_agent(config: Config, version: str, prompt: Path) -> dict:
         "tools": [tool.as_dict()],
         "text": native_response_format(),
     }
-    receipt = ARTIFACTS / "agents" / f"native-v{version}.json"
+    receipt = artifacts_dir() / "agents" / f"native-v{version}.json"
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential, retry_total=0) as project:
             result = ensure_fixed_release(
@@ -216,14 +216,14 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
     model = config.tuned_model if stage == "tuned" else config.model
     if not model:
         raise LabError("실제 학습 완료 모델의 배포 이름 TUNED_MODEL_DEPLOYMENT가 필요합니다.")
-    record_path = ARTIFACTS / "agents" / f"{stage}.json"
+    record_path = artifacts_dir() / "agents" / f"{stage}.json"
     if record_path.exists() and not new_version:
         raise LabError(
             f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가해야 합니다."
         )
     if record_path.exists():
         prior = read_json(record_path)
-        prior_version = ARTIFACTS / "agents/versions" / f"{prior['name']}-v{prior['version']}.json"
+        prior_version = artifacts_dir() / "agents/versions" / f"{prior['name']}-v{prior['version']}.json"
         if not prior_version.exists():
             write_once_json(prior_version, prior)
     tools = []
@@ -279,18 +279,18 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
                 "code": code_provenance(),
             }
             record_created(config, {"kind": "agent_version", "name": agent.name, "version": agent.version})
-            snapshot = ARTIFACTS / "agents/prompts" / f"{agent.name}-v{agent.version}.txt"
+            snapshot = artifacts_dir() / "agents/prompts" / f"{agent.name}-v{agent.version}.txt"
             snapshot.parent.mkdir(parents=True, exist_ok=True)
             snapshot.write_text(instructions, encoding="utf-8")
             record["prompt_snapshot"] = artifact_reference(snapshot)
-            write_once_json(ARTIFACTS / "agents/versions" / f"{agent.name}-v{agent.version}.json", record)
+            write_once_json(artifacts_dir() / "agents/versions" / f"{agent.name}-v{agent.version}.json", record)
             save_json(record_path, record)
     return record
 
 
 def load_agent(config: Config, stage: str) -> dict:
     state = workspace(config)
-    record = read_json(ARTIFACTS / "agents" / f"{stage}.json")
+    record = read_json(artifacts_dir() / "agents" / f"{stage}.json")
     require_content_language(record)
     if (
         record.get("workspace_id") != state["workspace_id"]

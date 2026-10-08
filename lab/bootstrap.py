@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from fnmatch import fnmatchcase
+from functools import partial
 import hashlib
 import json
 import math
@@ -297,6 +298,8 @@ def _validate(config: dict, *, template_path: Path | None = None) -> None:
         raise BootstrapError("An explicit expected Azure user principal name is required.")
     if not re.fullmatch(r"[a-z][a-z0-9-]{2,23}", config.get("environment", "")):
         raise BootstrapError("Environment must be a lowercase 3–24 character lab prefix.")
+    if "language" in config and config["language"] not in {"ko", "en"}:
+        raise BootstrapError("The planned language must be ko or en.")
     names = config.get("names", {})
     if not re.fullmatch(r"rg-foundry-eval-v11-\d{8}-[a-f0-9]{6,12}", names.get("resource_group", "")):
         raise BootstrapError("The resource group must be a newly generated lab resource group.")
@@ -661,10 +664,17 @@ def plan(
     resource_group: str | None = None, agent_sku: str | None = None,
 ) -> dict:
     """Create a private local plan only; never query Azure or overwrite .env/artifacts."""
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language
+
     instance = uuid4()
     suffix = instance.hex[:8]
     date = _now().strftime("%Y%m%d")
     environment = environment or f"lab-{date}-{suffix}"
+    try:
+        language = environment_language(environment) or selected_language()
+    except LabError as exc:
+        raise BootstrapError(str(exc)) from exc
     root = Path(root)
     if root.is_symlink() or any(parent.is_symlink() for parent in root.parents):
         raise BootstrapError("Environment root must not traverse symlinks.")
@@ -681,7 +691,7 @@ def plan(
         model.setdefault("deployment", f"lab-{model.get('roles', ['model'])[0]}-{suffix}")
     config = {
         "schema_version": SCHEMA_VERSION, "instance_id": str(instance), "created_at": _stamp(),
-        "environment": environment, "environment_dir": str(directory),
+        "environment": environment, "environment_dir": str(directory), "language": language,
         "subscription_id": subscription_id, "tenant_id": tenant_id, "expected_user": expected_user,
         "location": location, "retention_days": retention_days, "models": selected,
         "deployment_name": f"lab-bootstrap-{suffix}",
@@ -1851,6 +1861,8 @@ def _repair_template(
 
 
 def _env(config: dict, insights: dict, approval_path: Path | str) -> str:
+    from lab.config import environment_language
+
     ids, names = _ids(config), config["names"]
     models = {role: m["deployment"] for m in config["models"] for role in m["roles"]}
     values = {
@@ -1872,6 +1884,9 @@ def _env(config: dict, insights: dict, approval_path: Path | str) -> str:
         "APPLICATIONINSIGHTS_AUTHENTICATION_STRING": "Authorization=AAD",
         "APPLICATIONINSIGHTS_CONNECTION_STRING": insights.get("properties", {}).get("ConnectionString", ""),
     }
+    language = config.get("language") or environment_language(config["environment"])
+    if language is not None:
+        values["LAB_LANGUAGE"] = language
     # JSON quoting is compatible with dotenv; no shell script is generated or executed.
     return "".join(f"{key}={json.dumps(value)}\n" for key, value in values.items())
 
@@ -2127,11 +2142,11 @@ def setup(
     read: Callable[[str], str] = input, write: Callable[[str], None] = print,
 ) -> dict:
     """Guide a participant through the existing exact-scope bootstrap, without retries."""
-    from lab.config import LabError
-    from lab.content import selected_language, text
+    from lab.config import LabError, environment_language
+    from lab.content import selected_language, text as localized_text
 
     try:
-        selected_language()
+        language = environment_language(environment) or selected_language()
     except LabError as exc:
         raise BootstrapError(str(exc)) from exc
     if not re.fullmatch(r"[a-z][a-z0-9-]{2,23}", environment):
@@ -2155,6 +2170,8 @@ def setup(
             expected_user=account["user"].get("name", ""), environment=environment, root=root,
         )
     directory, config, manifest = _load(config_path)
+    language = config.get("language", language)
+    text = partial(localized_text, language=language)
     config_path = directory / "config.json"
     approval_path = directory / "approval.json"
     if manifest["phase"] != "planned" or manifest["attempts"]:
@@ -2175,6 +2192,7 @@ def setup(
         "config_path": str(config_path), "user": config["expected_user"],
         "subscription": config["subscription_id"], "tenant": config["tenant_id"],
         "location": config["location"], "resources": config["names"], "models": config["models"],
+        "language": language, "artifacts_dir": str(directory / "artifacts"),
         "log_retention_days": config["retention_days"],
     }))
     write(text(

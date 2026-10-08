@@ -99,7 +99,7 @@ class BatchRecoveryTests(unittest.TestCase):
         self.root = Path("artifacts") / f"test-batch-{uuid4().hex}"
         self.root.mkdir(parents=True)
         self.addCleanup(shutil.rmtree, self.root)
-        self.patch("lab.files.ARTIFACTS", self.root)
+        self.patch("lab.files.artifacts_dir", return_value=self.root)
         self.cases = read_jsonl(ROOT / "data/splits/dev.jsonl")
         self.config = SimpleNamespace(project_endpoint="https://mock.invalid/project")
         self.snapshot = {"model": {"name": "unit-only-model", "version": "1"}}

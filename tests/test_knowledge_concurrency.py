@@ -34,7 +34,7 @@ class KnowledgeConcurrencyTests(unittest.TestCase):
                 return exc
 
         with TemporaryDirectory() as directory, \
-                patch("lab.knowledge.ARTIFACTS", Path(directory)), \
+                patch("lab.knowledge.artifacts_dir", return_value=Path(directory)), \
                 patch("lab.knowledge.load_knowledge", side_effect=lambda _: deepcopy(setup)), \
                 patch("lab.knowledge.credential_for"), \
                 patch("lab.knowledge.JsonHttp") as http, \

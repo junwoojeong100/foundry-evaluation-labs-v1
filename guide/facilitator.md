@@ -28,7 +28,7 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 
 | 단계 | 필수 동작 | 완료 근거 |
 |---|---|---|
-| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Microsoft Azure CLI·언어 변수를 확인합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
+| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Microsoft Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
 | [02 환경 생성](handbook.md#resources) | `bootstrap setup`의 준비 검사·실제 승인 입력·생성 확인을 수행합니다. | APPLIED, 생성된 `.env`, 포털 배포와 런타임 preflight PASS를 확인합니다. |
 | [03 Agent 준비](handbook.md#agent) | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
 | [04 데이터셋](handbook.md#start) | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 기록합니다. |

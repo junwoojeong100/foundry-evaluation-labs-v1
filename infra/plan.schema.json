@@ -14,6 +14,7 @@
     "instance_id": {"type": "string", "format": "uuid"},
     "created_at": {"type": "string", "format": "date-time"},
     "environment": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,23}$"},
+    "language": {"enum": ["ko", "en"], "description": "Saved by new plans; older plans remain valid without this field."},
     "environment_dir": {"type": "string", "minLength": 1},
     "subscription_id": {"type": "string", "format": "uuid"},
     "tenant_id": {"type": "string", "format": "uuid"},

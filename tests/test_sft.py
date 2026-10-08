@@ -60,11 +60,10 @@ class SftTests(unittest.TestCase):
         self.stack = ExitStack()
         self.addCleanup(self.stack.close)
         self.stack.enter_context(redirect_stdout(io.StringIO()))
-        for name, value in (
-            ("lab.sft.ROOT", self.root), ("lab.sft.ARTIFACTS", self.root / "artifacts"),
-            ("lab.files.ARTIFACTS", self.root / "artifacts"), ("lab.batch.ROOT", self.root),
-        ):
-            self.stack.enter_context(patch(name, value))
+        for name in ("lab.sft.ROOT", "lab.batch.ROOT"):
+            self.stack.enter_context(patch(name, self.root))
+        for name in ("lab.sft.artifacts_dir", "lab.files.artifacts_dir"):
+            self.stack.enter_context(patch(name, return_value=self.root / "artifacts"))
         self.validation = self.stack.enter_context(patch("lab.sft.validate_generated_data"))
         self.auth = self.stack.enter_context(patch("lab.sft.credential_for"))
         self.stack.enter_context(patch("lab.sft.require_owned_scope"))

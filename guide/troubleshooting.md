@@ -35,11 +35,12 @@ Python·Git·Microsoft Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그
 | `.venv/bin/activate` 또는 `Activate.ps1`이 없습니다. | 저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 [설치 순서](handbook.md#setup-local)를 따릅니다. | 같은 Python의 `python -m pip --version`과 `python -m lab --help`가 성공합니다. |
 | `ModuleNotFoundError`가 나옵니다. | 사용할 가상환경을 확인하고 그 Python으로 `python -m pip install -r requirements.lock`을 실행합니다. | 같은 환경에서 필요한 import와 데이터 검사가 성공합니다. |
 | PowerShell 활성화가 정책으로 차단됩니다. | 조직 정책을 바꾸지 않고 `.\.venv\Scripts\python.exe`로 명령을 실행합니다. | 정책 변경 없이 Python을 실행할 수 있습니다. |
-| 새 터미널을 열었더니 이전 설정이 적용되지 않습니다. | [새 터미널 재개 절차](handbook.md#setup-resume)로 기존 가상환경과 언어·기록 폴더 변수를 복원합니다. clone·plan·apply부터 반복하지 않습니다. | 원래 신원과 `notes.md`의 마지막 완료 단계를 확인하고 같은 기록으로 이어갑니다. |
-| `agents/`·`knowledge/` 실행 기록 파일을 찾을 수 없습니다. | [기록 폴더 안내](handbook.md#resources-notes)에 따라 자신의 `LAB_ARTIFACTS_DIR` 아래에서 찾습니다. `data/`·`scripts/`는 저장소 폴더 아래입니다. | 예시 경로가 아닌 자신의 언어·환경 기록을 엽니다. |
+| 새 터미널을 열었더니 이전 설정이 적용되지 않습니다. | [재개 절차](handbook.md#setup-resume)로 기존 가상환경을 활성화하고 명령의 원래 `--config` 경로를 사용합니다. 언어·기록 변수 설정과 clone·plan·apply를 반복하지 않습니다. | 원래 신원과 `notes.md`의 마지막 완료 단계를 확인하고 같은 기록으로 이어갑니다. |
+| `agents/`·`knowledge/` 실행 기록 파일을 찾을 수 없습니다. | [기록 폴더 안내](handbook.md#resources-notes)에 따라 해당 환경의 `artifacts/` 아래에서 찾습니다. `data/`·`scripts/`는 저장소 폴더 아래입니다. | 예시 경로가 아닌 자신의 언어·환경 기록을 엽니다. |
 | 포털과 CLI의 계정이 다릅니다. | 브라우저와 CLI는 별도 로그인입니다. [01의 로그인·조회 명령](handbook.md#setup-login)으로 사용자·tenant·subscription을 포털과 대조하고 본인 인증은 직접 완료합니다. | 승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다. |
 | `AzureCliCredential`의 tenant·subscription 동시 지정이 실패합니다. | tenant 일치를 먼저 확인한 뒤 credential에는 subscription을 지정하는 저장소 인증 경로를 사용합니다. | tenant 확인을 생략하지 않고 같은 구독으로 호출합니다. |
-| 다른 언어의 artifacts에 기록됩니다. | Python 시작 전에 [01의 언어·기록 폴더 명령](handbook.md#setup-language)으로 `LAB_LANGUAGE`와 `LAB_ARTIFACTS_DIR`를 지정합니다. | 데이터·설정·workspace·결과의 언어가 일치합니다. 기존 기록을 덮어쓰지 않습니다. |
+| 다른 언어 또는 환경의 기록이 선택됩니다. | 명령의 `--config`가 원래 `.lab/lab-ko/.env`를 가리키는지 확인합니다. [언어·기록 위치는 이 설정에서 자동 적용](handbook.md#setup-language)되며 터미널 변수로 바꾸지 않습니다. | 데이터·설정·workspace·결과가 같은 환경입니다. 기존 기록을 덮어쓰지 않습니다. |
+| 과거 기록이 저장소의 공통 `artifacts/`에 있습니다. | 이전 실행의 설정·언어·소유권을 확인하고 기록을 그대로 보관합니다. 다른 폴더로 자동 이동하거나 새 기록으로 대체하지 않으며 [설정 참고](admin-setup.md#runtime-settings)를 확인합니다. | 원래 기록의 위치를 확인하기 전에는 유료 작업을 다시 제출하지 않습니다. |
 
 ## GitHub Codespaces {#codespaces}
 

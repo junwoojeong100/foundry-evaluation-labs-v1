@@ -6,9 +6,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-from lab.config import LabError, load_config
+from lab.config import Config, LabError, load_config, use_config
 from lab.content import content_path, selected_language, text
-from lab.files import ARTIFACTS, ROOT, read_json, safe_run_dir
+from lab.files import ROOT, artifacts_dir, read_json, safe_run_dir
 from lab.preflight import run_preflight, save_json
 
 
@@ -17,7 +17,7 @@ def parser() -> argparse.ArgumentParser:
         prog="python -m lab",
         description="Foundry learning loop: explicit evidence, no simulated cloud success.",
     )
-    result.add_argument("--config", type=Path, default=ROOT / ".env")
+    result.add_argument("--config", type=Path, help="Environment .env; also selects saved language and record folder")
     commands = result.add_subparsers(dest="command", required=True)
     demo = commands.add_parser("demo", help="Free authored examples; no SDK, credentials, login or network")
     demo.add_argument("--out", type=Path)
@@ -59,13 +59,10 @@ def parser() -> argparse.ArgumentParser:
     compare = commands.add_parser("compare", help="Compare paired, held-out evidence locally")
     compare.add_argument("--baseline", required=True)
     compare.add_argument("--candidate", required=True)
-    compare.add_argument("--out", type=Path, default=ARTIFACTS / "decision.json")
+    compare.add_argument("--out", type=Path)
     iq = commands.add_parser("iq", help="Create or probe a real Search knowledge base")
     iq.add_argument("action", choices=("prepare", "probe", "vectors"))
-    iq.add_argument("--query", default=text(
-        "Contoso Atlas Cloud의 환불 조건을 알려주세요.",
-        "What are the refund conditions for Contoso Atlas Cloud?",
-    ))
+    iq.add_argument("--query")
     iq.add_argument("--confirm", action="store_true")
     evaluate = commands.add_parser("evaluate", help="Submit or inspect a managed Foundry evaluation")
     evaluate.add_argument("action", choices=("submit", "collect"))
@@ -146,6 +143,18 @@ def require_confirmation(args: argparse.Namespace) -> None:
 
 
 def execute(args: argparse.Namespace) -> int:
+    without_config = {
+        "bootstrap", "demo", "validate", "explain", "optimizer-check", "feedback", "review",
+        "holdout", "governance", "score", "compare", "optimize", "tune-prepare",
+    }
+    if args.command in {"bootstrap", "demo"} or (args.command in without_config and args.config is None):
+        return _execute(args)
+    config = load_config(args.config or ROOT / ".env")
+    with use_config(config):
+        return _execute(args, config)
+
+
+def _execute(args: argparse.Namespace, config: Config | None = None) -> int:
     if args.command == "explain":
         from lab.explanation import explain_run
 
@@ -226,7 +235,7 @@ def execute(args: argparse.Namespace) -> int:
             read_json(safe_run_dir(args.candidate) / "summary.json"),
             read_json(ROOT / "config/gates.json"),
         )
-        save_json(args.out, decision)
+        save_json(args.out or artifacts_dir() / "decision.json", decision)
         print(json.dumps(decision, ensure_ascii=False, indent=2))
         return 0 if decision["outcome"] == "PASS_FOR_WORKSHOP" else 1
     if args.command == "optimize":
@@ -239,7 +248,8 @@ def execute(args: argparse.Namespace) -> int:
 
         print(prepare_tuning(args.kind))
         return 0
-    config = load_config(args.config)
+    if config is None:
+        raise LabError("This command requires an environment configuration.")
     if args.command == "optimizer-result":
         from lab.optimizer import collect_prompt
 
@@ -301,7 +311,7 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         return 0 if output["status"] == "VERIFIED_TRACE_MODEL_TOOL_EVAL_LINKS" else 1
     if args.command == "preflight":
         report = run_preflight(config)
-        save_json(ARTIFACTS / "preflight.json", report)
+        save_json(artifacts_dir() / "preflight.json", report)
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0 if report["status"] == "PASS" else 1
     if args.command == "agent":
@@ -311,8 +321,8 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         default_prompts = {
             "baseline": content_path(ROOT, "prompts/baseline.txt"),
             "iq": content_path(ROOT, "prompts/baseline.txt"),
-            "optimized": ARTIFACTS / "optimizer/selected-prompt.txt",
-            "tuned": ARTIFACTS / "optimizer/selected-prompt.txt",
+            "optimized": artifacts_dir() / "optimizer/selected-prompt.txt",
+            "tuned": artifacts_dir() / "optimizer/selected-prompt.txt",
         }
         record = create_agent(config, args.stage, args.prompt or default_prompts[args.stage], new_version=args.new_version)
         print(json.dumps(record, ensure_ascii=False, indent=2))
@@ -348,10 +358,14 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         from lab.knowledge import prepare_knowledge, probe_knowledge, probe_vectors
 
         require_confirmation(args)
+        query = args.query if args.query is not None else text(
+            "Contoso Atlas Cloud의 환불 조건을 알려주세요.",
+            "What are the refund conditions for Contoso Atlas Cloud?",
+        )
         output = (
             prepare_knowledge(config) if args.action == "prepare"
-            else probe_vectors(config, args.query) if args.action == "vectors"
-            else probe_knowledge(config, args.query)
+            else probe_vectors(config, query) if args.action == "vectors"
+            else probe_knowledge(config, query)
         )
         print(json.dumps(output, ensure_ascii=False, indent=2))
         return 0

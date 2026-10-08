@@ -322,6 +322,48 @@ class BootstrapTests(unittest.TestCase):
         self.assertTrue((config_path.parent / ".env").is_file())
         self.assertTrue(clouds[0].mutations)
 
+    def test_setup_environment_name_persists_language_and_records_without_shell_settings(self):
+        from lab.config import load_config, use_config
+        from lab.content import content_path, selected_language
+        from lab.files import artifacts_dir
+
+        for environment, language in (("lab-ko", "ko"), ("lab-en-02", "en")):
+            with self.subTest(environment=environment), patch.dict(
+                "os.environ", {"LAB_LANGUAGE": "invalid", "LAB_ARTIFACTS_DIR": str(self.root / "wrong")},
+            ):
+                config_path = self.root / environment / "config.json"
+                clouds = []
+
+                def run(args):
+                    if not config_path.exists():
+                        self.assertEqual(args, ["account", "show"])
+                        return deepcopy(self.azure.account)
+                    if not clouds:
+                        clouds.append(FakeAzure(config_path))
+                    return clouds[0](args)
+
+                answers = iter(["USD", "20", "4", "100", "Private test authorization", f"CREATE {environment}"])
+                output = []
+                result = b.setup(environment, root=self.root, run=run, read=lambda _: next(answers), write=output.append)
+                self.assertEqual(result["status"], "APPLIED")
+                self.assertEqual(b._read(config_path)["language"], language)
+                config = load_config(config_path.parent / ".env")
+                with use_config(config):
+                    self.assertEqual(selected_language(), language)
+                    self.assertEqual(artifacts_dir(), config_path.parent / "artifacts")
+                    expected = "prompts/en/baseline.txt" if language == "en" else "prompts/baseline.txt"
+                    self.assertEqual(content_path(ROOT, "prompts/baseline.txt"), ROOT / expected)
+                self.assertIn("Checking permissions" if language == "en" else "권한·모델·할당량", output[0])
+
+    def test_old_plan_without_language_remains_valid_and_is_not_rewritten(self):
+        config = deepcopy(self.config)
+        del config["language"]
+        config["scope_sha256"] = b._scope(config)
+        original = deepcopy(config)
+        b._validate(config)
+        b._env(config, {}, self.path.parent / "approval.json")
+        self.assertEqual(config, original)
+
     def test_setup_cancel_and_closed_input_never_save_approval_or_create_resources(self):
         answers = iter(["USD", "20", "4", "100", "Private test authorization", "no"])
         result = b.setup("lab-unit", root=self.root, run=self.azure, read=lambda _: next(answers), write=lambda _: None)
@@ -1614,7 +1656,8 @@ class BootstrapTests(unittest.TestCase):
     def test_published_schemas_match_generated_plan_and_approval_fields(self):
         schema = json.loads((ROOT / "infra" / "plan.schema.json").read_text())
         approval_schema = json.loads((ROOT / "infra" / "approval.schema.json").read_text())
-        self.assertEqual(set(schema["required"]), set(self.config))
+        self.assertEqual(set(schema["required"]) | {"language"}, set(self.config))
+        self.assertEqual(set(schema["properties"]), set(self.config))
         self.assertEqual(set(approval_schema["required"]), set(b.approval_template(self.config)))
         self.assertEqual(schema["properties"]["location"]["const"], b.REGION)
         self.assertEqual(approval_schema["properties"]["allow_rbac_assignments"]["const"], True)

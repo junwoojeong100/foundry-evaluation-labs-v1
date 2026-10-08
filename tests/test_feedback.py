@@ -24,7 +24,7 @@ class FeedbackTests(unittest.TestCase):
             save_json(run / "summary.json", {"rows": [{
                 "id": "case-1", "rule_failures": ["route"], "api_error": None, "judge": None,
             }]})
-            with patch("lab.files.ARTIFACTS", root), patch("lab.feedback.ARTIFACTS", root), \
+            with patch("lab.files.artifacts_dir", return_value=root), patch("lab.feedback.artifacts_dir", return_value=root), \
                     patch("lab.batch.dataset_for_metadata", return_value=dataset):
                 result = prepare_feedback("dev-run", "feedback-1")
                 self.assertEqual(result["candidate_count"], 1)
@@ -38,7 +38,7 @@ class FeedbackTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
             save_json(root / "runs/final/metadata.json", {"source_split": "test", "split": "test", "freeze_id": "frozen"})
-            with patch("lab.files.ARTIFACTS", root), patch("lab.feedback.ARTIFACTS", root), self.assertRaises(LabError):
+            with patch("lab.files.artifacts_dir", return_value=root), patch("lab.feedback.artifacts_dir", return_value=root), self.assertRaises(LabError):
                 prepare_feedback("final", "feedback-1")
             self.assertFalse((root / "feedback").exists())
 

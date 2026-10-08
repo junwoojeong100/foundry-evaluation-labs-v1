@@ -18,7 +18,7 @@ class ModelSmokeTests(unittest.TestCase):
             id="resp-fixture", output_text="READY",
             model_dump=lambda **_: {"id": "resp-fixture", "status": "completed", "usage": {"input_tokens": 4, "output_tokens": 1}},
         )
-        with TemporaryDirectory() as directory, patch("lab.files.ARTIFACTS", Path(directory)), \
+        with TemporaryDirectory() as directory, patch("lab.files.artifacts_dir", return_value=Path(directory)), \
                 patch("lab.agents.model_snapshot", return_value={"model": {"name": "fixture", "version": "1"}}), \
                 patch("lab.agents.credential_for"), patch("lab.agents.AIProjectClient") as project:
             client = project.return_value.__enter__.return_value.get_openai_client.return_value.__enter__.return_value
@@ -32,7 +32,7 @@ class ModelSmokeTests(unittest.TestCase):
 
     def test_unknown_submission_is_not_resubmitted(self):
         config = load_config(ROOT / ".env.example")
-        with TemporaryDirectory() as directory, patch("lab.files.ARTIFACTS", Path(directory)), \
+        with TemporaryDirectory() as directory, patch("lab.files.artifacts_dir", return_value=Path(directory)), \
                 patch("lab.agents.model_snapshot", return_value={"model": {"name": "fixture", "version": "1"}}), \
                 patch("lab.agents.credential_for"), patch("lab.agents.AIProjectClient") as project:
             client = project.return_value.__enter__.return_value.get_openai_client.return_value.__enter__.return_value

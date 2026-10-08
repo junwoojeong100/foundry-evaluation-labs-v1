@@ -41,7 +41,7 @@ class CalibrationTests(unittest.TestCase):
         self.root = Path("artifacts") / f"test-calibration-{uuid4().hex}"
         self.root.mkdir(parents=True)
         self.addCleanup(shutil.rmtree, self.root)
-        self.patch("lab.calibration.ARTIFACTS", self.root)
+        self.patch("lab.calibration.artifacts_dir", return_value=self.root)
         self.fixtures = calibration.load_fixtures()
         self.contract = calibration.evaluator_contract()
         self.config = SimpleNamespace(
@@ -258,7 +258,7 @@ assert len(lab.calibration.load_fixtures()) >= 10
         shutil.copytree(SOURCE_ROOT / "data", package / "data")
         self.patch("lab.calibration.ROOT", package)
         self.patch("lab.batch.ROOT", package)
-        self.patch("lab.files.ARTIFACTS", self.root)
+        self.patch("lab.files.artifacts_dir", return_value=self.root)
         path = package / "data/splits/dev.jsonl"
         cases = calibration.read_jsonl(path)[:3]
         records = [

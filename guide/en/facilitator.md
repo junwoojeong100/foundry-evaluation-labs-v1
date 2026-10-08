@@ -28,7 +28,7 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, Microsoft Azure CLI, and language variables | Matching identity, all three version checks, and successful local commands in the virtual environment |
+| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, and Microsoft Azure CLI. Step 02 sets language/record location automatically. | Matching identity, all three version checks, and successful local commands in the virtual environment |
 | [02 Provisioning](handbook.md#resources) | Complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |

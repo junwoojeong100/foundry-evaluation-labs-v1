@@ -10,13 +10,19 @@ import subprocess
 import sys
 from uuid import uuid4
 
-from lab.config import Config, LabError
+from lab.config import Config, LabError, active_config
 from lab.content import language_metadata, require_content_language
 from lab.preflight import save_json
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACTS = Path(os.environ.get("LAB_ARTIFACTS_DIR", str(ROOT / "artifacts"))).expanduser().resolve()
+
+
+def artifacts_dir() -> Path:
+    config = active_config()
+    if config and config.artifacts_dir is not None:
+        return config.artifacts_dir
+    return Path(os.environ.get("LAB_ARTIFACTS_DIR", str(ROOT / "artifacts"))).expanduser().resolve()
 
 
 def artifact_reference(path: Path, *, root: Path = ROOT) -> str:
@@ -106,11 +112,11 @@ def write_once_json(path: Path, value: dict) -> None:
 def safe_run_dir(run_id: str) -> Path:
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}", run_id):
         raise LabError("run-id는 1~64자의 영문·숫자·하이픈·밑줄이어야 합니다.")
-    return ARTIFACTS / "runs" / run_id
+    return artifacts_dir() / "runs" / run_id
 
 
 def workspace(config: Config, *, create: bool = False) -> dict:
-    path = ARTIFACTS / "workspace.json"
+    path = artifacts_dir() / "workspace.json"
     scope = {
         "project_id": config.project_id,
         "search_id": config.search_id,
@@ -133,4 +139,4 @@ def workspace(config: Config, *, create: bool = False) -> dict:
 def record_created(config: Config, record: dict) -> None:
     state = workspace(config)
     state["created"].append(record)
-    save_json(ARTIFACTS / "workspace.json", state)
+    save_json(artifacts_dir() / "workspace.json", state)

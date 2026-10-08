@@ -4,7 +4,7 @@
 
 Use this reference for **your own steps 02 provisioning, 03 Agent setup, and 10 cleanup**. Follow the [hands-on guide](handbook.md#setup) in order and open only the linked sections you need. Record actual values and completion evidence in your `.lab/lab-en/notes.md`.
 
-**Command shortcuts:** [Codespaces](handbook.md#setup-codespaces) · [CLI sign-in](handbook.md#setup-login) · [Language/records](handbook.md#setup-language) · [Quick provisioning](handbook.md#resources-quickstart) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from your selected lab folder's terminal; do not repeat completed work.
+**Command shortcuts:** [Codespaces](handbook.md#setup-codespaces) · [CLI sign-in](handbook.md#setup-login) · [Quick provisioning](handbook.md#resources-quickstart) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from your selected lab folder's terminal; do not repeat completed work.
 {: .execution-guide}
 
 To read inside unchanged commands, open [02 creation code/portal](handbook.md#resources-code-portal), [03 retrieval code/portal](handbook.md#knowledge-code-portal), [Agent configuration](handbook.md#agent-code-portal), [09 submission/lookup](handbook.md#decision-code-portal), and [10 cleanup scope](handbook.md#cleanup-code-portal). Source panels are read-only, not instructions to run another program or duplicate creation in the portal.
@@ -24,6 +24,14 @@ Verify CLI, SDK, and portal identities separately and use the same personal iden
 Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.
 
 Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.
+
+### The program reads language and record settings {#runtime-settings}
+
+The default lab requires no environment-variable commands. `bootstrap setup --environment lab-en` saves English in the plan; `lab-ko` saves Korean. Names such as `lab-en-02` and `lab-ko-02` are supported too. Subsequent commands read `LAB_LANGUAGE` and `LAB_ARTIFACTS_DIR` from the generated `.env` through `--config`. Relative record paths resolve beside the configuration file.
+
+If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rule in `LAB_PREFIX` without rewriting the file or plan hash. Only legacy custom names outside that rule and separate tools with no selected configuration keep their existing environment-variable/default behavior. Those variables are not additional setup for the default lab.
+
+**Existing records are never moved or merged automatically.** If earlier work used shared `artifacts/` or another location, first compare the original configuration with the project, prefix, and language in `workspace.json`. Do not launch paid work against a different record folder or edit the original `.env`/manifest to bypass ownership checks.
 
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../../web/assets/portal/en/00-resource-group.png" alt="Microsoft Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
@@ -68,7 +76,7 @@ Use the [real response check in 03](handbook.md#agent) to verify Agent and `know
 
 ## Prepare an executable Agent {#bootstrap}
 
-[01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Then sign in, set language variables, and finish [quick provisioning](handbook.md#resources-quickstart). Do not treat fake IDs in `.env.example` as a live environment.
+[01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Sign in, then run [quick provisioning](handbook.md#resources-quickstart); language and record location are set automatically too. Do not treat fake IDs in `.env.example` as a live environment.
 
 Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
 
@@ -107,7 +115,7 @@ Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifier
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
 
-**The required comparison uses [Microsoft Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, `LAB_LANGUAGE` or `--language ko`/`--language en` selects report language and default dev12; match any explicit dataset to that language.
+**The required comparison uses [Microsoft Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, its `--language ko`/`--language en` option selects report language and default dev12; match any explicit dataset to that language.
 
 ### Check evaluation response mappings {#evaluation-mapping}
 
@@ -189,7 +197,7 @@ After creating the plan in 02, copy this table into your **`.lab/lab-en/notes.md
 | Required item | Actual values or evidence |
 |---|---|
 | Identity | User, tenant ID, and subscription ID; never passwords or tokens |
-| Local paths | Your environment name, bootstrap config, runtime `.env`, `LAB_LANGUAGE`, and `LAB_ARTIFACTS_DIR`; record `.env` only after successful creation |
+| Local paths | Your environment name, bootstrap config, and runtime `.env`; language/record location are automatic. Record `.env` only after successful creation. |
 | Microsoft Azure environment | Resource group, Microsoft Foundry account/project, project endpoint, and Search service |
 | Models | Actual names, product/version, SKU, and capacity for all four deployments |
 | Policy search | Source/language, eight uploaded documents, knowledge-base/connection names, and `retrieval_verified` |

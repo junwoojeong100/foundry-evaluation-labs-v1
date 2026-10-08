@@ -24,7 +24,7 @@ from lab.calibration import (
 from lab.config import LabError
 from lab.content import content_path, dataset_files, language_metadata, require_content_language, selected_language, text
 from lab.evidence import evaluate_gates, load_gates, observed_model_drift, score_row, summarize, validate_case
-from lab.files import ARTIFACTS, ROOT, code_provenance, safe_run_dir, sha256_file
+from lab.files import ROOT, artifacts_dir, code_provenance, safe_run_dir, sha256_file
 
 
 def load_agent(config, stage):
@@ -33,7 +33,7 @@ def load_agent(config, stage):
 
 
 def _directory(kind: str) -> Path:
-    return ARTIFACTS / "governance" / kind
+    return artifacts_dir() / "governance" / kind
 
 
 def _text(value, label: str) -> str:
@@ -201,7 +201,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
     if mode not in {"LIVE", "DEMO"}:
         raise LabError("Freeze mode must be LIVE or DEMO.")
     agent = load_agent(config, stage)
-    for path in sorted((ARTIFACTS / "runs").glob("*/metadata.json")):
+    for path in sorted((artifacts_dir() / "runs").glob("*/metadata.json")):
         observed = read_json(path)
         if isinstance(observed, dict) and all(observed.get(key) == value for key, value in {
             "agent_name": agent["name"], "agent_version": agent["version"],
@@ -211,7 +211,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
                 f"Candidate version has terminal observed model drift in {path.parent.name}. "
                 "Preserve that run; pin a new candidate version instead of revalidating it."
             )
-    calibration_path = ARTIFACTS / "calibration" / calibration_id / "report.json"
+    calibration_path = artifacts_dir() / "calibration" / calibration_id / "report.json"
     calibration = read_json(calibration_path)
     if observed_model_drift(agent) or observed_model_drift(calibration):
         raise LabError("Cannot freeze evidence with terminal observed model drift; later restoration does not revalidate it.")
@@ -255,12 +255,12 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
     if legacy_gates.get("business_policy", {}).get("required_for_contract") != CONTRACT_VERSION:
         raise LabError("Governed final evaluation requires the versioned business-policy gates.")
     gates, sample_contract = _fresh_gates(legacy_gates)
-    search_path = ARTIFACTS / "knowledge/setup.json"
+    search_path = artifacts_dir() / "knowledge/setup.json"
     if stage != "baseline" and not search_path.is_file():
         raise LabError("Freeze needs the candidate's recorded search configuration.")
     search = read_json(search_path) if stage != "baseline" else {"enabled": False, "reason": "baseline"}
     files = [
-        _file(ARTIFACTS / "agents" / f"{stage}.json", "candidate"),
+        _file(artifacts_dir() / "agents" / f"{stage}.json", "candidate"),
         _file(prompt_path, "prompt"),
         _file(calibration_path, "calibration"),
         _file(fixture_path, "calibration_references"),
@@ -272,7 +272,7 @@ def freeze_candidate(config, freeze_id: str, stage: str, *, calibration_id: str,
     if stage != "baseline":
         files.append(_file(search_path, "search"))
         files.extend(
-            _file(path, "search_artifact") for path in sorted((ARTIFACTS / "knowledge").rglob("*"))
+            _file(path, "search_artifact") for path in sorted((artifacts_dir() / "knowledge").rglob("*"))
             if path.is_file() and path != search_path
         )
     files.extend(_file(ROOT / "config/evaluators" / name, "evaluator") for name in DEFINITIONS.values())
@@ -457,7 +457,7 @@ def register_holdout(freeze_id: str, holdout_id: str, source_path: Path, *,
                      generated_at: str, provenance: str) -> dict:
     frozen = load_freeze(freeze_id)
     path = Path(source_path).resolve()
-    if not path.is_relative_to(ARTIFACTS.resolve()):
+    if not path.is_relative_to(artifacts_dir().resolve()):
         raise LabError("Fresh datasets must be authored/registered under ARTIFACTS, never original data/.")
     _text(provenance, "external holdout provenance")
     if not path.is_file() or path.stat().st_mtime < _timestamp(frozen["created_at"]).timestamp():

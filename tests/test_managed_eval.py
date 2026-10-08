@@ -118,7 +118,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.management = self.start_patch("lab.managed_eval.az_json", return_value=[self.deployment])
         self.factory = self.start_patch("lab.managed_eval.AIProjectClient", return_value=self.project)
         self.start_patch("lab.managed_eval.ROOT", self.root)
-        self.start_patch("lab.files.ARTIFACTS", self.root)
+        self.start_patch("lab.files.artifacts_dir", return_value=self.root)
 
     def start_patch(self, target, *args, **kwargs):
         patcher = patch(target, *args, **kwargs)

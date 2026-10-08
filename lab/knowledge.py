@@ -10,7 +10,7 @@ from lab.auth import credential_for
 from lab.config import Config, LabError
 from lab.content import content_path, language_metadata, require_content_language, selected_language
 from lab.embeddings import DIMENSIONS, embed, validate_vectors
-from lab.files import ARTIFACTS, ROOT, read_json, record_created, sha256_file, workspace, write_once_json
+from lab.files import ROOT, artifacts_dir, read_json, record_created, sha256_file, workspace, write_once_json
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
 from lab.preflight import az_json, save_json
 
@@ -131,7 +131,7 @@ def prepare_knowledge(config: Config) -> dict:
     documents_path = content_path(ROOT, "data/knowledge/documents.json")
     documents = read_json(documents_path)
     content_hash = sha256_file(documents_path)
-    setup_path = ARTIFACTS / "knowledge/setup.json"
+    setup_path = artifacts_dir() / "knowledge/setup.json"
     previous = None
     if setup_path.exists():
         previous = read_json(setup_path)
@@ -175,13 +175,13 @@ def prepare_knowledge(config: Config) -> dict:
             },
         }
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / "knowledge/config-snapshot.json", payloads)
+        save_json(artifacts_dir() / "knowledge/config-snapshot.json", payloads)
         search = JsonHttp(credential, scope=SEARCH_SCOPE, allowed_origin=config.search_endpoint)
         index_url = search_url(config, "indexes", names["index"])
         _ensure_created(config, search, "search_index", names["index"], index_url, payloads["index"])
         embedding = embed(
             config, [f"{doc['title']}\n{doc['content']}" for doc in documents],
-            ARTIFACTS / "knowledge/document-embeddings.json",
+            artifacts_dir() / "knowledge/document-embeddings.json",
         )
         vectors = validate_vectors(embedding["response"], len(documents))
         uploaded = [{
@@ -191,9 +191,9 @@ def prepare_knowledge(config: Config) -> dict:
             "effective_date": doc["effective_date"],
             "content_vector": vector,
         } for doc, vector in zip(documents, vectors, strict=True)]
-        upload_path = ARTIFACTS / "knowledge/upload-response.json"
+        upload_path = artifacts_dir() / "knowledge/upload-response.json"
         upload_contract = {"documents_sha256": content_hash, "payload_sha256": payload_hash,
-                           "embedding_sha256": sha256_file(ARTIFACTS / "knowledge/document-embeddings.json")}
+                           "embedding_sha256": sha256_file(artifacts_dir() / "knowledge/document-embeddings.json")}
         if upload_path.exists():
             upload_record = read_json(upload_path)
             if upload_record.get("contract") != upload_contract or upload_record.get("status") != "completed":
@@ -212,7 +212,7 @@ def prepare_knowledge(config: Config) -> dict:
             or {item.get("key") for item in statuses} != {doc["id"] for doc in documents}
             or any(item.get("status") is not True for item in statuses)
         ):
-            save_json(ARTIFACTS / "knowledge/upload-error.json", upload_body)
+            save_json(artifacts_dir() / "knowledge/upload-error.json", upload_body)
             raise LabError("일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.")
         save_json(upload_path, {"status": "completed", "contract": upload_contract, "response": upload_body})
         _ensure_created(
@@ -235,13 +235,13 @@ def prepare_knowledge(config: Config) -> dict:
         setup["uploaded_documents"] = len(uploaded)
         setup["embedding_usage"] = embedding["response"].get("usage")
         save_json(setup_path, setup)
-        save_json(ARTIFACTS / "knowledge/documents-snapshot.json", documents)
+        save_json(artifacts_dir() / "knowledge/documents-snapshot.json", documents)
         return setup
 
 
 def load_knowledge(config: Config) -> dict:
     state = workspace(config)
-    setup = read_json(ARTIFACTS / "knowledge/setup.json")
+    setup = read_json(artifacts_dir() / "knowledge/setup.json")
     require_content_language(setup)
     if (
         setup.get("workspace_id") != state["workspace_id"]
@@ -269,7 +269,7 @@ def probe_knowledge(config: Config, query: str) -> dict:
         }],
     }
     key = hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
-    directory = ARTIFACTS / "knowledge/probes" / key
+    directory = artifacts_dir() / "knowledge/probes" / key
     intent_path, response_path = directory / "iq-request.json", directory / "iq-response.json"
     if response_path.exists():
         if read_json(intent_path) != request:
@@ -286,13 +286,13 @@ def probe_knowledge(config: Config, query: str) -> dict:
             )
         body = result.body
         save_json(response_path, body)
-    if not (ARTIFACTS / "knowledge/retrieve-response.json").exists():
-        save_json(ARTIFACTS / "knowledge/retrieve-response.json", body)
+    if not (artifacts_dir() / "knowledge/retrieve-response.json").exists():
+        save_json(artifacts_dir() / "knowledge/retrieve-response.json", body)
     if not body.get("response") or not body.get("references") or not body.get("activity"):
         raise LabError("검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.")
     setup["status"] = "retrieval_verified"
     setup["probe_scope"] = "Human CLI identity; deployed-agent managed identity must still be verified by an agent call."
-    save_json(ARTIFACTS / "knowledge/setup.json", setup)
+    save_json(artifacts_dir() / "knowledge/setup.json", setup)
     return {"status": setup["status"], "references": body["references"], "activity": body["activity"], "scope": setup["probe_scope"]}
 
 
@@ -302,7 +302,7 @@ def probe_vectors(config: Config, query: str) -> dict:
     if not query.strip():
         raise LabError("벡터 검색 질문이 비어 있습니다.")
     probe_key = hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
-    directory = ARTIFACTS / "knowledge/probes" / probe_key
+    directory = artifacts_dir() / "knowledge/probes" / probe_key
     result_path = directory / "result.json"
     if result_path.exists():
         return read_json(result_path)

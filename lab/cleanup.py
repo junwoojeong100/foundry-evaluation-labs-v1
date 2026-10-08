@@ -8,7 +8,7 @@ from openai import NotFoundError
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
-from lab.files import ARTIFACTS, read_json, read_jsonl, workspace
+from lab.files import artifacts_dir, read_json, read_jsonl, workspace
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
 from lab.knowledge import CONNECTION_API, resource_names, search_url
 from lab.preflight import save_json
@@ -39,7 +39,7 @@ def cleanup_plan(config: Config) -> dict:
         else:
             raise LabError(f"자동 정리를 지원하지 않는 기록 유형: {kind}")
         actions.append(dict(record))
-    for metadata_path in (ARTIFACTS / "runs").glob("*/metadata.json"):
+    for metadata_path in (artifacts_dir() / "runs").glob("*/metadata.json"):
         metadata = read_json(metadata_path)
         if metadata.get("workspace_id") != state["workspace_id"]:
             continue
@@ -132,7 +132,7 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
                         transport = arm if kind == "project_connection" else search
                         transport.request("DELETE", action["url"], etag=action.get("current_etag"))
                     completed.append({**action, "result": "delete_request_succeeded"})
-                    save_json(ARTIFACTS / "cleanup.json", {**plan, "mode": "DELETING", "completed": completed})
+                    save_json(artifacts_dir() / "cleanup.json", {**plan, "mode": "DELETING", "completed": completed})
                 remaining = []
                 for action in inspected:
                     kind = action["kind"]
@@ -161,5 +161,5 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
         "completed": completed,
         "remaining": remaining,
     }
-    save_json(ARTIFACTS / "cleanup.json", result)
+    save_json(artifacts_dir() / "cleanup.json", result)
     return result

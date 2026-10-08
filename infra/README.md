@@ -20,6 +20,12 @@ requires actual bounded authorization and a typed creation confirmation. Prior
 creation attempts are inspected, not resubmitted. The individual commands below
 remain available for advanced inspection and explicit automation.
 
+Names `lab-ko`/`lab-en` and their suffixed variants also select the corpus
+language. New plans persist that choice and the generated `.env` supplies the
+language and per-environment artifact root to subsequent `--config` commands.
+Older plan files remain valid without the new language field and are not
+rewritten. Existing `.env` files can infer language from their `LAB_PREFIX`.
+
 ## What bootstrap does
 
 `lab.bootstrap` uses Python's standard library and an authenticated Microsoft Azure CLI.

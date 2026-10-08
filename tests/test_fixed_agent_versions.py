@@ -221,7 +221,7 @@ class NativeAgentSetupTests(unittest.TestCase):
             def record(_config, item):
                 state["created"].append(item)
 
-            with patch("lab.agents.ARTIFACTS", artifacts), \
+            with patch("lab.agents.artifacts_dir", return_value=artifacts), \
                  patch("lab.agents.workspace", return_value=state), \
                  patch("lab.agents.record_created", side_effect=record), \
                  patch("lab.agents.model_snapshot", return_value=snapshot), \
@@ -253,7 +253,7 @@ class NativeAgentSetupTests(unittest.TestCase):
             artifacts = Path(directory)
             prompt = artifacts / "instructions.txt"
             prompt.write_text("Reviewed instructions.", encoding="utf-8")
-            with patch("lab.agents.ARTIFACTS", artifacts), \
+            with patch("lab.agents.artifacts_dir", return_value=artifacts), \
                  patch("lab.agents.workspace", return_value={"workspace_id": "owned", "created": []}), \
                  patch("lab.knowledge.knowledge_tool"), patch("lab.agents.model_snapshot", return_value={}), \
                  patch("lab.agents.ensure_fixed_release") as release, \

@@ -22,7 +22,7 @@ from lab.auth import credential_for, require_owned_scope
 from lab.batch import export_evaluation, score_run
 from lab.config import Config, LabError, load_config
 from lab.content import content_path, language_metadata, require_content_language
-from lab.files import ARTIFACTS, ROOT, artifact_reference, code_provenance, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
+from lab.files import ROOT, artifacts_dir, artifact_reference, code_provenance, read_json, read_jsonl, safe_run_dir, sha256_file, write_jsonl
 from lab.handoffs import validate_generated_data
 from lab.http import ARM_SCOPE, CloudRequestError, JsonHttp
 from lab.preflight import az_json, save_json
@@ -45,7 +45,7 @@ def _now() -> str:
 
 
 def _directory() -> Path:
-    return ARTIFACTS / "tuning/sft"
+    return artifacts_dir() / "tuning/sft"
 
 
 def _confirm(confirmed: bool) -> None:

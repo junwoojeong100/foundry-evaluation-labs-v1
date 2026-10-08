@@ -11,7 +11,7 @@ from lab.preflight import save_json
 
 class HandoffTests(unittest.TestCase):
     def test_frontier_preparation_does_not_claim_training_or_include_holdout(self):
-        with tempfile.TemporaryDirectory() as directory, patch("lab.handoffs.ARTIFACTS", Path(directory)):
+        with tempfile.TemporaryDirectory() as directory, patch("lab.handoffs.artifacts_dir", return_value=Path(directory)):
             target = prepare_tuning("frontier")
             manifest = read_json(target / "manifest.json")
             self.assertEqual(manifest["status"], "PREPARED_NOT_SUBMITTED")
@@ -22,7 +22,7 @@ class HandoffTests(unittest.TestCase):
             self.assertFalse((target / "test.jsonl").exists())
 
     def test_sft_upload_bundle_has_bom_and_never_overwrites_an_experiment(self):
-        with tempfile.TemporaryDirectory() as directory, patch("lab.handoffs.ARTIFACTS", Path(directory)):
+        with tempfile.TemporaryDirectory() as directory, patch("lab.handoffs.artifacts_dir", return_value=Path(directory)):
             target = prepare_tuning("sft")
             train = target / "sft-train.jsonl"
             self.assertTrue(train.read_bytes().startswith(b"\xef\xbb\xbf"))
@@ -43,24 +43,24 @@ class HandoffTests(unittest.TestCase):
 
     def test_optimizer_preparation_requires_observed_iq_use(self):
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.handoffs.ARTIFACTS", Path(directory)), \
-             patch("lab.files.ARTIFACTS", Path(directory)):
+             patch("lab.handoffs.artifacts_dir", return_value=Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)):
             save_json(Path(directory) / "runs/fixture/metadata.json", self._metadata(retrieval=0))
             with self.assertRaisesRegex(LabError, "실제 IQ"):
                 prepare_optimizer("fixture")
 
     def test_optimizer_preparation_rejects_holdout(self):
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.handoffs.ARTIFACTS", Path(directory)), \
-             patch("lab.files.ARTIFACTS", Path(directory)):
+             patch("lab.handoffs.artifacts_dir", return_value=Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)):
             save_json(Path(directory) / "runs/fixture/metadata.json", self._metadata(split="test"))
             with self.assertRaises(LabError):
                 prepare_optimizer("fixture")
 
     def test_optimizer_bundle_is_prepared_only_and_matches_portal_columns(self):
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.handoffs.ARTIFACTS", Path(directory)), \
-             patch("lab.files.ARTIFACTS", Path(directory)):
+             patch("lab.handoffs.artifacts_dir", return_value=Path(directory)), \
+             patch("lab.files.artifacts_dir", return_value=Path(directory)):
             save_json(Path(directory) / "runs/fixture/metadata.json", self._metadata())
             target = prepare_optimizer("fixture")
             state = read_json(target / "handoff.json")

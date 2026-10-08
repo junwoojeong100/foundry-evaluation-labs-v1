@@ -14,7 +14,7 @@ class CleanupTests(unittest.TestCase):
 
     def test_plan_does_not_authenticate_or_delete_cloud_resources(self):
         with tempfile.TemporaryDirectory() as directory, \
-             patch("lab.cleanup.ARTIFACTS", Path(directory)), \
+             patch("lab.cleanup.artifacts_dir", return_value=Path(directory)), \
              patch("lab.cleanup.workspace", return_value=self.state), \
              patch("lab.cleanup.credential_for") as credential:
             result = cleanup(self.config)

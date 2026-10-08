@@ -59,10 +59,10 @@
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>이 단계에서 하는 일:</strong> 사용할 Microsoft Azure 구독·권한과 로컬 실행 환경을 확인합니다.</p>
 <p><strong>중요한 이유:</strong> 브라우저와 CLI가 다른 계정이나 구독을 사용하면 권한 오류가 나거나 잘못된 환경에 자원을 만들 수 있습니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구·로그인·언어 설정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
+<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구와 로그인 계정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
 </div>
 
-**실행 순서:** [계정·권한 확인](#setup-account) → [Codespaces 열기 · 권장](#setup-codespaces) → [터미널 · 로그인](#setup-login) → [언어 설정](#setup-language). Codespaces를 사용할 수 없으면 [내 PC 설치](#setup-local-install)를 선택합니다.
+**실행 순서:** [계정·권한 확인](#setup-account) → [Codespaces 열기 · 권장](#setup-codespaces) → [터미널 · 로그인](#setup-login). Codespaces를 사용할 수 없으면 [내 PC 설치](#setup-local-install)를 선택합니다.
 {: .step-route}
 
 <details class="guide-details optional-path" markdown="1">
@@ -275,7 +275,7 @@ python scripts/build_datasets.py --language ko --check
 
 </details>
 
-### CLI 로그인과 언어를 고정합니다 {#setup-login}
+### CLI 로그인 계정을 확인합니다 {#setup-login}
 
 Codespaces 또는 선택한 내 PC 터미널에서 실행합니다. `--use-device-code`는 터미널에 표시된 Microsoft 로그인 주소를 브라우저에서 열고 일회용 코드를 직접 입력하는 방식입니다. **코드·토큰을 다른 사람에게 전달하지 않습니다.** 포털과 같은 Microsoft Azure 계정으로 로그인한 뒤 아래 `YOUR_SUBSCRIPTION_ID`를 자신의 구독 ID로 바꿉니다.
 
@@ -288,25 +288,11 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 마지막 출력의 **`state`가 `Enabled`인지 확인**하고 `user`, `tenant`, `subscription`을 포털과 대조합니다. 브라우저와 CLI의 로그인은 별개입니다. 다른 디렉터리가 선택됐다면 `az login --use-device-code --tenant "YOUR_TENANT_ID"`로 승인된 디렉터리를 지정합니다. 조직에서 device-code 로그인을 차단하면 우회하지 말고 [로그인 문제 해결](troubleshooting.md#codespaces)을 확인합니다.
 
-#### 언어와 실행 기록 폴더를 지정합니다 {#setup-language}
+#### 언어와 기록 위치는 자동으로 적용됩니다 {#setup-language}
 
-이 한국어 실습의 환경 이름은 **`lab-ko`**로 사용합니다. 같은 이름의 로컬 계획이 이미 있으면 새로 만들지 않고 원래 기록을 재개합니다. 별도 수업이면 `lab-ko-02`처럼 새 이름을 정하고 이후 모든 경로와 prefix도 함께 바꿉니다.
+**따로 실행할 설정 명령은 없습니다.** 02의 생성 명령에서 `--environment lab-ko`를 사용하면 한국어와 해당 환경의 기록 위치를 자동으로 저장합니다. 영어 가이드는 `lab-en`을 사용합니다. 다음 단계부터는 명령에 있는 `--config`가 같은 설정을 읽으므로 새 터미널에서도 환경 변수를 다시 지정하지 않습니다.
 
-**Codespaces/macOS/Linux에서는 다음 환경 변수를 지정합니다.**
-
-```bash
-export LAB_LANGUAGE=ko
-export LAB_ARTIFACTS_DIR="$PWD/.lab/lab-ko/artifacts"
-```
-
-**Windows PowerShell에서는 다음 환경 변수를 지정합니다.**
-
-```powershell
-$env:LAB_LANGUAGE = "ko"
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-ko/artifacts"
-```
-
-두 변수는 현재 터미널에만 적용됩니다. **새 터미널에서는 아래 재개 절차**를 사용합니다. `LAB_LANGUAGE`를 바꾸면서 기존 실행 폴더를 재사용하지 않습니다.
+같은 실습을 재개할 때는 기존 환경을 사용합니다. 별도 한국어 실습이면 `lab-ko-02`처럼 **`lab-ko-`로 시작하는 이름**을 사용하고 이후 경로도 함께 바꿉니다. 기록은 자동으로 저장되며 정리 전에 삭제하지 않습니다.
 
 <details class="guide-details optional-path" markdown="1">
 <summary>중단 후 재개할 때만 · 터미널 설정을 복원합니다</summary>
@@ -319,16 +305,12 @@ $env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-ko/artifacts"
 
 ```bash
 source .venv/bin/activate
-export LAB_LANGUAGE=ko
-export LAB_ARTIFACTS_DIR="$PWD/.lab/lab-ko/artifacts"
 ```
 
 **Windows PowerShell:**
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-$env:LAB_LANGUAGE = "ko"
-$env:LAB_ARTIFACTS_DIR = Join-Path (Get-Location).Path ".lab/lab-ko/artifacts"
 ```
 
 PowerShell 활성화가 차단되면 조직 정책을 바꾸지 않고 이후 `python`을 `.\.venv\Scripts\python.exe`로 바꿉니다.
@@ -341,6 +323,8 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 `Enabled`를 확인합니다. 로그인이 만료됐거나 다르면 [같은 계정으로 로그인](#setup-login)한 뒤 다시 확인합니다.
 
+**언어·기록 폴더 설정은 반복하지 않습니다.** 다음 명령의 원래 `--config` 경로를 유지하면 저장된 설정을 자동으로 사용합니다.
+
 자신의 `notes.md`에서 마지막 완료 단계를 찾습니다. 환경 생성 상태는 [02의 읽기 전용 status](#resources-status), 제출한 평가의 ID·상태는 [06의 조회](#baseline-identifiers), 후보 재평가 수집은 [09의 같은 receipt 재개](#decision-run)로 확인합니다. **완료한 작업은 다시 제출하지 않고, 진행 중인 작업은 같은 ID로 조회합니다.** 01에서는 Microsoft Azure 환경을 생성하거나 SDK를 호출하지 않습니다.
 
 </details>
@@ -350,13 +334,13 @@ Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 `En
 
 #### 코드 ↔ 포털 · 로그인과 로컬 설정을 확인합니다 {#setup-code-portal}
 
-**실행 위치:** 위의 [터미널 로그인 명령](#setup-login)과 [언어·기록 폴더 설정](#setup-language)을 실행합니다. 이 단계에서는 명령 출력과 포털 값을 직접 대조합니다.
+**실행 위치:** 위의 [터미널 로그인 명령](#setup-login)을 실행합니다. [언어·기록 자동 설정 안내](#setup-language)는 설명이며 실행할 추가 명령이 아닙니다.
 {: .execution-guide}
 
 | 실행한 명령·설정값 | 지금 확인하는 내용 | 포털 조작·확인 위치 |
 |---|---|---|
 | `az login`, `az account set`, `az account show` | 로그인 계정·테넌트·구독을 기록하고 `state: Enabled`를 확인합니다. | Microsoft Azure Portal 우측 상단 계정의 Directory와 **Subscriptions → 사용할 구독 → Overview**의 ID·상태를 직접 대조합니다. |
-| `LAB_LANGUAGE`, `LAB_ARTIFACTS_DIR` | 현재 터미널의 데이터 언어와 실행 기록 경로를 지정합니다. | 포털에 없는 로컬 설정입니다. 한국어 실습은 `ko`와 `.lab/lab-ko/artifacts`를 사용합니다. |
+| `--environment lab-ko` → 이후 명령의 `--config` | 02에서 언어·기록 위치를 저장하고 이후 명령이 읽습니다. 터미널 변수 설정은 없습니다. | 포털 언어 선택과 무관한 실습 설정입니다. 한국어 자료와 해당 환경의 기록을 사용합니다. |
 
 </details>
 
@@ -380,11 +364,13 @@ Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 `En
 
 ### 생성 명령 하나로 환경을 준비합니다 {#resources-quickstart}
 
-01의 로그인·언어 설정을 마쳤다면 바로 실행합니다. **구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 자원 이름과 설정 파일은 자동으로 만듭니다.** JSON 승인서를 직접 작성할 필요가 없습니다.
+01의 로그인을 마쳤다면 바로 실행합니다. **구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 언어·기록 위치·자원 이름·설정 파일은 자동으로 정합니다.** 별도 환경 변수나 언어 옵션을 입력하거나 JSON 승인서를 직접 작성할 필요가 없습니다.
 
 ```sh
 python -m lab bootstrap setup --environment lab-ko
 ```
+
+`lab-ko`는 한국어, `lab-en`은 영어입니다. `lab-ko-02`·`lab-en-02` 같은 별도 환경도 같은 규칙을 따릅니다. 한국어 실습의 명령 실행 결과는 `.lab/lab-ko/artifacts/`에 저장됩니다.
 
 프로그램은 **계획 → 권한·모델·할당량 검사 → 실제 승인 내용 입력 → 생성** 순서로 안내합니다. 지역은 `northcentralus`, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.
 
@@ -407,6 +393,8 @@ python -m lab bootstrap setup --environment lab-ko
 **정상 결과는 `status: APPLIED`와 `.lab/lab-ko/.env` 생성입니다.** `config.json`·`approval.json`·`manifest.json`도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다. 오류가 있으면 [생성 문제 해결](troubleshooting.md#provisioning)로 이동합니다.
 
 **`.env`는 프로젝트 연결 주소(Project endpoint)와 모델 배포 이름을 담은 설정 파일**이며 Python 패키지 폴더인 `.venv`와 다릅니다. 이후 명령이 `--config`로 읽으므로 직접 실행하거나 `source`하지 않습니다. 생성이 실패했다면 `.env.example`을 복사하여 대신하지 않습니다.
+
+프로그램은 같은 파일의 언어·기록 위치도 자동으로 읽습니다. **셸에 남아 있는 과거 환경 변수보다 선택한 설정 파일이 우선**합니다. 이전 버전에서 생성한 `lab-ko`·`lab-en` 환경도 파일을 고치거나 재생성하지 않고 사용할 수 있습니다. 다른 언어의 기존 기록을 다시 표시하거나 덮어쓰지는 않습니다.
 
 같은 이름으로 다시 실행하면 **아직 생성 시도가 없는 계획만 이어 준비**합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 [status 조회](#resources-status)로 확인합니다.
 
