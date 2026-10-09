@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
+  <meta property="og:title" content="Evaluate and improve a customer-support Agent · v1">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
+  <meta name="twitter:card" content="summary">
   <title>Evaluate and improve a customer-support Agent · v1 · Microsoft Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
@@ -104,7 +110,7 @@
 
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
+        <span class="document-date">As of <time datetime="2026-10-09">2026-10-09</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Evaluate and improve a customer-support Agent · v1">
@@ -146,7 +152,7 @@
 <ul>
 <li><strong>Subscription, permissions, spending:</strong> You need your own Microsoft Azure subscription, <strong>both provisioning and role-assignment permissions</strong> for resources, and spending authorization.</li>
 <li><strong>Lab terminal:</strong> <strong>GitHub Codespaces (recommended)</strong> needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Microsoft Azure CLI.</li>
-<li><strong>Time:</strong> Allow roughly half a day, plus permission/quota approvals and service execution time.</li>
+<li><strong>Time:</strong> Allow roughly half a day, plus permission/quota approvals and service execution time. Service waits are usually short (provisioning in 02 about 10 minutes, a 12-case evaluation a few minutes, an Optimizer job often 10–20 minutes) but can be longer when the service is busy.</li>
 <li><strong>Ground rule:</strong> <strong>Every participant completes every step with their own account, from setup to cleanup.</strong> Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the <a href="#setup-resume">resume instructions</a> and verify completed work using your own <code>config.json</code>, manifest, and receipts.</li>
 </ul>
 <p class="note warning"><strong>Closing your browser does not end charges; finish the cleanup in 10.</strong> Microsoft Azure model/Search/logging charges are <strong>separate from GitHub Codespaces compute/storage charges</strong>. If you stop after creating resources, still preserve records and clean up.</p>
@@ -297,7 +303,8 @@ az version
 python -m lab --help
 python scripts/build_datasets.py --language en --check
 </code></pre>
-<p>Confirm Python <strong>3.12.x</strong>, Git/Microsoft Azure CLI versions, the lab command list, and a successful dataset check. <strong>Continue to <a href="#setup-login">sign-in</a> without reinstalling tools, cloning, or recreating the virtual environment.</strong> If initial setup fails, see <a href="troubleshooting.html#codespaces">Codespaces troubleshooting</a>.</p>
+<p>Confirm Python <strong>3.12.x</strong>, Git/Microsoft Azure CLI versions, the lab command list, and a successful dataset check. The command list is long, but this guide uses only <code>bootstrap</code>, <code>preflight</code>, <code>smoke</code>, <code>iq</code>, <code>native-agent</code>, <code>native-evals</code>, and <code>cleanup</code>; ignore the others. <strong>Continue to <a href="#setup-login">sign-in</a> without reinstalling tools, cloning, or recreating the virtual environment.</strong> If initial setup fails, see <a href="troubleshooting.html#codespaces">Codespaces troubleshooting</a>.</p>
+<p class="note"><strong>Keep the codespace active during waits.</strong> By default, a codespace stops after 30 minutes without interaction, and stopping it ends any running command. Stay with the terminal while 02 provisions and 09 waits for the reevaluation. If it stops, <a href="https://github.com/codespaces">restart it</a>, open <strong>Terminal → New Terminal</strong>, and follow the <a href="#setup-resume">resume instructions</a>; check status instead of repeating <code>apply</code> or a submission. A stopped codespace that stays unused is deleted after 30 days by default, so back up <code>.lab/</code> as described in <a href="#cleanup-codespaces">10</a> before a long break. Your account or organization may use different <a href="https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle">codespace lifecycle rules</a>.</p>
 <details class="guide-details optional-path">
 <summary>Local computer only · Windows/macOS/Linux installation</summary>
 <h4 id="setup-local-install">Select the local installation path</h4>
@@ -399,10 +406,10 @@ az version
 <p>Python information in <code>az version</code> describes Microsoft Azure CLI's own runtime, not verification of the lab's Python installation. <strong>All three commands must succeed before</strong> downloading the lab or creating its virtual environment. For <code>command not found</code>, <code>not recognized</code>, or Microsoft Store opening instead of Python, see <a href="troubleshooting.html#environment">installation and PATH troubleshooting</a>.</p>
 <h4 id="setup-download">Download the lab files</h4>
 <p class="command-label">Run in your terminal · Shared terminal</p>
-<pre class="terminal-command"><code class="language-sh">git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+<pre class="terminal-command"><code class="language-sh">git clone --depth 1 https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 </code></pre>
-<p>If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub <strong>Code → Download ZIP</strong>, extract the archive first and open the folder containing <code>pyproject.toml</code> and <code>requirements.lock</code>. Downloading only an HTML file omits the code, data, and images.</p>
+<p><code>--depth 1</code> downloads only the latest files, not the repository history, which keeps the download small because the repository also stores demonstration videos. If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub <strong>Code → Download ZIP</strong>, extract the archive first and open the folder containing <code>pyproject.toml</code> and <code>requirements.lock</code>. Downloading only an HTML file omits the code, data, and images.</p>
 <h4 id="setup-venv">Create a virtual environment with the verified Python</h4>
 <p>Run subsequent commands from the <strong>lab folder containing <code>pyproject.toml</code> and <code>requirements.lock</code></strong>. <code>.venv</code> is an isolated Python package environment for this lab. Create it with <strong>the same Python you verified above</strong>, running only the one path matching your operating system.</p>
 <p><strong>macOS · the Homebrew path above:</strong></p>
@@ -551,7 +558,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p><strong>Final review before creation:</strong> Read the displayed account, subscription, region, resources, models, and limits. This quick path records <strong>at most two candidates, a one-hour job wait, and 30-day log retention</strong>. Use the individual configuration path below if different limits are required. Type <strong><code>CREATE lab-en</code></strong> only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.</p>
+<p><strong>How to size the numbers:</strong> Choose hours that cover provisioning (usually about 10 minutes), your work, and the cleanup in 10, and keep the resources only that long. The largest continuing cost is <strong>Microsoft Azure AI Search (Basic)</strong>, billed per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared, roughly US$2.4 per day. Model charges depend on tokens and current model prices. Estimate your own budget with the <a href="https://azure.microsoft.com/pricing/calculator/">Microsoft Azure pricing calculator</a>, the current <a href="https://azure.microsoft.com/pricing/details/search/">AI Search prices</a>, and Microsoft Foundry model prices, then add room for retries you did not plan. The prompts record your numbers; they are not spending caps.
+{: .note}
+<strong>Final review before creation:</strong> Read the displayed account, subscription, region, resources, models, and limits. This quick path records <strong>at most two candidates, a one-hour job wait, and 30-day log retention</strong>. Use the individual configuration path below if different limits are required. Type <strong><code>CREATE lab-en</code></strong> only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.</p>
 <p class="note warning">No Microsoft Azure resources are created before confirmation, and Enter cancels. <strong>After confirmation, provisioning and charges can begin.</strong> Budget, call counts, and hosting hours are not automatic spending cutoffs, nor authorization for deletion, training, or automatic retries.</p>
 <p><strong>Successful result</strong></p>
 <ul>
@@ -663,7 +672,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:plan</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L660-L736">Full source file · 660–736</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L660-L736">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L661-L737">Full source file · 661–737</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L661-L737">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:plan"><code class="language-python">def plan(
     *, subscription_id: str, tenant_id: str, expected_user: str,
     environment: str | None = None, root: Path | str = Path(&quot;.lab&quot;),
@@ -790,7 +799,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:_preflight</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1317-L1349">Full source file · 1317–1349</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1317-L1349">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1318-L1350">Full source file · 1318–1350</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1318-L1350">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_preflight"><code class="language-python">def _preflight(config: dict, manifest: dict, run: Run) -&gt; tuple[dict, dict, dict]:
     identity = _identity(config, manifest, run)
     prerequisites = _prerequisites(config, run)
@@ -828,7 +837,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 </details>
 <p>After confirming authorization for your spending and changes, open <code>.lab/lab-en/approval.example.json</code> in an editor and <strong>Save As</strong> <code>.lab/lab-en/approval.json</code>. If you can authorize spending on your own subscription, set and record its limits yourself. For an organizational subscription, follow its actual approval procedure. Preserve <code>scope_sha256</code>, <code>models</code>, and <code>retention_days</code>, and complete <strong>every field in the <a href="admin.html#approval">approval worksheet</a></strong>.</p>
 <p><strong>Required reference:</strong> Open the approval worksheet in another tab, complete it, then <strong>return here</strong>. Confirm you saved <strong><code>approval.json</code></strong> in the same folder, not changes to the original <code>approval.example.json</code>, and run the check below. Do not repeat provisioning commands from the reference document.</p>
-<p>Set <code>approved_by</code> to <strong>your sign-in name</strong>, matching the plan's <code>expected_user</code>. This binds the execution identity; it is not an organizational approver's digital signature. Confirm actual authorization evidence, currently valid timestamps, currency/budget, wait/retention bounds, and resource/RBAC/global-processing consent. Changing only <code>approved</code> to <code>true</code> is insufficient; the budget value is not an Microsoft Azure spending cutoff.</p>
+<p>Set <code>approved_by</code> to <strong>your sign-in name</strong>, matching the plan's <code>expected_user</code>. This binds the execution identity; it is not an organizational approver's digital signature. Confirm actual authorization evidence, currently valid timestamps, currency/budget, wait/retention bounds, and resource/RBAC/global-processing consent. Changing only <code>approved</code> to <code>true</code> is insufficient; the budget value is not a Microsoft Azure spending cutoff.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
@@ -898,7 +907,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:apply</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1916-L2107">Full source file · 1916–2107</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1916-L2107">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1917-L2108">Full source file · 1917–2108</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1917-L2108">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:apply"><code class="language-python">def apply(
     config_path: Path | str, approval_path: Path | str | None = None, *,
     run: Run = az_json, what_if: bool = False, retry: bool = False,
@@ -1097,7 +1106,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:_parameters</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L1401-L1410">Full source file · 1401–1410</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1401-L1410">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L1402-L1411">Full source file · 1402–1411</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L1402-L1411">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:_parameters"><code class="language-python">def _parameters(config: dict, principal: str) -&gt; dict:
     return {
         &quot;$schema&quot;: &quot;https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#&quot;,
@@ -1114,7 +1123,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:status</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L2110-L2137">Full source file · 2110–2137</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2110-L2137">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L2111-L2138">Full source file · 2111–2138</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2111-L2138">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:status"><code class="language-python">def status(
     config_path: Path | str, *, run: Run = az_json, approval_path: Path | str | None = None,
 ) -&gt; dict:
@@ -1149,7 +1158,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:setup</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/bootstrap.py#L2140-L2255">Full source file · 2140–2255</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2140-L2255">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/bootstrap.py#L2141-L2256">Full source file · 2141–2256</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/bootstrap.py#L2141-L2256">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/bootstrap.py:setup"><code class="language-python">def setup(
     environment: str, *, root: Path | str = Path(&quot;.lab&quot;), run: Run = az_json,
     read: Callable[[str], str] = input, write: Callable[[str], None] = print,
@@ -1327,11 +1336,14 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/preflight.py:check_identity</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/preflight.py#L69-L87">Full source file · 69–87</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L69-L87">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/preflight.py#L80-L105">Full source file · 80–105</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L80-L105">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/preflight.py:check_identity"><code class="language-python">def check_identity(config: Config, run: Callable = az_json) -&gt; dict:
     account = run([&quot;account&quot;, &quot;show&quot;, &quot;--subscription&quot;, config.subscription_id])
     if not isinstance(account, dict):
-        raise LabError(&quot;az account show 응답 형식이 올바르지 않습니다.&quot;)
+        raise LabError(text(
+            &quot;az account show 응답 형식이 올바르지 않습니다.&quot;,
+            &quot;The az account show response has an unexpected format.&quot;,
+        ))
     actual_user = account.get(&quot;user&quot;, {}).get(&quot;name&quot;, &quot;&quot;)
     checks = {
         &quot;subscription&quot;: account.get(&quot;id&quot;) == config.subscription_id,
@@ -1341,11 +1353,15 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     }
     if not all(checks.values()):
         failed = &quot;, &quot;.join(key for key, ok in checks.items() if not ok)
-        raise LabError(
+        raise LabError(text(
             f&quot;로그인 환경 불일치({failed}). 작업을 중단했습니다. &quot;
             f&quot;az login --tenant {config.tenant_id} 후 지정 계정으로 로그인해야 합니다. &quot;
-            &quot;SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다.&quot;
-        )
+            &quot;SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다.&quot;,
+            f&quot;The sign-in environment does not match ({failed}). Work stopped. &quot;
+            f&quot;Run az login --tenant {config.tenant_id} and sign in with the designated account. &quot;
+            &quot;The SDK never switches to another environment&#x27;s credentials automatically.&quot;,
+            language=config.language,
+        ))
     return {&quot;user&quot;: actual_user, &quot;subscription&quot;: account[&quot;id&quot;], &quot;tenant&quot;: account[&quot;tenantId&quot;]}
 </code></pre>
 </details>
@@ -1353,7 +1369,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/preflight.py:run_preflight</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/preflight.py#L90-L224">Full source file · 90–224</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L90-L224">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/preflight.py#L108-L258">Full source file · 108–258</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/preflight.py#L108-L258">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/preflight.py:run_preflight"><code class="language-python">def run_preflight(config: Config, *, run: Callable = az_json) -&gt; dict:
     identity = check_identity(config, run)
     account = run([
@@ -1414,7 +1430,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                 or str(deployment.get(&quot;id&quot;, &quot;&quot;)).lower() != identifier.lower()
                 or not isinstance(deployment.get(&quot;properties&quot;), dict)
             ):
-                raise LabError(&quot;TPM 조회 응답이 요청한 모델 배포와 다릅니다.&quot;)
+                raise LabError(text(
+                    &quot;TPM 조회 응답이 요청한 모델 배포와 다릅니다.&quot;,
+                    &quot;The TPM lookup response does not match the requested model deployment.&quot;,
+                ))
             deployment_map[name] = deployment
             source = &quot;Raw ARM deployment metadata&quot;
         rate_limit_sources[name] = source
@@ -1468,7 +1487,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     if public_access == &quot;Disabled&quot;:
         checks.append({
             &quot;name&quot;: &quot;network&quot;, &quot;status&quot;: &quot;BLOCKED&quot;,
-            &quot;observed&quot;: &quot;PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행해야 합니다.&quot;,
+            &quot;observed&quot;: text(
+                &quot;PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행해야 합니다.&quot;,
+                &quot;PublicNetworkAccess=Disabled: run from an approved VNet-connected environment.&quot;,
+            ),
         })
     return {
         &quot;checked_at&quot;: datetime.now(timezone.utc).isoformat(),
@@ -1482,11 +1504,21 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             &quot;search_managed_identity&quot;: search.get(&quot;identity&quot;, {}).get(&quot;principalId&quot;),
         },
         &quot;not_verified&quot;: [
-            &quot;데이터 평면 RBAC와 모델 추론 성공&quot;,
-            &quot;Foundry IQ 지식 베이스 생성·검색 권한&quot;,
-            &quot;Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한&quot;,
-            &quot;GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
-            &quot;TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.&quot;,
+            text(&quot;데이터 평면 RBAC와 모델 추론 성공&quot;, &quot;Data-plane RBAC and successful model inference&quot;),
+            text(&quot;Foundry IQ 지식 베이스 생성·검색 권한&quot;, &quot;Foundry IQ knowledge-base creation and retrieval permissions&quot;),
+            text(
+                &quot;Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한&quot;,
+                &quot;Tenant access to Prompt Optimizer and Frontier Tuning&quot;,
+            ),
+            text(
+                &quot;GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
+                &quot;GlobalStandard does not guarantee processing inside North Central US.&quot;,
+            ),
+            text(
+                &quot;TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.&quot;,
+                &quot;Meeting the TPM minimum does not guarantee remaining tokens, absence of shared load, &quot;
+                &quot;RPM or burst limits, or a run without 429 errors.&quot;,
+            ),
         ],
     }
 </code></pre>
@@ -1537,7 +1569,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/auth.py:credential_for</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/auth.py#L11-L15">Full source file · 11–15</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/auth.py#L11-L15">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/auth.py#L12-L16">Full source file · 12–16</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/auth.py#L12-L16">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/auth.py:credential_for"><code class="language-python">def credential_for(config: Config) -&gt; AzureCliCredential:
     check_identity(config)
     # Azure CLI rejects get-access-token when both tenant and subscription are
@@ -1549,7 +1581,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/agents.py:smoke_model</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/agents.py#L168-L207">Full source file · 168–207</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/agents.py#L168-L207">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/agents.py#L168-L216">Full source file · 168–216</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/agents.py#L168-L216">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/agents.py:smoke_model"><code class="language-python">def smoke_model(config: Config, run_id: str) -&gt; dict:
     directory = safe_run_dir(run_id)
     path = directory / &quot;model-smoke.json&quot;
@@ -1557,9 +1589,15 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         previous = read_json(path)
         require_content_language(previous)
         if previous.get(&quot;project_endpoint&quot;) != config.project_endpoint or previous.get(&quot;deployment&quot;) != config.model:
-            raise LabError(&quot;기존 model smoke의 환경/배포가 다릅니다.&quot;)
+            raise LabError(text(
+                &quot;기존 model smoke의 환경/배포가 다릅니다.&quot;,
+                &quot;The environment or deployment of the earlier model smoke check differs.&quot;,
+            ))
         if previous.get(&quot;status&quot;) != &quot;completed&quot;:
-            raise LabError(&quot;이 model smoke는 실패 또는 결과 불명입니다. 원본을 확인하기 전 재호출하지 않습니다.&quot;)
+            raise LabError(text(
+                &quot;이 model smoke는 실패 또는 결과 불명입니다. 원본을 확인하기 전 재호출하지 않습니다.&quot;,
+                &quot;This model smoke check failed or its outcome is unknown. Do not call it again before checking the original record.&quot;,
+            ))
         return previous
     snapshot = model_snapshot(config, config.model)
     record = {
@@ -1588,7 +1626,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                 ) else &quot;failed&quot;
                 save_json(path, record)
     if record[&quot;status&quot;] != &quot;completed&quot;:
-        raise LabError(&quot;모델 smoke가 완료된 비어 있지 않은 응답을 반환하지 않았습니다.&quot;)
+        raise LabError(text(
+            &quot;모델 smoke가 완료된 비어 있지 않은 응답을 반환하지 않았습니다.&quot;,
+            &quot;The model smoke check did not return a completed, non-empty response.&quot;,
+        ))
     return record
 </code></pre>
 </details>
@@ -1643,10 +1684,13 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:knowledge_payloads</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L33-L105">Full source file · 33–105</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L33-L105">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L33-L108">Full source file · 33–108</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L33-L108">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:knowledge_payloads"><code class="language-python">def knowledge_payloads(config: Config, names: dict, planner_model: str) -&gt; dict:
     if not config.embedding:
-        raise LabError(&quot;벡터 검색을 위해 EMBEDDING_DEPLOYMENT를 명시해야 합니다.&quot;)
+        raise LabError(text(
+            &quot;벡터 검색을 위해 EMBEDDING_DEPLOYMENT를 명시해야 합니다.&quot;,
+            &quot;EMBEDDING_DEPLOYMENT must be set explicitly for vector search.&quot;,
+        ))
     analyzer = f&quot;{selected_language()}.microsoft&quot;
     return {
         &quot;index&quot;: {
@@ -1723,7 +1767,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:_ensure_created</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L108-L125">Full source file · 108–125</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L108-L125">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L111-L134">Full source file · 111–134</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L111-L134">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:_ensure_created"><code class="language-python">def _ensure_created(config: Config, http: JsonHttp, kind: str, name: str, url: str, payload: dict) -&gt; dict:
     state = workspace(config)
     owned = [item for item in state[&quot;created&quot;] if item.get(&quot;kind&quot;) == kind and item.get(&quot;name&quot;) == name]
@@ -1735,11 +1779,17 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         existing = None
     if existing is not None:
         if not owned:
-            raise LabError(f&quot;{name}이 이미 존재하지만 이 실습의 생성 기록이 없습니다. 덮어쓰지 않습니다.&quot;)
+            raise LabError(text(
+                f&quot;{name}이 이미 존재하지만 이 실습의 생성 기록이 없습니다. 덮어쓰지 않습니다.&quot;,
+                f&quot;{name} already exists, but this lab has no creation record for it. Not overwriting.&quot;,
+            ))
         return existing.body
     result = http.request(&quot;PUT&quot;, url, payload, create_only=True)
     if result.status not in {200, 201}:
-        raise LabError(f&quot;{name}: 비동기/예상 밖 상태 {result.status}. 완료로 기록하지 않습니다.&quot;)
+        raise LabError(text(
+            f&quot;{name}: 비동기/예상 밖 상태 {result.status}. 완료로 기록하지 않습니다.&quot;,
+            f&quot;{name}: asynchronous or unexpected status {result.status}. Not recorded as complete.&quot;,
+        ))
     record_created(config, {&quot;kind&quot;: kind, &quot;name&quot;: name, &quot;url&quot;: url, &quot;etag&quot;: result.etag})
     return result.body
 </code></pre>
@@ -1747,7 +1797,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:prepare_knowledge</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L128-L239">Full source file · 128–239</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L128-L239">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L137-L269">Full source file · 137–269</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L137-L269">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:prepare_knowledge"><code class="language-python">def prepare_knowledge(config: Config) -&gt; dict:
     state = workspace(config, create=True)
     names = resource_names(config, state)
@@ -1760,10 +1810,16 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         previous = read_json(setup_path)
         require_content_language(previous)
         if previous.get(&quot;documents_sha256&quot;) != content_hash or previous.get(&quot;names&quot;) != names:
-            raise LabError(&quot;기존 지식 준비와 원본/범위가 다릅니다. 다른 실험을 기존 인덱스에 덮어쓰지 않습니다.&quot;)
+            raise LabError(text(
+                &quot;기존 지식 준비와 원본/범위가 다릅니다. 다른 실험을 기존 인덱스에 덮어쓰지 않습니다.&quot;,
+                &quot;The source or scope differs from the earlier knowledge preparation. A different experiment is never written over the existing index.&quot;,
+            ))
         if previous.get(&quot;status&quot;) in {&quot;created_not_retrieval_tested&quot;, &quot;retrieval_verified&quot;}:
             if previous.get(&quot;retrieval&quot;, {}).get(&quot;embedding_deployment&quot;) != config.embedding:
-                raise LabError(&quot;준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.&quot;)
+                raise LabError(text(
+                    &quot;준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.&quot;,
+                    &quot;The embedding contract of the prepared index differs. Create a new experiment.&quot;,
+                ))
             return previous
     with credential_for(config) as credential:
         planner = az_json([
@@ -1773,15 +1829,24 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         ])
         model = planner.get(&quot;properties&quot;, {}).get(&quot;model&quot;, {})
         if not model.get(&quot;name&quot;):
-            raise LabError(&quot;IQ planner의 실제 모델 이름을 확인할 수 없습니다.&quot;)
+            raise LabError(text(
+                &quot;IQ planner의 실제 모델 이름을 확인할 수 없습니다.&quot;,
+                &quot;Could not confirm the actual model name of the IQ planner.&quot;,
+            ))
         # This workshop&#x27;s main lane was researched for gpt-5.5, not arbitrary
         # answer models that may be unsupported by the knowledge-base planner.
         if model[&quot;name&quot;] != &quot;gpt-5.5&quot;:
-            raise LabError(&quot;이 경로의 IQ planner는 확인된 gpt-5.5 배포를 요구합니다. 다른 모델로 자동 전환하지 않습니다.&quot;)
+            raise LabError(text(
+                &quot;이 경로의 IQ planner는 확인된 gpt-5.5 배포를 요구합니다. 다른 모델로 자동 전환하지 않습니다.&quot;,
+                &quot;The IQ planner on this path requires a verified gpt-5.5 deployment. It never switches to another model automatically.&quot;,
+            ))
         payloads = knowledge_payloads(config, names, model[&quot;name&quot;])
         payload_hash = hashlib.sha256(json.dumps(payloads, sort_keys=True).encode()).hexdigest()
         if previous and previous.get(&quot;payload_sha256&quot;) != payload_hash:
-            raise LabError(&quot;미완료 검색 설정의 구성 계약이 바뀌었습니다. 같은 인덱스에 덮어쓰지 않습니다.&quot;)
+            raise LabError(text(
+                &quot;미완료 검색 설정의 구성 계약이 바뀌었습니다. 같은 인덱스에 덮어쓰지 않습니다.&quot;,
+                &quot;The configuration contract of the unfinished search setup changed. Not overwriting the same index.&quot;,
+            ))
         setup = {
             **language_metadata(),
             &quot;status&quot;: &quot;preparing&quot;, &quot;workspace_id&quot;: state[&quot;workspace_id&quot;], &quot;names&quot;: names,
@@ -1820,7 +1885,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         if upload_path.exists():
             upload_record = read_json(upload_path)
             if upload_record.get(&quot;contract&quot;) != upload_contract or upload_record.get(&quot;status&quot;) != &quot;completed&quot;:
-                raise LabError(&quot;업로드 계약 변경 또는 결과 불명입니다. 업로드를 반복하지 않고 실제 인덱스 상태를 확인해야 합니다.&quot;)
+                raise LabError(text(
+                    &quot;업로드 계약 변경 또는 결과 불명입니다. 업로드를 반복하지 않고 실제 인덱스 상태를 확인해야 합니다.&quot;,
+                    &quot;The upload contract changed or its outcome is unknown. Do not repeat the upload; check the actual index state.&quot;,
+                ))
             upload_body = upload_record[&quot;response&quot;]
         else:
             write_once_json(upload_path, {&quot;status&quot;: &quot;submitting&quot;, &quot;contract&quot;: upload_contract})
@@ -1836,7 +1904,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             or any(item.get(&quot;status&quot;) is not True for item in statuses)
         ):
             save_json(artifacts_dir() / &quot;knowledge/upload-error.json&quot;, upload_body)
-            raise LabError(&quot;일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.&quot;)
+            raise LabError(text(
+                &quot;일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.&quot;,
+                &quot;Some document uploads failed. Check knowledge/upload-error.json.&quot;,
+            ))
         save_json(upload_path, {&quot;status&quot;: &quot;completed&quot;, &quot;contract&quot;: upload_contract, &quot;response&quot;: upload_body})
         _ensure_created(
             config, search, &quot;knowledge_source&quot;, names[&quot;source&quot;],
@@ -1866,13 +1937,19 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/embeddings.py:embed</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/embeddings.py#L41-L97">Full source file · 41–97</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/embeddings.py#L41-L97">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/embeddings.py#L51-L122">Full source file · 51–122</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/embeddings.py#L51-L122">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/embeddings.py:embed"><code class="language-python">def embed(config: Config, texts: list[str], cache_path: Path) -&gt; dict:
     if not config.embedding or not texts or any(not isinstance(text, str) or not text.strip() for text in texts):
-        raise LabError(&quot;EMBEDDING_DEPLOYMENT와 비어 있지 않은 embedding 입력이 필요합니다.&quot;)
+        raise LabError(localized_text(
+            &quot;EMBEDDING_DEPLOYMENT와 비어 있지 않은 embedding 입력이 필요합니다.&quot;,
+            &quot;EMBEDDING_DEPLOYMENT and non-empty embedding input are required.&quot;,
+        ))
     deployment = model_snapshot(config, config.embedding)
     if deployment[&quot;model&quot;].get(&quot;name&quot;) != &quot;text-embedding-3-small&quot;:
-        raise LabError(&quot;이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.&quot;)
+        raise LabError(localized_text(
+            &quot;이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.&quot;,
+            &quot;This index&#x27;s frozen contract is text-embedding-3-small/1536. It is never replaced automatically.&quot;,
+        ))
     contract = {
         &quot;endpoint&quot;: config.openai_endpoint, &quot;deployment&quot;: deployment,
         &quot;dimensions&quot;: DIMENSIONS,
@@ -1882,9 +1959,15 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     if cache_path.exists():
         previous = read_json(cache_path)
         if previous.get(&quot;contract&quot;) != contract:
-            raise LabError(&quot;기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존해야 합니다.&quot;)
+            raise LabError(localized_text(
+                &quot;기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존해야 합니다.&quot;,
+                &quot;The input, model or scope differs from the earlier embedding run. Preserve the existing record.&quot;,
+            ))
         if previous.get(&quot;status&quot;) != &quot;completed&quot;:
-            raise LabError(&quot;이 embedding 요청은 실패 또는 결과 불명입니다. 원격 요청을 확인하기 전 재호출하지 않습니다.&quot;)
+            raise LabError(localized_text(
+                &quot;이 embedding 요청은 실패 또는 결과 불명입니다. 원격 요청을 확인하기 전 재호출하지 않습니다.&quot;,
+                &quot;This embedding request failed or its outcome is unknown. Do not call it again before checking the remote request.&quot;,
+            ))
         validate_vectors(previous[&quot;response&quot;], len(texts))
         return previous
     from azure.identity import get_bearer_token_provider
@@ -1900,7 +1983,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         with cache_path.open(&quot;x&quot;, encoding=&quot;utf-8&quot;) as stream:
             json.dump(record, stream, ensure_ascii=False, indent=2)
     except FileExistsError as exc:
-        raise LabError(&quot;동시 embedding 실행을 차단했습니다. 기존 기록을 확인해야 합니다.&quot;) from exc
+        raise LabError(localized_text(
+            &quot;동시 embedding 실행을 차단했습니다. 기존 기록을 확인해야 합니다.&quot;,
+            &quot;A concurrent embedding run was blocked. Check the existing record.&quot;,
+        )) from exc
     started = time.perf_counter()
     try:
         with credential_for(config) as credential:
@@ -1936,11 +2022,11 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:probe_knowledge</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L256-L296">Full source file · 256–296</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L256-L296">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L289-L338">Full source file · 289–338</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L289-L338">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:probe_knowledge"><code class="language-python">def probe_knowledge(config: Config, query: str) -&gt; dict:
     setup = load_knowledge(config)
     if not query.strip():
-        raise LabError(&quot;지식 검색 질문이 비어 있습니다.&quot;)
+        raise LabError(text(&quot;지식 검색 질문이 비어 있습니다.&quot;, &quot;The knowledge retrieval question is empty.&quot;))
     names = setup[&quot;names&quot;]
     request = {
         &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: query}]}],
@@ -1957,11 +2043,17 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     intent_path, response_path = directory / &quot;iq-request.json&quot;, directory / &quot;iq-response.json&quot;
     if response_path.exists():
         if read_json(intent_path) != request:
-            raise LabError(&quot;기존 IQ 요청 계약이 다릅니다. 원본 기록을 보존해야 합니다.&quot;)
+            raise LabError(text(
+                &quot;기존 IQ 요청 계약이 다릅니다. 원본 기록을 보존해야 합니다.&quot;,
+                &quot;The earlier IQ request contract differs. Preserve the original record.&quot;,
+            ))
         body = read_json(response_path)
     else:
         if intent_path.exists():
-            raise LabError(&quot;이 IQ probe는 결과 불명입니다. planner를 다시 유료 호출하지 않고 원격 요청을 확인해야 합니다.&quot;)
+            raise LabError(text(
+                &quot;이 IQ probe는 결과 불명입니다. planner를 다시 유료 호출하지 않고 원격 요청을 확인해야 합니다.&quot;,
+                &quot;This IQ probe&#x27;s outcome is unknown. Do not call the planner again at a cost; check the remote request.&quot;,
+            ))
         write_once_json(intent_path, request)
         with credential_for(config) as credential:
             http = JsonHttp(credential, scope=SEARCH_SCOPE, allowed_origin=config.search_endpoint)
@@ -1973,7 +2065,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
     if not (artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;).exists():
         save_json(artifacts_dir() / &quot;knowledge/retrieve-response.json&quot;, body)
     if not body.get(&quot;response&quot;) or not body.get(&quot;references&quot;) or not body.get(&quot;activity&quot;):
-        raise LabError(&quot;검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.&quot;)
+        raise LabError(text(
+            &quot;검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.&quot;,
+            &quot;The search response, references or activity is missing. Check the preserved iq-response.json; this is not recorded as complete.&quot;,
+        ))
     setup[&quot;status&quot;] = &quot;retrieval_verified&quot;
     setup[&quot;probe_scope&quot;] = &quot;Human CLI identity; deployed-agent managed identity must still be verified by an agent call.&quot;
     save_json(artifacts_dir() / &quot;knowledge/setup.json&quot;, setup)
@@ -2030,11 +2125,14 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:knowledge_tool</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L347-L358">Full source file · 347–358</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L347-L358">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L395-L409">Full source file · 395–409</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L395-L409">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:knowledge_tool"><code class="language-python">def knowledge_tool(config: Config) -&gt; MCPTool:
     setup = load_knowledge(config)
     if setup[&quot;status&quot;] != &quot;retrieval_verified&quot;:
-        raise LabError(&quot;먼저 python -m lab iq probe --confirm 으로 실제 검색을 확인해야 합니다.&quot;)
+        raise LabError(text(
+            &quot;먼저 python -m lab iq probe --confirm 으로 실제 검색을 확인해야 합니다.&quot;,
+            &quot;First verify real retrieval with python -m lab iq probe --confirm.&quot;,
+        ))
     return MCPTool(
         server_label=&quot;contoso-knowledge&quot;,
         server_url=setup[&quot;mcp_endpoint&quot;],
@@ -2402,7 +2500,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>scripts/add_foundry_eval_run.py:evaluation_contract</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L39-L80">Full source file · 39–80</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L39-L80">View on GitHub</a></p>
+<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L42-L83">Full source file · 42–83</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L42-L83">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:evaluation_contract"><code class="language-python">def evaluation_contract(evaluation: dict) -&gt; dict:
     expected = {
         &quot;Relevance&quot;: (&quot;builtin.relevance&quot;, 4, &quot;{{sample.output_text}}&quot;),
@@ -2804,42 +2902,6 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 
 <p class="step-route"><strong>Action order:</strong> <a href="#optimizer-configure">Microsoft Foundry · configure optimization</a> → <a href="#optimizer-results">Submit/inspect results</a> → <a href="#optimizer-candidate">Editor · save complete instructions</a>.</p>
 <p><strong>Agent Optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
-<details class="guide-details implementation-notes">
-<summary>Optional · how it works: portal optimization and the candidate file</summary>
-<h4 id="optimizer-code-portal">Code ↔ portal · run Optimizer in the portal</h4>
-<p class="execution-guide"><strong>Where to act:</strong> Follow the <a href="#optimizer-configure">Microsoft Foundry optimization steps below</a>, then <a href="#optimizer-candidate">save the reviewed candidate</a>. <strong>There is no terminal optimization-submission command in this step.</strong></p>
-<table class="code-portal-map">
-<thead>
-<tr>
-<th>Portal action</th>
-<th>Connection to existing code</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Agent version 1</strong>, <strong>Instruction only</strong>, model/tool changes off</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Use the fixed Agent definition created in 03. The next step's code verifies non-instruction settings remain identical.</td>
-</tr>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Optimization model</strong>, <strong>Evaluation model</strong>, dev12/Criteria</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Select your <code>.env</code> deployments and the data/criteria from 04–05. No local program submits optimization here.</td>
-</tr>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Review → Submit</strong>, <strong>Optimization runs</strong></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Microsoft Foundry handles the actual job, state, and ranking. Do not submit the same optimization again from the terminal.</td>
-</tr>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span>Save full instructions from <strong>View changes</strong></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span><code>.lab/lab-en/candidate.txt</code> becomes the input to <code>prompt.read_text(encoding="utf-8")</code> in 09. Distinguish original, candidate, and manual edits.</td>
-</tr>
-<tr>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Promote candidate</strong></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Do not select it in this path. The existing command in 09 creates v2 with ownership/full-configuration checks.</td>
-</tr>
-</tbody>
-</table>
-<p>Optimization runs in the Microsoft Foundry service. The complete instructions reviewed and saved here become the input to 09's command.</p>
-</details>
 <h3 id="optimizer-configure">Configure instruction-only optimization in Microsoft Foundry</h3>
 <ol>
 <li>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize</strong>.</li>
@@ -2948,6 +3010,42 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <p class="note warning"><strong>Do not select Promote candidate in this lab.</strong> Step 09's CLI checks your ownership records and fixed configuration before creating one v2. Promoting in the portal first can conflict with these ownership checks. Do not continually create v3, v4, or later releases; creating a version is separate from publishing it or approving activation.</p>
 <p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Present the reviewed candidate and explain the changed behaviors, expected improvements, and possible regressions.</p>
 
+<details class="guide-details implementation-notes">
+<summary>Optional · how it works: portal optimization and the candidate file</summary>
+<h4 id="optimizer-code-portal">Code ↔ portal · run Optimizer in the portal</h4>
+<p class="execution-guide"><strong>Where to act:</strong> Perform the <a href="#optimizer-configure">Microsoft Foundry optimization steps</a> and <a href="#optimizer-candidate">save the reviewed candidate</a> above. <strong>There is no terminal optimization-submission command in this step.</strong></p>
+<table class="code-portal-map">
+<thead>
+<tr>
+<th>Portal action</th>
+<th>Connection to existing code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Agent version 1</strong>, <strong>Instruction only</strong>, model/tool changes off</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Use the fixed Agent definition created in 03. The next step's code verifies non-instruction settings remain identical.</td>
+</tr>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Optimization model</strong>, <strong>Evaluation model</strong>, dev12/Criteria</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Select your <code>.env</code> deployments and the data/criteria from 04–05. No local program submits optimization here.</td>
+</tr>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Review → Submit</strong>, <strong>Optimization runs</strong></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Microsoft Foundry handles the actual job, state, and ranking. Do not submit the same optimization again from the terminal.</td>
+</tr>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span>Save full instructions from <strong>View changes</strong></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span><code>.lab/lab-en/candidate.txt</code> becomes the input to <code>prompt.read_text(encoding="utf-8")</code> in 09. Distinguish original, candidate, and manual edits.</td>
+</tr>
+<tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Promote candidate</strong></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Do not select it in this path. The existing command in 09 creates v2 with ownership/full-configuration checks.</td>
+</tr>
+</tbody>
+</table>
+<p>Optimization runs in the Microsoft Foundry service. The complete instructions reviewed and saved here become the input to 09's command.</p>
+</details>
 <p class="completion-check"><strong>Completion criteria:</strong> Record real job/candidate IDs, the reviewed instruction file, and change reasons. Without a candidate worth retaining or complete instructions, record <strong>retain v1 and the specific reason</strong>, then continue to 10. If you do not perform 09, record the separate reevaluation as not run too. Do not repeatedly run the same job to manufacture improvement.</p>
 <p class="step-next no-print"><a href="#decision" data-next-step>Reviewed candidate: 09 reevaluation →</a> <a href="#cleanup">No candidate: 10 cleanup →</a></p>
 
@@ -2978,14 +3076,6 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 </thead>
 <tbody>
 <tr>
-<td><code>YOUR_PROJECT_ENDPOINT</code></td>
-<td><code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.lab/lab-en/.env</code></td>
-</tr>
-<tr>
-<td><code>YOUR_SUBSCRIPTION_ID</code></td>
-<td>The subscription ID from 01, also <code>AZURE_SUBSCRIPTION_ID</code> in that <code>.env</code></td>
-</tr>
-<tr>
 <td><code>YOUR_EVALUATION_ID</code></td>
 <td>The selected <code>evaluation_id</code> from the <code>native-evals</code> output in 06</td>
 </tr>
@@ -2995,9 +3085,9 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 </tr>
 </tbody>
 </table>
-<p>Replace all four values and execute this single-line command. Submitting a new run incurs charges.</p>
+<p><code>--config</code> reads the project endpoint and subscription from your <code>.env</code>, checks that the signed-in user, tenant, and subscription match it, and saves the receipt under that environment's <code>artifacts/foundry-evaluations/</code>. Replace both values and execute this single-line command. Submitting a new run incurs charges.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
-<pre class="terminal-command"><code class="language-sh">python scripts/add_foundry_eval_run.py --endpoint &quot;YOUR_PROJECT_ENDPOINT&quot; --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
+<pre class="terminal-command"><code class="language-sh">python scripts/add_foundry_eval_run.py --config .lab/lab-en/.env --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2
 </code></pre>
 <p>The default wait is 30 minutes. For a shorter authorized wait, append <code>--wait-seconds</code> and its value in seconds. The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions. Continue according to the result:</p>
 <table>
@@ -3014,7 +3104,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 </tr>
 <tr>
 <td>Exit code 2 with <strong>Still running</strong></td>
-<td>The wait expired, but the remote job can remain active. If the receipt contains a run ID, repeat the <strong>identical command and <code>--out</code> path</strong> to collect that run.</td>
+<td>The wait expired, but the remote job can remain active. If the receipt contains a run ID, repeat the <strong>identical command</strong> to collect that run.</td>
 </tr>
 <tr>
 <td>No run ID, or an existing remote run with the same name</td>
@@ -3065,7 +3155,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>scripts/add_foundry_eval_run.py:candidate_source</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L108-L135">Full source file · 108–135</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L108-L135">View on GitHub</a></p>
+<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L111-L138">Full source file · 111–138</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L111-L138">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:candidate_source"><code class="language-python">def candidate_source(baseline: dict, *, evaluation_id: str, version: str) -&gt; dict:
     if baseline.get(&quot;eval_id&quot;) != evaluation_id or baseline.get(&quot;status&quot;) != &quot;completed&quot;:
         raise ValueError(&quot;Use a completed baseline run from this exact Foundry evaluation.&quot;)
@@ -3099,7 +3189,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>scripts/add_foundry_eval_run.py:submit_or_resume</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L138-L190">Full source file · 138–190</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L138-L190">View on GitHub</a></p>
+<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L141-L193">Full source file · 141–193</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L141-L193">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:submit_or_resume"><code class="language-python">def submit_or_resume(project, client, *, evaluation_id: str, baseline_run_id: str,
                      version: str, name: str, output: Path) -&gt; dict:
     intent = {
@@ -3158,19 +3248,24 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>scripts/add_foundry_eval_run.py:main</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L193-L268">Full source file · 193–268</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L193-L268">View on GitHub</a></p>
+<p class="implementation-links"><a href="../scripts/add_foundry_eval_run.py#L215-L295">Full source file · 215–295</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L215-L295">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:main"><code class="language-python">def main(argv: list[str] | None = None) -&gt; int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(&quot;--endpoint&quot;, required=True, help=&quot;The same Foundry project endpoint as the baseline&quot;)
-    parser.add_argument(&quot;--subscription&quot;, required=True, help=&quot;The explicitly selected Azure CLI subscription&quot;)
+    parser.add_argument(
+        &quot;--config&quot;, type=Path,
+        help=&quot;Environment .env from bootstrap; supplies the project endpoint, subscription and receipt folder&quot;,
+    )
+    parser.add_argument(&quot;--endpoint&quot;, help=&quot;The same Foundry project endpoint as the baseline (not needed with --config)&quot;)
+    parser.add_argument(&quot;--subscription&quot;, help=&quot;The explicitly selected Azure CLI subscription (not needed with --config)&quot;)
     parser.add_argument(&quot;--evaluation&quot;, required=True, help=&quot;Existing eval_... ID; no new evaluation definition is created&quot;)
     parser.add_argument(&quot;--baseline&quot;, required=True, help=&quot;Completed baseline evalrun_... ID&quot;)
     parser.add_argument(&quot;--version&quot;, required=True, help=&quot;Explicit candidate agent version&quot;)
     parser.add_argument(&quot;--name&quot;, default=&quot;candidate-v2&quot;)
-    parser.add_argument(&quot;--out&quot;, type=Path, default=Path(&quot;.lab/foundry-evaluations/candidate-v2.json&quot;))
+    parser.add_argument(&quot;--out&quot;, type=Path, help=&quot;Receipt path; defaults to the environment&#x27;s foundry-evaluations folder&quot;)
     parser.add_argument(&quot;--wait-seconds&quot;, type=int, default=1800)
     args = parser.parse_args(argv)
     try:
+        args.endpoint, args.subscription, args.out = settings(args)
         endpoint = urlsplit(args.endpoint)
         if (
             endpoint.scheme != &quot;https&quot; or endpoint.username or endpoint.password
@@ -3181,13 +3276,13 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             raise ValueError(&quot;Use the exact HTTPS Foundry project endpoint, without credentials or query parameters.&quot;)
         if not 1 &lt;= args.wait_seconds &lt;= 3600:
             raise ValueError(&quot;--wait-seconds must be between 1 and 3600.&quot;)
-        account = subprocess.run(
-            [&quot;az&quot;, &quot;account&quot;, &quot;show&quot;, &quot;--subscription&quot;, args.subscription, &quot;-o&quot;, &quot;json&quot;],
-            capture_output=True, text=True, check=True, timeout=30,
-        )
-        identity = json.loads(account.stdout)
-        if identity.get(&quot;id&quot;, &quot;&quot;).lower() != args.subscription.lower() or identity.get(&quot;state&quot;) != &quot;Enabled&quot;:
-            raise ValueError(&quot;Azure CLI did not confirm the intended enabled subscription.&quot;)
+        if args.config is None:
+            account = azcli.run([&quot;account&quot;, &quot;show&quot;, &quot;--subscription&quot;, args.subscription, &quot;-o&quot;, &quot;json&quot;], timeout=30)
+            if account.returncode:
+                raise ValueError(f&quot;Azure CLI could not read the subscription: {account.stderr.strip()}&quot;)
+            identity = json.loads(account.stdout)
+            if identity.get(&quot;id&quot;, &quot;&quot;).lower() != args.subscription.lower() or identity.get(&quot;state&quot;) != &quot;Enabled&quot;:
+                raise ValueError(&quot;Azure CLI did not confirm the intended enabled subscription.&quot;)
         from azure.ai.projects import AIProjectClient
         from azure.identity import AzureCliCredential
 
@@ -3232,7 +3327,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                             print(&quot;Still running. Repeat this exact command to collect the same run; do not delete the receipt.&quot;, file=sys.stderr)
                             return 2
                         time.sleep(15)
-    except (OSError, ValueError, subprocess.SubprocessError) as error:
+    except (OSError, ValueError, subprocess.SubprocessError, LabError) as error:
         print(f&quot;ERROR: {error}&quot;, file=sys.stderr)
         return 1
 </code></pre>
@@ -3419,7 +3514,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/cleanup.py:cleanup_plan</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/cleanup.py#L17-L74">Full source file · 17–74</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/cleanup.py#L17-L74">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/cleanup.py#L18-L90">Full source file · 18–90</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/cleanup.py#L18-L90">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/cleanup.py:cleanup_plan"><code class="language-python">def cleanup_plan(config: Config) -&gt; dict:
     state = workspace(config)
     names = resource_names(config, state)
@@ -3438,19 +3533,31 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         kind = record.get(&quot;kind&quot;)
         if kind == &quot;agent_version&quot;:
             if record.get(&quot;name&quot;) not in allowed_agents or not re.fullmatch(r&quot;[A-Za-z0-9_-]+&quot;, str(record.get(&quot;version&quot;, &quot;&quot;))):
-                raise LabError(&quot;정리 기록의 에이전트 범위가 다릅니다. 삭제하지 않습니다.&quot;)
+                raise LabError(text(
+                    &quot;정리 기록의 에이전트 범위가 다릅니다. 삭제하지 않습니다.&quot;,
+                    &quot;The Agent scope in the cleanup record differs. Nothing is deleted.&quot;,
+                ))
         elif kind in allowed:
             if (record.get(&quot;name&quot;), record.get(&quot;url&quot;)) != allowed[kind]:
-                raise LabError(&quot;정리 기록의 Search/프로젝트 범위가 다릅니다. 삭제하지 않습니다.&quot;)
+                raise LabError(text(
+                    &quot;정리 기록의 Search/프로젝트 범위가 다릅니다. 삭제하지 않습니다.&quot;,
+                    &quot;The Search/project scope in the cleanup record differs. Nothing is deleted.&quot;,
+                ))
         else:
-            raise LabError(f&quot;자동 정리를 지원하지 않는 기록 유형: {kind}&quot;)
+            raise LabError(text(
+                f&quot;자동 정리를 지원하지 않는 기록 유형: {kind}&quot;,
+                f&quot;Record type not supported by automatic cleanup: {kind}&quot;,
+            ))
         actions.append(dict(record))
     for metadata_path in (artifacts_dir() / &quot;runs&quot;).glob(&quot;*/metadata.json&quot;):
         metadata = read_json(metadata_path)
         if metadata.get(&quot;workspace_id&quot;) != state[&quot;workspace_id&quot;]:
             continue
         if metadata.get(&quot;project_endpoint&quot;) != config.project_endpoint:
-            raise LabError(&quot;응답 정리 대상의 프로젝트 endpoint가 다릅니다.&quot;)
+            raise LabError(text(
+                &quot;응답 정리 대상의 프로젝트 endpoint가 다릅니다.&quot;,
+                &quot;The project endpoint of the response cleanup target differs.&quot;,
+            ))
         outputs_path = metadata_path.parent / &quot;outputs.jsonl&quot;
         if not outputs_path.exists():
             continue
@@ -3458,7 +3565,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
             identifier = row.get(&quot;response_id&quot;)
             if identifier:
                 if not re.fullmatch(r&quot;resp_[A-Za-z0-9_-]+&quot;, identifier):
-                    raise LabError(&quot;알 수 없는 response ID 형식입니다. 자동 삭제하지 않습니다.&quot;)
+                    raise LabError(text(
+                        &quot;알 수 없는 response ID 형식입니다. 자동 삭제하지 않습니다.&quot;,
+                        &quot;Unrecognized response ID format. Not deleted automatically.&quot;,
+                    ))
                 actions.append({&quot;kind&quot;: &quot;response&quot;, &quot;id&quot;: identifier})
     order = {&quot;response&quot;: 0, &quot;agent_version&quot;: 1, &quot;project_connection&quot;: 2, &quot;knowledge_base&quot;: 3, &quot;knowledge_source&quot;: 4, &quot;search_index&quot;: 5}
     actions.sort(key=lambda action: order[action[&quot;kind&quot;]])
@@ -3483,13 +3593,16 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/cleanup.py:cleanup</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/cleanup.py#L77-L165">Full source file · 77–165</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/cleanup.py#L77-L165">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/cleanup.py#L93-L193">Full source file · 93–193</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/cleanup.py#L93-L193">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/cleanup.py:cleanup"><code class="language-python">def cleanup(config: Config, *, confirm_prefix: str | None = None) -&gt; dict:
     plan = cleanup_plan(config)
     if confirm_prefix is None:
         return plan
     if confirm_prefix != config.prefix:
-        raise LabError(&quot;--confirm-prefix가 현재 LAB_PREFIX와 다릅니다. 삭제하지 않았습니다.&quot;)
+        raise LabError(text(
+            &quot;--confirm-prefix가 현재 LAB_PREFIX와 다릅니다. 삭제하지 않았습니다.&quot;,
+            &quot;--confirm-prefix differs from the current LAB_PREFIX. Nothing was deleted.&quot;,
+        ))
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
             with project.get_openai_client(max_retries=0, timeout=60.0) as client:
@@ -3506,7 +3619,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                             item[&quot;exists&quot;] = False
                         else:
                             if (remote.metadata or {}).get(&quot;workspace&quot;) != plan[&quot;workspace_id&quot;]:
-                                raise LabError(&quot;원격 에이전트 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.&quot;)
+                                raise LabError(text(
+                                    &quot;원격 에이전트 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.&quot;,
+                                    &quot;The remote Agent ownership marker differs. Nothing was deleted.&quot;,
+                                ))
                     elif kind == &quot;response&quot;:
                         try:
                             response = client.responses.retrieve(action[&quot;id&quot;])
@@ -3514,7 +3630,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                             item[&quot;exists&quot;] = False
                         else:
                             if (response.metadata or {}).get(&quot;lab_workspace&quot;) != plan[&quot;workspace_id&quot;]:
-                                raise LabError(&quot;원격 응답 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.&quot;)
+                                raise LabError(text(
+                                    &quot;원격 응답 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.&quot;,
+                                    &quot;The remote response ownership marker differs. Nothing was deleted.&quot;,
+                                ))
                     else:
                         transport = arm if kind == &quot;project_connection&quot; else search
                         try:
@@ -3525,7 +3644,10 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
                             item[&quot;exists&quot;] = False
                         else:
                             if action.get(&quot;etag&quot;) and remote.etag and action[&quot;etag&quot;] != remote.etag:
-                                raise LabError(&quot;생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토해야 합니다.&quot;)
+                                raise LabError(text(
+                                    &quot;생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토해야 합니다.&quot;,
+                                    &quot;The remote resource configuration changed after creation. Review the cleanup targets yourself.&quot;,
+                                ))
                             item[&quot;current_etag&quot;] = remote.etag
                     inspected.append(item)
                 completed = []
@@ -3614,6 +3736,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <li>In <a href="https://github.com/codespaces">your Codespaces</a>, choose that environment's <strong>… → Stop codespace</strong>. If you retain Microsoft Azure resources for resumption, keep the codespace stopped too. When the lab is finished and backup is verified, you can <strong>Delete</strong> it. Stopping ends compute charges but storage charges can remain; deletion loses files you did not back up.</li>
 </ol>
 <p>Skip this section for the local-computer path. Neither Microsoft Azure cleanup nor Codespaces cleanup substitutes for the other.</p>
+<p><strong>Local computer · sign out when finished.</strong> After the verification above, run <code>az logout</code> on a shared or work computer, or whenever you no longer need this sign-in. It removes only the local Microsoft Azure CLI session and changes no cloud resources. If you resume later, sign in again with <code>az login --use-device-code</code>.</p>
 <p class="completion-check"><strong>Final completion criteria:</strong> For authorized deletion of your dedicated group, record <code>az group exists</code> returning <code>false</code> and the verification time. For explicitly authorized retention, record the actual remaining items, reasons, cost responsibility, review date, and subsequent deletion plan. Verify the outcome matching your authorization; do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">cleanup checklist</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
       </article>
 
@@ -3626,7 +3749,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next step →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-09">2026-10-09</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

@@ -19,3 +19,5 @@ Compare a reviewed candidate with its fixed v1 under the same conditions. If no 
 See [troubleshooting](guide/en/troubleshooting.md) for recovery procedures. Separate narrated CLI/SDK replay videos: [English](docs/media/Foundry-Lab-Replay-EN.mp4) · [한국어](docs/media/Foundry-Lab-Replay-KO.mp4). These are execution-record summaries, not portal screen recordings.
 
 Authenticated portal walkthroughs are also available: [English](docs/media/Foundry-Portal-Walkthrough-EN.mp4) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.mp4). They show the actual Microsoft Azure/Microsoft Foundry UI with private fields redacted, without creating duplicate evaluation or optimization jobs.
+
+Released under the [MIT License](LICENSE); Microsoft artwork and portal screenshots are not relicensed (see [NOTICE](web/assets/NOTICE.txt)).

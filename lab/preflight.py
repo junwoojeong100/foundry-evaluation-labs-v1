@@ -8,7 +8,9 @@ import subprocess
 from typing import Callable
 from urllib.parse import quote
 
+from lab import azcli
 from lab.config import Config, LabError
+from lab.content import text
 
 
 LAB_MINIMUM_TPM = {
@@ -47,29 +49,41 @@ def _tokens_per_minute(rate_limits: object) -> float:
 
 def az_json(args: list[str]) -> object:
     try:
-        result = subprocess.run(
-            ["az", *args, "--only-show-errors", "--output", "json"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=90,
-        )
+        result = azcli.run([*args, "--only-show-errors", "--output", "json"], timeout=90)
     except FileNotFoundError as exc:
-        raise LabError("Azure CLI(az)가 없습니다. 가이드 01의 설치 절차를 먼저 진행해야 합니다.") from exc
+        raise LabError(text(
+            "Azure CLI(az)가 없습니다. 가이드 01의 설치 절차를 먼저 진행해야 합니다.",
+            "Azure CLI (az) was not found. Complete the installation steps in guide 01 first.",
+        )) from exc
+    except azcli.AzureCliLaunchError as exc:
+        raise LabError(text(
+            "이 Azure CLI는 Windows 배치 파일로 시작되어 & | 따옴표 같은 특수 문자를 안전하게 전달할 수 없습니다. "
+            "Microsoft 설치 관리자(WinGet 또는 MSI)로 Azure CLI를 다시 설치하거나 GitHub Codespaces 또는 WSL2에서 실행해야 합니다.",
+            str(exc),
+        )) from exc
     except subprocess.TimeoutExpired as exc:
-        raise LabError("Azure CLI 조회가 90초를 초과했습니다. 네트워크와 로그인을 확인해야 합니다.") from exc
+        raise LabError(text(
+            "Azure CLI 조회가 90초를 초과했습니다. 네트워크와 로그인을 확인해야 합니다.",
+            "The Azure CLI query exceeded 90 seconds. Check your network connection and sign-in.",
+        )) from exc
     if result.returncode:
-        raise LabError(f"Azure CLI 조회 실패: {result.stderr.strip()}")
+        raise LabError(text("Azure CLI 조회 실패: ", "Azure CLI query failed: ") + result.stderr.strip())
     try:
         return json.loads(result.stdout)
     except json.JSONDecodeError as exc:
-        raise LabError("Azure CLI 응답이 JSON이 아닙니다. az 버전과 로그인을 확인해야 합니다.") from exc
+        raise LabError(text(
+            "Azure CLI 응답이 JSON이 아닙니다. az 버전과 로그인을 확인해야 합니다.",
+            "The Azure CLI response is not JSON. Check your az version and sign-in.",
+        )) from exc
 
 
 def check_identity(config: Config, run: Callable = az_json) -> dict:
     account = run(["account", "show", "--subscription", config.subscription_id])
     if not isinstance(account, dict):
-        raise LabError("az account show 응답 형식이 올바르지 않습니다.")
+        raise LabError(text(
+            "az account show 응답 형식이 올바르지 않습니다.",
+            "The az account show response has an unexpected format.",
+        ))
     actual_user = account.get("user", {}).get("name", "")
     checks = {
         "subscription": account.get("id") == config.subscription_id,
@@ -79,11 +93,15 @@ def check_identity(config: Config, run: Callable = az_json) -> dict:
     }
     if not all(checks.values()):
         failed = ", ".join(key for key, ok in checks.items() if not ok)
-        raise LabError(
+        raise LabError(text(
             f"로그인 환경 불일치({failed}). 작업을 중단했습니다. "
             f"az login --tenant {config.tenant_id} 후 지정 계정으로 로그인해야 합니다. "
-            "SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다."
-        )
+            "SDK는 다른 환경 자격 증명으로 자동 전환하지 않습니다.",
+            f"The sign-in environment does not match ({failed}). Work stopped. "
+            f"Run az login --tenant {config.tenant_id} and sign in with the designated account. "
+            "The SDK never switches to another environment's credentials automatically.",
+            language=config.language,
+        ))
     return {"user": actual_user, "subscription": account["id"], "tenant": account["tenantId"]}
 
 
@@ -147,7 +165,10 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
                 or str(deployment.get("id", "")).lower() != identifier.lower()
                 or not isinstance(deployment.get("properties"), dict)
             ):
-                raise LabError("TPM 조회 응답이 요청한 모델 배포와 다릅니다.")
+                raise LabError(text(
+                    "TPM 조회 응답이 요청한 모델 배포와 다릅니다.",
+                    "The TPM lookup response does not match the requested model deployment.",
+                ))
             deployment_map[name] = deployment
             source = "Raw ARM deployment metadata"
         rate_limit_sources[name] = source
@@ -201,7 +222,10 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
     if public_access == "Disabled":
         checks.append({
             "name": "network", "status": "BLOCKED",
-            "observed": "PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행해야 합니다.",
+            "observed": text(
+                "PublicNetworkAccess=Disabled: 승인된 VNet 연결 환경에서 실행해야 합니다.",
+                "PublicNetworkAccess=Disabled: run from an approved VNet-connected environment.",
+            ),
         })
     return {
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -215,11 +239,21 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
             "search_managed_identity": search.get("identity", {}).get("principalId"),
         },
         "not_verified": [
-            "데이터 평면 RBAC와 모델 추론 성공",
-            "Foundry IQ 지식 베이스 생성·검색 권한",
-            "Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한",
-            "GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.",
-            "TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.",
+            text("데이터 평면 RBAC와 모델 추론 성공", "Data-plane RBAC and successful model inference"),
+            text("Foundry IQ 지식 베이스 생성·검색 권한", "Foundry IQ knowledge-base creation and retrieval permissions"),
+            text(
+                "Prompt Optimizer 및 Frontier Tuning 테넌트 접근 권한",
+                "Tenant access to Prompt Optimizer and Frontier Tuning",
+            ),
+            text(
+                "GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.",
+                "GlobalStandard does not guarantee processing inside North Central US.",
+            ),
+            text(
+                "TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.",
+                "Meeting the TPM minimum does not guarantee remaining tokens, absence of shared load, "
+                "RPM or burst limits, or a run without 429 errors.",
+            ),
         ],
     }
 
@@ -236,13 +270,20 @@ def model_snapshot(config: Config, deployment_name: str, *, run: Callable = az_j
         "--name", config.account, "--deployment-name", deployment_name,
     ])
     if not isinstance(value, dict):
-        raise LabError("모델 배포 메타데이터가 JSON 객체가 아닙니다.")
+        raise LabError(text(
+            "모델 배포 메타데이터가 JSON 객체가 아닙니다.", "The model deployment metadata is not a JSON object.",
+        ))
     properties = value.get("properties", {})
     model = properties.get("model", {})
     if properties.get("provisioningState") != "Succeeded" or not model.get("name") or not model.get("version"):
-        raise LabError("준비된 모델의 실제 이름/버전을 확인하지 못했습니다.")
+        raise LabError(text(
+            "준비된 모델의 실제 이름/버전을 확인하지 못했습니다.",
+            "Could not confirm the actual name and version of the prepared model.",
+        ))
     if value.get("name") != deployment_name:
-        raise LabError("조회된 모델 배포 이름이 요청과 다릅니다.")
+        raise LabError(text(
+            "조회된 모델 배포 이름이 요청과 다릅니다.", "The returned model deployment name differs from the request.",
+        ))
     return {
         "deployment": deployment_name,
         "model": model,

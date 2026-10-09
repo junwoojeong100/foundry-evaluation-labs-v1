@@ -477,8 +477,12 @@ def main(argv: list[str] | None = None) -> int:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
         if mismatches:
-            print("생성물이 없거나 오래되었습니다:\n" + "\n".join(mismatches), file=sys.stderr)
-            print(f"python scripts/build_datasets.py --language {args.language} 명령으로 다시 생성해야 합니다.", file=sys.stderr)
+            if args.language == "en":
+                print("Generated files are missing or stale:\n" + "\n".join(mismatches), file=sys.stderr)
+                print(f"Regenerate them with: python scripts/build_datasets.py --language {args.language}", file=sys.stderr)
+            else:
+                print("생성물이 없거나 오래되었습니다:\n" + "\n".join(mismatches), file=sys.stderr)
+                print(f"python scripts/build_datasets.py --language {args.language} 명령으로 다시 생성해야 합니다.", file=sys.stderr)
             return 1
         manifest_path = "data/en/manifest.json" if args.language == "en" else "data/manifest.json"
         manifest = parse_json(artifacts[manifest_path].decode("utf-8"))

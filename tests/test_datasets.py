@@ -442,6 +442,24 @@ class DatasetContractTests(unittest.TestCase):
                 self.assertIn(relative, output)
                 self.assertIn("오래되었습니다", output)
 
+    def test_english_check_rejects_crlf_checkouts_with_an_english_message(self) -> None:
+        target = ROOT / "data/en/optimizer/dev.jsonl"
+        original_read_bytes = Path.read_bytes
+
+        def crlf_bytes(path: Path) -> bytes:
+            data = original_read_bytes(path)
+            return data.replace(b"\n", b"\r\n") if path == target else data
+
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with mock.patch.object(Path, "read_bytes", new=crlf_bytes), redirect_stdout(stdout), redirect_stderr(stderr):
+            status = builder.main(["--check", "--language", "en"])
+        output = stdout.getvalue() + stderr.getvalue()
+        self.assertEqual(status, 1)
+        self.assertIn("data/en/optimizer/dev.jsonl", output)
+        self.assertIn("missing or stale", output)
+        self.assertIn("--language en", output)
+        self.assertIsNone(re.search("[가-힣]", output))
+
     def test_check_rejects_missing_exports_and_manifest_without_writing(self) -> None:
         original_is_file = Path.is_file
         for relative in self.artifacts:

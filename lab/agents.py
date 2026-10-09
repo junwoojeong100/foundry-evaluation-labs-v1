@@ -13,7 +13,7 @@ from azure.core.exceptions import ResourceNotFoundError
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
-from lab.content import content_path, language_metadata, require_content_language
+from lab.content import content_path, language_metadata, require_content_language, text
 from lab.files import ROOT, artifacts_dir, artifact_reference, code_provenance, read_json, record_created, safe_run_dir, sha256_file, workspace, write_once_json
 from lab.preflight import model_snapshot, save_json
 
@@ -172,9 +172,15 @@ def smoke_model(config: Config, run_id: str) -> dict:
         previous = read_json(path)
         require_content_language(previous)
         if previous.get("project_endpoint") != config.project_endpoint or previous.get("deployment") != config.model:
-            raise LabError("기존 model smoke의 환경/배포가 다릅니다.")
+            raise LabError(text(
+                "기존 model smoke의 환경/배포가 다릅니다.",
+                "The environment or deployment of the earlier model smoke check differs.",
+            ))
         if previous.get("status") != "completed":
-            raise LabError("이 model smoke는 실패 또는 결과 불명입니다. 원본을 확인하기 전 재호출하지 않습니다.")
+            raise LabError(text(
+                "이 model smoke는 실패 또는 결과 불명입니다. 원본을 확인하기 전 재호출하지 않습니다.",
+                "This model smoke check failed or its outcome is unknown. Do not call it again before checking the original record.",
+            ))
         return previous
     snapshot = model_snapshot(config, config.model)
     record = {
@@ -203,24 +209,31 @@ def smoke_model(config: Config, run_id: str) -> dict:
                 ) else "failed"
                 save_json(path, record)
     if record["status"] != "completed":
-        raise LabError("모델 smoke가 완료된 비어 있지 않은 응답을 반환하지 않았습니다.")
+        raise LabError(text(
+            "모델 smoke가 완료된 비어 있지 않은 응답을 반환하지 않았습니다.",
+            "The model smoke check did not return a completed, non-empty response.",
+        ))
     return record
 
 
 def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool = False) -> dict:
     if not prompt.is_file() or not prompt.read_text(encoding="utf-8").strip():
-        raise LabError(f"프롬프트가 없거나 비어 있습니다: {prompt}")
+        raise LabError(text(f"프롬프트가 없거나 비어 있습니다: {prompt}", f"The prompt file is missing or empty: {prompt}"))
     instructions = prompt.read_text(encoding="utf-8")
     state = workspace(config, create=True)
     name = config.agent_name(stage)
     model = config.tuned_model if stage == "tuned" else config.model
     if not model:
-        raise LabError("실제 학습 완료 모델의 배포 이름 TUNED_MODEL_DEPLOYMENT가 필요합니다.")
+        raise LabError(text(
+            "실제 학습 완료 모델의 배포 이름 TUNED_MODEL_DEPLOYMENT가 필요합니다.",
+            "TUNED_MODEL_DEPLOYMENT with the deployment name of an actual trained model is required.",
+        ))
     record_path = artifacts_dir() / "agents" / f"{stage}.json"
     if record_path.exists() and not new_version:
-        raise LabError(
-            f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가해야 합니다."
-        )
+        raise LabError(text(
+            f"{stage} 버전 기록이 이미 있습니다. 재사용하거나, 의도적인 변경에만 --new-version을 추가해야 합니다.",
+            f"A version record for {stage} already exists. Reuse it, or add --new-version only for an intentional change.",
+        ))
     if record_path.exists():
         prior = read_json(record_path)
         prior_version = artifacts_dir() / "agents/versions" / f"{prior['name']}-v{prior['version']}.json"
@@ -240,13 +253,19 @@ def create_agent(config: Config, stage: str, prompt: Path, *, new_version: bool 
                 existing = None
             if existing is not None:
                 if not record_path.exists():
-                    raise LabError(f"원격에 {name}이 이미 존재하지만 이 실습의 소유 기록이 없습니다. 중단합니다.")
+                    raise LabError(text(
+                        f"원격에 {name}이 이미 존재하지만 이 실습의 소유 기록이 없습니다. 중단합니다.",
+                        f"{name} already exists remotely, but this lab has no ownership record for it. Stopping.",
+                    ))
                 previous = read_json(record_path)
                 remote_version = project.agents.get_version(
                     agent_name=name, agent_version=previous["version"],
                 )
                 if (remote_version.metadata or {}).get("workspace") != state["workspace_id"]:
-                    raise LabError("원격 에이전트의 실습 소유 표식이 다릅니다. 변경하지 않습니다.")
+                    raise LabError(text(
+                        "원격 에이전트의 실습 소유 표식이 다릅니다. 변경하지 않습니다.",
+                        "The remote Agent's lab ownership marker differs. Making no changes.",
+                    ))
             agent = project.agents.create_version(
                 agent_name=name,
                 definition=PromptAgentDefinition(
@@ -297,5 +316,7 @@ def load_agent(config: Config, stage: str) -> dict:
         or record.get("project_endpoint") != config.project_endpoint
         or record.get("name") != config.agent_name(stage)
     ):
-        raise LabError("에이전트 기록과 현재 실습 범위가 다릅니다.")
+        raise LabError(text(
+            "에이전트 기록과 현재 실습 범위가 다릅니다.", "The Agent record differs from the current lab scope.",
+        ))
     return record

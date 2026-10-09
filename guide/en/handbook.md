@@ -38,7 +38,7 @@
 
 - **Subscription, permissions, spending:** You need your own Microsoft Azure subscription, **both provisioning and role-assignment permissions** for resources, and spending authorization.
 - **Lab terminal:** **GitHub Codespaces (recommended)** needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Microsoft Azure CLI.
-- **Time:** Allow roughly half a day, plus permission/quota approvals and service execution time.
+- **Time:** Allow roughly half a day, plus permission/quota approvals and service execution time. Service waits are usually short (provisioning in 02 about 10 minutes, a 12-case evaluation a few minutes, an Optimizer job often 10–20 minutes) but can be longer when the service is busy.
 - **Ground rule:** **Every participant completes every step with their own account, from setup to cleanup.** Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the [resume instructions](#setup-resume) and verify completed work using your own `config.json`, manifest, and receipts.
 
 **Closing your browser does not end charges; finish the cleanup in 10.** Microsoft Azure model/Search/logging charges are **separate from GitHub Codespaces compute/storage charges**. If you stop after creating resources, still preserve records and clean up.
@@ -144,7 +144,10 @@ python -m lab --help
 python scripts/build_datasets.py --language en --check
 ```
 
-Confirm Python **3.12.x**, Git/Microsoft Azure CLI versions, the lab command list, and a successful dataset check. **Continue to [sign-in](#setup-login) without reinstalling tools, cloning, or recreating the virtual environment.** If initial setup fails, see [Codespaces troubleshooting](troubleshooting.md#codespaces).
+Confirm Python **3.12.x**, Git/Microsoft Azure CLI versions, the lab command list, and a successful dataset check. The command list is long, but this guide uses only `bootstrap`, `preflight`, `smoke`, `iq`, `native-agent`, `native-evals`, and `cleanup`; ignore the others. **Continue to [sign-in](#setup-login) without reinstalling tools, cloning, or recreating the virtual environment.** If initial setup fails, see [Codespaces troubleshooting](troubleshooting.md#codespaces).
+
+**Keep the codespace active during waits.** By default, a codespace stops after 30 minutes without interaction, and stopping it ends any running command. Stay with the terminal while 02 provisions and 09 waits for the reevaluation. If it stops, [restart it](https://github.com/codespaces), open **Terminal → New Terminal**, and follow the [resume instructions](#setup-resume); check status instead of repeating `apply` or a submission. A stopped codespace that stays unused is deleted after 30 days by default, so back up `.lab/` as described in [10](#cleanup-codespaces) before a long break. Your account or organization may use different [codespace lifecycle rules](https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle).
+{: .note}
 
 <details class="guide-details optional-path" markdown="1">
 <summary>Local computer only · Windows/macOS/Linux installation</summary>
@@ -245,11 +248,11 @@ Python information in `az version` describes Microsoft Azure CLI's own runtime, 
 #### Download the lab files {#setup-download}
 
 ```sh
-git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+git clone --depth 1 https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 ```
 
-If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub **Code → Download ZIP**, extract the archive first and open the folder containing `pyproject.toml` and `requirements.lock`. Downloading only an HTML file omits the code, data, and images.
+`--depth 1` downloads only the latest files, not the repository history, which keeps the download small because the repository also stores demonstration videos. If you already downloaded the repository, enter its folder rather than cloning it again. With GitHub **Code → Download ZIP**, extract the archive first and open the folder containing `pyproject.toml` and `requirements.lock`. Downloading only an HTML file omits the code, data, and images.
 
 #### Create a virtual environment with the verified Python {#setup-venv}
 
@@ -408,6 +411,8 @@ The program guides you through these stages:
 | Model-call allowance | An approved positive integer. Even 12 cases can make multiple Agent, Judge, retrieval, and Optimizer calls. |
 | Actual authorization reference | A private note identifying your own authorized decision or organizational approval. Never enter passwords/tokens. |
 
+**How to size the numbers:** Choose hours that cover provisioning (usually about 10 minutes), your work, and the cleanup in 10, and keep the resources only that long. The largest continuing cost is **Microsoft Azure AI Search (Basic)**, billed per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared, roughly US$2.4 per day. Model charges depend on tokens and current model prices. Estimate your own budget with the [Microsoft Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/), the current [AI Search prices](https://azure.microsoft.com/pricing/details/search/), and Microsoft Foundry model prices, then add room for retries you did not plan. The prompts record your numbers; they are not spending caps.
+{: .note}
 **Final review before creation:** Read the displayed account, subscription, region, resources, models, and limits. This quick path records **at most two candidates, a one-hour job wait, and 30-day log retention**. Use the individual configuration path below if different limits are required. Type **`CREATE lab-en`** only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.
 
 No Microsoft Azure resources are created before confirmation, and Enter cancels. **After confirmation, provisioning and charges can begin.** Budget, call counts, and hosting hours are not automatic spending cutoffs, nor authorization for deletion, training, or automatic retries.
@@ -545,7 +550,7 @@ After confirming authorization for your spending and changes, open `.lab/lab-en/
 
 **Required reference:** Open the approval worksheet in another tab, complete it, then **return here**. Confirm you saved **`approval.json`** in the same folder, not changes to the original `approval.example.json`, and run the check below. Do not repeat provisioning commands from the reference document.
 
-Set `approved_by` to **your sign-in name**, matching the plan's `expected_user`. This binds the execution identity; it is not an organizational approver's digital signature. Confirm actual authorization evidence, currently valid timestamps, currency/budget, wait/retention bounds, and resource/RBAC/global-processing consent. Changing only `approved` to `true` is insufficient; the budget value is not an Microsoft Azure spending cutoff.
+Set `approved_by` to **your sign-in name**, matching the plan's `expected_user`. This binds the execution identity; it is not an organizational approver's digital signature. Confirm actual authorization evidence, currently valid timestamps, currency/budget, wait/retention bounds, and resource/RBAC/global-processing consent. Changing only `approved` to `true` is insufficient; the budget value is not a Microsoft Azure spending cutoff.
 
 ```sh
 python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
@@ -1176,26 +1181,6 @@ Open **`.lab/lab-en/notes.md`**, created in 02, and fill in this worksheet with 
 
 **Agent Optimizer proposes and tests instruction improvements.** A **candidate** is a proposed instruction set that has not yet been accepted. This does not retrain the model.
 
-<details class="guide-details implementation-notes" markdown="1">
-<summary>Optional · how it works: portal optimization and the candidate file</summary>
-
-#### Code ↔ portal · run Optimizer in the portal {#optimizer-code-portal}
-
-**Where to act:** Follow the [Microsoft Foundry optimization steps below](#optimizer-configure), then [save the reviewed candidate](#optimizer-candidate). **There is no terminal optimization-submission command in this step.**
-{: .execution-guide}
-
-| Portal action | Connection to existing code |
-|---|---|
-| **Agent version 1**, **Instruction only**, model/tool changes off | Use the fixed Agent definition created in 03. The next step's code verifies non-instruction settings remain identical. |
-| **Optimization model**, **Evaluation model**, dev12/Criteria | Select your `.env` deployments and the data/criteria from 04–05. No local program submits optimization here. |
-| **Review → Submit**, **Optimization runs** | Microsoft Foundry handles the actual job, state, and ranking. Do not submit the same optimization again from the terminal. |
-| Save full instructions from **View changes** | `.lab/lab-en/candidate.txt` becomes the input to `prompt.read_text(encoding="utf-8")` in 09. Distinguish original, candidate, and manual edits. |
-| **Promote candidate** | Do not select it in this path. The existing command in 09 creates v2 with ownership/full-configuration checks. |
-
-Optimization runs in the Microsoft Foundry service. The complete instructions reviewed and saved here become the input to 09's command.
-
-</details>
-
 ### Configure instruction-only optimization in Microsoft Foundry {#optimizer-configure}
 
 1. Open **Build → Agents → lab-en-iq → Optimize Preview/Optimize**.
@@ -1267,6 +1252,26 @@ Perform the following only after reviewing a candidate worth retaining.
 
 <p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Present the reviewed candidate and explain the changed behaviors, expected improvements, and possible regressions.</p>
 
+<details class="guide-details implementation-notes" markdown="1">
+<summary>Optional · how it works: portal optimization and the candidate file</summary>
+
+#### Code ↔ portal · run Optimizer in the portal {#optimizer-code-portal}
+
+**Where to act:** Perform the [Microsoft Foundry optimization steps](#optimizer-configure) and [save the reviewed candidate](#optimizer-candidate) above. **There is no terminal optimization-submission command in this step.**
+{: .execution-guide}
+
+| Portal action | Connection to existing code |
+|---|---|
+| **Agent version 1**, **Instruction only**, model/tool changes off | Use the fixed Agent definition created in 03. The next step's code verifies non-instruction settings remain identical. |
+| **Optimization model**, **Evaluation model**, dev12/Criteria | Select your `.env` deployments and the data/criteria from 04–05. No local program submits optimization here. |
+| **Review → Submit**, **Optimization runs** | Microsoft Foundry handles the actual job, state, and ranking. Do not submit the same optimization again from the terminal. |
+| Save full instructions from **View changes** | `.lab/lab-en/candidate.txt` becomes the input to `prompt.read_text(encoding="utf-8")` in 09. Distinguish original, candidate, and manual edits. |
+| **Promote candidate** | Do not select it in this path. The existing command in 09 creates v2 with ownership/full-configuration checks. |
+
+Optimization runs in the Microsoft Foundry service. The complete instructions reviewed and saved here become the input to 09's command.
+
+</details>
+
 **Completion criteria:** Record real job/candidate IDs, the reviewed instruction file, and change reasons. Without a candidate worth retaining or complete instructions, record **retain v1 and the specific reason**, then continue to 10. If you do not perform 09, record the separate reevaluation as not run too. Do not repeatedly run the same job to manufacture improvement.
 {: .completion-check}
 
@@ -1304,15 +1309,13 @@ The helper below is a supplied Python program. It uses the official Microsoft Az
 
 | Placeholder | Where to find your value |
 |---|---|
-| `YOUR_PROJECT_ENDPOINT` | `AZURE_AI_PROJECT_ENDPOINT` in `.lab/lab-en/.env` |
-| `YOUR_SUBSCRIPTION_ID` | The subscription ID from 01, also `AZURE_SUBSCRIPTION_ID` in that `.env` |
 | `YOUR_EVALUATION_ID` | The selected `evaluation_id` from the `native-evals` output in 06 |
 | `YOUR_BASELINE_RUN_ID` | That evaluation's completed version-1 `run_id`, not an Optimizer job ID |
 
-Replace all four values and execute this single-line command. Submitting a new run incurs charges.
+`--config` reads the project endpoint and subscription from your `.env`, checks that the signed-in user, tenant, and subscription match it, and saves the receipt under that environment's `artifacts/foundry-evaluations/`. Replace both values and execute this single-line command. Submitting a new run incurs charges.
 
 ```sh
-python scripts/add_foundry_eval_run.py --endpoint "YOUR_PROJECT_ENDPOINT" --subscription "YOUR_SUBSCRIPTION_ID" --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
+python scripts/add_foundry_eval_run.py --config .lab/lab-en/.env --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2
 ```
 
 The default wait is 30 minutes. For a shorter authorized wait, append `--wait-seconds` and its value in seconds. The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions. Continue according to the result:
@@ -1320,7 +1323,7 @@ The default wait is 30 minutes. For a shorter authorized wait, append `--wait-se
 | Result | What to do |
 |---|---|
 | `status: completed`, `result_counts.total: 12` | Confirm all 12 output items, then continue to [3. compare v1/v2](#decision-compare). |
-| Exit code 2 with **Still running** | The wait expired, but the remote job can remain active. If the receipt contains a run ID, repeat the **identical command and `--out` path** to collect that run. |
+| Exit code 2 with **Still running** | The wait expired, but the remote job can remain active. If the receipt contains a run ID, repeat the **identical command** to collect that run. |
 | No run ID, or an existing remote run with the same name | Follow [duplicate-submission recovery](troubleshooting.md#evaluation). |
 
 Do not delete the receipt or rename the run to resubmit.
@@ -1528,6 +1531,8 @@ python -m zipfile -c .lab/lab-en-records.zip .lab/lab-en
 3. In [your Codespaces](https://github.com/codespaces), choose that environment's **… → Stop codespace**. If you retain Microsoft Azure resources for resumption, keep the codespace stopped too. When the lab is finished and backup is verified, you can **Delete** it. Stopping ends compute charges but storage charges can remain; deletion loses files you did not back up.
 
 Skip this section for the local-computer path. Neither Microsoft Azure cleanup nor Codespaces cleanup substitutes for the other.
+
+**Local computer · sign out when finished.** After the verification above, run `az logout` on a shared or work computer, or whenever you no longer need this sign-in. It removes only the local Microsoft Azure CLI session and changes no cloud resources. If you resume later, sign in again with `az login --use-device-code`.
 
 **Final completion criteria:** For authorized deletion of your dedicated group, record `az group exists` returning `false` and the verification time. For explicitly authorized retention, record the actual remaining items, reasons, cost responsibility, review date, and subsequent deletion plan. Verify the outcome matching your authorization; do not delete `.lab` first and lose ownership evidence. See the [cleanup checklist](admin-setup.md#cleanup) and [deletion troubleshooting](troubleshooting.md#cleanup).
 {: .completion-check}

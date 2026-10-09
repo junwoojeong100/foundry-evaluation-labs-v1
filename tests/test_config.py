@@ -53,6 +53,15 @@ class ConfigTests(unittest.TestCase):
                     with self.assertRaises(LabError):
                         load_config(profile)
 
+    def test_missing_config_error_is_readable_in_both_languages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(LabError) as raised:
+                load_config(Path(directory) / ".lab/lab-en/.env")
+        message = str(raised.exception)
+        self.assertIn("Config file not found", message)
+        self.assertIn("--config .lab/ENVIRONMENT/.env", message)
+        self.assertIn("설정 파일이 없습니다", message)
+
     def test_endpoint_cannot_send_data_elsewhere(self):
         with self.assertRaises(LabError):
             replace(self.config, project_endpoint="https://example.org").validate()

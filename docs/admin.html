@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
+  <meta property="og:title" content="Environment setup reference · access, authorization, and cleanup">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
+  <meta name="twitter:card" content="summary">
   <title>Environment setup reference · access, authorization, and cleanup · Microsoft Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
@@ -112,7 +118,7 @@
 <a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
+        <span class="document-date">As of <time datetime="2026-10-09">2026-10-09</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Environment setup reference · access, authorization, and cleanup">
@@ -421,6 +427,37 @@
 <p>Allow registration/role propagation, then rerun the same preflight. For continuing <code>403</code>, compare identity, role scope, and network access. Do not grant new subscription-wide Owner, disable network or organizational policies, or transfer tokens as a shortcut.</p>
 <h2 id="cost">Costs and operational boundaries</h2>
 <p>Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.</p>
+<table>
+<thead>
+<tr>
+<th>Cost component</th>
+<th>How it is billed</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft Azure AI Search (Basic, one replica)</td>
+<td>Per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared. Check the current <a href="https://azure.microsoft.com/pricing/details/search/">AI Search prices</a>.</td>
+<td>The largest continuing cost. Delete the group as soon as you finish, as in 10.</td>
+</tr>
+<tr>
+<td>Model deployments (Agent, Judge, Optimizer/planner, embeddings)</td>
+<td>GlobalStandard bills by tokens used; an idle deployment adds no token charge.</td>
+<td>Evaluation, Optimizer, and retrieval calls consume tokens. Do not resubmit work to "try again".</td>
+</tr>
+<tr>
+<td>Application Insights and Log Analytics</td>
+<td>By data ingested and retained; the quick path keeps logs for 30 days.</td>
+<td>Usually small for this lab; still removed with the group.</td>
+</tr>
+<tr>
+<td>GitHub Codespaces</td>
+<td>Separate GitHub billing: compute while running, storage while it exists.</td>
+<td>Stop or delete it as described in 10.</td>
+</tr>
+</tbody>
+</table>
 <p>In Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.</p>
 <h2 id="handoff">Record actual values and completion evidence</h2>
 <p>After creating the plan in 02, copy this table into your <strong><code>.lab/lab-en/notes.md</code></strong>. Mark unexecuted items <strong>not run</strong>, then fill actual values as each step completes. “The environment is ready” is not sufficient evidence.</p>
@@ -527,7 +564,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-09">2026-10-09</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

@@ -11,7 +11,7 @@ import sys
 from uuid import uuid4
 
 from lab.config import Config, LabError, active_config
-from lab.content import language_metadata, require_content_language
+from lab.content import language_metadata, require_content_language, text
 from lab.preflight import save_json
 
 
@@ -50,7 +50,10 @@ def code_provenance() -> dict:
         for arguments in (["rev-parse", "HEAD"], ["status", "--porcelain", "--untracked-files=all"]):
             result = subprocess.run(["git", *arguments], cwd=ROOT, capture_output=True, text=True, timeout=30, check=False)
             if result.returncode:
-                raise LabError("코드 커밋/변경 상태 확인 실패. 확인되지 않은 리비전을 기록하지 않습니다.")
+                raise LabError(text(
+                    "코드 커밋/변경 상태 확인 실패. 확인되지 않은 리비전을 기록하지 않습니다.",
+                    "Could not verify the code commit and working-tree status. Unverified revisions are not recorded.",
+                ))
             results.append(result.stdout.strip())
         record.update(git_commit=results[0], worktree_dirty=bool(results[1]), source_mode="git_worktree")
     return record
@@ -62,29 +65,36 @@ def sha256_file(path: Path) -> str:
 
 def read_json(path: Path) -> object:
     if not path.is_file():
-        raise LabError(f"필요한 파일이 없습니다: {path}")
+        raise LabError(text(f"필요한 파일이 없습니다: {path}", f"Required file not found: {path}"))
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise LabError(f"올바른 JSON 파일이 아닙니다: {path}:{exc.lineno}") from exc
+        raise LabError(text(
+            f"올바른 JSON 파일이 아닙니다: {path}:{exc.lineno}", f"Not a valid JSON file: {path}:{exc.lineno}",
+        )) from exc
 
 
 def read_jsonl(path: Path) -> list[dict]:
     if not path.is_file():
-        raise LabError(f"필요한 JSONL 파일이 없습니다: {path}")
+        raise LabError(text(f"필요한 JSONL 파일이 없습니다: {path}", f"Required JSONL file not found: {path}"))
     rows = []
     for line_number, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), start=1):
         if not line.strip():
-            raise LabError(f"JSONL 빈 행: {path}:{line_number}")
+            raise LabError(text(f"JSONL 빈 행: {path}:{line_number}", f"Blank JSONL line: {path}:{line_number}"))
         try:
             row = json.loads(line)
         except json.JSONDecodeError as exc:
-            raise LabError(f"JSONL 문법 오류: {path}:{line_number}") from exc
+            raise LabError(text(
+                f"JSONL 문법 오류: {path}:{line_number}", f"JSONL syntax error: {path}:{line_number}",
+            )) from exc
         if not isinstance(row, dict):
-            raise LabError(f"JSONL 각 행은 객체여야 합니다: {path}:{line_number}")
+            raise LabError(text(
+                f"JSONL 각 행은 객체여야 합니다: {path}:{line_number}",
+                f"Each JSONL line must be an object: {path}:{line_number}",
+            ))
         rows.append(row)
     if not rows:
-        raise LabError(f"비어 있는 데이터셋: {path}")
+        raise LabError(text(f"비어 있는 데이터셋: {path}", f"Empty dataset: {path}"))
     return rows
 
 
@@ -106,12 +116,18 @@ def write_once_json(path: Path, value: dict) -> None:
             stream.flush()
             os.fsync(stream.fileno())
     except FileExistsError as exc:
-        raise LabError("동시 또는 이전 실행의 요청 기록이 있습니다. 중복 제출하지 않고 중단합니다.") from exc
+        raise LabError(text(
+            "동시 또는 이전 실행의 요청 기록이 있습니다. 중복 제출하지 않고 중단합니다.",
+            "A request record from a concurrent or earlier run already exists. Stopping without submitting a duplicate.",
+        )) from exc
 
 
 def safe_run_dir(run_id: str) -> Path:
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}", run_id):
-        raise LabError("run-id는 1~64자의 영문·숫자·하이픈·밑줄이어야 합니다.")
+        raise LabError(text(
+            "run-id는 1~64자의 영문·숫자·하이픈·밑줄이어야 합니다.",
+            "run-id must be 1-64 characters: letters, digits, hyphens and underscores.",
+        ))
     return artifacts_dir() / "runs" / run_id
 
 
@@ -126,11 +142,19 @@ def workspace(config: Config, *, create: bool = False) -> dict:
     if path.exists():
         state = read_json(path)
         if not isinstance(state, dict) or any(state.get(k) != v for k, v in scope.items()):
-            raise LabError("기록된 실습 범위와 .env가 다릅니다. 기존 아티팩트를 보존하고 별도 패키지에서 시작해야 합니다.")
+            raise LabError(text(
+                "기록된 실습 범위와 .env가 다릅니다. 기존 아티팩트를 보존하고 별도 패키지에서 시작해야 합니다.",
+                "The recorded lab scope differs from .env. Preserve the existing artifacts and start from a separate package.",
+                language=config.language,
+            ))
         require_content_language(state)
         return state
     if not create:
-        raise LabError("실습 작업 기록이 없습니다. 가이드 03의 정책 연결·Agent 준비부터 진행해야 합니다.")
+        raise LabError(text(
+            "실습 작업 기록이 없습니다. 가이드 03의 정책 연결·Agent 준비부터 진행해야 합니다.",
+            "No lab workspace record exists. Start with the policy connection and Agent setup in guide step 03.",
+            language=config.language,
+        ))
     state = {**scope, "workspace_id": str(uuid4()), "created": []}
     save_json(path, state)
     return state

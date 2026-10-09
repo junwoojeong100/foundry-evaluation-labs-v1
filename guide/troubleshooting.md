@@ -52,6 +52,7 @@ Python·Git·Microsoft Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그
 | 포털 Browse에서 `dev.jsonl`이 보이지 않습니다. | Browse는 내 PC 파일을 고릅니다. [Codespaces Explorer에서 Download](handbook.md#dataset-download)한 원본 파일을 선택합니다. |
 | `candidate.txt`를 만들었는데 찾을 수 없습니다. | 내 PC가 아니라 **실습 터미널과 같은 Codespace**의 `.lab` 아래에 저장했는지 [후보 저장 절차](handbook.md#optimizer-candidate)로 확인합니다. |
 | 사설망 자원에 연결할 수 없습니다. | Codespaces가 해당 VNet/VPN에 연결됐다고 가정하지 않습니다. 승인된 네트워크의 실행 환경을 사용하며 public access나 방화벽을 임의로 바꾸지 않습니다. |
+| 명령이 실행되는 동안 Codespace가 중지되거나 연결이 끊어졌습니다. | [내 Codespaces](https://github.com/codespaces)에서 다시 시작하고 **Terminal → New Terminal**을 연 뒤 [재개 절차](handbook.md#setup-resume)를 따릅니다. 먼저 상태를 조회합니다. 생성은 [`bootstrap status`](handbook.md#resources-status), 평가는 [`native-evals`](handbook.md#baseline-identifiers), 재평가는 [09의 재개 규칙](handbook.md#decision-run)을 사용합니다. `apply`를 반복하거나 이름을 바꿔 다시 제출하지 않습니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로 [`.lab/` 백업](handbook.md#cleanup-codespaces)을 보관합니다. |
 | 재개 또는 삭제할 Codespace를 모르겠습니다. | 원래 저장소·Codespace와 `notes.md`를 대조합니다. [백업·중지·삭제 순서](handbook.md#cleanup-codespaces)를 따르며 새 Codespace를 만들고 Microsoft Azure 자원까지 중복 생성하지 않습니다. |
 
 ## 생성·승인·할당량 {#provisioning}
@@ -106,7 +107,7 @@ Unable to create data source configuration from item schema
 |---|---|
 | evaluation ID·run ID를 모릅니다. | [06의 전체 `native-evals` 명령](handbook.md#baseline-identifiers)으로 조회합니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
 | 같은 이름의 평가가 여러 개입니다. | 생성 시각·Agent·데이터·run을 대조합니다. 이름만으로 임의 선택하지 않습니다. |
-| helper가 Still running으로 끝났습니다. | receipt에 run ID가 있으면 같은 명령·같은 `--out`으로 수집을 재개합니다. |
+| helper가 Still running으로 끝났습니다. | receipt에 run ID가 있으면 같은 명령으로 수집을 재개합니다. |
 | receipt에 run ID가 없거나 같은 이름의 원격 run이 있습니다. | 원본을 보관하고 제출 수락 여부와 실제 run을 확인합니다. receipt 삭제·이름 변경·자동 재제출을 하지 않습니다. |
 | 버전 선택 뒤 체크가 사라집니다. | 명시적 v1을 선택한 뒤 체크박스를 다시 선택하고 대상 하나를 확인합니다. |
 | 데이터 미리 보기가 5행입니다. | 원본 12행·등록 버전·실제 결과 전체 건수를 대조합니다. 미리 보기만으로 판단하지 않습니다. |

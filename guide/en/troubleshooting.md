@@ -52,6 +52,7 @@ Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before
 | Portal Browse cannot find `dev.jsonl` | Browse selects your computer's files. Choose the unchanged file [downloaded from Codespaces Explorer](handbook.md#dataset-download). |
 | `candidate.txt` exists but the command cannot find it | Use the [candidate-saving steps](handbook.md#optimizer-candidate) to verify it is under `.lab` in **the same codespace as the lab terminal**, not only on your computer. |
 | Private-network resources are unreachable | Do not assume Codespaces is connected to the required VNet/VPN. Use an approved network environment without disabling public-access restrictions or firewalls. |
+| The codespace stopped or disconnected while a command was running | Restart it from [your Codespaces](https://github.com/codespaces), open **Terminal → New Terminal**, and follow [resumption](handbook.md#setup-resume). Inspect state before acting: [`bootstrap status`](handbook.md#resources-status) for provisioning, [`native-evals`](handbook.md#baseline-identifiers) for evaluations, and the [09 resume rules](handbook.md#decision-run) for a reevaluation. Do not repeat `apply` or submit under a new name. A stopped codespace left unused is deleted after 30 days by default; keep a [backup of `.lab/`](handbook.md#cleanup-codespaces). |
 | Unsure which codespace to resume or delete | Match the original repository/codespace and `notes.md`. Follow [backup, stop, and deletion](handbook.md#cleanup-codespaces); do not create another codespace and duplicate Microsoft Azure provisioning. |
 
 ## Provisioning, authorization and quota {#provisioning}
@@ -106,7 +107,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 |---|---|
 | Evaluation ID or run ID is unknown | Use [06's complete `native-evals` command](handbook.md#baseline-identifiers). Evaluation uses `eval_...`; the baseline is a completed version-one `evalrun_...`. |
 | Several evaluations have the same name | Compare creation time, Agent, dataset and runs; do not select by name alone. |
-| Helper exits with Still running | If the receipt has a run ID, resume collection with the identical command and `--out`. |
+| Helper exits with Still running | If the receipt has a run ID, resume collection with the identical command. |
 | Receipt has no run ID, or a remote run with the same name exists | Preserve the original and check submission acceptance and the actual run. Do not delete receipts, rename or automatically resubmit. |
 | Changing the version clears its checkbox | Reselect explicit v1 and confirm one checked target. |
 | Dataset preview has five rows | Compare the twelve-row source, registered version and complete result count; the preview alone is insufficient. |

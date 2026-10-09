@@ -8,6 +8,7 @@ from pathlib import Path
 import time
 
 from lab.config import Config, LabError
+from lab.content import text as localized_text
 from lab.files import code_provenance, read_json
 from lab.preflight import model_snapshot, save_json
 
@@ -17,14 +18,20 @@ DIMENSIONS = 1536
 
 def validate_vectors(payload: dict, count: int) -> list[list[float]]:
     if not isinstance(payload, dict):
-        raise LabError("Embedding 응답은 JSON 객체여야 합니다.")
+        raise LabError(localized_text("Embedding 응답은 JSON 객체여야 합니다.", "The embedding response must be a JSON object."))
     entries = payload.get("data")
     if not isinstance(entries, list) or len(entries) != count:
-        raise LabError("Embedding 응답 수가 입력 수와 다릅니다.")
+        raise LabError(localized_text(
+            "Embedding 응답 수가 입력 수와 다릅니다.", "The number of embedding responses differs from the number of inputs.",
+        ))
     if any(not isinstance(entry, dict) or type(entry.get("index")) is not int for entry in entries):
-        raise LabError("Embedding 응답마다 정수 index가 필요합니다.")
+        raise LabError(localized_text(
+            "Embedding 응답마다 정수 index가 필요합니다.", "Every embedding response needs an integer index.",
+        ))
     if {entry.get("index") for entry in entries} != set(range(count)):
-        raise LabError("Embedding 응답의 index가 누락되거나 중복되었습니다.")
+        raise LabError(localized_text(
+            "Embedding 응답의 index가 누락되거나 중복되었습니다.", "Embedding response indexes are missing or duplicated.",
+        ))
     vectors = []
     for entry in sorted(entries, key=lambda value: value["index"]):
         vector = entry.get("embedding")
@@ -33,17 +40,26 @@ def validate_vectors(payload: dict, count: int) -> list[list[float]]:
             or any(type(value) not in (int, float) or not math.isfinite(value) for value in vector)
             or not any(value != 0 for value in vector)
         ):
-            raise LabError("실제 1536차원의 유한한 비영 벡터가 필요합니다. 가짜/빈 벡터는 허용하지 않습니다.")
+            raise LabError(localized_text(
+                "실제 1536차원의 유한한 비영 벡터가 필요합니다. 가짜/빈 벡터는 허용하지 않습니다.",
+                "A real, finite, non-zero 1536-dimension vector is required. Fake or empty vectors are not accepted.",
+            ))
         vectors.append(vector)
     return vectors
 
 
 def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
     if not config.embedding or not texts or any(not isinstance(text, str) or not text.strip() for text in texts):
-        raise LabError("EMBEDDING_DEPLOYMENT와 비어 있지 않은 embedding 입력이 필요합니다.")
+        raise LabError(localized_text(
+            "EMBEDDING_DEPLOYMENT와 비어 있지 않은 embedding 입력이 필요합니다.",
+            "EMBEDDING_DEPLOYMENT and non-empty embedding input are required.",
+        ))
     deployment = model_snapshot(config, config.embedding)
     if deployment["model"].get("name") != "text-embedding-3-small":
-        raise LabError("이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.")
+        raise LabError(localized_text(
+            "이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.",
+            "This index's frozen contract is text-embedding-3-small/1536. It is never replaced automatically.",
+        ))
     contract = {
         "endpoint": config.openai_endpoint, "deployment": deployment,
         "dimensions": DIMENSIONS,
@@ -53,9 +69,15 @@ def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
     if cache_path.exists():
         previous = read_json(cache_path)
         if previous.get("contract") != contract:
-            raise LabError("기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존해야 합니다.")
+            raise LabError(localized_text(
+                "기존 embedding 실행과 입력/모델/범위가 다릅니다. 기존 기록을 보존해야 합니다.",
+                "The input, model or scope differs from the earlier embedding run. Preserve the existing record.",
+            ))
         if previous.get("status") != "completed":
-            raise LabError("이 embedding 요청은 실패 또는 결과 불명입니다. 원격 요청을 확인하기 전 재호출하지 않습니다.")
+            raise LabError(localized_text(
+                "이 embedding 요청은 실패 또는 결과 불명입니다. 원격 요청을 확인하기 전 재호출하지 않습니다.",
+                "This embedding request failed or its outcome is unknown. Do not call it again before checking the remote request.",
+            ))
         validate_vectors(previous["response"], len(texts))
         return previous
     from azure.identity import get_bearer_token_provider
@@ -71,7 +93,10 @@ def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
         with cache_path.open("x", encoding="utf-8") as stream:
             json.dump(record, stream, ensure_ascii=False, indent=2)
     except FileExistsError as exc:
-        raise LabError("동시 embedding 실행을 차단했습니다. 기존 기록을 확인해야 합니다.") from exc
+        raise LabError(localized_text(
+            "동시 embedding 실행을 차단했습니다. 기존 기록을 확인해야 합니다.",
+            "A concurrent embedding run was blocked. Check the existing record.",
+        )) from exc
     started = time.perf_counter()
     try:
         with credential_for(config) as credential:

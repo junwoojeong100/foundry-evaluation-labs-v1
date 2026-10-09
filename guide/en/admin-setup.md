@@ -188,6 +188,13 @@ Allow registration/role propagation, then rerun the same preflight. For continui
 
 Evaluation invokes the Agent and Judge; optimization makes additional internal calls. Search and monitoring can continue to incur charges after the lab page closes. Distinguish measured tokens, cost estimates, and actual billing; unknown billing is not zero.
 
+| Cost component | How it is billed | What to do |
+|---|---|---|
+| Microsoft Azure AI Search (Basic, one replica) | Per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared. Check the current [AI Search prices](https://azure.microsoft.com/pricing/details/search/). | The largest continuing cost. Delete the group as soon as you finish, as in 10. |
+| Model deployments (Agent, Judge, Optimizer/planner, embeddings) | GlobalStandard bills by tokens used; an idle deployment adds no token charge. | Evaluation, Optimizer, and retrieval calls consume tokens. Do not resubmit work to "try again". |
+| Application Insights and Log Analytics | By data ingested and retained; the quick path keeps logs for 30 days. | Usually small for this lab; still removed with the group. |
+| GitHub Codespaces | Separate GitHub billing: compute while running, storage while it exists. | Stop or delete it as described in 10. |
+
 In Microsoft Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.
 
 ## Record actual values and completion evidence {#handoff}

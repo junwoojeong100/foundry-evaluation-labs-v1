@@ -18,8 +18,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from lab import azcli
 from lab.calibration import save_json
+from lab.config import LabError, load_config, use_config
 from lab.files import write_once_json
+from lab.preflight import check_identity
 
 
 def as_object(value) -> dict:
@@ -190,18 +193,42 @@ def submit_or_resume(project, client, *, evaluation_id: str, baseline_run_id: st
     return saved
 
 
+def settings(args: argparse.Namespace) -> tuple[str, str, Path]:
+    """Resolve the project endpoint, subscription and receipt path from --config or explicit values."""
+    if args.config is None:
+        if not args.endpoint or not args.subscription:
+            raise ValueError("Pass --config .lab/ENVIRONMENT/.env, or both --endpoint and --subscription.")
+        return args.endpoint, args.subscription, args.out or Path(".lab/foundry-evaluations/candidate-v2.json")
+    config = load_config(args.config)
+    for flag, explicit, configured in (
+        ("--endpoint", args.endpoint, config.project_endpoint),
+        ("--subscription", args.subscription, config.subscription_id),
+    ):
+        if explicit is not None and explicit.rstrip("/").lower() != configured.rstrip("/").lower():
+            raise ValueError(f"{flag} differs from the selected configuration; omit it or use the configured value.")
+    with use_config(config):
+        check_identity(config)
+    receipts = (config.artifacts_dir or Path(".lab")) / "foundry-evaluations"
+    return config.project_endpoint, config.subscription_id, args.out or receipts / "candidate-v2.json"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--endpoint", required=True, help="The same Foundry project endpoint as the baseline")
-    parser.add_argument("--subscription", required=True, help="The explicitly selected Azure CLI subscription")
+    parser.add_argument(
+        "--config", type=Path,
+        help="Environment .env from bootstrap; supplies the project endpoint, subscription and receipt folder",
+    )
+    parser.add_argument("--endpoint", help="The same Foundry project endpoint as the baseline (not needed with --config)")
+    parser.add_argument("--subscription", help="The explicitly selected Azure CLI subscription (not needed with --config)")
     parser.add_argument("--evaluation", required=True, help="Existing eval_... ID; no new evaluation definition is created")
     parser.add_argument("--baseline", required=True, help="Completed baseline evalrun_... ID")
     parser.add_argument("--version", required=True, help="Explicit candidate agent version")
     parser.add_argument("--name", default="candidate-v2")
-    parser.add_argument("--out", type=Path, default=Path(".lab/foundry-evaluations/candidate-v2.json"))
+    parser.add_argument("--out", type=Path, help="Receipt path; defaults to the environment's foundry-evaluations folder")
     parser.add_argument("--wait-seconds", type=int, default=1800)
     args = parser.parse_args(argv)
     try:
+        args.endpoint, args.subscription, args.out = settings(args)
         endpoint = urlsplit(args.endpoint)
         if (
             endpoint.scheme != "https" or endpoint.username or endpoint.password
@@ -212,13 +239,13 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError("Use the exact HTTPS Foundry project endpoint, without credentials or query parameters.")
         if not 1 <= args.wait_seconds <= 3600:
             raise ValueError("--wait-seconds must be between 1 and 3600.")
-        account = subprocess.run(
-            ["az", "account", "show", "--subscription", args.subscription, "-o", "json"],
-            capture_output=True, text=True, check=True, timeout=30,
-        )
-        identity = json.loads(account.stdout)
-        if identity.get("id", "").lower() != args.subscription.lower() or identity.get("state") != "Enabled":
-            raise ValueError("Azure CLI did not confirm the intended enabled subscription.")
+        if args.config is None:
+            account = azcli.run(["account", "show", "--subscription", args.subscription, "-o", "json"], timeout=30)
+            if account.returncode:
+                raise ValueError(f"Azure CLI could not read the subscription: {account.stderr.strip()}")
+            identity = json.loads(account.stdout)
+            if identity.get("id", "").lower() != args.subscription.lower() or identity.get("state") != "Enabled":
+                raise ValueError("Azure CLI did not confirm the intended enabled subscription.")
         from azure.ai.projects import AIProjectClient
         from azure.identity import AzureCliCredential
 
@@ -263,7 +290,7 @@ def main(argv: list[str] | None = None) -> int:
                             print("Still running. Repeat this exact command to collect the same run; do not delete the receipt.", file=sys.stderr)
                             return 2
                         time.sleep(15)
-    except (OSError, ValueError, subprocess.SubprocessError) as error:
+    except (OSError, ValueError, subprocess.SubprocessError, LabError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
 

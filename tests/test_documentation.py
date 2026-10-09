@@ -1233,8 +1233,9 @@ class DocumentationTests(unittest.TestCase):
             ]
             self.assertTrue(commands, language)
             for command in commands:
-                for flag in ("--endpoint", "--subscription", "--evaluation", "--baseline", "--version", "--out"):
+                for flag in ("--config", "--evaluation", "--baseline", "--version"):
                     self.assertIn(flag, command)
+                self.assertNotIn("--endpoint", command)
                 self.assertEqual(command[command.index("--version") + 1], "2")
 
     def test_all_documented_lab_commands_match_the_cli_parser(self):

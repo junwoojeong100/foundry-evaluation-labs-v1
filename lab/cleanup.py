@@ -8,6 +8,7 @@ from openai import NotFoundError
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
+from lab.content import text
 from lab.files import artifacts_dir, read_json, read_jsonl, workspace
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
 from lab.knowledge import CONNECTION_API, resource_names, search_url
@@ -32,19 +33,31 @@ def cleanup_plan(config: Config) -> dict:
         kind = record.get("kind")
         if kind == "agent_version":
             if record.get("name") not in allowed_agents or not re.fullmatch(r"[A-Za-z0-9_-]+", str(record.get("version", ""))):
-                raise LabError("정리 기록의 에이전트 범위가 다릅니다. 삭제하지 않습니다.")
+                raise LabError(text(
+                    "정리 기록의 에이전트 범위가 다릅니다. 삭제하지 않습니다.",
+                    "The Agent scope in the cleanup record differs. Nothing is deleted.",
+                ))
         elif kind in allowed:
             if (record.get("name"), record.get("url")) != allowed[kind]:
-                raise LabError("정리 기록의 Search/프로젝트 범위가 다릅니다. 삭제하지 않습니다.")
+                raise LabError(text(
+                    "정리 기록의 Search/프로젝트 범위가 다릅니다. 삭제하지 않습니다.",
+                    "The Search/project scope in the cleanup record differs. Nothing is deleted.",
+                ))
         else:
-            raise LabError(f"자동 정리를 지원하지 않는 기록 유형: {kind}")
+            raise LabError(text(
+                f"자동 정리를 지원하지 않는 기록 유형: {kind}",
+                f"Record type not supported by automatic cleanup: {kind}",
+            ))
         actions.append(dict(record))
     for metadata_path in (artifacts_dir() / "runs").glob("*/metadata.json"):
         metadata = read_json(metadata_path)
         if metadata.get("workspace_id") != state["workspace_id"]:
             continue
         if metadata.get("project_endpoint") != config.project_endpoint:
-            raise LabError("응답 정리 대상의 프로젝트 endpoint가 다릅니다.")
+            raise LabError(text(
+                "응답 정리 대상의 프로젝트 endpoint가 다릅니다.",
+                "The project endpoint of the response cleanup target differs.",
+            ))
         outputs_path = metadata_path.parent / "outputs.jsonl"
         if not outputs_path.exists():
             continue
@@ -52,7 +65,10 @@ def cleanup_plan(config: Config) -> dict:
             identifier = row.get("response_id")
             if identifier:
                 if not re.fullmatch(r"resp_[A-Za-z0-9_-]+", identifier):
-                    raise LabError("알 수 없는 response ID 형식입니다. 자동 삭제하지 않습니다.")
+                    raise LabError(text(
+                        "알 수 없는 response ID 형식입니다. 자동 삭제하지 않습니다.",
+                        "Unrecognized response ID format. Not deleted automatically.",
+                    ))
                 actions.append({"kind": "response", "id": identifier})
     order = {"response": 0, "agent_version": 1, "project_connection": 2, "knowledge_base": 3, "knowledge_source": 4, "search_index": 5}
     actions.sort(key=lambda action: order[action["kind"]])
@@ -79,7 +95,10 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
     if confirm_prefix is None:
         return plan
     if confirm_prefix != config.prefix:
-        raise LabError("--confirm-prefix가 현재 LAB_PREFIX와 다릅니다. 삭제하지 않았습니다.")
+        raise LabError(text(
+            "--confirm-prefix가 현재 LAB_PREFIX와 다릅니다. 삭제하지 않았습니다.",
+            "--confirm-prefix differs from the current LAB_PREFIX. Nothing was deleted.",
+        ))
     with credential_for(config) as credential:
         with AIProjectClient(endpoint=config.project_endpoint, credential=credential) as project:
             with project.get_openai_client(max_retries=0, timeout=60.0) as client:
@@ -96,7 +115,10 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
                             item["exists"] = False
                         else:
                             if (remote.metadata or {}).get("workspace") != plan["workspace_id"]:
-                                raise LabError("원격 에이전트 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.")
+                                raise LabError(text(
+                                    "원격 에이전트 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.",
+                                    "The remote Agent ownership marker differs. Nothing was deleted.",
+                                ))
                     elif kind == "response":
                         try:
                             response = client.responses.retrieve(action["id"])
@@ -104,7 +126,10 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
                             item["exists"] = False
                         else:
                             if (response.metadata or {}).get("lab_workspace") != plan["workspace_id"]:
-                                raise LabError("원격 응답 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.")
+                                raise LabError(text(
+                                    "원격 응답 소유 표식이 다릅니다. 아무 대상도 삭제하지 않았습니다.",
+                                    "The remote response ownership marker differs. Nothing was deleted.",
+                                ))
                     else:
                         transport = arm if kind == "project_connection" else search
                         try:
@@ -115,7 +140,10 @@ def cleanup(config: Config, *, confirm_prefix: str | None = None) -> dict:
                             item["exists"] = False
                         else:
                             if action.get("etag") and remote.etag and action["etag"] != remote.etag:
-                                raise LabError("생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토해야 합니다.")
+                                raise LabError(text(
+                                    "생성 후 원격 리소스 구성이 변경되었습니다. 정리 대상을 직접 검토해야 합니다.",
+                                    "The remote resource configuration changed after creation. Review the cleanup targets yourself.",
+                                ))
                             item["current_etag"] = remote.etag
                     inspected.append(item)
                 completed = []

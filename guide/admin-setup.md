@@ -188,6 +188,13 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 평가는 Agent·Judge를 호출하고 최적화에는 추가 내부 호출이 있습니다. Search·모니터링은 실습 화면을 닫아도 비용이 남을 수 있습니다. 관측 토큰·예상 비용·실제 청구를 구분하고 미확인 비용을 0원으로 표시하지 않습니다.
 
+| 비용 구성 | 청구 방식 | 해야 할 일 |
+|---|---|---|
+| Microsoft Azure AI Search(Basic, 복제 1개) | 존재하는 동안 유휴 상태에서도 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10이었습니다. 현재 [AI Search 가격](https://azure.microsoft.com/pricing/details/search/)을 확인합니다. | 가장 큰 지속 비용입니다. 끝나는 대로 10단계처럼 그룹을 삭제합니다. |
+| 모델 배포(Agent·Judge·Optimizer/planner·embedding) | GlobalStandard는 사용한 토큰 기준으로 청구되며, 유휴 배포는 토큰 비용을 추가하지 않습니다. | 평가·Optimizer·검색 호출이 토큰을 사용합니다. "다시 시도"하려고 같은 작업을 재제출하지 않습니다. |
+| Application Insights·Log Analytics | 수집·보존한 데이터량 기준입니다. 빠른 경로는 로그를 30일 보관합니다. | 이 실습에서는 보통 작지만 그룹 삭제 시 함께 삭제됩니다. |
+| GitHub Codespaces | GitHub의 별도 청구입니다. 실행 중에는 컴퓨팅, 존재하는 동안에는 저장소 비용이 듭니다. | 10단계에 따라 중지하거나 삭제합니다. |
+
 Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획을 기록표에 적습니다.
 
 ## 실제 값과 완료 근거를 기록합니다 {#handoff}

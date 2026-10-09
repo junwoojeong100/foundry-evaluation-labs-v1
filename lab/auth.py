@@ -5,6 +5,7 @@ from pathlib import Path
 from azure.identity import AzureCliCredential
 
 from lab.config import Config, LabError
+from lab.content import text
 from lab.preflight import check_identity
 
 
@@ -17,10 +18,17 @@ def credential_for(config: Config) -> AzureCliCredential:
 
 def require_owned_scope(config: Config) -> dict:
     if not config.bootstrap_config:
-        raise LabError("BOOTSTRAP_CONFIG가 없습니다. 새 실습 RG의 완료된 bootstrap 소유 기록이 필요합니다.")
+        raise LabError(text(
+            "BOOTSTRAP_CONFIG가 없습니다. 새 실습 RG의 완료된 bootstrap 소유 기록이 필요합니다.",
+            "BOOTSTRAP_CONFIG is missing. The completed bootstrap ownership record of this lab's resource group is required.",
+            language=config.language,
+        ))
     from lab.bootstrap import BootstrapError, require_owned_resources
 
     try:
         return require_owned_resources(Path(config.bootstrap_config), config.account_id)
     except BootstrapError as exc:
-        raise LabError(f"신규 실습 자원 소유권 확인 실패: {exc}") from exc
+        raise LabError(
+            text("신규 실습 자원 소유권 확인 실패: ", "Ownership check failed for the new lab resources: ", language=config.language)
+            + str(exc)
+        ) from exc

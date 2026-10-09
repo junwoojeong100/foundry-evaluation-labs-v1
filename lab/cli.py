@@ -16,6 +16,10 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
         prog="python -m lab",
         description="Foundry learning loop: explicit evidence, no simulated cloud success.",
+        epilog=(
+            "The ten-step guide uses only these commands: bootstrap, preflight, smoke, iq, native-agent, "
+            "native-evals and cleanup. The other commands are advanced and optional."
+        ),
     )
     result.add_argument("--config", type=Path, help="Environment .env; also selects saved language and record folder")
     commands = result.add_subparsers(dest="command", required=True)
@@ -208,7 +212,9 @@ def _execute(args: argparse.Namespace, config: Config | None = None) -> int:
         from lab.governance import finalize_holdout, governance_status
 
         if args.action == "finalize" and not args.run_id:
-            raise LabError("governance finalize에는 --run-id가 필요합니다.")
+            raise LabError(text(
+                "governance finalize에는 --run-id가 필요합니다.", "governance finalize requires --run-id.",
+            ))
         result = (
             finalize_holdout(args.freeze_id, args.run_id) if args.action == "finalize"
             else governance_status(args.freeze_id)
@@ -385,7 +391,7 @@ def execute_cloud(args: argparse.Namespace, config) -> int:
         output = cleanup(config, confirm_prefix=args.confirm_prefix)
         print(json.dumps(output, ensure_ascii=False, indent=2))
         return 1 if output["mode"] == "DELETION_PENDING" else 0
-    raise LabError(f"지원하지 않는 명령: {args.command}")
+    raise LabError(text(f"지원하지 않는 명령: {args.command}", f"Unsupported command: {args.command}"))
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -8,7 +8,7 @@ from azure.ai.projects.models import MCPTool
 
 from lab.auth import credential_for
 from lab.config import Config, LabError
-from lab.content import content_path, language_metadata, require_content_language, selected_language
+from lab.content import content_path, language_metadata, require_content_language, selected_language, text
 from lab.embeddings import DIMENSIONS, embed, validate_vectors
 from lab.files import ROOT, artifacts_dir, read_json, record_created, sha256_file, workspace, write_once_json
 from lab.http import ARM_SCOPE, SEARCH_SCOPE, CloudRequestError, JsonHttp
@@ -32,7 +32,10 @@ def search_url(config: Config, resource: str, name: str, action: str = "") -> st
 
 def knowledge_payloads(config: Config, names: dict, planner_model: str) -> dict:
     if not config.embedding:
-        raise LabError("벡터 검색을 위해 EMBEDDING_DEPLOYMENT를 명시해야 합니다.")
+        raise LabError(text(
+            "벡터 검색을 위해 EMBEDDING_DEPLOYMENT를 명시해야 합니다.",
+            "EMBEDDING_DEPLOYMENT must be set explicitly for vector search.",
+        ))
     analyzer = f"{selected_language()}.microsoft"
     return {
         "index": {
@@ -116,11 +119,17 @@ def _ensure_created(config: Config, http: JsonHttp, kind: str, name: str, url: s
         existing = None
     if existing is not None:
         if not owned:
-            raise LabError(f"{name}이 이미 존재하지만 이 실습의 생성 기록이 없습니다. 덮어쓰지 않습니다.")
+            raise LabError(text(
+                f"{name}이 이미 존재하지만 이 실습의 생성 기록이 없습니다. 덮어쓰지 않습니다.",
+                f"{name} already exists, but this lab has no creation record for it. Not overwriting.",
+            ))
         return existing.body
     result = http.request("PUT", url, payload, create_only=True)
     if result.status not in {200, 201}:
-        raise LabError(f"{name}: 비동기/예상 밖 상태 {result.status}. 완료로 기록하지 않습니다.")
+        raise LabError(text(
+            f"{name}: 비동기/예상 밖 상태 {result.status}. 완료로 기록하지 않습니다.",
+            f"{name}: asynchronous or unexpected status {result.status}. Not recorded as complete.",
+        ))
     record_created(config, {"kind": kind, "name": name, "url": url, "etag": result.etag})
     return result.body
 
@@ -137,10 +146,16 @@ def prepare_knowledge(config: Config) -> dict:
         previous = read_json(setup_path)
         require_content_language(previous)
         if previous.get("documents_sha256") != content_hash or previous.get("names") != names:
-            raise LabError("기존 지식 준비와 원본/범위가 다릅니다. 다른 실험을 기존 인덱스에 덮어쓰지 않습니다.")
+            raise LabError(text(
+                "기존 지식 준비와 원본/범위가 다릅니다. 다른 실험을 기존 인덱스에 덮어쓰지 않습니다.",
+                "The source or scope differs from the earlier knowledge preparation. A different experiment is never written over the existing index.",
+            ))
         if previous.get("status") in {"created_not_retrieval_tested", "retrieval_verified"}:
             if previous.get("retrieval", {}).get("embedding_deployment") != config.embedding:
-                raise LabError("준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.")
+                raise LabError(text(
+                    "준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.",
+                    "The embedding contract of the prepared index differs. Create a new experiment.",
+                ))
             return previous
     with credential_for(config) as credential:
         planner = az_json([
@@ -150,15 +165,24 @@ def prepare_knowledge(config: Config) -> dict:
         ])
         model = planner.get("properties", {}).get("model", {})
         if not model.get("name"):
-            raise LabError("IQ planner의 실제 모델 이름을 확인할 수 없습니다.")
+            raise LabError(text(
+                "IQ planner의 실제 모델 이름을 확인할 수 없습니다.",
+                "Could not confirm the actual model name of the IQ planner.",
+            ))
         # This workshop's main lane was researched for gpt-5.5, not arbitrary
         # answer models that may be unsupported by the knowledge-base planner.
         if model["name"] != "gpt-5.5":
-            raise LabError("이 경로의 IQ planner는 확인된 gpt-5.5 배포를 요구합니다. 다른 모델로 자동 전환하지 않습니다.")
+            raise LabError(text(
+                "이 경로의 IQ planner는 확인된 gpt-5.5 배포를 요구합니다. 다른 모델로 자동 전환하지 않습니다.",
+                "The IQ planner on this path requires a verified gpt-5.5 deployment. It never switches to another model automatically.",
+            ))
         payloads = knowledge_payloads(config, names, model["name"])
         payload_hash = hashlib.sha256(json.dumps(payloads, sort_keys=True).encode()).hexdigest()
         if previous and previous.get("payload_sha256") != payload_hash:
-            raise LabError("미완료 검색 설정의 구성 계약이 바뀌었습니다. 같은 인덱스에 덮어쓰지 않습니다.")
+            raise LabError(text(
+                "미완료 검색 설정의 구성 계약이 바뀌었습니다. 같은 인덱스에 덮어쓰지 않습니다.",
+                "The configuration contract of the unfinished search setup changed. Not overwriting the same index.",
+            ))
         setup = {
             **language_metadata(),
             "status": "preparing", "workspace_id": state["workspace_id"], "names": names,
@@ -197,7 +221,10 @@ def prepare_knowledge(config: Config) -> dict:
         if upload_path.exists():
             upload_record = read_json(upload_path)
             if upload_record.get("contract") != upload_contract or upload_record.get("status") != "completed":
-                raise LabError("업로드 계약 변경 또는 결과 불명입니다. 업로드를 반복하지 않고 실제 인덱스 상태를 확인해야 합니다.")
+                raise LabError(text(
+                    "업로드 계약 변경 또는 결과 불명입니다. 업로드를 반복하지 않고 실제 인덱스 상태를 확인해야 합니다.",
+                    "The upload contract changed or its outcome is unknown. Do not repeat the upload; check the actual index state.",
+                ))
             upload_body = upload_record["response"]
         else:
             write_once_json(upload_path, {"status": "submitting", "contract": upload_contract})
@@ -213,7 +240,10 @@ def prepare_knowledge(config: Config) -> dict:
             or any(item.get("status") is not True for item in statuses)
         ):
             save_json(artifacts_dir() / "knowledge/upload-error.json", upload_body)
-            raise LabError("일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.")
+            raise LabError(text(
+                "일부 문서 업로드가 실패했습니다. knowledge/upload-error.json을 확인해야 합니다.",
+                "Some document uploads failed. Check knowledge/upload-error.json.",
+            ))
         save_json(upload_path, {"status": "completed", "contract": upload_contract, "response": upload_body})
         _ensure_created(
             config, search, "knowledge_source", names["source"],
@@ -249,14 +279,17 @@ def load_knowledge(config: Config) -> dict:
         or setup.get("names") != resource_names(config, state)
         or setup.get("status") not in {"created_not_retrieval_tested", "retrieval_verified"}
     ):
-        raise LabError("지식 베이스 준비 기록이 현재 실습 범위와 다르거나 아직 완료되지 않았습니다.")
+        raise LabError(text(
+            "지식 베이스 준비 기록이 현재 실습 범위와 다르거나 아직 완료되지 않았습니다.",
+            "The knowledge-base preparation record differs from the current lab scope or is not complete yet.",
+        ))
     return setup
 
 
 def probe_knowledge(config: Config, query: str) -> dict:
     setup = load_knowledge(config)
     if not query.strip():
-        raise LabError("지식 검색 질문이 비어 있습니다.")
+        raise LabError(text("지식 검색 질문이 비어 있습니다.", "The knowledge retrieval question is empty."))
     names = setup["names"]
     request = {
         "messages": [{"role": "user", "content": [{"type": "text", "text": query}]}],
@@ -273,11 +306,17 @@ def probe_knowledge(config: Config, query: str) -> dict:
     intent_path, response_path = directory / "iq-request.json", directory / "iq-response.json"
     if response_path.exists():
         if read_json(intent_path) != request:
-            raise LabError("기존 IQ 요청 계약이 다릅니다. 원본 기록을 보존해야 합니다.")
+            raise LabError(text(
+                "기존 IQ 요청 계약이 다릅니다. 원본 기록을 보존해야 합니다.",
+                "The earlier IQ request contract differs. Preserve the original record.",
+            ))
         body = read_json(response_path)
     else:
         if intent_path.exists():
-            raise LabError("이 IQ probe는 결과 불명입니다. planner를 다시 유료 호출하지 않고 원격 요청을 확인해야 합니다.")
+            raise LabError(text(
+                "이 IQ probe는 결과 불명입니다. planner를 다시 유료 호출하지 않고 원격 요청을 확인해야 합니다.",
+                "This IQ probe's outcome is unknown. Do not call the planner again at a cost; check the remote request.",
+            ))
         write_once_json(intent_path, request)
         with credential_for(config) as credential:
             http = JsonHttp(credential, scope=SEARCH_SCOPE, allowed_origin=config.search_endpoint)
@@ -289,7 +328,10 @@ def probe_knowledge(config: Config, query: str) -> dict:
     if not (artifacts_dir() / "knowledge/retrieve-response.json").exists():
         save_json(artifacts_dir() / "knowledge/retrieve-response.json", body)
     if not body.get("response") or not body.get("references") or not body.get("activity"):
-        raise LabError("검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.")
+        raise LabError(text(
+            "검색 응답·출처·활동 중 일부가 없습니다. 보존한 iq-response.json을 확인해야 하며 완료 처리하지 않습니다.",
+            "The search response, references or activity is missing. Check the preserved iq-response.json; this is not recorded as complete.",
+        ))
     setup["status"] = "retrieval_verified"
     setup["probe_scope"] = "Human CLI identity; deployed-agent managed identity must still be verified by an agent call."
     save_json(artifacts_dir() / "knowledge/setup.json", setup)
@@ -300,7 +342,7 @@ def probe_vectors(config: Config, query: str) -> dict:
     """Diagnostic probes are not evidence that these documents reached an agent."""
     setup = load_knowledge(config)
     if not query.strip():
-        raise LabError("벡터 검색 질문이 비어 있습니다.")
+        raise LabError(text("벡터 검색 질문이 비어 있습니다.", "The vector search question is empty."))
     probe_key = hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
     directory = artifacts_dir() / "knowledge/probes" / probe_key
     result_path = directory / "result.json"
@@ -328,7 +370,10 @@ def probe_vectors(config: Config, query: str) -> dict:
             else:
                 intent_path = directory / f"{mode}-request.json"
                 if intent_path.exists():
-                    raise LabError(f"{mode} probe의 결과가 불명입니다. 같은 유료 요청을 자동 반복하지 않습니다.")
+                    raise LabError(text(
+                        f"{mode} probe의 결과가 불명입니다. 같은 유료 요청을 자동 반복하지 않습니다.",
+                        f"The outcome of the {mode} probe is unknown. The same paid request is not repeated automatically.",
+                    ))
                 write_once_json(intent_path, request)
                 response = http.request(
                     "POST", search_url(config, "indexes", setup["names"]["index"], "/docs/search"), request,
@@ -336,7 +381,10 @@ def probe_vectors(config: Config, query: str) -> dict:
                 save_json(path, response)
             hits = response.get("value")
             if not isinstance(hits, list) or not hits or any(not hit.get("id") or not hit.get("content") for hit in hits):
-                raise LabError(f"{mode} 검색에 실제 문서/내용이 없습니다. 빈 화면을 성공으로 처리하지 않습니다.")
+                raise LabError(text(
+                    f"{mode} 검색에 실제 문서/내용이 없습니다. 빈 화면을 성공으로 처리하지 않습니다.",
+                    f"The {mode} search returned no actual documents or content. An empty result is not treated as success.",
+                ))
             result["modes"][mode] = {"count": len(hits), "ids": [hit["id"] for hit in hits],
                                      "scores": [hit.get("@search.score") for hit in hits]}
     result["status"] = "VERIFIED_VECTOR_AND_HYBRID_ONLY"
@@ -347,7 +395,10 @@ def probe_vectors(config: Config, query: str) -> dict:
 def knowledge_tool(config: Config) -> MCPTool:
     setup = load_knowledge(config)
     if setup["status"] != "retrieval_verified":
-        raise LabError("먼저 python -m lab iq probe --confirm 으로 실제 검색을 확인해야 합니다.")
+        raise LabError(text(
+            "먼저 python -m lab iq probe --confirm 으로 실제 검색을 확인해야 합니다.",
+            "First verify real retrieval with python -m lab iq probe --confirm.",
+        ))
     return MCPTool(
         server_label="contoso-knowledge",
         server_url=setup["mcp_endpoint"],

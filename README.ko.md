@@ -97,6 +97,16 @@ python -m unittest discover -s tests -q
 
 ZIP은 `python scripts/package_lab.py`로 만듭니다.
 
+CI(`.github/workflows/ci.yml`)는 이 검사를 Python 3.11–3.14의 Ubuntu와 macOS·Windows에서 실행하고, Dependabot(`.github/dependabot.yml`)이 의존성·Action 갱신을 제안합니다. `requirements.lock`은 `uv pip compile pyproject.toml --extra guide --output-file requirements.lock`으로 만들며, 테스트가 직접 의존성이 모두 고정되어 있는지 확인합니다. 핀은 검사가 통과하고 실제 실습도 정상일 때만 갱신합니다.
+
+가이드 머리글의 날짜는 `scripts/build_guide.py`의 `BUILD_DATE`입니다. 안내가 바뀌거나 다시 검증할 때 이 값과 해당 테스트를 함께 바꿉니다. `.gitattributes`는 내보내기 파일·프롬프트·가이드를 바이트 단위로 검사하므로 Windows clone을 포함한 모든 체크아웃에서 LF 줄바꿈을 강제합니다. `lab/azcli.py`는 Windows·macOS·Linux에서 같은 방식으로 Azure CLI를 시작합니다.
+
+이름과 버전: 이 저장소는 실습 에디션 **v1**입니다. Python 패키지는 `foundry-learning-loop-lab` **1.1.0**이며, ZIP 이름과 생성되는 리소스 이름의 `v11`은 이 도구 버전을 뜻합니다. 저장소에 약 45MB의 시연 영상이 있어 가이드의 로컬 clone은 `git clone --depth 1`을 사용합니다.
+
 실행별 점수·run ID·검증 로그·원본 결과는 Git에서 제외된 비공개 실행 폴더에 보관하고 재사용 가이드에 넣지 않습니다. 가이드는 안내가 잘못된 경우에만 수정합니다. 보존하는 리소스의 소유권·설정 기록은 유지하고 오래된 보고서·임시 파일만 정리하며 클라우드 리소스를 함께 삭제하지 않습니다.
 
 GitHub Pages는 **main 브랜치 루트**와 `.nojekyll`을 사용합니다. 루트 index.html·기존 docs/english.html은 쿼리와 절 링크를 유지하며 영어로 연결합니다.
+
+## 라이선스
+
+[MIT 라이선스](LICENSE)로 배포합니다. Microsoft Foundry 아이콘과 포털 화면 캡처는 Microsoft의 자산이며 다시 라이선스하지 않습니다. [NOTICE](web/assets/NOTICE.txt)를 참고합니다.

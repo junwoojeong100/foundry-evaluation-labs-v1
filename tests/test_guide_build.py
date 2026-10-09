@@ -87,9 +87,9 @@ class GuideBuildTests(unittest.TestCase):
         cls.page.feed(cls.rendered)
 
     def test_build_is_deterministic_and_date_is_fixed(self) -> None:
-        self.assertEqual(build_guide.BUILD_DATE, "2026-10-05")
+        self.assertEqual(build_guide.BUILD_DATE, "2026-10-09")
         self.assertEqual(self.rendered, build_guide.render_guide(FIXTURE, self.template))
-        self.assertIn('datetime="2026-10-05"', self.rendered)
+        self.assertIn('datetime="2026-10-09"', self.rendered)
         self.assertTrue(self.rendered.endswith("\n"))
         self.assertFalse(self.rendered.endswith("\n\n"))
 

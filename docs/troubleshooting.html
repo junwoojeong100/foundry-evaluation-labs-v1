@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
+  <meta property="og:title" content="Lab troubleshooting">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
+  <meta name="twitter:card" content="summary">
   <title>Lab troubleshooting · Microsoft Foundry Lab Guide</title>
   <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
   <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html">
@@ -106,7 +112,7 @@
 <a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-05">2026-10-05</time></span>
+        <span class="document-date">As of <time datetime="2026-10-09">2026-10-09</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Lab troubleshooting">
@@ -276,6 +282,10 @@
 <td>Do not assume Codespaces is connected to the required VNet/VPN. Use an approved network environment without disabling public-access restrictions or firewalls.</td>
 </tr>
 <tr>
+<td>The codespace stopped or disconnected while a command was running</td>
+<td>Restart it from <a href="https://github.com/codespaces">your Codespaces</a>, open <strong>Terminal → New Terminal</strong>, and follow <a href="index.html#setup-resume">resumption</a>. Inspect state before acting: <a href="index.html#resources-status"><code>bootstrap status</code></a> for provisioning, <a href="index.html#baseline-identifiers"><code>native-evals</code></a> for evaluations, and the <a href="index.html#decision-run">09 resume rules</a> for a reevaluation. Do not repeat <code>apply</code> or submit under a new name. A stopped codespace left unused is deleted after 30 days by default; keep a <a href="index.html#cleanup-codespaces">backup of <code>.lab/</code></a>.</td>
+</tr>
+<tr>
 <td>Unsure which codespace to resume or delete</td>
 <td>Match the original repository/codespace and <code>notes.md</code>. Follow <a href="index.html#cleanup-codespaces">backup, stop, and deletion</a>; do not create another codespace and duplicate Microsoft Azure provisioning.</td>
 </tr>
@@ -419,7 +429,7 @@
 </tr>
 <tr>
 <td>Helper exits with Still running</td>
-<td>If the receipt has a run ID, resume collection with the identical command and <code>--out</code>.</td>
+<td>If the receipt has a run ID, resume collection with the identical command.</td>
 </tr>
 <tr>
 <td>Receipt has no run ID, or a remote run with the same name exists</td>
@@ -557,7 +567,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-05">2026-10-05</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-09">2026-10-09</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

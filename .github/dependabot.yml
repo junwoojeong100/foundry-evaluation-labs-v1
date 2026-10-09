@@ -1,0 +1,18 @@
+# requirements.lock is generated, not hand-edited:
+#   uv pip compile pyproject.toml --extra guide --output-file requirements.lock
+# A pip update PR changes pyproject.toml only, so tests/test_dependencies.py fails until the lock is regenerated.
+# Merge dependency updates only after CI passes and the live lab still works.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      python-dependencies:
+        patterns: ["*"]

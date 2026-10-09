@@ -38,7 +38,7 @@
 
 - **구독·권한·비용:** 본인이 사용할 Microsoft Azure 구독, 리소스 **생성 권한과 역할 할당 권한**, 비용 승인이 필요합니다.
 - **실습 터미널:** **GitHub Codespaces(권장)**는 GitHub 계정과 브라우저만 있으면 됩니다. 내 PC를 쓰면 Python 3.11–3.14·Git·Microsoft Azure CLI를 설치합니다.
-- **시간:** 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다.
+- **시간:** 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다. 서비스 대기는 보통 짧지만(02의 생성 약 10분, 12문항 평가 몇 분, Optimizer 작업은 흔히 10~20분) 서비스가 붐비면 더 길어질 수 있습니다.
 - **진행 원칙:** **모든 실습 참여자가 본인 계정으로 준비부터 정리까지 직접 수행합니다.** 다른 사람의 설정·로그인 세션·소유권 기록을 복사하거나 이미 완료한 작업을 다시 생성·제출하지 않습니다. 재개할 때는 [재개 안내](#setup-resume)에 따라 자신의 `config.json`·manifest·receipt로 완료한 작업을 확인합니다.
 
 **브라우저를 닫아도 과금이 끝나지 않으므로 10의 정리까지 진행합니다.** Microsoft Azure의 모델·Search·로그 비용과 **GitHub Codespaces의 실행·저장소 비용은 별개**입니다. 중간에 중단하더라도 생성한 자원이 있다면 보관·정리를 수행합니다.
@@ -144,7 +144,10 @@ python -m lab --help
 python scripts/build_datasets.py --language ko --check
 ```
 
-Python **3.12.x**, Git·Microsoft Azure CLI 버전, 실습 명령 목록과 데이터 검사 성공을 확인합니다. **도구 설치·clone·가상환경 생성을 다시 하지 않고 [로그인](#setup-login)으로 이동합니다.** 초기 준비에 실패했으면 [Codespaces 문제 해결](troubleshooting.md#codespaces)을 확인합니다.
+Python **3.12.x**, Git·Microsoft Azure CLI 버전, 실습 명령 목록과 데이터 검사 성공을 확인합니다. 명령 목록이 길지만 이 가이드는 `bootstrap`, `preflight`, `smoke`, `iq`, `native-agent`, `native-evals`, `cleanup`만 사용하므로 나머지는 무시합니다. **도구 설치·clone·가상환경 생성을 다시 하지 않고 [로그인](#setup-login)으로 이동합니다.** 초기 준비에 실패했으면 [Codespaces 문제 해결](troubleshooting.md#codespaces)을 확인합니다.
+
+**대기하는 동안 Codespace를 활성 상태로 유지합니다.** 기본적으로 30분 동안 조작이 없으면 Codespace가 중지되고, 중지되면 실행 중이던 명령도 끝납니다. 02의 생성과 09의 재평가를 기다리는 동안에는 터미널을 지켜봅니다. 중지되면 [Codespace를 다시 시작](https://github.com/codespaces)하고 **Terminal → New Terminal**을 연 뒤 [재개 절차](#setup-resume)를 따릅니다. `apply`나 제출 명령을 반복하지 않고 상태를 먼저 조회합니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로, 오래 쉬기 전에 [10의 백업 절차](#cleanup-codespaces)로 `.lab/`을 보관합니다. 계정이나 조직에 따라 [Codespace 수명 주기 규칙](https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle)이 다를 수 있습니다.
+{: .note}
 
 <details class="guide-details optional-path" markdown="1">
 <summary>내 PC에서 진행할 때만 · Windows/macOS/Linux 설치</summary>
@@ -245,11 +248,11 @@ az version
 #### 실습 파일을 내려받습니다 {#setup-download}
 
 ```sh
-git clone https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
+git clone --depth 1 https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
 cd foundry-evaluation-labs-v1
 ```
 
-이미 내려받았다면 clone을 반복하지 않고 해당 폴더로 이동합니다. GitHub의 **Code → Download ZIP**으로 받은 경우 먼저 압축을 풀고 `pyproject.toml`과 `requirements.lock`이 있는 폴더를 엽니다. HTML 파일 한 개만 내려받으면 코드·데이터·그림이 누락됩니다.
+`--depth 1`은 저장소 이력 없이 최신 파일만 내려받아 용량을 줄입니다. 저장소에는 시연 영상도 포함되어 있습니다. 이미 내려받았다면 clone을 반복하지 않고 해당 폴더로 이동합니다. GitHub의 **Code → Download ZIP**으로 받은 경우 먼저 압축을 풀고 `pyproject.toml`과 `requirements.lock`이 있는 폴더를 엽니다. HTML 파일 한 개만 내려받으면 코드·데이터·그림이 누락됩니다.
 
 #### 확인한 Python으로 가상환경을 만듭니다 {#setup-venv}
 
@@ -408,6 +411,8 @@ python -m lab bootstrap setup --environment lab-ko
 | 모델 호출 한도 | 승인된 양의 정수. 12문항이라도 Agent·Judge·검색·Optimizer가 여러 번 호출될 수 있습니다. |
 | 실제 승인 근거 | 본인이 승인할 권한이 있는 범위의 결정 또는 조직 승인 기록을 식별할 비공개 메모. 비밀번호·토큰은 넣지 않습니다. |
 
+**숫자를 정하는 방법:** 시간은 생성(보통 약 10분), 실습 진행, 10단계 정리까지를 포함하고 자원도 그 시간만큼만 유지합니다. 가장 큰 지속 비용은 **Microsoft Azure AI Search(Basic)**이며, 유휴 상태에서도 존재하는 동안 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10, 하루 약 US$2.4였습니다. 모델 비용은 토큰 사용량과 현재 모델 단가에 따라 달라집니다. [Microsoft Azure 가격 계산기](https://azure.microsoft.com/pricing/calculator/), 현재 [AI Search 가격](https://azure.microsoft.com/pricing/details/search/), Microsoft Foundry 모델 단가로 예산을 직접 산정하고 예상하지 못한 재시도 여유를 더합니다. 프롬프트에 입력한 값은 기록이며 지출 상한이 아닙니다.
+{: .note}
 **생성 전 마지막 확인:** 출력된 계정·구독·지역·자원·모델과 한도를 읽습니다. 이 빠른 경로는 **후보 최대 2개·작업 대기 최대 1시간·로그 보존 30일**을 기록합니다. 다른 한도가 필요하면 아래 개별 설정 경로를 사용합니다. GlobalStandard의 전 세계 처리, 자원 생성·자원 범위 역할 할당, 지속 과금과 불확정 총비용을 실제로 승인한 경우에만 **`CREATE lab-ko`**를 직접 입력합니다.
 
 확인 전에는 Microsoft Azure 자원을 생성하지 않으며 Enter로 취소할 수 있습니다. **확인 후에는 실제 생성·과금이 시작될 수 있습니다.** 입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며, 삭제·학습·자동 재시도 승인도 아닙니다.
@@ -502,7 +507,7 @@ python -m lab bootstrap plan --subscription "YOUR_SUBSCRIPTION_ID" --tenant "YOU
 | `.lab/lab-ko/manifest.json` | 생성·소유권·중단 상태를 추적하는 기록입니다. 보존합니다. |
 | `.lab/lab-ko/.env` | 아직 없습니다. 실제 생성이 완료된 뒤 만들어지는 런타임 설정입니다. |
 
-파일은 텍스트 편집기의 **파일 열기**로 확인합니다. `.lab`는 실습 기록 폴더이며 운영체제에 따라 숨김 폴더로 보일 수 있습니다. JSON은 설정을 `이름: 값`으로 저장하는 형식입니다. Word 문서로 변환하거나 파일 확장자를 바꾸지 않습니다.
+파일은 텍스트 편집기의 **파일 열기**로 확인합니다. `.lab`은 실습 기록 폴더이며 운영체제에 따라 숨김 폴더로 보일 수 있습니다. JSON은 설정을 `이름: 값`으로 저장하는 형식입니다. Word 문서로 변환하거나 파일 확장자를 바꾸지 않습니다.
 
 **구현 참고:** `plan()`은 이름·모델·해시를 정하고 로컬 파일만 씁니다. **Microsoft Azure 생성 호출은 없습니다.** `plan` 뒤 포털에 자원이 나타나지 않는 것은 정상입니다.
 
@@ -1176,26 +1181,6 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 
 **Agent Optimizer는 더 나은 지침을 제안하고 시험하는 기능**입니다. **후보(candidate)**는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.
 
-<details class="guide-details implementation-notes" markdown="1">
-<summary>선택 · 내부 동작: 포털 최적화와 후보 파일의 연결</summary>
-
-#### 코드 ↔ 포털 · Optimizer는 포털에서 실행합니다 {#optimizer-code-portal}
-
-**실행 위치:** [아래의 Microsoft Foundry 최적화 절차](#optimizer-configure)를 수행하고 [후보 파일 저장](#optimizer-candidate)까지 진행합니다. **이 단계에는 터미널의 최적화 제출 명령이 없습니다.**
-{: .execution-guide}
-
-| 포털에서 조작하는 항목 | 기존 코드와의 연결 |
-|---|---|
-| **Agent version 1**, **Instruction only**, 모델·도구 변경 끄기 | 03에서 만든 고정 Agent 정의가 원본입니다. 다음 단계의 코드가 지침 외 구성이 같은지 다시 확인합니다. |
-| **Optimization model**, **Evaluation model**, dev12·Criteria | 자신의 `.env` 배포와 04–05의 데이터·기준을 선택합니다. 로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다. |
-| **Review → Submit**, **Optimization runs** | 실제 Optimizer 실행·job 상태·후보 순위는 Microsoft Foundry 서비스가 처리합니다. 터미널에서 같은 작업을 다시 제출하지 않습니다. |
-| **View changes**에서 전체 지침 저장 | `.lab/lab-ko/candidate.txt`가 09의 `prompt.read_text(encoding="utf-8")` 입력이 됩니다. 원본·후보·직접 수정한 부분을 구분합니다. |
-| **Promote candidate** | 이번 경로에서는 누르지 않습니다. 09의 기존 명령이 소유권·전체 구성을 확인하며 v2를 만듭니다. |
-
-최적화는 Microsoft Foundry 서비스에서 실행됩니다. 여기서 검토·저장한 지침 전체를 09의 명령에 입력으로 사용합니다.
-
-</details>
-
 ### Microsoft Foundry에서 지침만 최적화하도록 설정합니다 {#optimizer-configure}
 
 1. **Build → Agents → lab-ko-iq → Optimize Preview/Optimize**를 엽니다.
@@ -1267,6 +1252,26 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 
 <p class="share-checkpoint" id="share-optimizer"><strong>공유:</strong> 검토한 후보를 제시하고 달라진 지침 행동과 개선·회귀 가능성을 설명합니다.</p>
 
+<details class="guide-details implementation-notes" markdown="1">
+<summary>선택 · 내부 동작: 포털 최적화와 후보 파일의 연결</summary>
+
+#### 코드 ↔ 포털 · Optimizer는 포털에서 실행합니다 {#optimizer-code-portal}
+
+**실행 위치:** 위의 [Microsoft Foundry 최적화 절차](#optimizer-configure)를 수행하고 [후보 파일 저장](#optimizer-candidate)까지 진행합니다. **이 단계에는 터미널의 최적화 제출 명령이 없습니다.**
+{: .execution-guide}
+
+| 포털에서 조작하는 항목 | 기존 코드와의 연결 |
+|---|---|
+| **Agent version 1**, **Instruction only**, 모델·도구 변경 끄기 | 03에서 만든 고정 Agent 정의가 원본입니다. 다음 단계의 코드가 지침 외 구성이 같은지 다시 확인합니다. |
+| **Optimization model**, **Evaluation model**, dev12·Criteria | 자신의 `.env` 배포와 04–05의 데이터·기준을 선택합니다. 로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다. |
+| **Review → Submit**, **Optimization runs** | 실제 Optimizer 실행·job 상태·후보 순위는 Microsoft Foundry 서비스가 처리합니다. 터미널에서 같은 작업을 다시 제출하지 않습니다. |
+| **View changes**에서 전체 지침 저장 | `.lab/lab-ko/candidate.txt`가 09의 `prompt.read_text(encoding="utf-8")` 입력이 됩니다. 원본·후보·직접 수정한 부분을 구분합니다. |
+| **Promote candidate** | 이번 경로에서는 누르지 않습니다. 09의 기존 명령이 소유권·전체 구성을 확인하며 v2를 만듭니다. |
+
+최적화는 Microsoft Foundry 서비스에서 실행됩니다. 여기서 검토·저장한 지침 전체를 09의 명령에 입력으로 사용합니다.
+
+</details>
+
 **완료 기준:** 실제 job/candidate ID, 검토한 지침 파일과 변경 이유를 기록합니다. 유지할 후보가 없거나 전체 지침을 확보하지 못했다면 **v1 유지와 구체적인 이유**를 기록하고 10으로 이동합니다. 09를 수행하지 않았다면 별도 재평가도 미실행으로 기록합니다. 개선을 만들기 위해 같은 작업을 반복하지 않습니다.
 {: .completion-check}
 
@@ -1304,15 +1309,13 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 | 자리표시자 | 실제 값을 찾는 곳 |
 |---|---|
-| `YOUR_PROJECT_ENDPOINT` | `.lab/lab-ko/.env`의 `AZURE_AI_PROJECT_ENDPOINT` 값입니다. |
-| `YOUR_SUBSCRIPTION_ID` | 01의 구독 ID 또는 같은 `.env`의 `AZURE_SUBSCRIPTION_ID` 값입니다. |
 | `YOUR_EVALUATION_ID` | 06의 `native-evals` 출력에서 선택한 `evaluation_id`입니다. |
 | `YOUR_BASELINE_RUN_ID` | 같은 평가에서 완료된 버전 1의 `run_id`입니다. Optimizer job ID가 아닙니다. |
 
-네 값을 교체하고 다음 한 줄 명령을 실행합니다. 새 run 제출에는 비용이 발생합니다.
+`--config`는 `.env`에서 프로젝트 endpoint와 구독을 읽고, 로그인한 사용자·테넌트·구독이 `.env`와 일치하는지 확인하며, receipt를 해당 환경의 `artifacts/foundry-evaluations/` 아래에 저장합니다. 두 값을 교체하고 다음 한 줄 명령을 실행합니다. 새 run 제출에는 비용이 발생합니다.
 
 ```sh
-python scripts/add_foundry_eval_run.py --endpoint "YOUR_PROJECT_ENDPOINT" --subscription "YOUR_SUBSCRIPTION_ID" --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2 --out .lab/lab-ko/artifacts/foundry-evaluations/candidate-v2.json
+python scripts/add_foundry_eval_run.py --config .lab/lab-ko/.env --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2
 ```
 
 기본 대기는 30분입니다. 승인한 한도가 더 짧다면 `--wait-seconds`와 초 단위 값을 추가합니다. helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 확인합니다. 결과에 따라 다음과 같이 진행합니다.
@@ -1320,7 +1323,7 @@ python scripts/add_foundry_eval_run.py --endpoint "YOUR_PROJECT_ENDPOINT" --subs
 | 결과 | 다음 행동 |
 |---|---|
 | `status: completed`, `result_counts.total: 12` | 결과 12건을 확인하고 [3. v1/v2 비교](#decision-compare)로 진행합니다. |
-| 종료 코드 2와 **Still running** 안내 | 대기 한도를 넘었지만 원격 작업은 계속될 수 있습니다. receipt에 run ID가 있으면 **같은 명령·같은 `--out`**으로 수집을 재개합니다. |
+| 종료 코드 2와 **Still running** 안내 | 대기 한도를 넘었지만 원격 작업은 계속될 수 있습니다. receipt에 run ID가 있으면 **같은 명령**으로 수집을 재개합니다. |
 | run ID가 없거나 같은 이름의 원격 run이 있음 | [중복 제출 방지 절차](troubleshooting.md#evaluation)를 따릅니다. |
 
 receipt를 삭제하거나 이름을 바꾸어 다시 제출하지 않습니다.
@@ -1528,6 +1531,8 @@ python -m zipfile -c .lab/lab-ko-records.zip .lab/lab-ko
 3. [내 Codespaces](https://github.com/codespaces)에서 해당 환경의 **… → Stop codespace**를 선택합니다. Microsoft Azure 환경을 보존해 재개할 계획이면 Codespace도 중지 상태로 유지합니다. 실습이 끝났고 백업을 확인했다면 **Delete**로 삭제할 수 있습니다. 중지는 실행 요금만 멈추며 저장소 요금은 남을 수 있습니다. 삭제하면 백업하지 않은 파일은 잃습니다.
 
 내 PC 경로에서는 이 절을 건너뜁니다. 두 경로 모두 Microsoft Azure 과금과 Codespaces 과금을 서로 대신 정리한 것으로 간주하지 않습니다.
+
+**내 PC · 마무리할 때 로그아웃합니다.** 위 확인이 끝난 뒤 공용·업무용 컴퓨터이거나 이 로그인이 더 필요하지 않다면 `az logout`을 실행합니다. 로컬 Microsoft Azure CLI 세션만 지우며 클라우드 자원은 바꾸지 않습니다. 나중에 재개하면 `az login --use-device-code`로 다시 로그인합니다.
 
 **최종 완료 기준:** 삭제 승인된 자신의 전용 그룹에 대해 `az group exists`의 `false`와 확인 시각을 기록했습니다. 보존 승인된 경우에는 실제 남은 항목·이유·비용 책임·보존 검토일과 후속 삭제 계획을 기록했습니다. 둘 중 자신의 승인 범위에 맞는 상태를 확인하고 `.lab` 기록을 먼저 지워 소유권 근거를 잃지 않습니다. [정리 체크리스트](admin-setup.md#cleanup) · [삭제 문제 해결](troubleshooting.md#cleanup)을 참고합니다.
 {: .completion-check}

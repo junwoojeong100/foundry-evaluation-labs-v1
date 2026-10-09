@@ -1,0 +1,5 @@
+# Keep LF in every working tree. Dataset exports, prompts and guides are checked
+# byte for byte, so Windows autocrlf checkouts must not rewrite them.
+* text=auto eol=lf
+*.png binary
+*.mp4 binary

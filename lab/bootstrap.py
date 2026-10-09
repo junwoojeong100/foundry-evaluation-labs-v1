@@ -22,6 +22,8 @@ from typing import Any, Callable
 from urllib.parse import urlencode
 from uuid import UUID, uuid4, uuid5
 
+from lab import azcli
+
 
 REGION = "northcentralus"
 TEMPLATE = Path(__file__).resolve().parents[1] / "infra" / "bootstrap.json"
@@ -182,12 +184,11 @@ def _azure_error(stderr: str, stdout: str, args: list[str]) -> AzureCommandError
 def az_json(args: list[str], *, timeout: float = 120) -> Any:
     """Invoke Azure CLI without shell expansion, credential switching, or SDK imports."""
     try:
-        result = subprocess.run(
-            ["az", *args, "--only-show-errors", "--output", "json"],
-            capture_output=True, text=True, check=False, timeout=timeout,
-        )
+        result = azcli.run([*args, "--only-show-errors", "--output", "json"], timeout=timeout)
     except FileNotFoundError as exc:
         raise BootstrapError("Azure CLI is required; install it separately and sign in explicitly.") from exc
+    except azcli.AzureCliLaunchError as exc:
+        raise BootstrapError(str(exc)) from exc
     except subprocess.TimeoutExpired as exc:
         def decoded(value: Any) -> str:
             return value.decode(errors="replace") if isinstance(value, bytes) else (value or "")

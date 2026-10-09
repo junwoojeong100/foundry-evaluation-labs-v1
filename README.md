@@ -97,6 +97,16 @@ Quick setup follows the **create → verify your project/deployments** structure
 
 Build the allowlisted ZIP with `python scripts/package_lab.py`.
 
+Continuous integration (`.github/workflows/ci.yml`) runs these checks on Ubuntu with Python 3.11–3.14, plus macOS and Windows. Dependabot (`.github/dependabot.yml`) proposes dependency and Action updates. `requirements.lock` comes from `uv pip compile pyproject.toml --extra guide --output-file requirements.lock`, and a test checks that it still pins every direct dependency. Refresh pins only after the checks pass and the live lab still works.
+
+The guide header date is `BUILD_DATE` in `scripts/build_guide.py`; change it and its test together whenever instructions change or are re-verified. `.gitattributes` forces LF line endings because exports, prompts, and guides are checked byte for byte, including on Windows clones. `lab/azcli.py` starts Azure CLI the same way on Windows, macOS, and Linux.
+
+Names and versions: this repository is lab edition **v1**. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in generated resource names refer to that toolkit version. The repository carries about 45 MB of demonstration videos, so the guide's local clone uses `git clone --depth 1`.
+
 Keep execution-specific scores, run IDs, validation logs and raw results in ignored private run folders, not in reusable guide sources. Correct a guide only when its instructions are wrong. Keep necessary ownership/configuration records for retained resources; remove superseded reports and temporary output without deleting cloud resources.
 
 GitHub Pages serves **main / repository root** with `.nojekyll`. Root `index.html` and legacy `docs/english.html` forward to English while preserving query strings and fragments.
+
+## License
+
+Released under the [MIT License](LICENSE). The Microsoft Foundry icon and the portal screenshots belong to Microsoft and are not relicensed; see [NOTICE](web/assets/NOTICE.txt).

@@ -9,7 +9,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 from azure.identity import get_bearer_token_provider
 
 from lab.config import LabError
-
+from lab.content import text as localized_text
 
 SEARCH_SCOPE = "https://search.azure.com/.default"
 ARM_SCOPE = "https://management.azure.com/.default"
@@ -42,7 +42,10 @@ class JsonHttp:
     def request(self, method: str, url: str, payload: dict | None = None, *, etag: str | None = None, create_only: bool = False) -> JsonResult:
         parsed = urlsplit(url)
         if parsed.scheme != "https" or parsed.netloc != self.origin.netloc or parsed.username or parsed.password:
-            raise LabError("인증 정보를 승인된 Azure endpoint 외부로 전송하지 않습니다.")
+            raise LabError(localized_text(
+                "인증 정보를 승인된 Azure endpoint 외부로 전송하지 않습니다.",
+                "Credentials are never sent outside the approved Azure endpoint.",
+            ))
         headers = {"Authorization": f"Bearer {self.token()}", "Accept": "application/json"}
         data = None
         if payload is not None:
@@ -62,13 +65,22 @@ class JsonHttp:
             body = exc.read().decode("utf-8", errors="replace")[:1800]
             raise CloudRequestError(exc.code, f"{method} {parsed.path}: HTTP {exc.code}\n{body}") from exc
         except (URLError, TimeoutError) as exc:
-            raise LabError(f"{method} {parsed.path}: 네트워크 오류. 자동 재시도하지 않았습니다: {exc}") from exc
+            raise LabError(localized_text(
+                f"{method} {parsed.path}: 네트워크 오류. 자동 재시도하지 않았습니다: {exc}",
+                f"{method} {parsed.path}: network error. Not retried automatically: {exc}",
+            )) from exc
         if not text and (status == 204 or (method == "DELETE" and status in {200, 202})):
             return JsonResult({}, status, response_etag)
         try:
             value = json.loads(text)
         except json.JSONDecodeError as exc:
-            raise LabError(f"{method} {parsed.path}: JSON이 아닌 서비스 응답입니다.") from exc
+            raise LabError(localized_text(
+                f"{method} {parsed.path}: JSON이 아닌 서비스 응답입니다.",
+                f"{method} {parsed.path}: the service response is not JSON.",
+            )) from exc
         if not isinstance(value, dict):
-            raise LabError(f"{method} {parsed.path}: 예상한 JSON 객체 응답이 아닙니다.")
+            raise LabError(localized_text(
+                f"{method} {parsed.path}: 예상한 JSON 객체 응답이 아닙니다.",
+                f"{method} {parsed.path}: the response is not the expected JSON object.",
+            ))
         return JsonResult(value, status, response_etag or value.get("@odata.etag"))

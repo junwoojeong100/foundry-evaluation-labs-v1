@@ -26,7 +26,7 @@ from markdown import Markdown
 from markdown.extensions.toc import slugify_unicode
 from markdown.treeprocessors import Treeprocessor
 
-BUILD_DATE = "2026-10-05"
+BUILD_DATE = "2026-10-09"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIRECTORY = "docs"
 SITE_URL = "https://junwoojeong100.github.io/foundry-evaluation-labs-v1/"

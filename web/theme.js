@@ -3,7 +3,9 @@
 
   const messages = JSON.parse(document.getElementById("guide-messages").textContent);
   const key = "foundry-evaluation-guide:theme:v1";
-  let theme = "light";
+  const prefersDark = typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  let theme = prefersDark ? "dark" : "light";
   let warning = "";
   try {
     const saved = window.localStorage.getItem(key);

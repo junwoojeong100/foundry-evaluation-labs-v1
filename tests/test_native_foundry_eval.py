@@ -1,5 +1,6 @@
 """Native Foundry run submission tests use mocks, never actual cloud scores."""
 
+from argparse import Namespace
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -8,7 +9,9 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 
-from scripts.add_foundry_eval_run import candidate_source, evaluation_contract, submit_or_resume, verify_agent_execution
+from scripts.add_foundry_eval_run import (
+    candidate_source, evaluation_contract, settings, submit_or_resume, verify_agent_execution,
+)
 from lab.config import LabError, load_config
 from lab.managed_eval import list_native_evaluations
 
@@ -280,6 +283,47 @@ class NativeFoundryEvaluationTests(unittest.TestCase):
                 self.submit(project, client, path)
             client.evals.runs.create.assert_not_called()
             self.assertFalse(path.exists())
+
+
+class AddRunSettingsTests(unittest.TestCase):
+    ENDPOINT = "https://foundry-eval-v11-example.services.ai.azure.com/api/projects/contoso-eval"
+    SUBSCRIPTION = "00000000-0000-0000-0000-000000000001"
+
+    def profile(self, directory):
+        profile = Path(directory) / ".env"
+        profile.write_text(
+            (Path(__file__).resolve().parents[1] / ".env.example").read_text()
+            + '\nLAB_LANGUAGE="en"\nLAB_ARTIFACTS_DIR="artifacts"\n'
+        )
+        return profile
+
+    def test_config_supplies_the_endpoint_subscription_and_receipt_folder(self):
+        with TemporaryDirectory() as directory:
+            args = Namespace(config=self.profile(directory), endpoint=None, subscription=None, out=None)
+            with patch("scripts.add_foundry_eval_run.check_identity") as identity:
+                resolved = settings(args)
+            identity.assert_called_once()
+            self.assertEqual(resolved, (
+                self.ENDPOINT, self.SUBSCRIPTION,
+                Path(directory).resolve() / "artifacts/foundry-evaluations/candidate-v2.json",
+            ))
+
+    def test_explicit_values_must_match_the_selected_configuration(self):
+        with TemporaryDirectory() as directory:
+            args = Namespace(
+                config=self.profile(directory), endpoint="https://other.services.ai.azure.com/api/projects/x",
+                subscription=None, out=None,
+            )
+            with patch("scripts.add_foundry_eval_run.check_identity"), self.assertRaisesRegex(ValueError, "--endpoint differs"):
+                settings(args)
+
+    def test_without_config_both_explicit_values_are_required(self):
+        with self.assertRaisesRegex(ValueError, "--config"):
+            settings(Namespace(config=None, endpoint=self.ENDPOINT, subscription=None, out=None))
+        self.assertEqual(
+            settings(Namespace(config=None, endpoint=self.ENDPOINT, subscription=self.SUBSCRIPTION, out=Path("receipt.json"))),
+            (self.ENDPOINT, self.SUBSCRIPTION, Path("receipt.json")),
+        )
 
 
 if __name__ == "__main__":
