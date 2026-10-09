@@ -2,7 +2,7 @@
 
 [Ten steps from the beginning](handbook.md#setup) · [Lab checklist](facilitator.md#prepare) · [Troubleshooting](troubleshooting.md)
 
-Use this reference for **your own steps 02 provisioning, 03 Agent setup, and 10 cleanup**. Follow the [hands-on guide](handbook.md#setup) in order and open only the linked sections you need. Record actual values and completion evidence in your `.lab/lab-en/notes.md`.
+Use this reference for **your own steps 02 provisioning, 03 Agent setup, and 10 cleanup**. Follow the [hands-on guide](handbook.md#setup) in order and open only the linked sections you need. Notes are optional; keep short ones only in 07, 09, and 10 (see [where the lab keeps its records](handbook.md#resources-notes)).
 
 **Command shortcuts:** [Codespaces](handbook.md#setup-codespaces) · [CLI sign-in](handbook.md#setup-login) · [Quick provisioning](handbook.md#resources-quickstart) · [Policies/Agent](handbook.md#agent-knowledge) · [Evaluation IDs](handbook.md#baseline-identifiers) · [Reevaluation](handbook.md#decision-run) · [Group deletion/verification](handbook.md#cleanup-delete). Run commands from your selected lab folder's terminal; do not repeat completed work.
 {: .execution-guide}
@@ -14,7 +14,7 @@ To read inside unchanged commands, open [02 creation code/portal](handbook.md#re
 | Situation | Action |
 |---|---|
 | Starting for the first time | Complete [01 account/Codespaces setup](handbook.md#setup), then use [02's `bootstrap setup`](handbook.md#resources-quickstart). One command guides planning, checks, authorization, and provisioning. |
-| Resuming your same lab | Compare original config, manifest, receipts, and actual state with the [worksheet](#handoff). Do not repeat completed creation or submission. |
+| Resuming your same lab | Use the [read-only resume checks](handbook.md#setup-resume) to compare the original config, manifest, receipts, and actual state; the [optional worksheet](#handoff) lists the same evidence if you want it. Do not repeat completed creation or submission. |
 | Only another workload's shared project is available | This lab does not adopt existing groups. Obtain subscription access and authorization to create your own dedicated environment before continuing. |
 
 Verify CLI, SDK, and portal identities separately and use the same personal identity throughout. Never use another person's tokens, sign-in session, configuration, or ownership records. Run creation, ID lookup, v2 creation, reevaluation, and cleanup yourself.
@@ -23,7 +23,7 @@ Verify CLI, SDK, and portal identities separately and use the same personal iden
 
 Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.
 
-Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.
+Default Agent names are **`lab-en-iq`** for English and **`lab-ko-iq`** for Korean. If the environment name changes, use the actual name returned by the CLI in every later step.
 
 ### The program reads language and record settings {#runtime-settings}
 
@@ -195,11 +195,11 @@ Evaluation invokes the Agent and Judge; optimization makes additional internal c
 | Application Insights and Log Analytics | By data ingested and retained; the quick path keeps logs for 30 days. | Usually small for this lab; still removed with the group. |
 | GitHub Codespaces | Separate GitHub billing: compute while running, storage while it exists. | Stop or delete it as described in 10. |
 
-In Microsoft Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.
+In Microsoft Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the [optional worksheet](#handoff) has a place for them.
 
-## Record actual values and completion evidence {#handoff}
+## Optional worksheet for actual values and completion evidence {#handoff}
 
-After creating the plan in 02, copy this table into your **`.lab/lab-en/notes.md`**. Mark unexecuted items **not run**, then fill actual values as each step completes. “The environment is ready” is not sufficient evidence.
+This worksheet is **optional**; nothing in the lab reads it. If your organization or your own habits call for a fuller record, copy this table into your own notes (for example `.lab/lab-en/notes.md`), mark unexecuted items **not run**, and fill in actual values as each step completes. “The environment is ready” is not sufficient evidence.
 
 | Required item | Actual values or evidence |
 |---|---|

@@ -159,7 +159,7 @@
 </tbody>
 </table>
 <h2 id="start">How to use this guide</h2>
-<p>Keep timestamps, steps, commands, target IDs, error codes and actions in your private lab record. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.</p>
+<p>Keep timestamps, steps, commands, target IDs, error codes and actions in your own notes. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.</p>
 <h2 id="environment">Environment, sign-in and local files</h2>
 <p>Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before signing in to Microsoft Azure.</p>
 <table>
@@ -219,7 +219,7 @@
 <tr>
 <td>Previous settings are missing in a new terminal</td>
 <td>Follow <a href="index.html#setup-resume">resumption</a>, activate the existing virtual environment, and keep the original <code>--config</code> path. Do not repeat language/record variables, clone, plan, or apply.</td>
-<td>Confirm the original identity and last completed step in <code>notes.md</code>, then continue with the same records.</td>
+<td>Confirm the original identity with <code>az account show</code> and the last completed step with the read-only resume checks, then continue with the same records.</td>
 </tr>
 <tr>
 <td>Cannot find <code>agents/</code> or <code>knowledge/</code> execution records</td>
@@ -287,7 +287,7 @@
 </tr>
 <tr>
 <td>Unsure which codespace to resume or delete</td>
-<td>Match the original repository/codespace and <code>notes.md</code>. Follow <a href="index.html#cleanup-codespaces">backup, stop, and deletion</a>; do not create another codespace and duplicate Microsoft Azure provisioning.</td>
+<td>Match the original repository/codespace and its <code>.lab/&lt;environment&gt;/</code> folder. Follow <a href="index.html#cleanup-codespaces">backup, stop, and deletion</a>; do not create another codespace and duplicate Microsoft Azure provisioning.</td>
 </tr>
 </tbody>
 </table>

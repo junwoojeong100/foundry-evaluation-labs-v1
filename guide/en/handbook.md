@@ -103,7 +103,7 @@
 ### Confirm your Microsoft Azure account and subscription {#setup-account}
 
 1. Sign in to the [Microsoft Azure portal](https://portal.azure.com) with **your own lab account**. If you have no account/subscription, follow the [Microsoft Azure account instructions](https://azure.microsoft.com/pricing/purchase-options/azure-account). For an organizational subscription, first obtain access and spending authorization for your own lab scope. A free or trial subscription does not guarantee the required model quota.
-2. Search for **Subscriptions** in the top search box and open the intended subscription. Confirm portal status **Active** and record its **Subscription ID** and **Directory/Tenant ID**. The CLI describes the same usable subscription as **Enabled**. If it is missing, check directory and subscription filters under your account.
+2. Search for **Subscriptions** in the top search box and open the intended subscription. Confirm portal status **Active** and read its **Subscription ID** and **Directory/Tenant ID**. The CLI describes the same usable subscription as **Enabled**. If it is missing, check directory and subscription filters under your account.
 3. Open the permissions menu **Access control (IAM) → Check access** and inspect your role and scope. Older UI versions may label this **View my access**. You create resources and resource-scoped role assignments in this lab, so **both provisioning and role-assignment permissions are required**. Contributor alone cannot assign roles. See [permissions by task and provider registration](admin-setup.md#rbac).
 4. Set a budget, end time, and deletion or retention scope for your dedicated group. If access or authorization is missing, obtain an approved execution scope through your organization's procedures before continuing. Do not delegate the remaining exercises to another person, grant new subscription-wide Owner, or disable security controls as a shortcut.
 
@@ -345,7 +345,7 @@ Confirm Python 3.11–3.14, the command list, and your original user, tenant, su
 
 **Do not repeat language or record-folder setup.** Keep the original `--config` path in subsequent commands to apply the saved settings automatically.
 
-Find your last completed step in `notes.md`. Check provisioning with [02's read-only status](#resources-status), submitted evaluation IDs/states with [06's lookup](#baseline-identifiers), and candidate result collection with [09's same-receipt resume](#decision-run). **Do not resubmit completed work; inspect running work by its existing ID.** Step 01 does not create Microsoft Azure resources or call the SDK.
+Find where you stopped with read-only lookups; no notes file is needed. Check provisioning with [02's read-only status](#resources-status), submitted evaluation IDs/states with [06's lookup](#baseline-identifiers), and candidate result collection with [09's same-receipt resume](#decision-run). The portal's **Evaluations** and **Optimization runs** lists show the same jobs. **Do not resubmit completed work; inspect running work by its existing ID.** Step 01 does not create Microsoft Azure resources or call the SDK.
 
 </details>
 
@@ -359,7 +359,7 @@ Find your last completed step in `notes.md`. Check provisioning with [02's read-
 
 | Executed command/setting | What to check now | Portal actions and verification |
 |---|---|---|
-| `az login`, `az account set`, `az account show` | Record the signed-in account, tenant, subscription, and `state: Enabled`. | Compare Directory under your Microsoft Azure Portal account and the IDs/state under **Subscriptions → intended subscription → Overview** yourself. |
+| `az login`, `az account set`, `az account show` | Check the signed-in account, tenant, subscription, and `state: Enabled`. | Compare Directory under your Microsoft Azure Portal account and the IDs/state under **Subscriptions → intended subscription → Overview** yourself. |
 | `--environment lab-en` → subsequent `--config` | Step 02 saves language/record settings; later commands read them. No shell-variable setup is needed. | This is separate from portal display language. Use the English corpus and that environment's records. |
 
 </details>
@@ -379,7 +379,7 @@ Find your last completed step in `notes.md`. Check provisioning with [02's read-
 <p><strong>How · where:</strong> One command in your lab terminal guides planning, readiness, authorization records, and provisioning. Then verify actual portal deployments and runtime checks.</p>
 </div>
 
-**Action order:** [Terminal · quick setup](#resources-quickstart) → [Lab record](#resources-notes) → [Portal/runtime checks](#resources-runtime-check).
+**Action order:** [Terminal · quick setup](#resources-quickstart) → [Where records live](#resources-notes) → [Portal/runtime checks](#resources-runtime-check).
 {: .step-route}
 
 ### Prepare the environment with one provisioning command {#resources-quickstart}
@@ -437,29 +437,11 @@ The program reads language and record location from the selected configuration f
 
 </details>
 
-#### Create your lab record {#resources-notes}
+#### Where the lab keeps its records {#resources-notes}
 
-In the same editor, create **`.lab/lab-en/notes.md`**. `.md` is a plain-text note file. **Paste the template below into that file**, starting with your identity and the generated environment. **This is not a terminal command.**
+**You do not need to create a record file.** As it runs, the program saves what later steps need in **`.lab/lab-en/`**: `config.json`, `manifest.json`, `approval.json`, `.env`, and the receipts under `artifacts/`. Values you may need again, such as the project endpoint or Agent version, can be read back from those files or looked up with read-only commands.
 
-```text
-Environment name: lab-en
-Last completed step / verification time: 01 /
-Signed-in user / tenant ID / subscription ID:
-Plan file: .lab/lab-en/config.json
-Authorization scope / expiry / budget: not verified
-Resource group / project / Project endpoint: not created
-Deployment names (Agent / Judge / Optimizer / embedding): not created
-Policy retrieval / Agent tool-call verification: not run
-Agent name / v1 / v2: not created
-Dataset name / version / row count / SHA-256: not registered
-Evaluation ID / v1 run ID / v2 run ID: not run
-Optimizer job ID / candidate ID / instruction file: not run
-Final decision / evidence: not recorded
-Cleanup result / verification time: not run
-If retained: remaining resources / cost owner / review date / deletion plan: not applicable
-```
-
-Update the record with **actual values and completion evidence** after each step. Without a candidate, record v2 as `not run - no candidate`. See the [lab worksheet](admin-setup.md#handoff) for field explanations. Never record passwords or tokens.
+A `notes.md` of your own is **optional**. If you keep one, write short notes only where a step asks for a conclusion: the [learning note in 07](#analysis-notes), the [v1/v2 comparison in 09](#decision-compare), and the [closing note in 10](#cleanup-records). Resuming never depends on it; use the [read-only checks in 01](#setup-resume). Never write passwords or tokens in a note. For a longer optional checklist, see the [worksheet](admin-setup.md#handoff); nothing in the lab reads it.
 
 Short execution-record paths such as `agents/native-v1.json` and `knowledge/config-snapshot.json` are relative to **`.lab/lab-en/artifacts/`**. In contrast, `data/`, `prompts/`, and `scripts/` are under the downloaded lab folder.
 
@@ -484,7 +466,7 @@ An **endpoint** is the address a program uses to connect to a service. Use the p
 
 ### Create a local provisioning plan {#resources-plan}
 
-Replace the placeholders with the values recorded in 01. An **ID identifies a resource; it is not its display name**. Do not enter a subscription name in an ID field.
+Replace the placeholders with the values from `az account show` (run it again if you need them). An **ID identifies a resource; it is not its display name**. Do not enter a subscription name in an ID field.
 
 | Placeholder | Your value |
 |---|---|
@@ -689,7 +671,7 @@ The following runtime `run_preflight()` reads the resources/deployments named in
 
 ### Verify the model and policy retrieval {#agent-knowledge}
 
-**These three commands perform actual uploads/model calls and can incur charges.** Check each result yourself before continuing. When resuming, inspect your records for completed work rather than repeating unnecessary calls.
+**These three commands perform actual uploads/model calls and can incur charges.** Check each result yourself before continuing. When resuming, check the saved receipts for completed work rather than repeating unnecessary calls.
 {: .note .warning}
 
 #### 1. Verify that the model responds {#agent-smoke}
@@ -793,7 +775,7 @@ In the portal, open **Build → Knowledge → Knowledge bases** and inspect Conn
 python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 ```
 
-This creates **`lab-en-iq` version `1`** using the instructions in `prompts/en/baseline.txt` and the verified policy tool. Record `agent_name`, `version`, and `receipt`. A **receipt is a file recording the operation's result**. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3.
+This creates **`lab-en-iq` version `1`** using the instructions in `prompts/en/baseline.txt` and the verified policy tool. Check `agent_name`, `version`, and `receipt` in the output. A **receipt is a file recording the operation's result**, so the Agent name and version stay readable there. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: Agent configuration and fixed versions</summary>
@@ -889,7 +871,7 @@ Only the question reaches the Agent. `context` and `ground_truth` support compat
 python -c "import hashlib,pathlib; p=pathlib.Path('data/en/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())"
 ```
 
-Record `rows = 12` and SHA-256 in your private notes. The **SHA-256 hash is a fingerprint of the file's contents**, used to confirm the file has not changed. Copy the output; you do not need to memorize or type it manually.
+Confirm `rows = 12` and note the SHA-256. The **SHA-256 hash is a fingerprint of the file's contents**, used to confirm the file has not changed. You can rerun this command whenever you need the hash again; you do not need to memorize or type it manually.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: file checks versus portal registration</summary>
@@ -903,7 +885,7 @@ Record `rows = 12` and SHA-256 in your private notes. The **SHA-256 hash is a fi
 |---|---|---|
 | `pathlib.Path('data/en/optimizer/dev.jsonl')` | Select the local source file. | Choose that exact file under **Upload new dataset → Browse** below. |
 | `p.read_text(...).splitlines()`, `len(...)` | Count the complete local JSONL. | Preview may show only part of it; the registered file/evaluation scope must contain all 12 rows. |
-| `hashlib.sha256(p.read_bytes()).hexdigest()` | Calculate the byte fingerprint. | If the portal has no SHA-256 control, keep it in `notes.md`; do not claim a nonexistent UI check. |
+| `hashlib.sha256(p.read_bytes()).hexdigest()` | Calculate the byte fingerprint. | If the portal has no SHA-256 control, rerun the command whenever you need to compare the hash; do not claim a nonexistent UI check. |
 | Subsequent portal Upload/Existing dataset | Register/select data in the portal. | Register `lab-en-dev12` version `1` once in your project. The Python command above uploads nothing and submits no evaluation. |
 
 </details>
@@ -920,14 +902,14 @@ In your own project, follow these actions. If you changed the environment name, 
 2. Select target type **Agent**, **`lab-en-iq`**, and version **1**. Use **Pin currently latest** only while latest really is version 1. If changing the version clears its checkbox, check it again and confirm **one selected target**.
 3. Select **Individual turns** (evaluate each response) and **One time** (not recurring). Do not select Synthetic data to generate new questions.
 4. Select **Upload new dataset → Browse** and choose the checked `dev.jsonl`. In Codespaces, choose **the file you just downloaded to your computer**; locally, choose `data/en/optimizer/dev.jsonl` from the lab folder. Name it **`lab-en-dev12`**, use first version **`1`**, and wait for registration. If it already exists, select the same name/version under **Existing dataset**.
-5. Verify `query`, `context`, and `ground_truth`. A **five-row preview is not the dataset total**; the original contains 12. Record its name/version and continue to 05 in this same wizard.
+5. Verify `query`, `context`, and `ground_truth`. A **five-row preview is not the dataset total**; the original contains 12. Confirm its name/version and continue to 05 in this same wizard.
 
 <figure class="portal-shot" id="portal-evaluation-dataset">
 <img src="../../web/assets/portal/en/15-evaluation-dataset.png" alt="Microsoft Foundry evaluation dataset selection and preview of query, context, and ground_truth columns." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Select the English dataset.</strong> Confirm the registration name/version and the query, context, and ground_truth columns. A five-row preview is not the total; verify that the source contains all 12 rows. <a href="../../web/assets/portal/en/15-evaluation-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-**Completion criteria:** The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are recorded. [Data contract](../../data/README.en.md#schema).
+**Completion criteria:** The draft targets explicit v1 and the unchanged 12-row dataset; count, version and hash are confirmed. [Data contract](../../data/README.en.md#schema).
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#prepare" data-next-step>Next: 05. Select evaluation criteria →</a></p>
@@ -1008,7 +990,7 @@ Agent, Judge, and Optimizer support can differ by role. Check the [Optimizer sup
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>What:</strong> Generate real responses from pinned v1 and collect managed scores and reasons.</p>
 <p><strong>Why:</strong> A candidate needs a recorded starting point for comparison. Completed means processing ended, not that every response was correct.</p>
-<p><strong>How · where:</strong> Review and submit once in Microsoft Foundry, inspect all 12 items, and use read-only terminal lookup to record the actual evaluation and run IDs.</p>
+<p><strong>How · where:</strong> Review and submit once in Microsoft Foundry, inspect all 12 items, and use read-only terminal lookup to retrieve the actual evaluation and run IDs.</p>
 </div>
 
 **Action order:** [Microsoft Foundry · review/submit](#baseline-submit) → [Verify completion/all 12](#baseline-results) → [Terminal · retrieve IDs](#baseline-identifiers).
@@ -1021,7 +1003,7 @@ An **evaluation is the saved configuration**; a **run is one execution of it**. 
 ### Review and submit once in Microsoft Foundry {#baseline-submit}
 
 1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**.
-2. Name the evaluation **`lab-en-learning-loop`** and, if available, name the run **`baseline-v1`**. Record any different name in `notes.md` and use it for later lookup. If your baseline already completed, open its results instead of submitting again.
+2. Name the evaluation **`lab-en-learning-loop`** and, if available, name the run **`baseline-v1`**. If you choose a different name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.
 3. For an authorized job not already submitted, select **Submit** once. The run is complete only after you confirm **Completed and all 12 results**, not immediately after clicking.
 
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -1039,7 +1021,7 @@ Open **Evaluations → your evaluation name → Evaluation runs → baseline run
 | Completed | Check all 12 results and error counts, then finish the [ID lookup below](#baseline-identifiers) before continuing to 07. This does not mean every answer is correct. |
 | Failed / Partial, or missing results | Preserve the error/run ID and use [evaluation troubleshooting](troubleshooting.md#evaluation). Do not mark it complete. |
 
-If it remains unfinished after 30 minutes or your shorter authorized wait, record its state, run ID, and error, then follow [evaluation resumption](troubleshooting.md#evaluation-resume). This is a status-check point, not a service completion guarantee. Stopping your wait does not cancel the remote job.
+If it remains unfinished after 30 minutes or your shorter authorized wait, check its state, run ID, and error, then follow [evaluation resumption](troubleshooting.md#evaluation-resume). This is a status-check point, not a service completion guarantee. Stopping your wait does not cancel the remote job.
 
 ### Retrieve actual evaluation and run IDs in your terminal {#baseline-identifiers}
 
@@ -1049,9 +1031,9 @@ Use this **read-only command** to retrieve actual evaluation and run IDs. If you
 python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 ```
 
-If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Record these **two IDs separately**. This command submits nothing.
+If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Keep these **two IDs separate**; 09 needs them, and you can rerun this command to read them again. This command submits nothing.
 
-| Value to record | Selection rule | Placeholder in 09 |
+| Value | Selection rule | Placeholder in 09 |
 |---|---|---|
 | `evaluation_id` · `eval_...` | The evaluation you created | `YOUR_EVALUATION_ID` |
 | `run_id` · `evalrun_...` | That evaluation's run with **`agent_version: "1"` and `status: completed`** | `YOUR_BASELINE_RUN_ID` |
@@ -1069,7 +1051,7 @@ If several evaluations have the same name, compare their portal creation times, 
 | Baseline submission through portal **Submit** | Use **Review → Submit** once in the same 04–05 wizard. The lookup code below does not submit it. |
 | `client.evals.list(...)`, exact-name comparison | Match **Build → Evaluations → your evaluation name**, not another same-named definition. |
 | `client.evals.runs.list(eval_id=...)` | Compare version, run name, and state in that evaluation's **Evaluation runs**. |
-| `run.id`, `target.version`, `result_counts` | Record the real v1 ID, completion state, all 12 items, and errors. Processing completion and quality are different. |
+| `run.id`, `target.version`, `result_counts` | Read the real v1 ID, completion state, all 12 items, and errors. Processing completion and quality are different. |
 
 This is the actual SDK implementation of `native-evals --name ...`. Notice `list` operations, not `create`.
 
@@ -1077,7 +1059,7 @@ This is the actual SDK implementation of `native-evals --name ...`. Notice `list
 
 </details>
 
-**Completion criteria:** The real Microsoft Foundry run is Completed and exposes 12 output items. Record failed/error counts in `result_counts` too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.
+**Completion criteria:** The real Microsoft Foundry run is Completed and exposes 12 output items. Check failed/error counts in `result_counts` too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#analyze" data-next-step>Next: 07. Read scores and reasons →</a></p>
@@ -1089,7 +1071,7 @@ This is the actual SDK implementation of `native-evals --name ...`. Notice `list
 <div class="lab-concept" data-learning-frame="analyze">
 <p><strong>What:</strong> Connect actual responses and evaluator reasons to policy evidence.</p>
 <p><strong>Why:</strong> An average can hide a date, citation, or routing failure. Explain the defect before deciding which instruction to change.</p>
-<p><strong>How · where:</strong> Read Microsoft Foundry detailed metrics, User view, and the source policy together; record a hypothesis and behaviors to preserve in notes.md.</p>
+<p><strong>How · where:</strong> Read Microsoft Foundry detailed metrics, User view, and the source policy together; then write a short learning note with a hypothesis and the behaviors to preserve.</p>
 </div>
 
 **Action order:** [Microsoft Foundry · responses/reasons](#analysis-details) → [Editor · record a hypothesis](#analysis-notes). No additional model call is needed.
@@ -1114,7 +1096,7 @@ Relevance 4/5 is not 80% accuracy. TaskAdherence 1 means Pass, not a low five-po
 
 #### Code ↔ portal · read response structure and quality {#analysis-code-portal}
 
-**Where to act:** Inspect [Microsoft Foundry results above](#analysis-details), then complete the [worksheet below](#analysis-notes). **There is no separate terminal command or local scoring in this step.**
+**Where to act:** Inspect [Microsoft Foundry results above](#analysis-details), then write the [learning note below](#analysis-notes). **There is no separate terminal command or local scoring in this step.**
 {: .execution-guide}
 
 | Actual setting/result | Portal actions and verification |
@@ -1149,7 +1131,7 @@ Watch for wrong date boundaries, unnecessary assumptions, numeric retrieval IDs 
 
 ### Record the hypothesis and behaviors to preserve in your editor {#analysis-notes}
 
-Open **`.lab/lab-en/notes.md`**, created in 02, and fill in this worksheet with your results. Append analysis to your records from 01–06. Keep full responses/reasons separately, and use the worksheet for identifiable runs/cases and concise observations.
+Write a short learning note from the table below. Saving it as **`.lab/lab-en/notes.md`** in your editor is optional (`.md` is a plain-text note file); any private file works, and nothing in the lab reads it. Keep full responses/reasons in the portal, and use the note for identifiable runs/cases and concise observations. Never write passwords or tokens.
 
 | Record | What to write |
 |---|---|
@@ -1217,7 +1199,7 @@ Open the same job you just submitted in **Optimization runs** and act according 
 
 | Job state | What to do |
 |---|---|
-| Running | Inspect the same job and wait; do not resubmit. After 60 minutes or your shorter authorized wait, record the state/job ID and follow [resumption](troubleshooting.md#optimizer). |
+| Running | Inspect the same job and wait; do not resubmit. After 60 minutes or your shorter authorized wait, check the state and job ID, then follow [resumption](troubleshooting.md#optimizer). |
 | Completed / Succeeded | Check the actual candidate count and **Token usage** where available, then review original/candidate scores and **View changes**. |
 | Failed or results unavailable | Preserve the state/job ID/error and follow [troubleshooting](troubleshooting.md#optimizer). Do not invent a candidate to continue. |
 
@@ -1227,7 +1209,7 @@ Open the same job you just submitted in **Optimization runs** and act according 
 
 <figure class="portal-shot" id="portal-optimizer-results">
 <img src="../../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and record why. <a href="../../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and keep the reason for the closing note in 10. <a href="../../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <figure class="portal-shot" id="portal-optimizer-diff">
@@ -1245,7 +1227,7 @@ Perform the following only after reviewing a candidate worth retaining.
     - **Location:** Save it in the editor of **the same environment as your lab terminal**. In Codespaces, create the file in its VS Code Explorer and paste the instructions there; a file saved only to your computer's Downloads folder will not be found by the next command.
     - **Format:** **UTF-8 plain text**. Do not use Word/rich text or accidentally save `candidate.txt.txt`.
     - **Content:** The complete instructions only. Exclude diff (change comparison) `+`/`-` markers, UI explanations, and scores.
-4. Record real job/candidate IDs and any manual edits/reasons in `notes.md`. Use this file next, not the repository's `prompts/en/candidate.txt`.
+4. If you edited the instructions by hand, note what you changed and why (in your learning note if you keep one). Use this file next, not the repository's `prompts/en/candidate.txt`.
 
 **Do not select Promote candidate in this lab.** Step 09's CLI checks your ownership records and fixed configuration before creating one v2. Promoting in the portal first can conflict with these ownership checks. Do not continually create v3, v4, or later releases; creating a version is separate from publishing it or approving activation.
 {: .note .warning}
@@ -1272,7 +1254,7 @@ Optimization runs in the Microsoft Foundry service. The complete instructions re
 
 </details>
 
-**Completion criteria:** Record real job/candidate IDs, the reviewed instruction file, and change reasons. Without a candidate worth retaining or complete instructions, record **retain v1 and the specific reason**, then continue to 10. If you do not perform 09, record the separate reevaluation as not run too. Do not repeatedly run the same job to manufacture improvement.
+**Completion criteria:** You have reviewed the real job and candidate, saved the complete instruction file, and can explain each change. Without a candidate worth retaining or complete instructions, **retain v1 with a specific reason** and continue to 10, whose closing note states it. If you do not perform 09, that note should also say the separate reevaluation was not run. Do not repeatedly run the same job to manufacture improvement.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#decision" data-next-step>Reviewed candidate: 09 reevaluation →</a> <a href="#cleanup">No candidate: 10 cleanup →</a></p>
@@ -1364,7 +1346,7 @@ In the same evaluation's **Evaluation runs**, select the v1 and v2 rows and **Co
 <figcaption><strong>Confirm the comparison direction and results.</strong> Select v1 as Baseline, then compare scores, pass counts, and statistical results. Inconclusive means a difference was not established; it is not evidence of equivalence. <a href="../../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-Check the following in order, then fill in the worksheet below.
+Check the following in order, then fill in the comparison table below.
 
 1. **Check that results are comparable.** All 12 cases must use the same questions, models, tools, and evaluators. Hold the decision if errors, missing results, or different conditions prevent comparison.
 2. **Compare responses and quality.** Read all 12 responses, scores, and reasons side by side; check factual truth, routing, and response format. **Both-criteria pass count and each metric's pass count and mean must all stay the same or increase, with at least one strict measured improvement.** A gain in one metric cannot offset a decline in another. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.
@@ -1372,7 +1354,7 @@ Check the following in order, then fill in the worksheet below.
 
 <p class="share-checkpoint" id="share-optimized"><strong>Explain the result:</strong> Identify the actual gain, unchanged criteria, any regression, and the remaining uncertainty. Observed improvement is not a guarantee that every future stochastic run will improve.</p>
 
-Copy this table into `notes.md` and fill it with your results. **Blanks are places to record your measurements, not example scores.** Pass counts always use **12** as their denominator. **Both criteria pass** means the same answer has Relevance at least 4 and TaskAdherence equal to 1.
+Fill in this table with your results; copying it into your learning note (for example `.lab/lab-en/notes.md`) is optional. **Blanks are places to record your measurements, not example scores.** Pass counts always use **12** as their denominator. **Both criteria pass** means the same answer has Relevance at least 4 and TaskAdherence equal to 1.
 
 <div class="worked-comparison" markdown="1">
 
@@ -1417,7 +1399,7 @@ Copy this table into `notes.md` and fill it with your results. **Blanks are plac
 
 ### Preserve records before deletion {#cleanup-records}
 
-1. Record the actual project, Agent, dataset version/hash, evaluation/run/job IDs, and decision in `notes.md`.
+1. Write a short closing note in `.lab/lab-en/notes.md` (or any private file) with the project and Agent names, dataset version/hash, evaluation/run/job IDs, the v1/v2 comparison, and your decision. Never write passwords or tokens.
 2. Use **Download/Export** where offered in the evaluation and Optimizer views. If unavailable, copy actual questions, responses, scores, reasons, and candidate instructions into private records, noting anything you could not obtain. **An ID list does not replace detailed results.** Confirm saved files open locally before proceeding with deletion.
 3. Retain `.lab/lab-en/` plans, manifest, approvals, and run records in an organization-approved private location. Do not commit raw credentials, cookies, signed URLs, or account details. Public records should contain only the necessary synthetic cases, scores, and reasons.
 4. Inspect Evaluations and Optimization runs for active jobs. Use **Cancel** where supported and verify the terminal state. Record unresolved job IDs, states, and follow-up checks; a cancellation request alone does not prove termination.

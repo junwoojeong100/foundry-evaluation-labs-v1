@@ -265,7 +265,7 @@
 <h3 id="setup-account">Microsoft Azure 계정과 구독을 확인합니다</h3>
 <ol>
 <li><a href="https://portal.azure.com">Microsoft Azure Portal</a>에 <strong>본인의 실습용 계정</strong>으로 로그인합니다. 사용할 계정·구독이 없다면 <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure 계정 안내</a>를 따라 준비합니다. 조직 구독은 본인이 사용할 범위의 접근·비용 승인을 먼저 확보합니다. 무료·체험 구독이라고 필요한 모델의 할당량까지 보장되지는 않습니다.</li>
-<li>상단 검색창에 <strong>Subscriptions</strong>를 입력하고 사용할 구독을 엽니다. 포털 상태가 <strong>Active</strong>인지 확인하고 <strong>Subscription ID</strong>와 <strong>Directory/Tenant ID</strong>를 기록합니다. 같은 정상 구독은 CLI에서 <strong>Enabled</strong>로 표시합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.</li>
+<li>상단 검색창에 <strong>Subscriptions</strong>를 입력하고 사용할 구독을 엽니다. 포털 상태가 <strong>Active</strong>인지 보고, <strong>Subscription ID</strong>와 <strong>Directory/Tenant ID</strong>를 확인합니다. 같은 정상 구독은 CLI에서 <strong>Enabled</strong>로 표시합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.</li>
 <li><strong>Access control (IAM, 권한 관리) → Check access</strong>에서 본인의 역할과 적용 범위를 확인합니다. 이전 UI에서는 <strong>View my access</strong>로 표시할 수 있습니다. 이 실습은 본인이 리소스를 생성하고 리소스 범위 역할을 할당하므로 <strong>생성 권한과 역할 할당 권한이 모두 필요합니다.</strong> Contributor만으로는 역할 할당이 가능하지 않습니다. <a href="admin.html#rbac">작업별 필요 권한·공급자 등록</a>을 확인합니다.</li>
 <li>비용 한도, 사용 종료 시각, 전용 리소스 그룹의 삭제 또는 보존 범위를 정합니다. 권한·구독·비용 승인이 부족하면 조직 절차에 따라 본인에게 허용된 실행 범위를 확보한 뒤 계속합니다. 다른 사람에게 이후 실습을 대신 실행하게 하거나 구독 전체 Owner·보안 정책 해제로 우회하지 않습니다.</li>
 </ol>
@@ -470,7 +470,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 <p>Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 <code>Enabled</code>를 확인합니다. 로그인이 만료됐거나 다르면 <a href="#setup-login">같은 계정으로 로그인</a>한 뒤 다시 확인합니다.</p>
 <p><strong>언어·기록 폴더 설정은 반복하지 않습니다.</strong> 다음 명령의 원래 <code>--config</code> 경로를 유지하면 저장된 설정을 자동으로 사용합니다.</p>
-<p>자신의 <code>notes.md</code>에서 마지막 완료 단계를 찾습니다. 환경 생성 상태는 <a href="#resources-status">02의 읽기 전용 status</a>, 제출한 평가의 ID·상태는 <a href="#baseline-identifiers">06의 조회</a>, 후보 재평가 수집은 <a href="#decision-run">09의 같은 receipt 재개</a>로 확인합니다. <strong>완료한 작업은 다시 제출하지 않고, 진행 중인 작업은 같은 ID로 조회합니다.</strong> 01에서는 Microsoft Azure 환경을 생성하거나 SDK를 호출하지 않습니다.</p>
+<p>마지막으로 끝낸 단계는 읽기 전용 조회로 찾으며 메모 파일은 필요하지 않습니다. 환경 생성 상태는 <a href="#resources-status">02의 읽기 전용 status</a>, 제출한 평가의 ID·상태는 <a href="#baseline-identifiers">06의 조회</a>, 후보 재평가 수집은 <a href="#decision-run">09의 같은 receipt 재개</a>로 확인합니다. 포털의 <strong>Evaluations</strong>와 <strong>Optimization runs</strong> 목록에서도 같은 작업을 볼 수 있습니다. <strong>완료한 작업은 다시 제출하지 않고, 진행 중인 작업은 같은 ID로 조회합니다.</strong> 01에서는 Microsoft Azure 환경을 생성하거나 SDK를 호출하지 않습니다.</p>
 </details>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: 로그인과 로컬 설정</summary>
@@ -487,7 +487,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tbody>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실행한 명령·설정값</span><code>az login</code>, <code>az account set</code>, <code>az account show</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">지금 확인하는 내용</span>로그인 계정·테넌트·구독을 기록하고 <code>state: Enabled</code>를 확인합니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">지금 확인하는 내용</span>로그인 계정·테넌트·구독과 <code>state: Enabled</code>를 확인합니다.</td>
 <td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal 우측 상단 계정의 Directory와 <strong>Subscriptions → 사용할 구독 → Overview</strong>의 ID·상태를 직접 대조합니다.</td>
 </tr>
 <tr>
@@ -509,7 +509,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p><strong>진행 방법·위치:</strong> 실습 터미널의 생성 명령 한 개가 계획·준비 검사·승인 기록·생성을 안내합니다. 완료 후 포털의 실제 배포와 런타임 검사를 확인합니다.</p>
 </div>
 
-<p class="step-route"><strong>실행 순서:</strong> <a href="#resources-quickstart">터미널 · 빠른 생성</a> → <a href="#resources-notes">실습 기록</a> → <a href="#resources-runtime-check">포털·런타임 확인</a>.</p>
+<p class="step-route"><strong>실행 순서:</strong> <a href="#resources-quickstart">터미널 · 빠른 생성</a> → <a href="#resources-notes">저장된 기록</a> → <a href="#resources-runtime-check">포털·런타임 확인</a>.</p>
 <h3 id="resources-quickstart">생성 명령 하나로 환경을 준비합니다</h3>
 <p>01의 로그인을 마쳤다면 바로 실행합니다. <strong>구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 언어·기록 위치·자원 이름·설정 파일은 자동으로 정합니다.</strong> 별도 환경 변수나 언어 옵션을 입력하거나 JSON 승인서를 직접 작성할 필요가 없습니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
@@ -578,25 +578,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <summary>이전 버전 환경을 쓰거나 환경 변수를 직접 설정한 적이 있을 때만</summary>
 <p>프로그램은 선택한 설정 파일의 언어·기록 위치를 자동으로 읽습니다. <strong>셸에 남아 있는 과거 환경 변수보다 선택한 설정 파일이 우선</strong>합니다. 이전 버전에서 생성한 <code>lab-ko</code>·<code>lab-en</code> 환경도 파일을 고치거나 재생성하지 않고 사용할 수 있습니다. 다른 언어의 기존 기록을 다시 표시하거나 덮어쓰지는 않습니다.</p>
 </details>
-<h4 id="resources-notes">실습 기록 파일을 만듭니다</h4>
-<p>같은 편집기에서 <strong><code>.lab/lab-ko/notes.md</code></strong>를 만듭니다. <code>.md</code>는 일반 텍스트 메모 파일입니다. 아래 양식을 <strong>파일에 붙여넣고</strong>, 계정 값과 생성된 환경부터 채웁니다. <strong>터미널에서 실행하는 명령이 아닙니다.</strong></p>
-<pre><code class="language-text">환경 이름: lab-ko
-마지막 완료 단계 / 확인 시각: 01 /
-로그인 사용자 / 테넌트 ID / 구독 ID:
-계획 파일: .lab/lab-ko/config.json
-승인 범위 / 만료 시각 / 예산: 미확인
-리소스 그룹 / 프로젝트 / Project endpoint: 미생성
-배포 이름 (Agent / Judge / Optimizer / embedding): 미생성
-정책 검색 / Agent 도구 호출 확인: 미실행
-Agent 이름 / v1 / v2: 미생성
-데이터 이름 / 버전 / 행 수 / SHA-256: 미등록
-evaluation ID / v1 run ID / v2 run ID: 미실행
-Optimizer job ID / candidate ID / 지침 파일: 미실행
-최종 판단 / 근거: 미작성
-정리 결과 / 확인 시각: 미실행
-보존 시 남은 자원 / 비용 책임 / 검토일 / 후속 삭제 계획: 해당 없음
-</code></pre>
-<p>이후 단계가 끝날 때 <strong>실제 값과 완료 근거로 갱신</strong>합니다. 후보가 없으면 v2는 <code>미실행 · 후보 없음</code>으로 남깁니다. 항목별 자세한 설명은 <a href="admin.html#handoff">실습 기록표</a>에서 확인합니다. 비밀번호·토큰은 적지 않습니다.</p>
+<h4 id="resources-notes">실습 기록이 저장되는 곳</h4>
+<p><strong>기록 파일을 따로 만들지 않아도 됩니다.</strong> 프로그램이 실행하면서 이후 단계에 필요한 내용을 <strong><code>.lab/lab-ko/</code></strong>에 자동으로 저장합니다. <code>config.json</code>·<code>manifest.json</code>·<code>approval.json</code>·<code>.env</code>와 <code>artifacts/</code> 아래의 receipt입니다. 프로젝트 endpoint나 Agent 버전처럼 다시 필요한 값은 이 파일을 읽거나 읽기 전용 명령으로 조회하면 됩니다.</p>
+<p><code>notes.md</code> 같은 개인 메모는 <strong>선택 사항</strong>입니다. 쓴다면 결론을 정리하는 곳에만 짧게 적습니다. <a href="#analysis-notes">07의 학습 노트</a>, <a href="#decision-compare">09의 v1/v2 비교</a>, <a href="#cleanup-records">10의 마무리 노트</a>입니다. 재개할 때는 메모에 의존하지 않고 <a href="#setup-resume">01의 읽기 전용 확인</a>을 사용합니다. 메모에는 비밀번호·토큰을 적지 않습니다. 더 긴 선택 점검표는 <a href="admin.html#handoff">기록표</a>를 참고하며, 실습 프로그램은 이 표를 읽지 않습니다.</p>
 <p>이후 나오는 <code>agents/native-v1.json</code>, <code>knowledge/config-snapshot.json</code> 같은 실행 기록의 상대 경로는 <strong><code>.lab/lab-ko/artifacts/</code> 아래</strong>입니다. 반면 <code>data/</code>·<code>prompts/</code>·<code>scripts/</code>는 내려받은 실습 폴더 아래입니다.</p>
 <p><strong>생성이 끝났다면 <a href="#resources-runtime-check">포털·런타임 확인</a>으로 이동합니다.</strong> 아래 개별 명령을 추가로 실행하지 않습니다.</p>
 <details class="guide-details optional-path">
@@ -613,7 +597,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </figure>
 <p><strong>Endpoint(엔드포인트)</strong>는 프로그램이 서비스에 연결할 때 쓰는 주소입니다. 이 실습은 프로젝트의 <strong>Project endpoint</strong>를 사용합니다. 옆에 있는 Microsoft Azure OpenAI endpoint와 서로 바꾸어 사용하지 않습니다.</p>
 <h3 id="resources-plan">로컬 생성 계획을 만듭니다</h3>
-<p>01에서 기록한 값을 아래 표대로 교체합니다. <strong>ID는 이름이 아니라 자원을 식별하는 값</strong>입니다. 구독의 표시 이름을 ID 자리에 넣지 않습니다.</p>
+<p><code>az account show</code>에서 확인한 값(필요하면 다시 실행합니다)을 아래 표대로 교체합니다. <strong>ID는 이름이 아니라 자원을 식별하는 값</strong>입니다. 구독의 표시 이름을 ID 자리에 넣지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -1537,7 +1521,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#agent-smoke">터미널 · 모델 확인</a> → <a href="#agent-search-prepare">정책 업로드</a> → <a href="#agent-search-probe">검색 확인</a> → <a href="#agent-create">v1 생성</a> → <a href="#agent-playground">Microsoft Foundry · 응답 확인</a>.</p>
 <h3 id="agent-knowledge">모델과 정책 검색을 확인합니다</h3>
-<p class="note warning"><strong>이 세 명령은 실제 업로드·모델 호출을 수행하며 비용이 발생할 수 있습니다.</strong> 본인이 각 명령의 정상 결과를 확인한 뒤 다음 명령으로 이동합니다. 재개할 때는 자신의 기록에서 이미 완료한 작업을 확인하고 불필요한 호출을 반복하지 않습니다.</p>
+<p class="note warning"><strong>이 세 명령은 실제 업로드·모델 호출을 수행하며 비용이 발생할 수 있습니다.</strong> 본인이 각 명령의 정상 결과를 확인한 뒤 다음 명령으로 이동합니다. 재개할 때는 저장된 receipt에서 이미 완료한 작업을 확인하고 불필요한 호출을 반복하지 않습니다.</p>
 <h4 id="agent-smoke">1. 모델이 실제로 응답하는지 확인합니다</h4>
 <p><code>smoke</code>는 짧은 동작 확인입니다.</p>
 <p>먼저 배포 TPM을 포함한 <a href="#resources-preflight">02의 런타임 검사</a>를 통과해야 합니다. 짧은 응답 한 번의 성공만으로 전체 평가에 필요한 처리량을 확보했다고 판단하지 않습니다.</p>
@@ -2086,7 +2070,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </code></pre>
-<p>이 명령은 <code>prompts/baseline.txt</code>의 지침과 방금 확인한 정책 도구로 <strong><code>lab-ko-iq</code> 버전 <code>1</code></strong>을 만듭니다. 출력의 <code>agent_name</code>, <code>version</code>, <code>receipt</code>를 기록합니다. <strong>Receipt는 실행 결과를 저장한 기록 파일</strong>입니다. 같은 소유 환경·동일 구성이면 기존 v1을 재사용하며, 다른 Agent를 인수하거나 v3를 만들지 않습니다.</p>
+<p>이 명령은 <code>prompts/baseline.txt</code>의 지침과 방금 확인한 정책 도구로 <strong><code>lab-ko-iq</code> 버전 <code>1</code></strong>을 만듭니다. 출력의 <code>agent_name</code>, <code>version</code>, <code>receipt</code>를 확인합니다. <strong>Receipt는 실행 결과를 저장한 기록 파일</strong>이라 Agent 이름과 버전을 나중에도 읽을 수 있습니다. 같은 소유 환경·동일 구성이면 기존 v1을 재사용하며, 다른 Agent를 인수하거나 v3를 만들지 않습니다.</p>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: Agent 구성과 고정 버전</summary>
 <h4 id="agent-code-portal">코드 ↔ 포털 · Agent의 전체 구성을 확인합니다</h4>
@@ -2365,7 +2349,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -c &quot;import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); print('rows =',len(p.read_text(encoding='utf-8').splitlines())); print('sha256 =',hashlib.sha256(p.read_bytes()).hexdigest())&quot;
 </code></pre>
-<p><code>rows = 12</code>와 SHA-256 값을 개인 메모에 기록합니다. <strong>SHA-256(해시)은 파일 내용의 지문</strong>으로, 이후에도 같은 파일인지 확인하는 값입니다. 외우거나 직접 입력할 필요 없이 출력된 값을 복사해 둡니다.</p>
+<p><code>rows = 12</code>를 확인하고 SHA-256 값을 눈여겨봅니다. <strong>SHA-256(해시)은 파일 내용의 지문</strong>으로, 이후에도 같은 파일인지 확인하는 값입니다. 외우거나 직접 입력할 필요 없이, 이 명령을 다시 실행하면 언제든 같은 값을 확인할 수 있습니다.</p>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: 로컬 파일 확인과 포털 등록의 차이</summary>
 <h4 id="dataset-code-portal">코드 ↔ 포털 · 파일 확인과 등록을 구분합니다</h4>
@@ -2392,7 +2376,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">명령의 실제 코드</span><code>hashlib.sha256(p.read_bytes()).hexdigest()</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>파일 바이트의 지문을 계산합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>포털에 SHA-256 확인란이 없으면 자신의 <code>notes.md</code>로 비교 조건을 보존합니다. 화면에 없는 해시를 확인했다고 표시하지 않습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>포털에 SHA-256 확인란이 없으면 필요할 때 위 명령을 다시 실행해 비교합니다. 화면에 없는 해시를 확인했다고 표시하지 않습니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">명령의 실제 코드</span>이후 포털의 Upload/Existing dataset</td>
@@ -2411,14 +2395,14 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <li>대상 유형 <strong>Agent</strong>에서 <strong><code>lab-ko-iq</code></strong>, 버전 <strong>1</strong>을 선택합니다. <strong>Pin currently latest</strong>는 최신 버전이 실제로 1일 때만 사용합니다. 버전을 바꾼 뒤 대상 체크가 풀렸다면 다시 체크하고 <strong>대상 한 개</strong>인지 확인합니다.</li>
 <li><strong>Individual turns(질문별 응답 평가)</strong>, <strong>One time(일회성 실행)</strong>을 선택합니다. 새 질문을 생성하는 Synthetic data는 선택하지 않습니다.</li>
 <li><strong>Upload new dataset → Browse</strong>에서 확인한 <code>dev.jsonl</code>을 고릅니다. Codespaces 사용자는 <strong>방금 내 PC에 다운로드한 파일</strong>, 로컬 사용자는 실습 폴더의 <code>data/optimizer/dev.jsonl</code>입니다. 이름은 <strong><code>lab-ko-dev12</code></strong>, 첫 버전은 <strong><code>1</code></strong>로 지정하고 등록 완료를 기다립니다. 이미 등록되어 있으면 <strong>Existing dataset</strong>에서 같은 이름·버전을 선택합니다.</li>
-<li><code>query</code>, <code>context</code>, <code>ground_truth</code> 열을 확인합니다. <strong>5행 미리 보기는 전체 건수가 아닙니다.</strong> 원본은 12행이며, 데이터셋 이름·버전을 메모한 뒤 같은 생성 화면에서 05로 이어갑니다.</li>
+<li><code>query</code>, <code>context</code>, <code>ground_truth</code> 열을 확인합니다. <strong>5행 미리 보기는 전체 건수가 아닙니다.</strong> 원본은 12행이며, 데이터셋 이름·버전을 확인한 뒤 같은 생성 화면에서 05로 이어갑니다.</li>
 </ol>
 <figure class="portal-shot" id="portal-evaluation-dataset">
 <img src="../../web/assets/portal/15-evaluation-dataset.png" alt="Microsoft Foundry 평가의 데이터셋 선택과 query·context·ground_truth 열 미리 보기입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>한국어 데이터셋을 선택합니다.</strong> 등록 이름·버전을 원본과 대조하고 query·context·ground_truth 열을 확인합니다. 5행 미리 보기를 전체 건수로 해석하지 않으며 원본은 12행이어야 합니다. <a href="../../web/assets/portal/15-evaluation-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<p class="completion-check"><strong>완료 기준:</strong> 명시적 v1과 변경 없는 12행 데이터셋을 선택하고 건수·버전·해시를 기록했습니다. <a href="data-guide.html#schema">데이터 계약</a>.</p>
+<p class="completion-check"><strong>완료 기준:</strong> 명시적 v1과 변경 없는 12행 데이터셋을 선택하고 건수·버전·해시를 확인했습니다. <a href="data-guide.html#schema">데이터 계약</a>.</p>
 <p class="step-next no-print"><a href="#prepare" data-next-step>다음: 05. 평가 기준 선택 →</a></p>
 
 <h2 id="prepare">05. 평가 기준을 선택합니다</h2>
@@ -2585,7 +2569,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>이 단계에서 하는 일:</strong> 고정된 v1의 실제 답변을 생성하고 관리형 평가 점수·이유를 수집합니다.</p>
 <p><strong>중요한 이유:</strong> 이후 후보와 비교할 출발점이 필요합니다. Completed는 처리가 끝났다는 뜻이지 모든 답변이 정확하다는 뜻은 아닙니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Foundry에서 검토 후 한 번 제출하고 전체 12건을 확인합니다. 터미널의 읽기 전용 조회로 실제 evaluation ID와 run ID를 기록합니다.</p>
+<p><strong>진행 방법·위치:</strong> Microsoft Foundry에서 검토 후 한 번 제출하고 전체 12건을 확인합니다. 터미널의 읽기 전용 조회로 실제 evaluation ID와 run ID를 가져옵니다.</p>
 </div>
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#baseline-submit">Microsoft Foundry · 검토·제출</a> → <a href="#baseline-results">12건·완료 상태 확인</a> → <a href="#baseline-identifiers">터미널 · ID 조회</a>.</p>
@@ -2595,7 +2579,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <h3 id="baseline-submit">Microsoft Foundry에서 검토하고 한 번 제출합니다</h3>
 <ol>
 <li><strong>Review</strong>에서 <strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 확인합니다.</li>
-<li>평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>, run 이름을 지정할 수 있으면 <strong><code>baseline-v1</code></strong>로 입력합니다. 다른 이름을 선택했다면 <code>notes.md</code>에 기록하고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.</li>
+<li>평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>, run 이름을 지정할 수 있으면 <strong><code>baseline-v1</code></strong>로 입력합니다. 다른 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.</li>
 <li>아직 실행하지 않은 승인된 작업만 <strong>Submit</strong>으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 <strong>Completed와 결과 12건</strong>을 확인해야 실행 완료입니다.</li>
 </ol>
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -2627,17 +2611,17 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </tr>
 </tbody>
 </table>
-<p>30분 또는 승인한 대기 한도 중 짧은 시간이 지나도 끝나지 않으면 현재 상태·run ID·오류를 기록하고 <a href="troubleshooting.html#evaluation-resume">평가 재개 절차</a>를 확인합니다. 이는 상태를 점검할 시점이지 서비스의 완료 보장 시간이 아닙니다. 기다림을 중단해도 원격 작업은 자동 취소되지 않습니다.</p>
+<p>30분 또는 승인한 대기 한도 중 짧은 시간이 지나도 끝나지 않으면 현재 상태·run ID·오류를 확인한 뒤 <a href="troubleshooting.html#evaluation-resume">평가 재개 절차</a>를 따릅니다. 이는 상태를 점검할 시점이지 서비스의 완료 보장 시간이 아닙니다. 기다림을 중단해도 원격 작업은 자동 취소되지 않습니다.</p>
 <h3 id="baseline-identifiers">터미널에서 실제 evaluation ID와 run ID를 조회합니다</h3>
 <p>다음 <strong>읽기 전용 명령</strong>으로 이름이 같은 평가의 실제 ID·run 목록을 확인합니다. 이름이 다르면 <code>--name</code>을 자신이 입력한 정확한 이름으로 바꿉니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 </code></pre>
-<p>같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 <strong>두 ID를 따로 기록</strong>합니다. 이 명령은 새 평가를 제출하지 않습니다.</p>
+<p>같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 <strong>두 ID는 따로 구분</strong>해 둡니다. 09에서 사용하며, 이 명령을 다시 실행하면 언제든 같은 값을 읽을 수 있습니다. 이 명령은 새 평가를 제출하지 않습니다.</p>
 <table>
 <thead>
 <tr>
-<th>기록할 값</th>
+<th>값</th>
 <th>선택 기준</th>
 <th>09에서 사용할 자리</th>
 </tr>
@@ -2681,7 +2665,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작·코드</span><code>run.id</code>, <code>target.version</code>, <code>result_counts</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>실제 v1 run ID, 완료 상태, 전체 12건·오류 수를 기록합니다. 결과의 질과 실행 완료는 다른 값입니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>실제 v1 run ID, 완료 상태, 전체 12건·오류 수를 읽습니다. 결과의 질과 실행 완료는 다른 값입니다.</td>
 </tr>
 </tbody>
 </table>
@@ -2717,7 +2701,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </code></pre>
 </details>
 </details>
-<p class="completion-check"><strong>완료 기준:</strong> 실제 Microsoft Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 기록합니다. 실패·부분 실행을 그대로 보존하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> 실제 Microsoft Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 확인합니다. 실패·부분 실행을 그대로 보존하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.</p>
 <p class="step-next no-print"><a href="#analyze" data-next-step>다음: 07. 점수와 이유 읽기 →</a></p>
 
 <h2 id="analyze">07. 점수와 이유를 읽습니다</h2>
@@ -2725,7 +2709,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <div class="lab-concept" data-learning-frame="analyze">
 <p><strong>이 단계에서 하는 일:</strong> 점수 뒤의 실제 답변과 평가 이유를 정책 근거에 연결합니다.</p>
 <p><strong>중요한 이유:</strong> 평균만 보면 특정 날짜·인용·분류 오류가 가려집니다. 무엇이 잘못됐는지 설명해야 바꿀 지침도 정할 수 있습니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Foundry의 상세 지표·User view와 원본 정책을 나란히 읽고 notes.md에 개선 가설과 유지할 행동을 기록합니다.</p>
+<p><strong>진행 방법·위치:</strong> Microsoft Foundry의 상세 지표·User view와 원본 정책을 나란히 읽은 뒤 개선 가설과 유지할 행동을 짧은 학습 노트로 정리합니다.</p>
 </div>
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#analysis-details">Microsoft Foundry · 답변·이유 확인</a> → <a href="#analysis-notes">편집기 · 개선 가설 기록</a>. 별도 모델 호출은 하지 않습니다.</p>
@@ -2745,7 +2729,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: JSON 응답 형식과 채점 결과</summary>
 <h4 id="analysis-code-portal">코드 ↔ 포털 · 응답 구조와 품질을 함께 읽습니다</h4>
-<p class="execution-guide"><strong>실행 위치:</strong> <a href="#analysis-details">위의 Microsoft Foundry 결과 확인</a> 후 <a href="#analysis-notes">아래의 기록표</a>를 채웁니다. <strong>이 단계에는 별도 터미널 명령이나 로컬 채점이 없습니다.</strong></p>
+<p class="execution-guide"><strong>실행 위치:</strong> <a href="#analysis-details">위의 Microsoft Foundry 결과 확인</a> 후 <a href="#analysis-notes">아래의 학습 노트</a>를 작성합니다. <strong>이 단계에는 별도 터미널 명령이나 로컬 채점이 없습니다.</strong></p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -2856,7 +2840,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 
 <p>날짜 경계 오류, 불필요한 가정, 정책 ID 대신 숫자 검색 ID, 사람 검토 분류 오류, 실행 완료 주장과 근거 없는 확신을 확인합니다. 정직한 불확실성을 높은 점수를 위한 허위 사실로 바꾸지 않습니다.</p>
 <h3 id="analysis-notes">편집기에서 개선 가설과 유지할 행동을 기록합니다</h3>
-<p>02에서 만든 <strong><code>.lab/lab-ko/notes.md</code></strong>를 편집기로 열고 다음 표를 자신의 결과로 채웁니다. 01–06의 기록에 분석을 이어서 적습니다. 원본 응답·이유는 별도로 보관하고 표에는 해당 run·행과 짧은 관측을 남깁니다.</p>
+<p>다음 표를 바탕으로 짧은 학습 노트를 작성합니다. 편집기에서 <strong><code>.lab/lab-ko/notes.md</code></strong>로 저장하는 것은 선택 사항이며(<code>.md</code>는 일반 텍스트 메모 파일입니다), 어떤 비공개 파일이든 괜찮고 실습 프로그램은 이 파일을 읽지 않습니다. 원본 응답·이유는 포털에 두고 노트에는 해당 run·행과 짧은 관측을 남깁니다. 비밀번호·토큰은 적지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -2970,7 +2954,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <tbody>
 <tr>
 <td>실행 중</td>
-<td>같은 job을 확인하며 기다립니다. 새로 제출하지 않습니다. 60분 또는 승인한 대기 한도 중 짧은 시간이 지나면 상태·job ID를 기록하고 <a href="troubleshooting.html#optimizer">재개 절차</a>를 따릅니다.</td>
+<td>같은 job을 확인하며 기다립니다. 새로 제출하지 않습니다. 60분 또는 승인한 대기 한도 중 짧은 시간이 지나면 상태·job ID를 확인하고 <a href="troubleshooting.html#optimizer">재개 절차</a>를 따릅니다.</td>
 </tr>
 <tr>
 <td>Completed / Succeeded</td>
@@ -2986,7 +2970,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <p><strong>비용·대기:</strong> 작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
 <img src="../../web/assets/portal/09-optimizer-results.png" alt="Agent Optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 기준선과 후보의 평가기별 점수를 비교하고 지침 변경 내용을 검토합니다. 타당한 개선 후보가 없으면 v1을 유지하고 그 이유를 기록합니다. <a href="../../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 기준선과 후보의 평가기별 점수를 비교하고 지침 변경 내용을 검토합니다. 타당한 개선 후보가 없으면 v1을 유지하고 그 이유를 10의 마무리 노트에 남깁니다. <a href="../../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <figure class="portal-shot" id="portal-optimizer-diff">
@@ -3005,7 +2989,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <li><strong>내용:</strong> 지침 전체만 넣습니다. diff(변경 비교)의 <code>+</code>·<code>-</code> 표시, 화면 설명, 평가 점수는 넣지 않습니다.</li>
 </ul>
 </li>
-<li>실제 job/candidate ID와 직접 수정한 부분·이유를 <code>notes.md</code>에 기록합니다. 다음 단계에는 이 파일을 사용하고 저장소의 <code>prompts/candidate.txt</code>로 대체하지 않습니다.</li>
+<li>지침을 직접 수정했다면 바꾼 부분과 이유를 적어 둡니다(학습 노트를 쓴다면 거기에). 다음 단계에는 이 파일을 사용하고 저장소의 <code>prompts/candidate.txt</code>로 대체하지 않습니다.</li>
 </ol>
 <p class="note warning"><strong>이 실습에서는 Promote candidate를 누르지 않습니다.</strong> 09의 CLI가 본인의 소유권 기록과 고정 구성을 확인하며 v2를 한 번 생성합니다. 포털에서 먼저 승격하면 이 경로의 소유권 확인이 맞지 않을 수 있습니다. v3·v4 등 정식 버전을 계속 만들지 않으며 새 버전 생성과 운영용 게시·활성화 승인은 구분합니다.</p>
 <p class="share-checkpoint" id="share-optimizer"><strong>공유:</strong> 검토한 후보를 제시하고 달라진 지침 행동과 개선·회귀 가능성을 설명합니다.</p>
@@ -3046,7 +3030,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </table>
 <p>최적화는 Microsoft Foundry 서비스에서 실행됩니다. 여기서 검토·저장한 지침 전체를 09의 명령에 입력으로 사용합니다.</p>
 </details>
-<p class="completion-check"><strong>완료 기준:</strong> 실제 job/candidate ID, 검토한 지침 파일과 변경 이유를 기록합니다. 유지할 후보가 없거나 전체 지침을 확보하지 못했다면 <strong>v1 유지와 구체적인 이유</strong>를 기록하고 10으로 이동합니다. 09를 수행하지 않았다면 별도 재평가도 미실행으로 기록합니다. 개선을 만들기 위해 같은 작업을 반복하지 않습니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> 실제 job과 후보를 검토했고 전체 지침 파일을 저장했으며 각 변경의 이유를 설명할 수 있습니다. 유지할 후보가 없거나 전체 지침을 확보하지 못했다면 <strong>구체적인 이유와 함께 v1을 유지</strong>하고, 그 이유를 적을 10의 마무리 노트로 이동합니다. 09를 수행하지 않았다면 그 노트에 별도 재평가를 하지 않았다고 함께 적습니다. 개선을 만들기 위해 같은 작업을 반복하지 않습니다.</p>
 <p class="step-next no-print"><a href="#decision" data-next-step>검토한 후보 있음: 09 재평가 →</a> <a href="#cleanup">후보 없음: 10 정리 →</a></p>
 
 <h2 id="decision">09. 재평가하고 v1/v2를 비교합니다</h2>
@@ -3340,7 +3324,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <figcaption><strong>비교 방향과 결과를 함께 확인합니다.</strong> Baseline을 v1으로 선택하고 두 run의 점수·통과 건수·통계 결과를 비교합니다. Inconclusive는 차이가 입증되지 않았다는 뜻이며 동등성의 증거로 해석하지 않습니다. <a href="../../web/assets/portal/20-evaluation-comparison.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-<p>다음 순서로 확인한 뒤 아래 기록표를 채웁니다.</p>
+<p>다음 순서로 확인한 뒤 아래 비교 표를 채웁니다.</p>
 <ol>
 <li><strong>비교 가능한 결과인지 확인합니다.</strong> 같은 질문·모델·도구·평가기 조건의 12건 전체가 있어야 합니다. 오류·누락·조건 차이가 있으면 판단을 보류합니다.</li>
 <li><strong>응답과 품질을 비교합니다.</strong> 12건의 응답·점수·이유를 나란히 읽고 사실·분류·응답 형식을 확인합니다. <strong>두 기준 모두 통과한 건수, 각 지표의 통과 건수와 평균이 모두 유지되거나 올라가고, 그중 하나 이상이 실제로 개선</strong>되어야 합니다. 한 지표의 상승으로 다른 지표의 하락을 상쇄하지 않습니다. 범용 평가를 통과했어도 실제 정책 오류가 있으면 채택하지 않습니다.</li>
@@ -3348,7 +3332,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 </ol>
 <p class="share-checkpoint" id="share-optimized"><strong>결과 설명:</strong> 실제 개선, 같은 평가 기준, 회귀와 남은 불확실성을 설명합니다. 관측된 개선이 향후 모든 확률적 실행의 개선을 보장하지는 않습니다.</p>
 
-<p>다음 표를 <code>notes.md</code>에 복사하여 자신의 결과로 채웁니다. <strong>빈칸은 예시 점수가 아니라 직접 기록할 자리</strong>입니다. 통과 건수의 분모는 항상 <strong>12</strong>이며, <strong>두 기준 모두 통과</strong>는 한 답변이 Relevance 4 이상과 TaskAdherence 1을 동시에 만족한 경우입니다.</p>
+<p>다음 표를 자신의 결과로 채웁니다. 학습 노트(예: <code>.lab/lab-ko/notes.md</code>)에 복사해 두는 것은 선택 사항입니다. <strong>빈칸은 예시 점수가 아니라 직접 기록할 자리</strong>입니다. 통과 건수의 분모는 항상 <strong>12</strong>이며, <strong>두 기준 모두 통과</strong>는 한 답변이 Relevance 4 이상과 TaskAdherence 1을 동시에 만족한 경우입니다.</p>
 <div class="worked-comparison">
 <table>
 <thead>
@@ -3430,7 +3414,7 @@ Optimizer job ID / candidate ID / 지침 파일: 미실행
 <p><strong>브라우저 종료·Agent 삭제·<code>cleanup</code> 실행만으로 리소스 그룹 전체의 과금이 멈추지는 않습니다.</strong></p>
 <h3 id="cleanup-records">삭제 전에 기록을 보관합니다</h3>
 <ol>
-<li><code>notes.md</code>에 실제 프로젝트·Agent·데이터셋 버전·해시, 평가/run/job ID와 최종 판단을 남깁니다.</li>
+<li><code>.lab/lab-ko/notes.md</code>(또는 원하는 비공개 파일)에 프로젝트·Agent 이름, 데이터셋 버전·해시, 평가/run/job ID, v1/v2 비교와 최종 판단을 짧은 마무리 노트로 남깁니다. 비밀번호·토큰은 적지 않습니다.</li>
 <li>평가·Optimizer 화면에서 제공하는 <strong>Download/Export</strong>로 결과를 받습니다. 메뉴가 없으면 실제 질문·응답·점수·이유와 후보 지침을 비공개 기록에 복사해 보관하고, 확보하지 못한 항목을 명시합니다. <strong>ID 목록만으로 상세 결과 보관을 대신하지 않습니다.</strong> 받은 파일이 로컬에서 열리는지 확인한 뒤 삭제로 넘어갑니다.</li>
 <li><code>.lab/lab-ko/</code>의 계획·manifest·승인·실행 기록을 조직이 허용한 비공개 위치에 보관합니다. 인증 정보·쿠키·서명된 URL·계정 정보가 있는 원본을 Git에 올리지 않습니다. 공개용 기록에는 필요한 합성 사례·점수·이유만 남깁니다.</li>
 <li>Evaluations와 Optimization runs에서 실행 중인 작업을 확인합니다. 지원되는 <strong>Cancel</strong>을 사용하고 종료 상태를 확인합니다. 종료되지 않은 작업의 ID·상태와 후속 확인 계획을 기록하며 취소 요청만으로 종료됐다고 표시하지 않습니다.</li>

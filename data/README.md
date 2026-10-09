@@ -1,6 +1,6 @@
 # 합성 한국어 평가 데이터 {#data-guide}
 
-[데이터셋 단계](../guide/handbook.md#start) · [실습 기록표](../guide/admin-setup.md#handoff) · [English data guide](README.en.md)
+[데이터셋 단계](../guide/handbook.md#start) · [선택 기록표](../guide/admin-setup.md#handoff) · [English data guide](README.en.md)
 
 ## 비교에는 변경 없는 데이터셋 하나 {#start}
 

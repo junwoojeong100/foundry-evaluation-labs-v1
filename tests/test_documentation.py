@@ -440,7 +440,6 @@ class DocumentationTests(unittest.TestCase):
     def test_self_service_path_keeps_setup_records_and_all_execution_steps(self):
         for language in ("en", "ko"):
             source = self.source(language)
-            environment = "lab-" + language
             with self.subTest(language=language):
                 intro = source.split("## 01.", 1)[0]
                 self.assertIn(
@@ -448,7 +447,6 @@ class DocumentationTests(unittest.TestCase):
                     intro,
                 )
                 provisioning = source.split("{#resources}", 1)[1].split("## 03.", 1)[0]
-                self.assertIn(f".lab/{environment}/notes.md", provisioning)
                 self.assertIn("admin-setup.md#handoff", provisioning)
                 for command in (
                     "bootstrap plan", "bootstrap preflight", "bootstrap apply", "bootstrap status",
@@ -463,6 +461,31 @@ class DocumentationTests(unittest.TestCase):
                 cleanup = source.split("{#cleanup}", 1)[1]
                 self.assertIn("default path" if language == "en" else "기본 경로", cleanup)
                 self.assertIn("separate option" if language == "en" else "별도 선택 사항", cleanup)
+
+    def test_notes_file_is_optional_and_requested_only_in_the_conclusion_steps(self):
+        for language in ("en", "ko"):
+            source = self.source(language)
+            with self.subTest(language=language):
+                template_field = (
+                    "Last completed step / verification time" if language == "en"
+                    else "마지막 완료 단계 / 확인 시각"
+                )
+                self.assertNotIn(template_field, source)
+                parts = re.split(r"^## (\d\d)\. ", source, flags=re.MULTILINE)
+                steps = dict(zip(parts[1::2], parts[2::2]))
+                self.assertEqual(
+                    [number for number, text in steps.items() if "notes.md" in text],
+                    ["02", "07", "09", "10"],
+                )
+                notes_paragraph = next(
+                    paragraph for paragraph in steps["02"].split("\n\n") if "notes.md" in paragraph
+                )
+                self.assertIn("**optional**" if language == "en" else "**선택 사항**", notes_paragraph)
+                for number in ("07", "09", "10"):
+                    self.assertIn(f".lab/lab-{language}/notes.md", steps[number])
+                resume = steps["01"].split("{#setup-resume}", 1)[1].split("</details>", 1)[0]
+                for anchor in ("#resources-status", "#baseline-identifiers", "#decision-run"):
+                    self.assertIn(anchor, resume)
 
     def test_setup_reference_documents_participant_authorization_and_registration(self):
         for language in ("en", "ko"):

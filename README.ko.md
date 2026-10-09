@@ -18,7 +18,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 
 가이드에서는 **실행 순서 → 명령·포털 조작 → 완료 기준**을 따라갑니다. **04–06은 같은 평가 생성 화면**에서 이어지며, **선택 · 내부 동작**의 읽기 전용 구현 코드는 실행하지 않습니다. 환경 설정 참고와 체크리스트는 같은 실습을 돕는 자료이며 모든 참여자가 직접 수행합니다. 명령·설명은 JavaScript 없이도 읽을 수 있습니다.
 
-재개할 때는 [재개 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-resume)를 확인하고 완료한 작업을 다시 생성·제출하지 않습니다. 본문의 [실습 기록 양식](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-notes)과 [v1/v2 비교 기록표](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#decision-compare)에 자신의 결과를 남깁니다.
+재개할 때는 [재개 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-resume)를 확인하고 완료한 작업을 다시 생성·제출하지 않습니다. 메모는 선택 사항입니다. 남긴다면 본문의 [학습 노트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#analysis-notes), [v1/v2 비교](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#decision-compare), [마무리 노트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#cleanup-records)에서 짧게 적습니다.
 
 ## 고정된 모델 역할과 비교 조건
 

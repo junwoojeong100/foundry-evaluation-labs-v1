@@ -1,6 +1,6 @@
 # Lab checklist · improve the measured result {#facilitator-guide}
 
-[Ten lab steps](handbook.md#setup) · [Environment and result worksheet](admin-setup.md#handoff) · [Troubleshooting](troubleshooting.md)
+[Ten lab steps](handbook.md#setup) · [Optional worksheet](admin-setup.md#handoff) · [Troubleshooting](troubleshooting.md)
 
 Use this checklist to review your own **evaluate → learn → improve → reevaluate** lab. It is not an alternative to the [hands-on guide](handbook.md#setup). Do not manufacture a weak baseline or promise that every future evaluation will improve.
 
@@ -10,7 +10,7 @@ Use this checklist to review your own **evaluate → learn → improve → reeva
 
 The default path is [GitHub Codespaces in 01](handbook.md#setup-codespaces). Follow [local installation](handbook.md#setup-local-install) and [version checks](handbook.md#setup-verify) only when installing **Python 3.11–3.14, Git, and Microsoft Azure CLI** on your computer. Confirm sign-in and the virtual environment in your selected lab environment.
 
-After planning in 02, copy the [template in the main guide](handbook.md#resources-notes) into your `notes.md`. Add actual values and completion evidence at each step. Never use another person's configuration, sign-in, or ownership records. In a new terminal, follow the [resume procedure](handbook.md#setup-resume) to continue with the same environment and records.
+Notes are optional. If you keep any, write them briefly in [07](handbook.md#analysis-notes), [09](handbook.md#decision-compare), and [10](handbook.md#cleanup-records); see [where the lab keeps its records](handbook.md#resources-notes). Never use another person's configuration, sign-in, or ownership records. In a new terminal, follow the [resume procedure](handbook.md#setup-resume) to continue with the same environment and records.
 
 Read the [six basic terms](handbook.md#basics) and [question → answer → scoring diagram](handbook.md#evaluation-flow). Check that you can explain **the Agent answers and the Judge scores**, and **instructions, not model weights, will change**. Memorized terms and high scores are not starting conditions.
 
@@ -32,7 +32,7 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 | [02 Provisioning](handbook.md#resources) | Complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
-| [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Record the unsubmitted wizard settings and query-only input |
+| [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Confirm the unsubmitted wizard settings and query-only input |
 | [06 Baseline](handbook.md#baseline) | Microsoft Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | [07 Analysis](handbook.md#analyze) | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
 | [08 Optimization](handbook.md#optimize) | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |

@@ -72,7 +72,7 @@
 <li><a href="#approval">실제 승인에 맞춰 승인서를 작성합니다</a></li>
 <li><a href="#rbac">권한과 공급자 등록을 확인합니다</a></li>
 <li><a href="#cost">비용과 운영 경계를 정합니다</a></li>
-<li><a href="#handoff">실제 값과 완료 근거를 기록합니다</a></li>
+<li><a href="#handoff">실제 값과 완료 근거를 적는 선택 기록표</a></li>
 <li><a href="#cleanup">삭제와 보존을 확인합니다</a></li>
 </ul>
 </div>
@@ -124,7 +124,7 @@
       <article id="guide-start" class="guide-content" lang="ko" aria-label="환경 설정 참고 · 권한·승인·정리">
         <h1 id="operator-guide">환경 설정 참고 · 권한·승인·정리</h1>
 <p><a href="index.html#setup">처음부터 진행하는 10단계</a> · <a href="facilitator.html#prepare">실습 체크리스트</a> · <a href="troubleshooting.html">문제 해결</a></p>
-<p>이 문서는 <strong>본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리</strong>의 설정 참고 자료입니다. <a href="index.html#setup">실습 가이드</a>를 순서대로 진행하면서 필요한 절만 엽니다. 실제 값과 완료 상태는 자신의 <code>.lab/lab-ko/notes.md</code>에 기록합니다.</p>
+<p>이 문서는 <strong>본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리</strong>의 설정 참고 자료입니다. <a href="index.html#setup">실습 가이드</a>를 순서대로 진행하면서 필요한 절만 엽니다. 메모는 선택 사항이며 07·09·10에서만 짧게 남깁니다(<a href="index.html#resources-notes">기록이 저장되는 곳</a> 참고).</p>
 <p class="execution-guide"><strong>실행 명령 바로가기:</strong> <a href="index.html#setup-codespaces">Codespaces 준비</a> · <a href="index.html#setup-login">CLI 로그인</a> · <a href="index.html#resources-quickstart">빠른 환경 생성</a> · <a href="index.html#agent-knowledge">정책·Agent 준비</a> · <a href="index.html#baseline-identifiers">평가 ID 조회</a> · <a href="index.html#decision-run">재평가</a> · <a href="index.html#cleanup-delete">그룹 삭제·확인</a>. 모든 명령은 선택한 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.</p>
 <p>명령을 바꾸지 않고 안쪽 동작을 읽으려면 <a href="index.html#resources-code-portal">02 생성 코드·포털</a>, <a href="index.html#knowledge-code-portal">03 검색 코드·포털</a>, <a href="index.html#agent-code-portal">Agent 구성</a>, <a href="index.html#decision-code-portal">09 제출·조회</a>, <a href="index.html#cleanup-code-portal">10 정리 범위</a>를 엽니다. 함수 원문은 읽기용이며 별도 실행이나 포털 중복 생성 지시가 아닙니다.</p>
 <h2 id="start">자신의 전용 실습 환경을 준비합니다</h2>
@@ -142,7 +142,7 @@
 </tr>
 <tr>
 <td>본인의 같은 실습을 재개합니다.</td>
-<td>원래 config·manifest·receipt와 실제 상태를 <a href="#handoff">기록표</a>로 대조합니다. 완료한 생성·제출을 반복하지 않습니다.</td>
+<td><a href="index.html#setup-resume">읽기 전용 재개 확인</a>으로 원래 config·manifest·receipt와 실제 상태를 대조합니다. 같은 근거를 원하면 <a href="#handoff">선택 기록표</a>에 항목이 정리되어 있습니다. 완료한 생성·제출을 반복하지 않습니다.</td>
 </tr>
 <tr>
 <td>다른 업무의 공유 프로젝트만 있습니다.</td>
@@ -153,7 +153,7 @@
 <p>CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본인 신원으로 진행합니다. 다른 사람의 토큰·로그인 세션·설정·소유권 기록을 사용하지 않습니다. 생성부터 ID 조회·v2 생성·재평가·정리까지 본인이 실행합니다.</p>
 <p><strong>모든 실습 참여자는 자신의 전용 환경과 Agent를 사용합니다.</strong> 여러 사람이 같은 Agent의 v2를 만들거나 같은 유료 작업을 제출하는 경로는 사용하지 않습니다. 각 PC에서 같은 예시 환경 이름을 써도 생성되는 Microsoft Azure 자원 이름에는 고유 suffix가 붙습니다.</p>
 <p>권한·비용 승인은 생략할 수 없는 시작 조건입니다. 부족하면 조직 절차에 따라 본인에게 허용된 범위를 확보합니다. 이것은 이후 실습을 다른 사람에게 맡기는 별도 경로가 아닙니다.</p>
-<p>기본 Agent 이름은 한국어 <strong><code>lab-ko-iq</code></strong>, 영어 <strong><code>lab-en-iq</code></strong>입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 기록표에 적습니다.</p>
+<p>기본 Agent 이름은 한국어 <strong><code>lab-ko-iq</code></strong>, 영어 <strong><code>lab-en-iq</code></strong>입니다. 환경 이름을 바꾼 경우 이후 모든 단계에서 CLI가 출력한 실제 이름을 사용합니다.</p>
 <h3 id="runtime-settings">언어·기록 설정은 프로그램이 읽습니다</h3>
 <p>기본 실습에는 환경 변수 입력이 없습니다. <code>bootstrap setup --environment lab-ko</code>는 한국어, <code>lab-en</code>은 영어를 계획에 저장하며 <code>lab-ko-02</code>·<code>lab-en-02</code>도 지원합니다. 생성된 <code>.env</code>의 <code>LAB_LANGUAGE</code>·<code>LAB_ARTIFACTS_DIR</code>를 이후 명령의 <code>--config</code>가 읽습니다. 상대 기록 경로는 설정 파일이 있는 폴더 기준입니다.</p>
 <p>이전 <code>.env</code>에 언어 항목이 없으면 <code>LAB_PREFIX</code>의 <code>lab-ko</code>·<code>lab-en</code> 규칙으로 판별하며 파일·계획 해시를 다시 쓰지 않습니다. 그 규칙에 해당하지 않는 기존 사용자 지정 환경과 설정 파일을 사용하지 않는 별도 도구만 기존 환경 변수·기본값을 유지합니다. 기본 실습에 해당 변수 설정을 추가할 필요는 없습니다.</p>
@@ -458,9 +458,9 @@
 </tr>
 </tbody>
 </table>
-<p>Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획을 기록표에 적습니다.</p>
-<h2 id="handoff">실제 값과 완료 근거를 기록합니다</h2>
-<p>02에서 생성 계획을 만든 뒤 다음 표를 자신의 <strong><code>.lab/lab-ko/notes.md</code></strong>에 복사합니다. 아직 실행하지 않은 항목은 <strong>미실행</strong>으로 표시하고 각 단계가 끝날 때 실제 값으로 채웁니다. “준비됨”이라는 문장만으로 완료를 표시하지 않습니다.</p>
+<p>Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, <a href="#handoff">선택 기록표</a>에 적을 자리가 있습니다.</p>
+<h2 id="handoff">실제 값과 완료 근거를 적는 선택 기록표</h2>
+<p>이 기록표는 <strong>선택 사항</strong>이며 실습 프로그램이 읽지 않습니다. 조직이나 본인의 습관상 더 자세한 기록이 필요하면 다음 표를 자신의 메모(예: <code>.lab/lab-ko/notes.md</code>)에 복사하고 아직 실행하지 않은 항목은 <strong>미실행</strong>으로 표시한 뒤 각 단계가 끝날 때 실제 값으로 채웁니다. “준비됨”이라는 문장만으로 완료를 표시하지 않습니다.</p>
 <table>
 <thead>
 <tr>

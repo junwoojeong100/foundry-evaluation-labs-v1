@@ -18,7 +18,7 @@
 
 ## 사용 방법 {#start}
 
-오류 시각·단계·명령·대상 ID·오류 코드와 조치를 자신의 비공개 실습 기록에 남깁니다. 원본 응답·receipt를 보관하고 실패를 성공으로 고쳐 쓰지 않습니다. 실행별 검증 로그와 결과는 재사용 가이드에 추가하지 않습니다.
+오류 시각·단계·명령·대상 ID·오류 코드와 조치를 자신의 메모에 남깁니다. 원본 응답·receipt를 보관하고 실패를 성공으로 고쳐 쓰지 않습니다. 실행별 검증 로그와 결과는 재사용 가이드에 추가하지 않습니다.
 
 ## 환경·로그인·로컬 파일 {#environment}
 
@@ -35,7 +35,7 @@ Python·Git·Microsoft Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그
 | `.venv/bin/activate` 또는 `Activate.ps1`이 없습니다. | 저장소 폴더에서 가상환경을 먼저 만들고 자신의 OS에 맞는 [설치 순서](handbook.md#setup-local)를 따릅니다. | 같은 Python의 `python -m pip --version`과 `python -m lab --help`가 성공합니다. |
 | `ModuleNotFoundError`가 나옵니다. | 사용할 가상환경을 확인하고 그 Python으로 `python -m pip install -r requirements.lock`을 실행합니다. | 같은 환경에서 필요한 import와 데이터 검사가 성공합니다. |
 | PowerShell 활성화가 정책으로 차단됩니다. | 조직 정책을 바꾸지 않고 `.\.venv\Scripts\python.exe`로 명령을 실행합니다. | 정책 변경 없이 Python을 실행할 수 있습니다. |
-| 새 터미널을 열었더니 이전 설정이 적용되지 않습니다. | [재개 절차](handbook.md#setup-resume)로 기존 가상환경을 활성화하고 명령의 원래 `--config` 경로를 사용합니다. 언어·기록 변수 설정과 clone·plan·apply를 반복하지 않습니다. | 원래 신원과 `notes.md`의 마지막 완료 단계를 확인하고 같은 기록으로 이어갑니다. |
+| 새 터미널을 열었더니 이전 설정이 적용되지 않습니다. | [재개 절차](handbook.md#setup-resume)로 기존 가상환경을 활성화하고 명령의 원래 `--config` 경로를 사용합니다. 언어·기록 변수 설정과 clone·plan·apply를 반복하지 않습니다. | `az account show`로 원래 신원을, 읽기 전용 재개 확인으로 마지막 완료 단계를 확인하고 같은 기록으로 이어갑니다. |
 | `agents/`·`knowledge/` 실행 기록 파일을 찾을 수 없습니다. | [기록 폴더 안내](handbook.md#resources-notes)에 따라 해당 환경의 `artifacts/` 아래에서 찾습니다. `data/`·`scripts/`는 저장소 폴더 아래입니다. | 예시 경로가 아닌 자신의 언어·환경 기록을 엽니다. |
 | 포털과 CLI의 계정이 다릅니다. | 브라우저와 CLI는 별도 로그인입니다. [01의 로그인·조회 명령](handbook.md#setup-login)으로 사용자·tenant·subscription을 포털과 대조하고 본인 인증은 직접 완료합니다. | 승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다. |
 | `AzureCliCredential`의 tenant·subscription 동시 지정이 실패합니다. | tenant 일치를 먼저 확인한 뒤 credential에는 subscription을 지정하는 저장소 인증 경로를 사용합니다. | tenant 확인을 생략하지 않고 같은 구독으로 호출합니다. |
@@ -53,7 +53,7 @@ Python·Git·Microsoft Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그
 | `candidate.txt`를 만들었는데 찾을 수 없습니다. | 내 PC가 아니라 **실습 터미널과 같은 Codespace**의 `.lab` 아래에 저장했는지 [후보 저장 절차](handbook.md#optimizer-candidate)로 확인합니다. |
 | 사설망 자원에 연결할 수 없습니다. | Codespaces가 해당 VNet/VPN에 연결됐다고 가정하지 않습니다. 승인된 네트워크의 실행 환경을 사용하며 public access나 방화벽을 임의로 바꾸지 않습니다. |
 | 명령이 실행되는 동안 Codespace가 중지되거나 연결이 끊어졌습니다. | [내 Codespaces](https://github.com/codespaces)에서 다시 시작하고 **Terminal → New Terminal**을 연 뒤 [재개 절차](handbook.md#setup-resume)를 따릅니다. 먼저 상태를 조회합니다. 생성은 [`bootstrap status`](handbook.md#resources-status), 평가는 [`native-evals`](handbook.md#baseline-identifiers), 재평가는 [09의 재개 규칙](handbook.md#decision-run)을 사용합니다. `apply`를 반복하거나 이름을 바꿔 다시 제출하지 않습니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로 [`.lab/` 백업](handbook.md#cleanup-codespaces)을 보관합니다. |
-| 재개 또는 삭제할 Codespace를 모르겠습니다. | 원래 저장소·Codespace와 `notes.md`를 대조합니다. [백업·중지·삭제 순서](handbook.md#cleanup-codespaces)를 따르며 새 Codespace를 만들고 Microsoft Azure 자원까지 중복 생성하지 않습니다. |
+| 재개 또는 삭제할 Codespace를 모르겠습니다. | 원래 저장소·Codespace와 그 안의 `.lab/<환경 이름>/` 폴더를 대조합니다. [백업·중지·삭제 순서](handbook.md#cleanup-codespaces)를 따르며 새 Codespace를 만들고 Microsoft Azure 자원까지 중복 생성하지 않습니다. |
 
 ## 생성·승인·할당량 {#provisioning}
 

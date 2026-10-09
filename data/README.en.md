@@ -1,6 +1,6 @@
 # Synthetic English evaluation data {#data-guide}
 
-[Dataset step](../guide/en/handbook.md#start) · [Lab worksheet](../guide/en/admin-setup.md#handoff) · [Korean data guide](README.md)
+[Dataset step](../guide/en/handbook.md#start) · [Optional worksheet](../guide/en/admin-setup.md#handoff) · [Korean data guide](README.md)
 
 ## One unchanged dataset for the comparison {#start}
 

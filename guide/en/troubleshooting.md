@@ -18,7 +18,7 @@ Executable commands appear in **Run in your terminal** blocks. Use each step's *
 
 ## How to use this guide {#start}
 
-Keep timestamps, steps, commands, target IDs, error codes and actions in your private lab record. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.
+Keep timestamps, steps, commands, target IDs, error codes and actions in your own notes. Preserve original responses and receipts rather than editing failures into successes. Do not append run-specific validation logs or results to reusable guides.
 
 ## Environment, sign-in and local files {#environment}
 
@@ -35,7 +35,7 @@ Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before
 | `.venv/bin/activate` or `Activate.ps1` is missing | Create the virtual environment in the repository and follow the [OS-specific setup order](handbook.md#setup-local). | `python -m pip --version` and `python -m lab --help` work in the same environment. |
 | `ModuleNotFoundError` | Confirm the intended environment and run `python -m pip install -r requirements.lock` with its Python. | Required imports and dataset checks work in that environment. |
 | PowerShell activation is blocked by policy | Use `.\.venv\Scripts\python.exe` without changing organizational policy. | Python runs without a policy change. |
-| Previous settings are missing in a new terminal | Follow [resumption](handbook.md#setup-resume), activate the existing virtual environment, and keep the original `--config` path. Do not repeat language/record variables, clone, plan, or apply. | Confirm the original identity and last completed step in `notes.md`, then continue with the same records. |
+| Previous settings are missing in a new terminal | Follow [resumption](handbook.md#setup-resume), activate the existing virtual environment, and keep the original `--config` path. Do not repeat language/record variables, clone, plan, or apply. | Confirm the original identity with `az account show` and the last completed step with the read-only resume checks, then continue with the same records. |
 | Cannot find `agents/` or `knowledge/` execution records | Follow the [record-folder explanation](handbook.md#resources-notes) and look under that environment's `artifacts/`. `data/` and `scripts/` are under the repository folder instead. | Open your own language/environment's records, not an example path. |
 | Portal and CLI accounts differ | These are separate sign-ins. Compare user, tenant and subscription with the portal using [01's sign-in/query commands](handbook.md#setup-login); complete personal authentication yourself. | All three approved values match. Do not substitute another identity or copy tokens to bypass authentication. |
 | `AzureCliCredential` fails with both tenant and subscription | Use the repository authentication path: verify the tenant first, then specify the subscription on the credential. | Calls use the intended subscription without dropping tenant checks. |
@@ -53,7 +53,7 @@ Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before
 | `candidate.txt` exists but the command cannot find it | Use the [candidate-saving steps](handbook.md#optimizer-candidate) to verify it is under `.lab` in **the same codespace as the lab terminal**, not only on your computer. |
 | Private-network resources are unreachable | Do not assume Codespaces is connected to the required VNet/VPN. Use an approved network environment without disabling public-access restrictions or firewalls. |
 | The codespace stopped or disconnected while a command was running | Restart it from [your Codespaces](https://github.com/codespaces), open **Terminal → New Terminal**, and follow [resumption](handbook.md#setup-resume). Inspect state before acting: [`bootstrap status`](handbook.md#resources-status) for provisioning, [`native-evals`](handbook.md#baseline-identifiers) for evaluations, and the [09 resume rules](handbook.md#decision-run) for a reevaluation. Do not repeat `apply` or submit under a new name. A stopped codespace left unused is deleted after 30 days by default; keep a [backup of `.lab/`](handbook.md#cleanup-codespaces). |
-| Unsure which codespace to resume or delete | Match the original repository/codespace and `notes.md`. Follow [backup, stop, and deletion](handbook.md#cleanup-codespaces); do not create another codespace and duplicate Microsoft Azure provisioning. |
+| Unsure which codespace to resume or delete | Match the original repository/codespace and its `.lab/<environment>/` folder. Follow [backup, stop, and deletion](handbook.md#cleanup-codespaces); do not create another codespace and duplicate Microsoft Azure provisioning. |
 
 ## Provisioning, authorization and quota {#provisioning}
 

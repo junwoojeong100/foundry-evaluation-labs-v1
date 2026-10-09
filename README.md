@@ -18,7 +18,7 @@ Environment names select language and record location: `lab-en` and `lab-en-02` 
 
 In the guide, follow **Action order → commands/portal actions → completion criteria**. **04–06 continue in the same evaluation wizard**. Read-only code under **Optional · how it works** is not an instruction to execute it. Setup references and checklists support the same path; every participant completes it personally. Commands and explanations remain readable without JavaScript.
 
-When returning, use the [resume instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-resume) instead of recreating or resubmitting completed work. Save your results in the guide's [lab record](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#resources-notes) and [v1/v2 comparison worksheet](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#decision-compare).
+When returning, use the [resume instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-resume) instead of recreating or resubmitting completed work. Notes are optional; if you keep any, write them briefly in the guide's [learning note](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#analysis-notes), [v1/v2 comparison](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#decision-compare), and [closing note](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#cleanup-records).
 
 ## Fixed model roles and comparison conditions
 

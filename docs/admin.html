@@ -72,7 +72,7 @@
 <li><a href="#approval">Complete the actual authorization file</a></li>
 <li><a href="#rbac">Verify permissions and provider registration</a></li>
 <li><a href="#cost">Costs and operational boundaries</a></li>
-<li><a href="#handoff">Record actual values and completion evidence</a></li>
+<li><a href="#handoff">Optional worksheet for actual values and completion evidence</a></li>
 <li><a href="#cleanup">Verify deletion and retention</a></li>
 </ul>
 </div>
@@ -124,7 +124,7 @@
       <article id="guide-start" class="guide-content" lang="en" aria-label="Environment setup reference · access, authorization, and cleanup">
         <h1 id="operator-guide">Environment setup reference · access, authorization, and cleanup</h1>
 <p><a href="index.html#setup">Ten steps from the beginning</a> · <a href="facilitator.html#prepare">Lab checklist</a> · <a href="troubleshooting.html">Troubleshooting</a></p>
-<p>Use this reference for <strong>your own steps 02 provisioning, 03 Agent setup, and 10 cleanup</strong>. Follow the <a href="index.html#setup">hands-on guide</a> in order and open only the linked sections you need. Record actual values and completion evidence in your <code>.lab/lab-en/notes.md</code>.</p>
+<p>Use this reference for <strong>your own steps 02 provisioning, 03 Agent setup, and 10 cleanup</strong>. Follow the <a href="index.html#setup">hands-on guide</a> in order and open only the linked sections you need. Notes are optional; keep short ones only in 07, 09, and 10 (see <a href="index.html#resources-notes">where the lab keeps its records</a>).</p>
 <p class="execution-guide"><strong>Command shortcuts:</strong> <a href="index.html#setup-codespaces">Codespaces</a> · <a href="index.html#setup-login">CLI sign-in</a> · <a href="index.html#resources-quickstart">Quick provisioning</a> · <a href="index.html#agent-knowledge">Policies/Agent</a> · <a href="index.html#baseline-identifiers">Evaluation IDs</a> · <a href="index.html#decision-run">Reevaluation</a> · <a href="index.html#cleanup-delete">Group deletion/verification</a>. Run commands from your selected lab folder's terminal; do not repeat completed work.</p>
 <p>To read inside unchanged commands, open <a href="index.html#resources-code-portal">02 creation code/portal</a>, <a href="index.html#knowledge-code-portal">03 retrieval code/portal</a>, <a href="index.html#agent-code-portal">Agent configuration</a>, <a href="index.html#decision-code-portal">09 submission/lookup</a>, and <a href="index.html#cleanup-code-portal">10 cleanup scope</a>. Source panels are read-only, not instructions to run another program or duplicate creation in the portal.</p>
 <h2 id="start">Prepare your dedicated lab environment</h2>
@@ -142,7 +142,7 @@
 </tr>
 <tr>
 <td>Resuming your same lab</td>
-<td>Compare original config, manifest, receipts, and actual state with the <a href="#handoff">worksheet</a>. Do not repeat completed creation or submission.</td>
+<td>Use the <a href="index.html#setup-resume">read-only resume checks</a> to compare the original config, manifest, receipts, and actual state; the <a href="#handoff">optional worksheet</a> lists the same evidence if you want it. Do not repeat completed creation or submission.</td>
 </tr>
 <tr>
 <td>Only another workload's shared project is available</td>
@@ -153,7 +153,7 @@
 <p>Verify CLI, SDK, and portal identities separately and use the same personal identity throughout. Never use another person's tokens, sign-in session, configuration, or ownership records. Run creation, ID lookup, v2 creation, reevaluation, and cleanup yourself.</p>
 <p><strong>Every participant uses their own dedicated environment and Agent.</strong> Do not have several people create the same Agent's v2 or submit the same paid job. The same example environment name on separate computers still produces Microsoft Azure resource names with unique suffixes.</p>
 <p>Access and spending authorization are required starting conditions. Obtain an approved scope through organizational procedures if needed. This is not an alternative path where someone else performs the remaining exercises.</p>
-<p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI and record it in the worksheet.</p>
+<p>Default Agent names are <strong><code>lab-en-iq</code></strong> for English and <strong><code>lab-ko-iq</code></strong> for Korean. If the environment name changes, use the actual name returned by the CLI in every later step.</p>
 <h3 id="runtime-settings">The program reads language and record settings</h3>
 <p>The default lab requires no environment-variable commands. <code>bootstrap setup --environment lab-en</code> saves English in the plan; <code>lab-ko</code> saves Korean. Names such as <code>lab-en-02</code> and <code>lab-ko-02</code> are supported too. Subsequent commands read <code>LAB_LANGUAGE</code> and <code>LAB_ARTIFACTS_DIR</code> from the generated <code>.env</code> through <code>--config</code>. Relative record paths resolve beside the configuration file.</p>
 <p>If an older <code>.env</code> lacks language, it is inferred from the <code>lab-en</code>/<code>lab-ko</code> rule in <code>LAB_PREFIX</code> without rewriting the file or plan hash. Only legacy custom names outside that rule and separate tools with no selected configuration keep their existing environment-variable/default behavior. Those variables are not additional setup for the default lab.</p>
@@ -458,9 +458,9 @@
 </tr>
 </tbody>
 </table>
-<p>In Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Record the actual budget, end time, and deletion/retention plan in the worksheet.</p>
-<h2 id="handoff">Record actual values and completion evidence</h2>
-<p>After creating the plan in 02, copy this table into your <strong><code>.lab/lab-en/notes.md</code></strong>. Mark unexecuted items <strong>not run</strong>, then fill actual values as each step completes. “The environment is ready” is not sufficient evidence.</p>
+<p>In Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the <a href="#handoff">optional worksheet</a> has a place for them.</p>
+<h2 id="handoff">Optional worksheet for actual values and completion evidence</h2>
+<p>This worksheet is <strong>optional</strong>; nothing in the lab reads it. If your organization or your own habits call for a fuller record, copy this table into your own notes (for example <code>.lab/lab-en/notes.md</code>), mark unexecuted items <strong>not run</strong>, and fill in actual values as each step completes. “The environment is ready” is not sufficient evidence.</p>
 <table>
 <thead>
 <tr>

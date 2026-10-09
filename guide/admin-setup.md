@@ -2,7 +2,7 @@
 
 [처음부터 진행하는 10단계](handbook.md#setup) · [실습 체크리스트](facilitator.md#prepare) · [문제 해결](troubleshooting.md)
 
-이 문서는 **본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리**의 설정 참고 자료입니다. [실습 가이드](handbook.md#setup)를 순서대로 진행하면서 필요한 절만 엽니다. 실제 값과 완료 상태는 자신의 `.lab/lab-ko/notes.md`에 기록합니다.
+이 문서는 **본인이 수행하는 02 환경 생성, 03 Agent 준비, 10 정리**의 설정 참고 자료입니다. [실습 가이드](handbook.md#setup)를 순서대로 진행하면서 필요한 절만 엽니다. 메모는 선택 사항이며 07·09·10에서만 짧게 남깁니다([기록이 저장되는 곳](handbook.md#resources-notes) 참고).
 
 **실행 명령 바로가기:** [Codespaces 준비](handbook.md#setup-codespaces) · [CLI 로그인](handbook.md#setup-login) · [빠른 환경 생성](handbook.md#resources-quickstart) · [정책·Agent 준비](handbook.md#agent-knowledge) · [평가 ID 조회](handbook.md#baseline-identifiers) · [재평가](handbook.md#decision-run) · [그룹 삭제·확인](handbook.md#cleanup-delete). 모든 명령은 선택한 실습 폴더의 터미널에서 실행하며, 이미 완료한 작업은 반복하지 않습니다.
 {: .execution-guide}
@@ -14,7 +14,7 @@
 | 상황 | 진행 방법 |
 |---|---|
 | 처음 시작합니다. | [01 계정·Codespaces 준비](handbook.md#setup) 후 [02의 `bootstrap setup`](handbook.md#resources-quickstart)으로 생성합니다. 계획·검사·승인·생성을 한 명령이 안내합니다. |
-| 본인의 같은 실습을 재개합니다. | 원래 config·manifest·receipt와 실제 상태를 [기록표](#handoff)로 대조합니다. 완료한 생성·제출을 반복하지 않습니다. |
+| 본인의 같은 실습을 재개합니다. | [읽기 전용 재개 확인](handbook.md#setup-resume)으로 원래 config·manifest·receipt와 실제 상태를 대조합니다. 같은 근거를 원하면 [선택 기록표](#handoff)에 항목이 정리되어 있습니다. 완료한 생성·제출을 반복하지 않습니다. |
 | 다른 업무의 공유 프로젝트만 있습니다. | 이 실습은 기존 그룹을 인수하지 않습니다. 본인이 전용 환경을 만들 수 있는 구독·권한·비용 범위를 확보한 뒤 진행합니다. |
 
 CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본인 신원으로 진행합니다. 다른 사람의 토큰·로그인 세션·설정·소유권 기록을 사용하지 않습니다. 생성부터 ID 조회·v2 생성·재평가·정리까지 본인이 실행합니다.
@@ -23,7 +23,7 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 
 권한·비용 승인은 생략할 수 없는 시작 조건입니다. 부족하면 조직 절차에 따라 본인에게 허용된 범위를 확보합니다. 이것은 이후 실습을 다른 사람에게 맡기는 별도 경로가 아닙니다.
 
-기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 CLI가 출력한 실제 이름을 사용하고 기록표에 적습니다.
+기본 Agent 이름은 한국어 **`lab-ko-iq`**, 영어 **`lab-en-iq`**입니다. 환경 이름을 바꾼 경우 이후 모든 단계에서 CLI가 출력한 실제 이름을 사용합니다.
 
 ### 언어·기록 설정은 프로그램이 읽습니다 {#runtime-settings}
 
@@ -195,11 +195,11 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | Application Insights·Log Analytics | 수집·보존한 데이터량 기준입니다. 빠른 경로는 로그를 30일 보관합니다. | 이 실습에서는 보통 작지만 그룹 삭제 시 함께 삭제됩니다. |
 | GitHub Codespaces | GitHub의 별도 청구입니다. 실행 중에는 컴퓨팅, 존재하는 동안에는 저장소 비용이 듭니다. | 10단계에 따라 중지하거나 삭제합니다. |
 
-Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획을 기록표에 적습니다.
+Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, [선택 기록표](#handoff)에 적을 자리가 있습니다.
 
-## 실제 값과 완료 근거를 기록합니다 {#handoff}
+## 실제 값과 완료 근거를 적는 선택 기록표 {#handoff}
 
-02에서 생성 계획을 만든 뒤 다음 표를 자신의 **`.lab/lab-ko/notes.md`**에 복사합니다. 아직 실행하지 않은 항목은 **미실행**으로 표시하고 각 단계가 끝날 때 실제 값으로 채웁니다. “준비됨”이라는 문장만으로 완료를 표시하지 않습니다.
+이 기록표는 **선택 사항**이며 실습 프로그램이 읽지 않습니다. 조직이나 본인의 습관상 더 자세한 기록이 필요하면 다음 표를 자신의 메모(예: `.lab/lab-ko/notes.md`)에 복사하고 아직 실행하지 않은 항목은 **미실행**으로 표시한 뒤 각 단계가 끝날 때 실제 값으로 채웁니다. “준비됨”이라는 문장만으로 완료를 표시하지 않습니다.
 
 | 필수 항목 | 기록할 실제 값·완료 근거 |
 |---|---|
