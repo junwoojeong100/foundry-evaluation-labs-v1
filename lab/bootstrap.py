@@ -720,7 +720,7 @@ def plan(
         "attempts": [], "operator_principal_id": None, "env_sha256": None,
     }
     _write(directory / "config.json", config)
-    _write(directory / "template.json", TEMPLATE.read_text(encoding="utf-8"), text=True)
+    _write_bytes(directory / "template.json", TEMPLATE.read_bytes())
     _write(directory / "approval.example.json", approval_template(config))
     _write(directory / "group-authorization.example.json", group_authorization_template(config))
     _write(directory / "manifest.json", manifest)

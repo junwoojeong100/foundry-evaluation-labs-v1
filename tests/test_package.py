@@ -24,7 +24,7 @@ class PackageTests(unittest.TestCase):
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("test fixture", encoding="utf-8")
-            selected = {str(p.relative_to(root)) for p in package_files(root)}
+            selected = {p.relative_to(root).as_posix() for p in package_files(root)}
             self.assertIn(".env.example", selected)
             self.assertIn(".devcontainer/devcontainer.json", selected)
             self.assertNotIn(".devcontainer/private.env", selected)

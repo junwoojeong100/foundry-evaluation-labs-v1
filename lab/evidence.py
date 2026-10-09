@@ -596,9 +596,11 @@ def wilson_interval(successes: int, total: int, confidence: float = 0.95) -> dic
     denominator = 1 + z * z / total
     center = (p + z * z / (2 * total)) / denominator
     half = z * math.sqrt(p * (1 - p) / total + z * z / (4 * total * total)) / denominator
+    # The score interval is exactly 0 at no successes and exactly 1 at all successes;
+    # pinning those ends keeps the result identical across floating-point libraries.
     return {
-        "lower": max(0.0, center - half),
-        "upper": min(1.0, center + half),
+        "lower": 0.0 if successes == 0 else max(0.0, center - half),
+        "upper": 1.0 if successes == total else min(1.0, center + half),
         "confidence": confidence,
         "method": "Wilson score, two-sided; independent Bernoulli assumption",
     }

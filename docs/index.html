@@ -735,7 +735,7 @@ If retained: remaining resources / cost owner / review date / deletion plan: not
         &quot;attempts&quot;: [], &quot;operator_principal_id&quot;: None, &quot;env_sha256&quot;: None,
     }
     _write(directory / &quot;config.json&quot;, config)
-    _write(directory / &quot;template.json&quot;, TEMPLATE.read_text(encoding=&quot;utf-8&quot;), text=True)
+    _write_bytes(directory / &quot;template.json&quot;, TEMPLATE.read_bytes())
     _write(directory / &quot;approval.example.json&quot;, approval_template(config))
     _write(directory / &quot;group-authorization.example.json&quot;, group_authorization_template(config))
     _write(directory / &quot;manifest.json&quot;, manifest)

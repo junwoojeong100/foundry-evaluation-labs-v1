@@ -2,6 +2,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -15,6 +16,8 @@ from lab import bootstrap as b
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Windows reports 0o666 for writable files because it has no POSIX permission bits.
+PRIVATE_MODE = 0o666 if os.name == "nt" else 0o600
 SUB = "11111111-1111-4111-8111-111111111111"
 TENANT = "22222222-2222-4222-8222-222222222222"
 OPERATOR = "33333333-3333-4333-8333-333333333333"
@@ -282,7 +285,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(self.azure.calls, [])
         self.assertFalse((self.path.parent / ".env").exists())
         self.assertTrue((self.path.parent / "artifacts").is_dir())
-        self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(self.path.stat().st_mode & 0o777, PRIVATE_MODE)
         manifest = self.azure.manifest()
         self.assertTrue(all(r["status"] == "planned" for r in manifest["resources"].values()))
         self.assertRegex(self.config["names"]["resource_group"], r"^rg-foundry-eval-v11-\d{8}-[a-f0-9]{8}$")
@@ -318,7 +321,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual((approval["budget_amount"], approval["max_calls"], approval["max_candidates"]), (20, 100, 2))
         self.assertFalse(approval["allow_training"])
         self.assertNotIn("max_provisioning_retries", approval)
-        self.assertEqual(approval_path.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(approval_path.stat().st_mode & 0o777, PRIVATE_MODE)
         self.assertTrue((config_path.parent / ".env").is_file())
         self.assertTrue(clouds[0].mutations)
 
@@ -689,10 +692,10 @@ class BootstrapTests(unittest.TestCase):
         self.assertTrue(all(r["status"] == "succeeded" for r in manifest["resources"].values()))
         env = (self.path.parent / ".env").read_text()
         self.assertIn("LAB_ARTIFACTS_DIR=", env)
-        self.assertIn(str(self.path.parent / "artifacts"), env)
+        self.assertIn(json.dumps(str(self.path.parent / "artifacts"))[1:-1], env)
         self.assertIn("Authorization=AAD", env)
         self.assertIn("EMBEDDING_DEPLOYMENT=", env)
-        self.assertEqual((self.path.parent / ".env").stat().st_mode & 0o777, 0o600)
+        self.assertEqual((self.path.parent / ".env").stat().st_mode & 0o777, PRIVATE_MODE)
 
     def test_generated_env_preserves_paths_outside_repository_without_relative_to(self):
         config = deepcopy(self.config)
@@ -701,8 +704,9 @@ class BootstrapTests(unittest.TestCase):
         values = {
             key: json.loads(value) for key, value in (line.split("=", 1) for line in content.splitlines())
         }
-        self.assertEqual(values["LAB_ARTIFACTS_DIR"], "/standalone-foundry-environment/lab-unit/artifacts")
-        self.assertEqual(values["LAB_BOOTSTRAP_CONFIG"], "/standalone-foundry-environment/lab-unit/config.json")
+        environment = Path("/standalone-foundry-environment/lab-unit")
+        self.assertEqual(values["LAB_ARTIFACTS_DIR"], str(environment / "artifacts"))
+        self.assertEqual(values["LAB_BOOTSTRAP_CONFIG"], str(environment / "config.json"))
         self.assertEqual(values["BOOTSTRAP_CONFIG"], values["LAB_BOOTSTRAP_CONFIG"])
         embedding = next(model for model in config["models"] if "embedding" in model["roles"])
         self.assertEqual(values["EMBEDDING_DEPLOYMENT"], embedding["deployment"])
@@ -1056,7 +1060,7 @@ class BootstrapTests(unittest.TestCase):
         archive = Path(result["archive_path"]) / "original"
         for name, content in originals.items():
             self.assertEqual((archive / name).read_bytes(), content)
-            self.assertEqual((archive / name).stat().st_mode & 0o777, 0o600)
+            self.assertEqual((archive / name).stat().st_mode & 0o777, PRIVATE_MODE)
         self.assertEqual((archive / "approval.original.json").read_bytes(), approval_bytes)
         self.assertEqual(approval.read_bytes(), approval_bytes)
         self.assertEqual((archive / "evidence" / failure.name).read_bytes(), failure_bytes)
@@ -1389,7 +1393,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertTrue(all(r["status"] == "planned" for k, r in manifest["resources"].items() if k != "resource_group"))
         self.assertEqual(manifest["last_validation"]["status"], "FAILED")
         failure = self.path.parent / "evidence" / manifest["last_error_evidence_file"]
-        self.assertEqual(failure.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(failure.stat().st_mode & 0o777, PRIVATE_MODE)
         self.assertIn(USER, json.loads(failure.read_text())["stderr"])
         self.assertNotIn(USER, manifest["last_error"])
 

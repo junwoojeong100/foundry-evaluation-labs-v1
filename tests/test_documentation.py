@@ -597,8 +597,9 @@ class DocumentationTests(unittest.TestCase):
     def test_codespaces_lifecycle_prepares_dependencies_without_cloud_actions(self):
         configuration = json.loads((ROOT / ".devcontainer/devcontainer.json").read_text())
         command = configuration["postCreateCommand"]
-        syntax = subprocess.run(["bash", "-n"], input=command, text=True, capture_output=True, check=False)
-        self.assertEqual(syntax.returncode, 0, syntax.stderr)
+        if sys.platform != "win32":  # bash validates the Linux dev container command
+            syntax = subprocess.run(["bash", "-n"], input=command, text=True, capture_output=True, check=False)
+            self.assertEqual(syntax.returncode, 0, syntax.stderr)
         self.assertIn("-m venv .venv", command)
         self.assertIn(".venv/bin/python -m pip install -r requirements.lock", command)
         hooks = "\n".join(str(value) for key, value in configuration.items() if key.endswith("Command"))
