@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import shutil
 from threading import Barrier
+import tomllib
 from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, Mock, patch
@@ -23,6 +24,13 @@ from lab import calibration, managed_eval
 from lab.config import Config, LabError
 from lab.files import ROOT as REPOSITORY_ROOT, read_jsonl, sha256_file, write_jsonl
 from lab.preflight import save_json
+
+
+def pinned_sdk_versions() -> dict[str, str]:
+    """The exact SDK versions pyproject.toml pins, so a dependency bump needs no test edit."""
+    declared = tomllib.loads((REPOSITORY_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["dependencies"]
+    pins = dict(requirement.split("==", 1) for requirement in declared if "==" in requirement)
+    return {name: pins[name] for name in ("azure-ai-projects", "openai")}
 
 
 class ManagedEvaluationTests(unittest.TestCase):
@@ -298,9 +306,7 @@ class ManagedEvaluationTests(unittest.TestCase):
                 body = post.call_args.kwargs["body"]
                 self.assertEqual(body["data_source"], request["data_source"])
                 self.assertNotIn("azure_ai_agent", json.dumps(body))
-        self.assertEqual(self.read(managed_eval.CONTRACT)["sdk_versions"], {
-            "azure-ai-projects": "2.7.0", "openai": "3.20.0",
-        })
+        self.assertEqual(self.read(managed_eval.CONTRACT)["sdk_versions"], pinned_sdk_versions())
 
     def test_cli_rejects_paid_submit_without_confirmation(self):
         from lab.cli import execute, parser
