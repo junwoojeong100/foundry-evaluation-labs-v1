@@ -1,7 +1,9 @@
 """Azure CLI launching must work without a shell on Windows, macOS and Linux."""
 
+import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -59,6 +61,15 @@ class AzureCliLauncherTests(unittest.TestCase):
                     with self.assertRaises(LabError) as lab_error:
                         preflight.az_json(["account", "show"])
                     self.assertIn(expected, str(lab_error.exception))
+
+    @unittest.skipUnless(shutil.which("az"), "Azure CLI is not installed")
+    def test_installed_azure_cli_starts_without_signing_in(self):
+        installed = Path(shutil.which("az"))
+        if os.name == "nt" and installed.suffix.lower() in {".cmd", ".bat"}:
+            self.assertEqual(azcli.command()[1:], ["-IBm", "azure.cli"], "the installer's batch file must not be used")
+        result = azcli.run(["version", "--output", "json"], timeout=180)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("azure-cli", json.loads(result.stdout))
 
     @unittest.skipUnless(os.name == "nt", "exercises a real Windows batch file")
     def test_real_batch_file_receives_plain_arguments_and_blocks_special_ones(self):
