@@ -2,9 +2,7 @@
 
 <p class="eyebrow">CONTOSO ATLAS CLOUD · ONE LEARNING PATH</p>
 
-**Score a support AI on 12 questions, improve its instructions, then compare its answers to the same questions.** No Microsoft Azure or Microsoft Foundry experience is required. **GitHub Codespaces is the recommended path:** start with a prepared terminal in your browser. You still need a Microsoft Azure subscription, provisioning/role-assignment permissions, and spending authorization.
-
-**Microsoft Azure** is Microsoft's cloud platform. **Microsoft Foundry** is the platform for building and evaluating AI models and Agents on Microsoft Azure. An **Agent** combines a model with instructions and tools. Here, a fictional **Contoso Atlas Cloud support Agent** searches policy documents before answering.
+**Score a support AI on 12 questions, improve its instructions, then compare its answers to the same questions.** No Microsoft Azure or Microsoft Foundry experience is required. **GitHub Codespaces is the recommended path:** start with a prepared terminal in your browser.
 
 <div class="hero-summary" aria-label="Lab purpose and outcomes">
 <div><strong>WHAT YOU BUILD</strong><span>A support Agent that answers using policy evidence.</span></div>
@@ -15,26 +13,45 @@
 
 <p class="step-next no-print"><a href="#setup">First time: start with step 01 →</a> <a href="#setup-resume">Resume your lab →</a></p>
 
-**Every participant completes the lab from beginning to end.** Use your own account to prepare the environment, Agent, dataset, and evaluation, then improve and clean up. Setup follows **open Codespaces → sign in to Microsoft Azure → run one provisioning command → verify deployments in the portal**. Local installation remains an alternative.
-
-**Start at 01; when resuming, start with your own records.** Use the same lab's `config.json`, manifest, and receipts to verify completed work and avoid duplicate creation or submission. Never copy another person's configuration, sign-in session, or ownership records.
-
-**Time and cost:** Allow roughly half a day for the complete lab, plus permission/quota approvals and service execution time. Microsoft Azure model/Search/logging charges are **separate from GitHub Codespaces compute/storage charges**. **Closing your browser does not end those charges; finish the cleanup in 10.** If you stop after creating resources, still preserve records and clean up.
-
 <ol class="learning-path" role="list" aria-label="Lab steps">
+<li><p class="phase-title"><strong>Prepare</strong><span>01–03 · Environment and v1 Agent</span></p><ul>
 <li><a href="#setup"><strong>01</strong> Check your account, computer, and access</a></li>
 <li><a href="#resources"><strong>02</strong> Create the Microsoft Foundry environment</a></li>
 <li><a href="#agent"><strong>03</strong> Connect policies and create the Agent</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>Evaluate</strong><span>04–07 · Score v1 on 12 questions</span></p><ul>
 <li><a href="#start"><strong>04</strong> Register the dataset</a></li>
 <li><a href="#prepare"><strong>05</strong> Select evaluation criteria</a></li>
 <li><a href="#baseline"><strong>06</strong> Run Microsoft Foundry Evaluation</a></li>
 <li><a href="#analyze"><strong>07</strong> Read scores and reasons</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>Improve · Compare</strong><span>08–09 · v2 with new instructions only</span></p><ul>
 <li><a href="#optimize"><strong>08</strong> Improve instructions with Agent Optimizer</a></li>
 <li><a href="#decision"><strong>09</strong> Reevaluate and compare v1/v2</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>Clean up</strong><span>10 · Save records, then delete</span></p><ul>
 <li><a href="#cleanup"><strong>10</strong> Save results and delete resources</a></li>
+</ul></li>
 </ol>
 
-Here, **learning means reading evaluation results and improving instructions**, not retraining model weights. Use only the supplied synthetic policies and questions. Do not upload private customer records or put the test answers into the instructions.
+**Before you start**
+
+- **Subscription, permissions, spending:** You need your own Microsoft Azure subscription, **both provisioning and role-assignment permissions** for resources, and spending authorization.
+- **Lab terminal:** **GitHub Codespaces (recommended)** needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Microsoft Azure CLI.
+- **Time:** Allow roughly half a day, plus permission/quota approvals and service execution time.
+- **Ground rule:** **Every participant completes every step with their own account, from setup to cleanup.** Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the [resume instructions](#setup-resume) and verify completed work using your own `config.json`, manifest, and receipts.
+
+**Closing your browser does not end charges; finish the cleanup in 10.** Microsoft Azure model/Search/logging charges are **separate from GitHub Codespaces compute/storage charges**. If you stop after creating resources, still preserve records and clean up.
+{: .note .warning}
+
+**Terms and scope**
+
+- **Microsoft Azure** is Microsoft's cloud platform, and **Microsoft Foundry** is the platform for building and evaluating AI models and Agents on Microsoft Azure.
+- An **Agent** combines a model with instructions and tools. Here, a fictional **Contoso Atlas Cloud support Agent** searches policy documents before answering.
+- **V1 is the original Agent; v2 is the candidate with revised instructions.** These are complete Agent versions; models, tools, and output format stay fixed. Retaining v1 when no improvement is found is a valid lab outcome; creating v2 is not production approval.
+- **Learning means reading evaluation results and improving instructions**, not retraining model weights. Use only the supplied synthetic policies and questions. Do not upload private customer records or put the test answers into the instructions.
+
+**Three places you work**
 
 | Where you work | What you do there |
 |---|---|
@@ -42,15 +59,16 @@ Here, **learning means reading evaluation results and improving instructions**, 
 | Lab terminal · Codespaces or your computer | Run the supplied commands. Codespaces avoids installing Python, Git, and Microsoft Azure CLI on your computer. |
 | [Microsoft Foundry](https://ai.azure.com) | Inspect the project, Agent, and policy tool; run evaluations and Optimizer; read comparisons. |
 
-**How to read a step:** Use its **Action order** links, perform each action, then check **completion criteria**. Enter **Run in your terminal** blocks in your selected lab terminal; perform portal actions in separate browser tabs. **Use your own account/project values, not the names in the illustrations.** If you choose Codespaces, edit subsequent files in its VS Code editor too.
+**How to follow this guide:** Follow **Action order → perform the work → check completion criteria** in each step. On your first pass, follow the expanded instructions and required reference links, including access and authorization.
 
-**On your first pass, follow the expanded instructions in order.** Open **Optional · how it works** only to explore the code/portal mapping. Its **Actual implementation · read only** panels are references, not code to copy and execute. Required commands, portal actions, and completion criteria remain outside the collapsed explanations. Follow any **required reference links**, such as access and authorization, at the relevant step.
-
-**Do not recreate code-created objects in the portal.** Inspect their results there. For evaluation and Optimizer stages that submit through the portal, submit once in that UI. Do not substitute invented SDK code for the portal's internal implementation.
-
-Steps 01–03 prepare the environment, 04–09 evaluate and improve, and 10 cleans up. **Steps 04–06 continue in the same evaluation wizard.** Do not create a separate evaluation for each step. Reading marks are personal bookmarks, not evidence of completed operations.
-
-**V1 is the original Agent; v2 is the candidate with revised instructions.** These are complete Agent versions. Keep their models, tools, and output format fixed. Retaining v1 when no improvement is found is a valid lab outcome; creating v2 is not production approval.
+| Guide label | What to do |
+|---|---|
+| **Run in your terminal** | Use your selected lab terminal. If you use Codespaces, edit files in its VS Code editor too. |
+| **Portal actions** | Use a separate browser tab and your own account/project values, not the names in the illustrations. |
+| **Optional · how it works** | Open only if you want implementation details. **Actual implementation · read only** is reference material; do not copy and execute it. |
+| **Creation/submission** | Inspect code-created objects in the portal; do not recreate them. Submit evaluation/Optimizer jobs once in the specified portal UI, not through invented SDK code. |
+| **Evaluation setup in 04–06** | Continue in the same evaluation wizard. Do not create a separate evaluation for each step. |
+| **Reading marks** | These are personal bookmarks. Use each step's completion criteria to verify actual work. |
 
 ## 01. Check your account, computer, and access {#setup}
 
@@ -103,7 +121,12 @@ Steps 01–03 prepare the environment, 04–09 evaluate and improve, and 10 clea
 
 **Recommended: use GitHub Codespaces.** A GitHub account and browser can prepare this repository's Python, Git, Microsoft Azure CLI, and locked dependencies. **Codespaces does not provide Microsoft Azure subscriptions, permissions, or model quota.** If organizational policy does not permit Codespaces, use the local path below.
 
-**Run one command at a time.** Copy buttons copy the entire block; for multiple lines, paste into an editor first and execute one command at a time. Replace `YOUR_...` with your values, keeping quotes. Stop at an error instead of proceeding.
+**Command rules**
+
+- Run **one command at a time**, and stop at an error instead of running the next command. A long command can wrap across screen lines; do not insert a line break within it.
+- Copy buttons copy the **whole block**. For multiple lines, paste into an editor first and run the commands individually.
+- Replace `YOUR_...` with your values, keeping the quotes.
+- `Shared terminal` blocks work in every environment. For `Codespaces/macOS/Linux` or `Windows PowerShell` blocks, **run only the one for your environment**.
 
 #### Open GitHub Codespaces in your browser · recommended {#setup-codespaces}
 
@@ -132,15 +155,9 @@ Install [Python](https://www.python.org/downloads/) **3.11–3.14**, [Git](https
 
 **If the tools are already installed, start with [installation checks](#setup-verify) and do not reinstall working tools.** The Windows/macOS examples below explicitly select **3.13** so an unsupported newer Python is not selected. If you already use another supported version, replace `py -3.13` or `python3.13` with its version-specific command, using the same Python for verification and virtual-environment creation. Python 3.10 or earlier and 3.15 or later are outside this lab's supported range.
 
-First open **your computer's terminal**. Search for **PowerShell** in Windows Start, **Terminal** in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Microsoft Azure Portal's Cloud Shell or the Python prompt showing `>>>`.
+First open **your computer's terminal**. Search for **PowerShell** in Windows Start, **Terminal** in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Microsoft Azure Portal's Cloud Shell or the Python prompt showing `>>>`. Follow the [command rules](#setup-local) above.
 
-**Reading commands:** Run **one command at a time** and wait for it to finish. A long command can wrap across screen lines; do not insert a line break within that command.
-
-Copy buttons copy the **whole block**. If it contains several commands, paste into an editor first and run them individually. Replace `YOUR_...` with your value, preserving the surrounding double quotes.
-
-Blocks labeled `Shared terminal` work on all operating systems. For `macOS/Linux` or `PowerShell` blocks, read the preceding description and **run only the blocks for your OS**. **Stop at an error instead of running the next command**, and use that step's troubleshooting link.
-
-Follow one of [Windows installation](#setup-windows), [macOS installation](#setup-macos), or [Linux installation](#setup-linux), then continue to [installation checks](#setup-verify).
+Follow **only your own operating system's** [Windows installation](#setup-windows), [macOS installation](#setup-macos), or [Linux installation](#setup-linux), then continue to [installation checks](#setup-verify).
 
 #### Windows · install in PowerShell {#setup-windows}
 
@@ -372,11 +389,16 @@ python -m lab bootstrap setup --environment lab-en
 
 `lab-en` selects English; `lab-ko` selects Korean. Separate names such as `lab-en-02` and `lab-ko-02` follow the same rule. English command results are saved under `.lab/lab-en/artifacts/`.
 
-The program guides **plan → permission/model/quota checks → actual authorization inputs → provision**. It uses `northcentralus` and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.
+The program guides you through these stages:
 
-The four roles are **Agent (answers), Judge (scoring), Optimizer/search planner (instruction improvement and retrieval planning), and embeddings (numerical representations for search)**. You prepare an environment that calls existing models; you do not build a model from scratch.
+1. **Plan:** It uses `northcentralus` and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.
+    - **The four roles:** **Agent (answers), Judge (scoring), Optimizer/search planner (instruction improvement and retrieval planning), and embeddings (numerical representations for search)**
+    - You prepare an environment that calls existing models; you do not build a model from scratch.
+2. **Permission/model/quota checks:** It confirms readiness before creating anything.
+3. **Actual authorization inputs:** After readiness passes, enter the five values below.
+4. **Provision:** It creates resources only if you approve at the final confirmation.
 
-After readiness passes, enter the following five values from **your actual authorization in 01**. If they are not established, **stop with Ctrl+C** and obtain authorization first. At the final creation confirmation, Enter also cancels.
+**Before you enter values:** Use your **actual authorization from 01**. If it is not established, **stop with Ctrl+C** and obtain authorization first.
 
 | Prompt | What to enter |
 |---|---|
@@ -386,19 +408,29 @@ After readiness passes, enter the following five values from **your actual autho
 | Model-call allowance | An approved positive integer. Even 12 cases can make multiple Agent, Judge, retrieval, and Optimizer calls. |
 | Actual authorization reference | A private note identifying your own authorized decision or organizational approval. Never enter passwords/tokens. |
 
-**Final review before creation:** Read the displayed account, subscription, region, resources, models, and limits. This quick path records **at most two candidates, a one-hour job wait, and 30-day log retention**. Type **`CREATE lab-en`** only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost. Use the individual configuration path below if different limits are required.
+**Final review before creation:** Read the displayed account, subscription, region, resources, models, and limits. This quick path records **at most two candidates, a one-hour job wait, and 30-day log retention**. Use the individual configuration path below if different limits are required. Type **`CREATE lab-en`** only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.
 
-No Microsoft Azure resources are created before confirmation. After it, provisioning and charges can begin. **Budget, call counts, and hosting hours are not automatic spending cutoffs**, nor authorization for deletion, training, or automatic retries.
+No Microsoft Azure resources are created before confirmation, and Enter cancels. **After confirmation, provisioning and charges can begin.** Budget, call counts, and hosting hours are not automatic spending cutoffs, nor authorization for deletion, training, or automatic retries.
+{: .note .warning}
 
-**Success reports `status: APPLIED` and creates `.lab/lab-en/.env`.** The same folder preserves `config.json`, `approval.json`, and `manifest.json`. Do not edit these to bypass checks. For errors, follow [provisioning troubleshooting](troubleshooting.md#provisioning).
+**Successful result**
 
-**`.env` holds the project connection address (Project endpoint) and model deployment names**, unlike `.venv`, the Python package folder. Subsequent commands read it with `--config`; do not execute or `source` it. If provisioning failed, do not substitute a copy of `.env.example`.
+- The output reports **`status: APPLIED`** and creates **`.lab/lab-en/.env`**.
+- The same folder preserves `config.json`, `approval.json`, and `manifest.json`. Do not edit these to bypass checks.
+- **`.env` holds the project connection address (Project endpoint) and model deployment names**, unlike `.venv`, the Python package folder. Subsequent commands read it with `--config`; do not execute or `source` it. If provisioning failed, do not substitute a copy of `.env.example`.
+- For errors, follow [provisioning troubleshooting](troubleshooting.md#provisioning).
 
-The program also reads language and record location from that file. **Selected configuration takes precedence over stale shell variables.** Existing `lab-en`/`lab-ko` environments from older versions work without editing their files or recreating them. Records from another language are never relabeled or overwritten.
+**If you run the same command again**
 
-Rerunning the same environment continues preparation **only for a plan with no creation attempt**. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use [status lookup](#resources-status) when resuming.
+- It continues preparation **only for a plan with no creation attempt**. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use [status lookup](#resources-status) when resuming.
+- If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.
 
-If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.
+<details class="guide-details optional-path" markdown="1">
+<summary>Only if you use an older-version environment or set environment variables manually</summary>
+
+The program reads language and record location from the selected configuration file. **Selected configuration takes precedence over stale shell variables.** Existing `lab-en`/`lab-ko` environments from older versions work without editing their files or recreating them. Records from another language are never relabeled or overwritten.
+
+</details>
 
 #### Create your lab record {#resources-notes}
 
@@ -607,7 +639,7 @@ Run this read-only command after provisioning creates `.lab/lab-en/.env`. It als
 python -m lab --config .lab/lab-en/.env preflight
 ```
 
-Inspect `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, and `embedding_tpm` under `checks`. Each `observed` value is actual deployment TPM; `expected` is the recommended minimum above. Insufficient or unverifiable token limits report `BLOCKED`: do not continue to model calls. Prepare the allocation, then rerun the same read-only preflight.
+Inspect `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, and `embedding_tpm` under `checks`. Each `observed` value is actual deployment TPM; `expected` is the [recommended minimum for that model](#resources-tpm). Insufficient or unverifiable token limits report `BLOCKED`: do not continue to model calls. Prepare the deployment allocation, then rerun the same read-only preflight.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: identity, deployments, and TPM</summary>
@@ -659,7 +691,7 @@ The following runtime `run_preflight()` reads the resources/deployments named in
 
 `smoke` is a short functional check.
 
-First pass the [TPM checks in 02](#resources-tpm). One successful short response does not establish sufficient throughput for the full evaluation.
+First pass the [runtime checks in 02](#resources-preflight), including deployment TPM. One successful short response does not establish sufficient throughput for the full evaluation.
 
 ```sh
 python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
@@ -828,6 +860,24 @@ Inspect execution details for a real **`knowledge_base_retrieve` call and respon
 
 A **dataset is the collection of test questions**. Use **[data/en/optimizer/dev.jsonl](../../data/en/optimizer/dev.jsonl)**: **12 JSONL rows**, called **dev12** for short. Each line is one test case in JSON format. Do not edit it or convert it to Excel, CSV, or a JSON array.
 
+| Column | Type | Use |
+|---|---|---|
+| `query` | String | The only Agent input |
+| `context` | String | Policy reference for supported evaluators and case review |
+| `ground_truth` | JSON string | Structured reference answer, never a generation prompt |
+
+Only the question reaches the Agent. `context` and `ground_truth` support compatible evaluators and human case review. The other supplied dataset files are outside this required lab.
+
+<figure class="concept-flow" id="evaluation-flow" aria-label="Flow from the question to the response and its scoring">
+<ol>
+<li><strong>Question · query</strong><span>One dataset row at a time</span></li>
+<li><strong>Agent</strong><span>Model + instructions + retrieval</span></li>
+<li><strong>Actual response</strong><span>answer and three other fields</span></li>
+<li><strong>Evaluators + Judge</strong><span>Scores and reasons</span></li>
+</ol>
+<figcaption>The Agent searches policies through its tool. Do not append the dataset's reference answer to the Agent input. The Agent only advises; it cannot actually refund, submit, delete, or grant access.</figcaption>
+</figure>
+
 ### Check the source count and hash in your terminal {#dataset-check}
 
 ```sh
@@ -852,24 +902,6 @@ Record `rows = 12` and SHA-256 in your private notes. The **SHA-256 hash is a fi
 | Subsequent portal Upload/Existing dataset | Register/select data in the portal. | Register `lab-en-dev12` version `1` once in your project. The Python command above uploads nothing and submits no evaluation. |
 
 </details>
-
-| Column | Type | Use |
-|---|---|---|
-| `query` | String | The only Agent input |
-| `context` | String | Policy reference for supported evaluators and case review |
-| `ground_truth` | JSON string | Structured reference answer, never a generation prompt |
-
-Only the question reaches the Agent. `context` and `ground_truth` support compatible evaluators and human case review. The other supplied dataset files are outside this required lab.
-
-<figure class="concept-flow" id="evaluation-flow" aria-label="Flow from the question to the response and its scoring">
-<ol>
-<li><strong>Question · query</strong><span>One dataset row at a time</span></li>
-<li><strong>Agent</strong><span>Model + instructions + retrieval</span></li>
-<li><strong>Actual response</strong><span>answer and three other fields</span></li>
-<li><strong>Evaluators + Judge</strong><span>Scores and reasons</span></li>
-</ol>
-<figcaption>The Agent searches policies through its tool. Do not append the dataset's reference answer to the Agent input. The Agent only advises; it cannot actually refund, submit, delete, or grant access.</figcaption>
-</figure>
 
 #### Make the Codespaces file available to the portal upload picker {#dataset-download}
 
@@ -1012,7 +1044,12 @@ Use this **read-only command** to retrieve actual evaluation and run IDs. If you
 python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 ```
 
-Record `evaluation_id` and the `run_id` whose **`agent_version` is `"1"` and `status` is `completed`**. Evaluation IDs use `eval_...`; run IDs use `evalrun_...`. They are not interchangeable. If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. This command submits nothing.
+If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Record these **two IDs separately**. This command submits nothing.
+
+| Value to record | Selection rule | Placeholder in 09 |
+|---|---|---|
+| `evaluation_id` · `eval_...` | The evaluation you created | `YOUR_EVALUATION_ID` |
+| `run_id` · `evalrun_...` | That evaluation's run with **`agent_version: "1"` and `status: completed`** | `YOUR_BASELINE_RUN_ID` |
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: evaluation submission versus ID lookup</summary>
@@ -1191,11 +1228,17 @@ If Criteria shows **No custom evaluators available**, switch **Custom only OFF**
 
 In **Review**, confirm the Agent/version, dataset, evaluators, and estimated cost, then **Submit** once within the approved scope. Neither the estimate nor the candidate setting is a billing cap.
 
-Open that same job in **Optimization runs**. Inspect its state for up to 60 minutes or your shorter authorized wait. If unfinished, record the state/job ID and follow [resumption](troubleshooting.md#optimizer). Stopping your wait does not cancel the job.
+Open the same job you just submitted in **Optimization runs** and act according to its state.
 
-One job includes multiple Agent, Judge, and retrieval calls. For a **Completed/Succeeded** job, inspect the actual candidate count and **Token usage** where available. Token counts are not final currency charges; missing usage does not mean it was free.
+| Job state | What to do |
+|---|---|
+| Running | Inspect the same job and wait; do not resubmit. After 60 minutes or your shorter authorized wait, record the state/job ID and follow [resumption](troubleshooting.md#optimizer). |
+| Completed / Succeeded | Check the actual candidate count and **Token usage** where available, then review original/candidate scores and **View changes**. |
+| Failed or results unavailable | Preserve the state/job ID/error and follow [troubleshooting](troubleshooting.md#optimizer). Do not invent a candidate to continue. |
 
-Inspect original/candidate scores and **View changes**. The internal **0–1 ranking** is not the separate managed Evaluation mean or pass percentage. Keep model, tools, reasoning and output schema unchanged; an empty function-tool export does not authorize removal of the MCP policy connection.
+**Interpretation:** The internal **0–1 ranking** is not the separate managed Evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection.
+
+**Cost and waiting:** One job includes multiple Agent, Judge, and retrieval calls. Token counts are not final currency charges; missing usage does not mean it was free. Stopping your wait does not cancel the job.
 
 <figure class="portal-shot" id="portal-optimizer-results">
 <img src="../../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
@@ -1213,10 +1256,14 @@ Perform the following only after reviewing a candidate worth retaining.
 
 1. Select the candidate and inspect **View changes**. Reject instructions that invent policy or unsupported certainty.
 2. Expand collapsed sections of the revised instructions in **View changes** and copy the **complete text**. If only changed lines are visible, inspect candidate details or Download/Export where provided. If the full instructions are unavailable, follow [candidate-file troubleshooting](troubleshooting.md#optimizer); do not create a file from partial diff fragments.
-3. Save **UTF-8 plain text** as `.lab/lab-en/candidate.txt` in **the same environment as your lab terminal**. In Codespaces, create the file in its VS Code Explorer and paste the instructions there; a file saved only to your computer's Downloads folder will not be found by the next command. Do not use Word/rich text or accidentally save `candidate.txt.txt`. Exclude diff (change comparison) `+`/`-` markers, UI explanations, and scores.
+3. Save the complete instructions as **`.lab/lab-en/candidate.txt`**:
+    - **Location:** Save it in the editor of **the same environment as your lab terminal**. In Codespaces, create the file in its VS Code Explorer and paste the instructions there; a file saved only to your computer's Downloads folder will not be found by the next command.
+    - **Format:** **UTF-8 plain text**. Do not use Word/rich text or accidentally save `candidate.txt.txt`.
+    - **Content:** The complete instructions only. Exclude diff (change comparison) `+`/`-` markers, UI explanations, and scores.
 4. Record real job/candidate IDs and any manual edits/reasons in `notes.md`. Use this file next, not the repository's `prompts/en/candidate.txt`.
 
 **Do not select Promote candidate in this lab.** Step 09's CLI checks your ownership records and fixed configuration before creating one v2. Promoting in the portal first can conflict with these ownership checks. Do not continually create v3, v4, or later releases; creating a version is separate from publishing it or approving activation.
+{: .note .warning}
 
 <p class="share-checkpoint" id="share-optimizer"><strong>Discuss:</strong> Present the reviewed candidate and explain the changed behaviors, expected improvements, and possible regressions.</p>
 
@@ -1268,11 +1315,15 @@ Replace all four values and execute this single-line command. Submitting a new r
 python scripts/add_foundry_eval_run.py --endpoint "YOUR_PROJECT_ENDPOINT" --subscription "YOUR_SUBSCRIPTION_ID" --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2 --out .lab/lab-en/artifacts/foundry-evaluations/candidate-v2.json
 ```
 
-The default wait is 30 minutes. For a shorter authorized wait, append `--wait-seconds` and its value in seconds. On completion, confirm `status: completed`, `result_counts.total: 12`, and all 12 output items.
+The default wait is 30 minutes. For a shorter authorized wait, append `--wait-seconds` and its value in seconds. The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions. Continue according to the result:
 
-When the wait expires, the command returns exit code 2 with **Still running**; the remote job can remain active. If the receipt contains a run ID, repeat the **identical command and `--out` path** to collect that run. Without a run ID or with an existing remote name, follow [duplicate-submission recovery](troubleshooting.md#evaluation). Do not delete the receipt or rename the run to resubmit.
+| Result | What to do |
+|---|---|
+| `status: completed`, `result_counts.total: 12` | Confirm all 12 output items, then continue to [3. compare v1/v2](#decision-compare). |
+| Exit code 2 with **Still running** | The wait expired, but the remote job can remain active. If the receipt contains a run ID, repeat the **identical command and `--out` path** to collect that run. |
+| No run ID, or an existing remote run with the same name | Follow [duplicate-submission recovery](troubleshooting.md#evaluation). |
 
-The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions.
+Do not delete the receipt or rename the run to resubmit.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: adding v2 to the same evaluation</summary>
@@ -1310,7 +1361,11 @@ In the same evaluation's **Evaluation runs**, select the v1 and v2 rows and **Co
 <figcaption><strong>Confirm the comparison direction and results.</strong> Select v1 as Baseline, then compare scores, pass counts, and statistical results. Inconclusive means a difference was not established; it is not evidence of equivalence. <a href="../../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-Compare responses, scores, and reasons for all 12 cases side by side. Require no decline in all-criteria passes or either metric's pass count/mean, and at least one strict measured improvement. Check factual truth, routing, and response format too, and record latency, tokens, and statistical results.
+Check the following in order, then fill in the worksheet below.
+
+1. **Check that results are comparable.** All 12 cases must use the same questions, models, tools, and evaluators. Hold the decision if errors, missing results, or different conditions prevent comparison.
+2. **Compare responses and quality.** Read all 12 responses, scores, and reasons side by side; check factual truth, routing, and response format. **Both-criteria pass count and each metric's pass count and mean must all stay the same or increase, with at least one strict measured improvement.** A gain in one metric cannot offset a decline in another. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.
+3. **Record tradeoffs and uncertainty.** Inspect latency, tokens, and Microsoft Foundry's statistical conclusion. Latency is time spent waiting for a response; tokens measure text processed by the model. A small score improvement can increase waiting time and cost.
 
 <p class="share-checkpoint" id="share-optimized"><strong>Explain the result:</strong> Identify the actual gain, unchanged criteria, any regression, and the remaining uncertainty. Observed improvement is not a guarantee that every future stochastic run will improve.</p>
 
@@ -1329,11 +1384,7 @@ Copy this table into `notes.md` and fill it with your results. **Blanks are plac
 
 </div>
 
-Means are averages of actual scores; do not convert mean Relevance into an accuracy percentage. If results contain errors or missing scores, **hold the decision** rather than inserting zero scores or comparing only successful rows. If latency, tokens, or statistical results are unavailable, record **not provided**, not an estimated zero.
-
-Below the table, record **Microsoft Foundry's statistical conclusion, changed answer examples, and your decision with reasons**. Consider v2 only if all quality pass counts/means are maintained or increased and at least one actually improves. One higher metric and another lower metric do not meet this rule. Do not adopt a candidate with actual policy errors merely because generic evaluators passed it.
-
-**Latency** is time spent waiting for a response; **tokens** measure the amount of text processed by the model. A small score improvement can come with increased waiting time and cost.
+**Recording rules:** Do not convert mean Relevance into an accuracy percentage, insert zero scores for errors/missing results, or compare only successful rows. If latency, tokens, or statistical results are unavailable, record **not provided**, not an estimated zero. Below the table, record **the statistical conclusion, changed answer examples, and your decision from the table below with reasons**.
 
 | Decision | When it fits |
 |---|---|
@@ -1433,17 +1484,19 @@ az group show --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GR
 az resource list --subscription "YOUR_SUBSCRIPTION_ID" --resource-group "YOUR_LAB_RESOURCE_GROUP" --query "[].{name:name,type:type}" -o table
 ```
 
-**Resource-group deletion is irreversible and removes the group's Microsoft Foundry resources, model deployments, Search, and monitoring together.** After saving evidence and receiving approval for that exact group, choose one method:
+**Resource-group deletion is irreversible and removes the group's Microsoft Foundry resources, model deployments, Search, and monitoring together.** After saving evidence and receiving approval for that exact group, choose **one of the two methods** below.
+{: .note .warning}
 
 The default Application Insights Smart Detection action group can also serve alerts in other resource groups. A dedicated lab group does not establish that every resource is independent. Review shared dependencies with the owner before deletion, or retain the group; do not delete alerts, permissions, or locks simply to bypass a check.
 
-1. **Portal:** Microsoft Azure Portal → Resource groups → exact group → **Delete resource group**. Read the deletion inventory, type the requested group name, and confirm.
-2. **CLI:** Run the command below and review the target again at the confirmation prompt. Do not append `--yes` to bypass confirmation.
+**Method A · Portal:** Microsoft Azure Portal → Resource groups → exact group → **Delete resource group**. Read the deletion inventory, type the requested group name, and confirm.
 
 <figure class="portal-shot" id="portal-delete-review">
 <img src="../../web/assets/portal/en/28-delete-review.png" alt="Resource-group deletion review with the target inventory, group-name confirmation field, and Delete and Cancel buttons." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Verify the group name and every resource. Only after authorization, enter the group name and proceed with Delete. Use Cancel if the target is wrong or deletion is not approved. <a href="../../web/assets/portal/en/28-delete-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
+
+**Method B · CLI:** Run the command below and review the target again at the confirmation prompt. Do not append `--yes` to bypass confirmation.
 
 ```sh
 az group delete --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GROUP"

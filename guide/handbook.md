@@ -2,9 +2,7 @@
 
 <p class="eyebrow">CONTOSO ATLAS CLOUD · 하나의 실습 경로</p>
 
-**고객지원 AI에 질문 12개를 보내 채점하고, 지침을 고친 뒤 같은 질문으로 다시 비교합니다.** Microsoft Azure·Microsoft Foundry 사용 경험은 필요하지 않습니다. **권장 경로는 GitHub Codespaces**이며, 브라우저에서 준비된 터미널을 열어 시작합니다. 사용할 Microsoft Azure 구독과 생성·역할 할당 권한, 비용 승인은 필요합니다.
-
-**Microsoft Azure**는 Microsoft의 클라우드 서비스입니다. **Microsoft Foundry**는 Microsoft Azure에서 AI 모델과 Agent를 만들고 평가하는 개발 플랫폼입니다. **Agent(에이전트)**는 모델에 지침과 도구를 연결한 AI입니다. 여기서는 가상의 **Contoso Atlas Cloud 고객지원 Agent**가 정책 문서를 검색해 답하게 합니다.
+**고객지원 AI에 질문 12개를 보내 채점하고, 지침을 고친 뒤 같은 질문으로 다시 비교합니다.** Microsoft Azure·Microsoft Foundry 사용 경험은 필요하지 않습니다. **권장 경로는 GitHub Codespaces**이며, 브라우저에서 준비된 터미널을 열어 시작합니다.
 
 <div class="hero-summary" aria-label="실습의 목적과 결과">
 <div><strong>실습 목표</strong><span>정책에 근거해 답하는 고객지원 Agent를 만듭니다.</span></div>
@@ -15,26 +13,45 @@
 
 <p class="step-next no-print"><a href="#setup">처음이면 01부터 시작하기 →</a> <a href="#setup-resume">중단한 실습 재개하기 →</a></p>
 
-**모든 실습 참여자가 처음부터 끝까지 직접 수행합니다.** 본인 계정으로 환경·Agent·데이터셋·평가를 준비하고 개선과 정리까지 진행합니다. **Codespaces 열기 → Microsoft Azure 로그인 → 생성 명령 한 개 → 포털에서 배포 확인** 순서로 환경을 준비합니다. 내 PC에서 진행하는 설치 경로도 선택할 수 있습니다.
-
-**처음이면 01부터, 중단 후 재개라면 자신의 기록부터 확인합니다.** 같은 실습의 `config.json`·manifest·receipt로 이미 완료한 작업을 확인하고 중복 생성·제출을 피합니다. 다른 사람의 설정·로그인 세션·소유권 기록을 복사하지 않습니다.
-
-**시간·비용:** 전체 실습은 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다. Microsoft Azure의 모델·Search·로그 비용과 **GitHub Codespaces의 실행·저장소 비용은 별개**입니다. **브라우저를 닫아도 과금이 끝나지 않으므로 10의 정리까지 진행합니다.** 중간에 중단하더라도 생성한 자원이 있다면 보관·정리를 수행합니다.
-
 <ol class="learning-path" role="list" aria-label="실습 순서">
+<li><p class="phase-title"><strong>준비</strong><span>01–03 · 환경과 v1 Agent</span></p><ul>
 <li><a href="#setup"><strong>01</strong> 계정·PC·권한 확인</a></li>
 <li><a href="#resources"><strong>02</strong> Microsoft Foundry 환경 생성</a></li>
 <li><a href="#agent"><strong>03</strong> 정책 연결·Agent 생성</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>평가</strong><span>04–07 · v1을 12문항으로 채점</span></p><ul>
 <li><a href="#start"><strong>04</strong> 데이터셋 등록</a></li>
 <li><a href="#prepare"><strong>05</strong> 평가 기준 선택</a></li>
 <li><a href="#baseline"><strong>06</strong> Microsoft Foundry Evaluation 실행</a></li>
 <li><a href="#analyze"><strong>07</strong> 점수와 이유 읽기</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>개선·비교</strong><span>08–09 · 지침만 바꾼 v2</span></p><ul>
 <li><a href="#optimize"><strong>08</strong> Agent Optimizer로 지침 개선</a></li>
 <li><a href="#decision"><strong>09</strong> 재평가·v1/v2 비교</a></li>
+</ul></li>
+<li><p class="phase-title"><strong>정리</strong><span>10 · 보관 후 삭제</span></p><ul>
 <li><a href="#cleanup"><strong>10</strong> 결과 보관·리소스 삭제</a></li>
+</ul></li>
 </ol>
 
-여기서 **학습은 평가 결과를 읽고 지침을 개선하는 과정**이며 모델 가중치를 다시 학습시키는 과정은 아닙니다. 제공된 합성 정책·질문만 사용합니다. 고객 원본 자료를 업로드하거나 평가 질문의 정답을 지침에 넣지 않습니다.
+**시작 전 확인**
+
+- **구독·권한·비용:** 본인이 사용할 Microsoft Azure 구독, 리소스 **생성 권한과 역할 할당 권한**, 비용 승인이 필요합니다.
+- **실습 터미널:** **GitHub Codespaces(권장)**는 GitHub 계정과 브라우저만 있으면 됩니다. 내 PC를 쓰면 Python 3.11–3.14·Git·Microsoft Azure CLI를 설치합니다.
+- **시간:** 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다.
+- **진행 원칙:** **모든 실습 참여자가 본인 계정으로 준비부터 정리까지 직접 수행합니다.** 다른 사람의 설정·로그인 세션·소유권 기록을 복사하거나 이미 완료한 작업을 다시 생성·제출하지 않습니다. 재개할 때는 [재개 안내](#setup-resume)에 따라 자신의 `config.json`·manifest·receipt로 완료한 작업을 확인합니다.
+
+**브라우저를 닫아도 과금이 끝나지 않으므로 10의 정리까지 진행합니다.** Microsoft Azure의 모델·Search·로그 비용과 **GitHub Codespaces의 실행·저장소 비용은 별개**입니다. 중간에 중단하더라도 생성한 자원이 있다면 보관·정리를 수행합니다.
+{: .note .warning}
+
+**용어와 범위**
+
+- **Microsoft Azure**는 Microsoft의 클라우드 서비스이고, **Microsoft Foundry**는 Microsoft Azure에서 AI 모델과 Agent를 만들고 평가하는 개발 플랫폼입니다.
+- **Agent(에이전트)**는 모델에 지침과 도구를 연결한 AI입니다. 여기서는 가상의 **Contoso Atlas Cloud 고객지원 Agent**가 정책 문서를 검색해 답하게 합니다.
+- **v1은 변경 전 Agent, v2는 지침을 바꾼 비교 후보**입니다. 두 번호는 Agent 전체 구성의 버전이며 모델·도구·출력 형식은 유지합니다. 개선이 없어서 v1을 유지해도 올바른 실습 결과이며, v2 생성은 운영용 게시 승인이 아닙니다.
+- **학습은 평가 결과를 읽고 지침을 개선하는 과정**이며 모델 가중치를 다시 학습시키는 과정은 아닙니다. 제공된 합성 정책·질문만 사용하고, 고객 원본 자료를 업로드하거나 평가 질문의 정답을 지침에 넣지 않습니다.
+
+**작업하는 세 곳**
 
 | 실행 위치 | 여기에서 하는 일 |
 |---|---|
@@ -42,15 +59,16 @@
 | 실습 터미널 · Codespaces 또는 내 PC | 제공된 명령을 실행합니다. Codespaces에서는 내 PC에 Python·Git·Microsoft Azure CLI를 설치하지 않습니다. |
 | [Microsoft Foundry](https://ai.azure.com) | 프로젝트·Agent·정책 도구를 확인하고 평가·Optimizer·비교 결과를 읽습니다. |
 
-**읽는 방법:** 각 단계 상단의 **실행 순서** 링크로 이동하고, 해당 작업 뒤 **완료 기준**을 확인합니다. **터미널에서 실행** 상자는 선택한 실습 터미널에 입력하고 포털 작업은 별도 브라우저 탭에서 수행합니다. **그림의 계정·프로젝트 이름 대신 자신의 값을 사용합니다.** Codespaces를 선택했다면 이후 파일 편집도 Codespaces의 VS Code에서 합니다.
+**가이드를 따라가는 방법:** 각 단계의 **실행 순서 → 작업 수행 → 완료 기준 확인** 순서로 진행합니다. 처음에는 펼쳐진 본문을 따라가고, 권한·승인 등 필수 참고 링크도 확인합니다.
 
-**처음에는 펼쳐진 본문만 순서대로 따라갑니다.** **선택 · 내부 동작**은 코드와 포털의 대응 관계가 궁금할 때만 펼칩니다. 안의 **실제 구현 코드 · 읽기 전용**도 참고 자료이며 복사해 실행하지 않습니다. 필수 명령·포털 조작·완료 기준은 접힌 설명 밖에 있습니다. 권한·승인 등 **필수로 연결한 참고 절**은 해당 단계에서 확인합니다.
-
-**포털로 이미 생성된 항목을 다시 만들지 않습니다.** 코드로 생성하는 단계는 포털에서 결과를 확인하고, 평가·Optimizer처럼 포털에서 제출하는 단계는 그 화면에서 한 번만 수행합니다. 포털 내부 구현을 추측한 SDK 코드로 대신하지 않습니다.
-
-01–03은 환경 준비, 04–09는 평가·개선, 10은 정리입니다. **04–06은 같은 평가 생성 화면에서 이어집니다.** 중간에 새 평가를 만들지 않습니다. 읽음 표시는 개인 책갈피일 뿐 실제 작업 완료 표시는 아닙니다.
-
-**v1은 변경 전 Agent, v2는 지침을 바꾼 비교 후보입니다.** 두 번호는 Agent 전체 구성의 버전입니다. 모델·도구·출력 형식은 유지합니다. 개선이 없어서 v1을 유지해도 올바른 실습 결과이며, v2 생성은 운영용 게시 승인이 아닙니다.
+| 안내 | 해야 할 일 |
+|---|---|
+| **터미널에서 실행** | 선택한 실습 터미널에서 실행합니다. Codespaces를 쓰면 파일 편집도 그 안의 VS Code에서 합니다. |
+| **포털 작업** | 별도 브라우저 탭에서 수행합니다. 그림의 계정·프로젝트 이름이 아니라 자신의 값을 사용합니다. |
+| **선택 · 내부 동작** | 원리가 궁금할 때만 펼칩니다. **실제 구현 코드 · 읽기 전용**은 참고용이며 복사해 실행하지 않습니다. |
+| **생성·제출** | 코드로 생성한 항목은 포털에서 확인만 합니다. 평가·Optimizer는 안내된 포털 화면에서 한 번만 제출하며, 추측한 SDK 코드로 대신하지 않습니다. |
+| **04–06 평가 생성** | 같은 평가 생성 화면에서 이어갑니다. 단계마다 새 평가를 만들지 않습니다. |
+| **읽음 표시** | 개인 책갈피입니다. 실제 작업 완료 여부는 각 단계의 완료 기준으로 확인합니다. |
 
 ## 01. 계정·PC·권한을 확인합니다 {#setup}
 
@@ -103,7 +121,12 @@
 
 **권장: GitHub Codespaces를 사용합니다.** GitHub 계정과 브라우저만 있으면 이 저장소의 Python·Git·Microsoft Azure CLI·잠금 의존성을 갖춘 개발환경을 준비할 수 있습니다. **Codespaces가 Microsoft Azure 구독·권한·모델 할당량까지 제공하는 것은 아닙니다.** 조직에서 Codespaces를 허용하지 않으면 아래 내 PC 경로를 사용합니다.
 
-**명령은 한 줄씩 실행합니다.** 복사 버튼은 상자 전체를 복사하므로 여러 줄이면 편집기에 먼저 붙여넣고 한 명령씩 실행합니다. `YOUR_...`는 자신의 값으로 바꾸고 큰따옴표는 유지합니다. 오류가 나면 다음 명령으로 넘어가지 않습니다.
+**명령 실행 규칙**
+
+- **한 줄씩** 실행하고, 오류가 나면 다음 명령으로 넘어가지 않습니다. 긴 명령이 여러 줄로 보여도 중간에 줄바꿈을 넣지 않습니다.
+- 복사 버튼은 **상자 전체**를 복사합니다. 여러 줄이면 편집기에 먼저 붙여넣고 한 명령씩 실행합니다.
+- `YOUR_...`는 자신의 값으로 바꾸고 큰따옴표는 유지합니다.
+- `공통 터미널` 상자는 모든 환경에서 사용합니다. `Codespaces/macOS/Linux`·`Windows PowerShell` 상자는 **자신의 환경에 해당하는 것만** 실행합니다.
 
 #### 브라우저에서 GitHub Codespaces를 엽니다 · 권장 {#setup-codespaces}
 
@@ -132,15 +155,9 @@ Python **3.12.x**, Git·Microsoft Azure CLI 버전, 실습 명령 목록과 데�
 
 **이미 설치했다면 [설치 확인](#setup-verify)부터 진행하고, 정상인 도구는 다시 설치하지 않습니다.** Windows·macOS의 아래 예시는 지원 범위를 벗어난 최신 Python이 선택되지 않도록 **3.13**을 지정합니다. 이미 다른 지원 버전을 사용한다면 `py -3.13`·`python3.13`을 해당 버전의 명령으로 바꾸고, 버전 확인과 가상환경 생성에 같은 Python을 사용합니다. 3.10 이하·3.15 이상은 이 실습의 지원 범위가 아닙니다.
 
-먼저 **내 PC의 터미널**을 엽니다. Windows는 시작 메뉴에서 **PowerShell**, macOS는 Spotlight에서 **Terminal(터미널)**, Linux는 앱 메뉴에서 터미널을 검색합니다. Microsoft Azure Portal의 Cloud Shell이나 `>>>`가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다.
+먼저 **내 PC의 터미널**을 엽니다. Windows는 시작 메뉴에서 **PowerShell**, macOS는 Spotlight에서 **Terminal(터미널)**, Linux는 앱 메뉴에서 터미널을 검색합니다. Microsoft Azure Portal의 Cloud Shell이나 `>>>`가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다. 명령은 위의 [명령 실행 규칙](#setup-local)을 따릅니다.
 
-**명령 읽는 법:** **한 명령씩** 실행하고 끝난 뒤 다음 명령으로 이동합니다. 긴 명령이 화면에서 여러 줄로 보이더라도 명령 중간에 줄바꿈을 넣지 않습니다.
-
-복사 버튼은 **상자 전체**를 복사합니다. 여러 명령이 들어 있다면 편집기에 먼저 붙여넣고 한 명령씩 실행합니다. `YOUR_...`는 자신의 값으로 바꾸고 바깥 큰따옴표는 유지합니다.
-
-`공통 터미널`은 모든 운영체제에서 사용합니다. `macOS/Linux`·`PowerShell` 상자는 바로 위 설명을 읽고 **자신의 운영체제에 해당하는 것만** 실행합니다. **오류가 나면 다음 명령으로 넘어가지 않고** 해당 단계의 문제 해결을 확인합니다.
-
-[Windows 설치](#setup-windows) · [macOS 설치](#setup-macos) · [Linux 설치](#setup-linux) 중 하나를 마친 뒤 [설치 확인](#setup-verify)으로 이동합니다.
+[Windows 설치](#setup-windows) · [macOS 설치](#setup-macos) · [Linux 설치](#setup-linux) 중 **자신의 운영체제 하나만** 따라 한 뒤 [설치 확인](#setup-verify)으로 이동합니다.
 
 #### Windows · PowerShell에서 설치합니다 {#setup-windows}
 
@@ -372,11 +389,16 @@ python -m lab bootstrap setup --environment lab-ko
 
 `lab-ko`는 한국어, `lab-en`은 영어입니다. `lab-ko-02`·`lab-en-02` 같은 별도 환경도 같은 규칙을 따릅니다. 한국어 실습의 명령 실행 결과는 `.lab/lab-ko/artifacts/`에 저장됩니다.
 
-프로그램은 **계획 → 권한·모델·할당량 검사 → 실제 승인 내용 입력 → 생성** 순서로 안내합니다. 지역은 `northcentralus`, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.
+프로그램은 다음 순서로 안내합니다.
 
-네 배포의 역할은 **Agent(답변), Judge(채점), Optimizer/검색 planner(지침 개선·검색 계획), embedding(검색용 숫자 변환)**입니다. 모델을 직접 만드는 실습이 아니라 준비된 모델을 호출할 환경을 만듭니다.
+1. **계획:** 지역은 `northcentralus`, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.
+    - **네 배포의 역할:** **Agent(답변), Judge(채점), Optimizer/검색 planner(지침 개선·검색 계획), embedding(검색용 숫자 변환)**
+    - 모델을 직접 만드는 실습이 아니라 준비된 모델을 호출할 환경을 만듭니다.
+2. **권한·모델·할당량 검사:** 생성 전에 준비 상태를 확인합니다.
+3. **실제 승인 내용 입력:** 준비 검사가 통과하면 아래 다섯 가지를 입력합니다.
+4. **생성:** 마지막 확인에서 승인한 경우에만 만듭니다.
 
-준비 검사가 통과하면 다음 다섯 가지를 입력합니다. **01에서 실제로 승인받은 값**을 사용합니다. 값이 정해지지 않았다면 **Ctrl+C로 중단**하고 승인을 확보합니다. 마지막 생성 확인에서는 Enter로 취소할 수 있습니다.
+**입력 전에:** **01에서 실제로 승인받은 값**을 사용합니다. 값이 정해지지 않았다면 **Ctrl+C로 중단**하고 승인을 확보합니다.
 
 | 질문 | 입력할 내용 |
 |---|---|
@@ -386,19 +408,29 @@ python -m lab bootstrap setup --environment lab-ko
 | 모델 호출 한도 | 승인된 양의 정수. 12문항이라도 Agent·Judge·검색·Optimizer가 여러 번 호출될 수 있습니다. |
 | 실제 승인 근거 | 본인이 승인할 권한이 있는 범위의 결정 또는 조직 승인 기록을 식별할 비공개 메모. 비밀번호·토큰은 넣지 않습니다. |
 
-**생성 전 마지막 확인:** 출력된 계정·구독·지역·자원·모델과 한도를 읽습니다. 이 빠른 경로는 **후보 최대 2개·작업 대기 최대 1시간·로그 보존 30일**을 기록합니다. GlobalStandard의 전 세계 처리, 자원 생성·자원 범위 역할 할당, 지속 과금과 불확정 총비용을 실제로 승인한 경우에만 **`CREATE lab-ko`**를 직접 입력합니다. 다른 한도가 필요하면 아래 개별 설정 경로를 사용합니다.
+**생성 전 마지막 확인:** 출력된 계정·구독·지역·자원·모델과 한도를 읽습니다. 이 빠른 경로는 **후보 최대 2개·작업 대기 최대 1시간·로그 보존 30일**을 기록합니다. 다른 한도가 필요하면 아래 개별 설정 경로를 사용합니다. GlobalStandard의 전 세계 처리, 자원 생성·자원 범위 역할 할당, 지속 과금과 불확정 총비용을 실제로 승인한 경우에만 **`CREATE lab-ko`**를 직접 입력합니다.
 
-확인 전에는 Microsoft Azure 자원을 생성하지 않습니다. 확인 후에는 실제 생성·과금이 시작될 수 있습니다. **입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며**, 삭제·학습·자동 재시도 승인도 아닙니다.
+확인 전에는 Microsoft Azure 자원을 생성하지 않으며 Enter로 취소할 수 있습니다. **확인 후에는 실제 생성·과금이 시작될 수 있습니다.** 입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며, 삭제·학습·자동 재시도 승인도 아닙니다.
+{: .note .warning}
 
-**정상 결과는 `status: APPLIED`와 `.lab/lab-ko/.env` 생성입니다.** `config.json`·`approval.json`·`manifest.json`도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다. 오류가 있으면 [생성 문제 해결](troubleshooting.md#provisioning)로 이동합니다.
+**정상 결과**
 
-**`.env`는 프로젝트 연결 주소(Project endpoint)와 모델 배포 이름을 담은 설정 파일**이며 Python 패키지 폴더인 `.venv`와 다릅니다. 이후 명령이 `--config`로 읽으므로 직접 실행하거나 `source`하지 않습니다. 생성이 실패했다면 `.env.example`을 복사하여 대신하지 않습니다.
+- 출력에 **`status: APPLIED`**가 표시되고 **`.lab/lab-ko/.env`**가 생성됩니다.
+- `config.json`·`approval.json`·`manifest.json`도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다.
+- **`.env`는 프로젝트 연결 주소(Project endpoint)와 모델 배포 이름을 담은 설정 파일**이며 Python 패키지 폴더인 `.venv`와 다릅니다. 이후 명령이 `--config`로 읽으므로 직접 실행하거나 `source`하지 않습니다. 생성이 실패했다면 `.env.example`을 복사하여 대신하지 않습니다.
+- 오류가 있으면 [생성 문제 해결](troubleshooting.md#provisioning)로 이동합니다.
 
-프로그램은 같은 파일의 언어·기록 위치도 자동으로 읽습니다. **셸에 남아 있는 과거 환경 변수보다 선택한 설정 파일이 우선**합니다. 이전 버전에서 생성한 `lab-ko`·`lab-en` 환경도 파일을 고치거나 재생성하지 않고 사용할 수 있습니다. 다른 언어의 기존 기록을 다시 표시하거나 덮어쓰지는 않습니다.
+**같은 명령을 다시 실행하면**
 
-같은 이름으로 다시 실행하면 **아직 생성 시도가 없는 계획만 이어 준비**합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 [status 조회](#resources-status)로 확인합니다.
+- 아직 생성 시도가 없는 계획만 이어 준비합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 [status 조회](#resources-status)로 확인합니다.
+- 기존의 유효한 승인 파일이 있으면 입력을 반복하지 않고 기록된 한도를 확인합니다. 기존 계획·승인값을 새 기본값으로 바꾸거나 만료 시각을 자동 연장하지 않습니다.
 
-기존의 유효한 승인 파일이 있으면 입력을 반복하지 않고 기록된 한도를 확인합니다. 기존 계획·승인값을 새 기본값으로 바꾸거나 만료 시각을 자동 연장하지 않습니다.
+<details class="guide-details optional-path" markdown="1">
+<summary>이전 버전 환경을 쓰거나 환경 변수를 직접 설정한 적이 있을 때만</summary>
+
+프로그램은 선택한 설정 파일의 언어·기록 위치를 자동으로 읽습니다. **셸에 남아 있는 과거 환경 변수보다 선택한 설정 파일이 우선**합니다. 이전 버전에서 생성한 `lab-ko`·`lab-en` 환경도 파일을 고치거나 재생성하지 않고 사용할 수 있습니다. 다른 언어의 기존 기록을 다시 표시하거나 덮어쓰지는 않습니다.
+
+</details>
 
 #### 실습 기록 파일을 만듭니다 {#resources-notes}
 
@@ -607,7 +639,7 @@ ARM 템플릿에 전달하는 실제 입력도 확인합니다. `names`·`models
 python -m lab --config .lab/lab-ko/.env preflight
 ```
 
-`checks`의 `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, `embedding_tpm`을 확인합니다. 각 항목의 `observed`가 실제 배포 TPM, `expected`가 위 최소 권장값입니다. 부족하거나 토큰 제한을 확인할 수 없으면 `BLOCKED`이며 다음 호출 단계로 진행하지 않습니다. 설정을 준비한 뒤 같은 읽기 전용 preflight를 다시 실행합니다.
+`checks`의 `agent_tpm`, `judge_tpm`, `optimizer_tpm`, `iq_planner_tpm`, `embedding_tpm`을 확인합니다. 각 항목의 `observed`는 실제 배포 TPM, `expected`는 [모델별 최소 권장값](#resources-tpm)입니다. 부족하거나 토큰 제한을 확인할 수 없으면 `BLOCKED`이며 다음 호출 단계로 진행하지 않습니다. 배포 할당량을 준비한 뒤 같은 읽기 전용 preflight를 다시 실행합니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 신원·배포·TPM 검사</summary>
@@ -659,7 +691,7 @@ python -m lab --config .lab/lab-ko/.env preflight
 
 `smoke`는 짧은 동작 확인입니다.
 
-먼저 [02의 TPM 검사](#resources-tpm)를 통과해야 합니다. 짧은 응답 한 번의 성공만으로 전체 평가에 필요한 처리량을 확보했다고 판단하지 않습니다.
+먼저 배포 TPM을 포함한 [02의 런타임 검사](#resources-preflight)를 통과해야 합니다. 짧은 응답 한 번의 성공만으로 전체 평가에 필요한 처리량을 확보했다고 판단하지 않습니다.
 
 ```sh
 python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
@@ -828,6 +860,24 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 
 **데이터셋은 평가에 사용할 질문 묶음**입니다. 이 실습에서는 **[data/optimizer/dev.jsonl](../data/optimizer/dev.jsonl)**의 **JSONL 12행**을 사용하며, 이를 줄여 **dev12**라고 부릅니다. 한 줄이 질문 한 건인 JSON 형식입니다. 편집하거나 Excel·CSV·JSON 배열로 변환하지 않습니다.
 
+| 열 | 형식 | 용도 |
+|---|---|---|
+| `query` | 문자열 | Agent에 보내는 유일한 입력 |
+| `context` | 문자열 | 지원 평가기와 사례 검토용 정책 참고 자료 |
+| `ground_truth` | JSON 문자열 | 구조화 참고 답변이며 생성 프롬프트가 아닙니다. |
+
+질문만 Agent에 전달하고, `context`·`ground_truth`는 지원 평가기와 사람의 사례 검토에 사용합니다. 제공된 나머지 데이터 파일은 이번 필수 실습에서 사용하지 않습니다.
+
+<figure class="concept-flow" id="evaluation-flow" aria-label="질문부터 응답과 채점까지의 흐름">
+<ol>
+<li><strong>질문 · query</strong><span>데이터 한 행씩 전달</span></li>
+<li><strong>Agent</strong><span>모델 + 지침 + 정책 검색</span></li>
+<li><strong>실제 답변</strong><span>answer 등 네 항목</span></li>
+<li><strong>평가기 + Judge</strong><span>점수와 채점 이유</span></li>
+</ol>
+<figcaption>정책 문서는 Agent가 도구로 검색합니다. 데이터의 참고 답변을 Agent 입력에 붙이지 않습니다. Agent는 안내만 하며 실제 환불·제출·삭제·권한 부여는 하지 않습니다.</figcaption>
+</figure>
+
 ### 터미널에서 원본의 행 수와 해시를 확인합니다 {#dataset-check}
 
 ```sh
@@ -852,24 +902,6 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 | 이후 포털의 Upload/Existing dataset | 실제 데이터셋 등록·선택은 포털에서 수행합니다. | 자신의 프로젝트에 `lab-ko-dev12` 버전 `1`을 한 번 등록합니다. 위 Python 명령은 업로드나 평가 제출을 하지 않습니다. |
 
 </details>
-
-| 열 | 형식 | 용도 |
-|---|---|---|
-| `query` | 문자열 | Agent에 보내는 유일한 입력 |
-| `context` | 문자열 | 지원 평가기와 사례 검토용 정책 참고 자료 |
-| `ground_truth` | JSON 문자열 | 구조화 참고 답변이며 생성 프롬프트가 아닙니다. |
-
-질문만 Agent에 전달하고, `context`·`ground_truth`는 지원 평가기와 사람의 사례 검토에 사용합니다. 제공된 나머지 데이터 파일은 이번 필수 실습에서 사용하지 않습니다.
-
-<figure class="concept-flow" id="evaluation-flow" aria-label="질문부터 응답과 채점까지의 흐름">
-<ol>
-<li><strong>질문 · query</strong><span>데이터 한 행씩 전달</span></li>
-<li><strong>Agent</strong><span>모델 + 지침 + 정책 검색</span></li>
-<li><strong>실제 답변</strong><span>answer 등 네 항목</span></li>
-<li><strong>평가기 + Judge</strong><span>점수와 채점 이유</span></li>
-</ol>
-<figcaption>정책 문서는 Agent가 도구로 검색합니다. 데이터의 참고 답변을 Agent 입력에 붙이지 않습니다. Agent는 안내만 하며 실제 환불·제출·삭제·권한 부여는 하지 않습니다.</figcaption>
-</figure>
 
 #### Codespaces 파일을 포털에서 업로드할 수 있게 준비합니다 {#dataset-download}
 
@@ -1012,7 +1044,12 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 ```
 
-출력의 `evaluation_id`와 **`agent_version: "1"`, `status: completed`인 run의 `run_id`**를 기록합니다. evaluation ID는 `eval_...`, run ID는 `evalrun_...` 형태이며 둘은 다릅니다. 같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 이 명령은 새 평가를 제출하지 않습니다.
+같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 **두 ID를 따로 기록**합니다. 이 명령은 새 평가를 제출하지 않습니다.
+
+| 기록할 값 | 선택 기준 | 09에서 사용할 자리 |
+|---|---|---|
+| `evaluation_id` · `eval_...` | 자신이 생성한 평가입니다. | `YOUR_EVALUATION_ID` |
+| `run_id` · `evalrun_...` | 그 평가 안의 **`agent_version: "1"`, `status: completed`**인 run입니다. | `YOUR_BASELINE_RUN_ID` |
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 평가 제출과 ID 조회의 차이</summary>
@@ -1191,11 +1228,17 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 
 **Review**에서 Agent·버전·데이터셋·평가기와 예상 비용을 확인한 뒤 승인된 비용 범위에서 한 번 **Submit**합니다. 예상 비용과 후보 수 설정은 청구 상한이 아닙니다.
 
-**Optimization runs**에서 같은 job을 엽니다. 60분 또는 승인한 대기 한도 중 짧은 시간까지 확인하고, 끝나지 않으면 상태·job ID를 기록하여 [재개 절차](troubleshooting.md#optimizer)를 따릅니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.
+**Optimization runs**에서 방금 제출한 같은 job을 열고 상태에 따라 진행합니다.
 
-작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. **Completed/Succeeded**인 작업에서 실제 생성 후보 수와 제공되는 **Token usage**를 확인합니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다.
+| 작업 상태 | 다음 행동 |
+|---|---|
+| 실행 중 | 같은 job을 확인하며 기다립니다. 새로 제출하지 않습니다. 60분 또는 승인한 대기 한도 중 짧은 시간이 지나면 상태·job ID를 기록하고 [재개 절차](troubleshooting.md#optimizer)를 따릅니다. |
+| Completed / Succeeded | 실제 후보 수·제공되는 **Token usage**를 확인하고, 원본·후보 점수와 **View changes**를 검토합니다. |
+| 실패 또는 결과 확인 불가 | 상태·job ID·오류를 보존하고 [문제 해결](troubleshooting.md#optimizer)을 확인합니다. 후보를 임의로 만들어 다음 단계로 진행하지 않습니다. |
 
-원본·후보 결과와 **View changes**를 읽습니다. 내부 **0–1 순위**는 별도 관리형 Evaluation 평균·통과율과 다릅니다. 모델·도구·추론·출력 스키마를 유지하며 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다.
+**결과 해석:** 내부 **0–1 순위**는 별도 관리형 Evaluation 평균·통과율이 아닙니다. 지침만 검토하며 모델·도구·추론·출력 스키마는 유지합니다. 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다.
+
+**비용·대기:** 작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-results">
 <img src="../web/assets/portal/09-optimizer-results.png" alt="Agent Optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
@@ -1213,10 +1256,14 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 
 1. 결과의 후보를 선택하고 **View changes(변경 내용)**에서 수정된 행동을 확인합니다. 정책에 없는 조건이나 근거 없는 확신을 추가한 후보는 사용하지 않습니다.
 2. **View changes**의 변경 후 지침에서 접힌 구간을 펼쳐 **지침 전체**를 복사합니다. 일부 변경 줄만 보인다면 제공되는 후보 상세·Download/Export에서 전체 내용을 확인합니다. 전체 지침을 확인할 수 없으면 [후보 파일 문제 해결](troubleshooting.md#optimizer)을 따르며 일부 diff만으로 파일을 만들지 않습니다.
-3. **실습 터미널과 같은 환경의 편집기**에서 `.lab/lab-ko/candidate.txt`에 **UTF-8 일반 텍스트**로 저장합니다. Codespaces라면 그 VS Code의 Explorer에서 파일을 만들고 붙여넣습니다. 내 PC의 다운로드 폴더에만 저장하면 다음 명령이 찾을 수 없습니다. Word/서식 있는 텍스트는 사용하지 않으며 파일명이 `candidate.txt.txt`가 아닌지 확인합니다. diff(변경 비교)의 `+`·`-` 표시, 화면 설명, 평가 점수는 넣지 않습니다.
+3. 복사한 지침 전체를 **`.lab/lab-ko/candidate.txt`**에 저장합니다.
+    - **위치:** 실습 터미널과 같은 환경의 편집기에서 저장합니다. Codespaces라면 그 VS Code의 Explorer에서 파일을 만들고 붙여넣습니다. 내 PC의 다운로드 폴더에만 저장하면 다음 명령이 찾을 수 없습니다.
+    - **형식:** **UTF-8 일반 텍스트**입니다. Word/서식 있는 텍스트는 사용하지 않으며 파일명이 `candidate.txt.txt`가 아닌지 확인합니다.
+    - **내용:** 지침 전체만 넣습니다. diff(변경 비교)의 `+`·`-` 표시, 화면 설명, 평가 점수는 넣지 않습니다.
 4. 실제 job/candidate ID와 직접 수정한 부분·이유를 `notes.md`에 기록합니다. 다음 단계에는 이 파일을 사용하고 저장소의 `prompts/candidate.txt`로 대체하지 않습니다.
 
 **이 실습에서는 Promote candidate를 누르지 않습니다.** 09의 CLI가 본인의 소유권 기록과 고정 구성을 확인하며 v2를 한 번 생성합니다. 포털에서 먼저 승격하면 이 경로의 소유권 확인이 맞지 않을 수 있습니다. v3·v4 등 정식 버전을 계속 만들지 않으며 새 버전 생성과 운영용 게시·활성화 승인은 구분합니다.
+{: .note .warning}
 
 <p class="share-checkpoint" id="share-optimizer"><strong>공유:</strong> 검토한 후보를 제시하고 달라진 지침 행동과 개선·회귀 가능성을 설명합니다.</p>
 
@@ -1268,11 +1315,15 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 python scripts/add_foundry_eval_run.py --endpoint "YOUR_PROJECT_ENDPOINT" --subscription "YOUR_SUBSCRIPTION_ID" --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2 --out .lab/lab-ko/artifacts/foundry-evaluations/candidate-v2.json
 ```
 
-기본 대기는 30분입니다. 승인한 한도가 더 짧다면 `--wait-seconds`와 초 단위 값을 추가합니다. 완료되면 `status: completed`, `result_counts.total: 12`와 결과 12건을 확인합니다.
+기본 대기는 30분입니다. 승인한 한도가 더 짧다면 `--wait-seconds`와 초 단위 값을 추가합니다. helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 확인합니다. 결과에 따라 다음과 같이 진행합니다.
 
-대기 한도를 넘으면 종료 코드 2와 **Still running** 안내가 나오며 원격 작업은 계속될 수 있습니다. receipt에 run ID가 있으면 **같은 명령·같은 `--out`**으로 수집을 재개합니다. run ID가 없거나 같은 이름의 원격 run이 있으면 [중복 제출 방지 절차](troubleshooting.md#evaluation)를 따릅니다. receipt를 삭제하거나 이름을 바꾸어 다시 제출하지 않습니다.
+| 결과 | 다음 행동 |
+|---|---|
+| `status: completed`, `result_counts.total: 12` | 결과 12건을 확인하고 [3. v1/v2 비교](#decision-compare)로 진행합니다. |
+| 종료 코드 2와 **Still running** 안내 | 대기 한도를 넘었지만 원격 작업은 계속될 수 있습니다. receipt에 run ID가 있으면 **같은 명령·같은 `--out`**으로 수집을 재개합니다. |
+| run ID가 없거나 같은 이름의 원격 run이 있음 | [중복 제출 방지 절차](troubleshooting.md#evaluation)를 따릅니다. |
 
-helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 확인합니다.
+receipt를 삭제하거나 이름을 바꾸어 다시 제출하지 않습니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 같은 평가에 v2 실행 추가</summary>
@@ -1310,7 +1361,11 @@ helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 
 <figcaption><strong>비교 방향과 결과를 함께 확인합니다.</strong> Baseline을 v1으로 선택하고 두 run의 점수·통과 건수·통계 결과를 비교합니다. Inconclusive는 차이가 입증되지 않았다는 뜻이며 동등성의 증거로 해석하지 않습니다. <a href="../web/assets/portal/20-evaluation-comparison.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-12건 전체의 응답·점수·이유를 나란히 비교합니다. 전체 기준 통과와 각 지표의 통과 건수·평균이 낮아지지 않고 하나 이상이 명확히 개선되어야 합니다. 사실·분류·응답 형식도 확인하며 지연·토큰·통계 결과를 함께 기록합니다.
+다음 순서로 확인한 뒤 아래 기록표를 채웁니다.
+
+1. **비교 가능한 결과인지 확인합니다.** 같은 질문·모델·도구·평가기 조건의 12건 전체가 있어야 합니다. 오류·누락·조건 차이가 있으면 판단을 보류합니다.
+2. **응답과 품질을 비교합니다.** 12건의 응답·점수·이유를 나란히 읽고 사실·분류·응답 형식을 확인합니다. **두 기준 모두 통과한 건수, 각 지표의 통과 건수와 평균이 모두 유지되거나 올라가고, 그중 하나 이상이 실제로 개선**되어야 합니다. 한 지표의 상승으로 다른 지표의 하락을 상쇄하지 않습니다. 범용 평가를 통과했어도 실제 정책 오류가 있으면 채택하지 않습니다.
+3. **상충 관계와 불확실성을 기록합니다.** 지연·토큰·Microsoft Foundry의 통계 결론을 확인합니다. 지연은 응답을 기다린 시간, 토큰은 모델이 처리한 텍스트 양입니다. 작은 점수 개선에도 시간·비용 부담이 커질 수 있습니다.
 
 <p class="share-checkpoint" id="share-optimized"><strong>결과 설명:</strong> 실제 개선, 같은 평가 기준, 회귀와 남은 불확실성을 설명합니다. 관측된 개선이 향후 모든 확률적 실행의 개선을 보장하지는 않습니다.</p>
 
@@ -1329,11 +1384,7 @@ helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 
 
 </div>
 
-평균은 실제 점수의 평균이며 Relevance 평균을 정확도 백분율로 바꾸지 않습니다. 오류·누락이 있으면 점수를 0으로 채우거나 성공 행만으로 비교하지 않고 **판단 보류**로 남깁니다. 지연·토큰 또는 통계 결과가 제공되지 않으면 **미제공**으로 적으며 0으로 추정하지 않습니다.
-
-표 아래에 **Microsoft Foundry의 통계 결론, 바뀐 답변 사례, 최종 판단과 이유**를 적습니다. 모든 품질 통과 건수·평균이 유지되거나 올라가고 하나 이상이 실제로 개선되어야 v2 채택 후보로 검토합니다. 한 지표만 올라가고 다른 지표가 내려가면 이 조건을 만족하지 않습니다. 범용 평가가 통과했어도 실제 정책 오류가 있으면 채택하지 않습니다.
-
-**지연(latency)**은 응답을 기다린 시간, **토큰(tokens)**은 모델이 처리한 텍스트 양의 단위입니다. 점수가 조금 좋아져도 시간·비용 부담이 커질 수 있습니다.
+**기록할 때:** Relevance 평균을 정확도 백분율로 바꾸지 않습니다. 오류·누락 점수를 0으로 채우거나 성공 행만 비교하지 않습니다. 지연·토큰·통계 결과가 없으면 **미제공**으로 적고 0으로 추정하지 않습니다. 표 아래에는 **통계 결론, 바뀐 답변 사례, 아래에서 선택한 최종 판단과 이유**를 적습니다.
 
 | 최종 판단 | 선택할 때 |
 |---|---|
@@ -1433,17 +1484,19 @@ az group show --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GR
 az resource list --subscription "YOUR_SUBSCRIPTION_ID" --resource-group "YOUR_LAB_RESOURCE_GROUP" --query "[].{name:name,type:type}" -o table
 ```
 
-**그룹 전체 삭제는 되돌릴 수 없으며 그룹 안의 Microsoft Foundry·모델·Search·모니터링 자원이 함께 삭제됩니다.** 보관이 끝났고 정확한 그룹 전체를 삭제하도록 승인받은 경우에만 다음 두 방법 중 하나를 선택합니다.
+**그룹 전체 삭제는 되돌릴 수 없으며 그룹 안의 Microsoft Foundry·모델·Search·모니터링 자원이 함께 삭제됩니다.** 보관이 끝났고 정확한 그룹 전체를 삭제하도록 승인받은 경우에만 아래 **두 방법 중 하나**를 선택합니다.
+{: .note .warning}
 
 Application Insights의 기본 Smart Detection Action group은 다른 그룹의 경고에서도 공유할 수 있습니다. 전용 실습 그룹이라는 이유만으로 모든 항목이 독립적이라고 가정하지 않습니다. 공유 연결이 있으면 담당자와 종속성을 먼저 정리하거나 해당 그룹을 보존하며, 확인을 위해 경고·권한·잠금을 임의로 삭제하지 않습니다.
 
-1. **포털 방법:** Microsoft Azure Portal → Resource groups → 정확한 그룹 → **Delete resource group**을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.
-2. **CLI 방법:** 다음 명령을 실행하고 확인 질문에서 이름·범위를 다시 확인한 뒤 동의합니다. `--yes`를 붙여 확인을 생략하지 않습니다.
+**방법 A · 포털:** Microsoft Azure Portal → Resource groups → 정확한 그룹 → **Delete resource group**을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.
 
 <figure class="portal-shot" id="portal-delete-review">
 <img src="../web/assets/portal/28-delete-review.png" alt="리소스 그룹 삭제 확인 창의 대상 목록, 그룹 이름 입력란과 Delete·Cancel 버튼입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>삭제 예정 목록과 확인란을 먼저 읽습니다.</strong> 그룹 이름과 전체 자원 목록을 대조합니다. 승인받은 경우에만 확인란에 그룹 이름을 입력하고 Delete로 진행합니다. 대상이 다르거나 승인되지 않았다면 Cancel로 닫습니다. <a href="../web/assets/portal/28-delete-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
+
+**방법 B · CLI:** 다음 명령을 실행하고 확인 질문에서 이름·범위를 다시 확인한 뒤 동의합니다. `--yes`를 붙여 확인을 생략하지 않습니다.
 
 ```sh
 az group delete --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GROUP"

@@ -401,6 +401,18 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual(page.next_links, links[1:])
                 self.assertIn('data-progress-revision="end-to-end-10"', (SITE / filename).read_text())
 
+    def test_learning_path_groups_the_ten_steps_into_four_phases(self):
+        for filename in ("index.html", "ko/index.html"):
+            with self.subTest(filename=filename):
+                path = re.search(
+                    r'<ol class="learning-path".*?</ol>', (SITE / filename).read_text(), re.DOTALL,
+                ).group(0)
+                phases = re.findall(r'<li><p class="phase-title">.*?</ul></li>', path, re.DOTALL)
+                self.assertEqual(
+                    [re.findall(r'href="#([^"]+)"', phase) for phase in phases],
+                    [STEPS[:3], STEPS[3:7], STEPS[7:9], STEPS[9:]],
+                )
+
     def test_all_guides_and_entry_points_are_role_neutral(self):
         role_terms = re.compile(
             r"\b(?:operator|facilitator|instructor|administrator)s?\b|강사|운영자|관리자|인수표",

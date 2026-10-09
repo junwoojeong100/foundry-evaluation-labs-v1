@@ -164,9 +164,15 @@ summary { cursor: pointer; }
 .guide-content li::marker { color: var(--teal); font-weight: 650; }
 .guide-content li > ul, .guide-content li > ol { margin-top: 0.35rem; margin-bottom: 0.5rem; }
 .guide-content li > p { margin: 0.5rem 0; }
-.guide-content .learning-path { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.65rem; margin: 1.5rem 0; padding: 0; list-style: none; }
+.guide-content .learning-path { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.3rem; margin: 1.5rem 0; padding: 0; list-style: none; }
 .guide-content .learning-path li { margin: 0; padding: 0; }
-.learning-path a { display: flex; align-items: center; gap: 0.65rem; min-height: 3.5rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--canvas); color: var(--ink); font-size: 0.85rem; text-decoration: none; }
+.guide-content .learning-path > li { position: relative; display: flex; flex-direction: column; gap: 0.55rem; padding: 0.65rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
+.guide-content .learning-path > li:not(:last-child)::after { content: "→"; position: absolute; top: 1.05rem; left: calc(100% + 0.28rem); color: var(--teal); font-size: 1.05rem; line-height: 1; }
+.guide-content .learning-path .phase-title { margin: 0; padding: 0.35rem 0.4rem 0.15rem; line-height: 1.5; }
+.guide-content .learning-path .phase-title strong { display: block; font-size: 0.95rem; white-space: normal; }
+.guide-content .learning-path .phase-title span { display: block; margin-top: 0.25rem; color: var(--muted); font-size: 0.76rem; line-height: 1.55; }
+.guide-content .learning-path ul { display: grid; flex: 1; align-content: start; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.learning-path a { display: flex; align-items: center; gap: 0.65rem; height: 100%; min-height: 3rem; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--paper); color: var(--ink); font-size: 0.82rem; line-height: 1.5; text-decoration: none; }
 .learning-path a:hover { border-color: var(--teal); background: var(--teal-soft); }
 .guide-content .learning-path strong { flex: 0 0 auto; white-space: nowrap; color: var(--teal); font-variant-numeric: tabular-nums; }
 .guide-content .step-next { margin: 2rem 0 0; }
@@ -316,6 +322,11 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .main-content { padding-top: 2rem; }
 }
 
+@media (max-width: 52rem) {
+  .guide-content .learning-path { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+  .guide-content .learning-path > li:not(:last-child)::after { display: none; }
+}
+
 @media (max-width: 42rem) {
   :root { --header-height: 7rem; }
   .header-inner { flex-wrap: wrap; padding: 0.4rem 0.75rem; gap: 0.35rem 0.4rem; }
@@ -335,7 +346,6 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .guide-content h1 { font-size: 2.05rem; }
   .guide-content h1 + p { font-size: 1.05rem; }
   .guide-content .hero-summary { font-size: 1.05rem; }
-  .guide-content .learning-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .guide-content div.hero-summary { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; padding: 1rem; }
   .guide-content .hero-summary > div { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0.7rem; }
   .guide-content .hero-summary > div > strong { margin-bottom: 0; line-height: 1.9; }
@@ -372,6 +382,7 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
 
 @media (max-width: 30rem) {
   .site-header .brand-text > span { display: none; }
+  .guide-content .learning-path { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media screen {
@@ -396,6 +407,7 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   :root[data-theme="dark"] .chapter-nav a { color: var(--body-ink); }
   :root[data-theme="dark"] .chapter-nav a[aria-current="location"] { color: var(--teal); }
   :root[data-theme="dark"] .guide-content strong { color: var(--ink); }
+  :root[data-theme="dark"] .guide-content .learning-path strong { color: var(--teal); }
   :root[data-theme="dark"] .guide-content h1 + p,
   :root[data-theme="dark"] .guide-content .hero-summary { color: var(--muted); }
   :root[data-theme="dark"] kbd,
@@ -457,7 +469,9 @@ body:has(dialog[open]), body.scroll-locked { overflow: hidden; }
   .guide-content h4, .guide-content h5, .guide-content h6 { font-size: 10.5pt; color: #111; }
   .guide-content h1, .guide-content h2, .guide-content h3, .guide-content h4 { break-after: avoid-page; page-break-after: avoid; }
   .guide-content p, .guide-content li { orphans: 3; widows: 3; }
-  .guide-content .learning-path { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2mm; margin: 4mm 0; break-inside: avoid-page; }
+  .guide-content .learning-path { gap: 4mm; margin: 4mm 0; break-inside: avoid-page; }
+  .guide-content .learning-path > li { padding: 2mm; border-color: #aaa; border-radius: 0; background: #fff; }
+  .guide-content .learning-path > li:not(:last-child)::after { display: none; }
   .learning-path a { min-height: 0; padding: 2mm; background: #fff; border-color: #aaa; font-size: 9pt; }
   .guide-content a { color: #164e81; text-decoration: underline; }
   .guide-content a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; overflow-wrap: anywhere; }

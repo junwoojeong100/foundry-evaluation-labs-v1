@@ -8,19 +8,17 @@
 
 Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 운영 인증이 아니라 **평가 → 학습 → 개선 → 재평가**를 익힙니다.
 
-**권장 시작 경로는 GitHub Codespaces → Microsoft Azure 로그인 → 환경 생성 명령 한 개입니다.** [01의 Codespaces 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces)로 브라우저에서 개발환경을 열고, [02의 `python -m lab bootstrap setup --environment lab-ko`](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-quickstart)를 실행합니다. 현재 계정·구독과 고정 모델을 확인하고 실제 승인값을 입력하면 계획·승인 파일과 환경을 준비합니다. JSON을 직접 작성하지 않으며 생성 확인 전에는 자원을 만들지 않습니다.
+## 시작하기
 
-**언어와 실행 기록 위치도 자동 설정됩니다.** `lab-ko`는 한국어, `lab-en`은 영어이며 `lab-ko-02` 같은 이름도 지원합니다. 이후 명령은 기존 `--config`에서 설정을 읽으므로 두 환경 변수를 직접 입력하거나 새 터미널마다 다시 지정하지 않습니다.
+1. **[01부터 시작합니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup).** 계정·구독·생성 및 역할 할당 권한·비용 승인을 확인합니다. Microsoft Azure·Microsoft Foundry 경험은 필요하지 않습니다.
+2. **[GitHub Codespaces를 엽니다 · 권장](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces).** Python·Git·Microsoft Azure CLI·의존성이 준비됩니다. 내 PC를 쓰려면 [로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)에 따라 Python **3.11–3.14**·Git·Microsoft Azure CLI를 준비합니다. GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
+3. **[로그인 후 02의 환경 생성 안내를 따릅니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-quickstart).** `python -m lab bootstrap setup --environment lab-ko`가 계획·승인 파일과 환경을 준비합니다. 현재 계정·구독·고정 모델과 실제 승인값을 확인하며, 생성 확인 전에는 자원을 만들지 않습니다.
 
-**Codespaces는 Python·Git·Microsoft Azure CLI·실습 의존성을 준비하므로 PC 설치를 생략합니다.** 내 PC에서 진행할 때만 **Python 3.11–3.14·Git·Microsoft Azure CLI**를 [01의 로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)로 준비합니다. 어느 경로든 본인의 구독·권한·비용 승인은 필요하며 GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
+언어와 기록 위치는 환경 이름으로 정해집니다. `lab-ko`·`lab-ko-02`는 한국어, `lab-en`은 영어입니다. JSON이나 환경 변수를 직접 작성할 필요 없이 이후 명령은 기존 `--config`를 사용합니다.
 
-**Microsoft Azure·Microsoft Foundry를 처음 접한다면 실습 가이드부터 읽습니다.** 계정·구독·프로젝트의 차이와 터미널 여는 방법부터 설명합니다. 04–06은 한 번의 평가 생성 과정이며 클릭 순서와 점수 해석 예시를 제공합니다. 환경 설정 참고와 체크리스트도 같은 실습 경로를 돕는 자료이며 별도 역할로 작업을 나누지 않습니다. Microsoft Azure 자원을 만들기 전에 본인에게 필요한 생성·역할 할당 권한과 비용 승인을 확보합니다.
+가이드에서는 **실행 순서 → 명령·포털 조작 → 완료 기준**을 따라갑니다. **04–06은 같은 평가 생성 화면**에서 이어지며, **선택 · 내부 동작**의 읽기 전용 구현 코드는 실행하지 않습니다. 환경 설정 참고와 체크리스트는 같은 실습을 돕는 자료이며 모든 참여자가 직접 수행합니다. 명령·설명은 JavaScript 없이도 읽을 수 있습니다.
 
-시작 화면에서 실습의 정의·중요성·진행 방식·완료 산출물을 설명합니다. 각 단계는 **하는 일 → 중요한 이유 → 방법·위치 → 실제 화면과 실행 → 완료 기준**으로 읽을 수 있도록 구성합니다.
-
-**처음에는 펼쳐진 본문을 따라갑니다.** 각 단계의 **실행 순서 → 명령·포털 조작 → 완료 기준**을 확인합니다. 코드·포털 대응표와 구현 원문은 **선택 · 내부 동작**에 접어 두어 필수 절차와 구분합니다. **터미널에서 실행** 상자에는 OS와 복사 버튼이 표시되며, 읽기 전용 구현 코드는 실행하지 않습니다. 명령·설명은 JavaScript 없이도 읽을 수 있습니다.
-
-[중단한 실습 재개](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-resume), [복사용 실습 기록 양식](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-notes), [v1/v2 비교 기록표](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#decision-compare)를 본문에서 제공합니다. 완료한 작업을 다시 생성·제출하지 않고 같은 기록으로 이어갑니다.
+재개할 때는 [재개 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-resume)를 확인하고 완료한 작업을 다시 생성·제출하지 않습니다. 본문의 [실습 기록 양식](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-notes)과 [v1/v2 비교 기록표](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#decision-compare)에 자신의 결과를 남깁니다.
 
 ## 고정된 모델 역할과 비교 조건
 
