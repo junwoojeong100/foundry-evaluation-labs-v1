@@ -2,7 +2,7 @@
 
 This is a supporting library/reference dataset, not a required step in the
 current ten-step participant guide. The main workshop uses Microsoft Foundry managed
-evaluation and the agent optimizer; its setup and cleanup are documented separately.
+evaluation and Agent Optimizer; its setup and cleanup are documented separately.
 
 `fixtures.jsonl` contains **16 newly authored synthetic examples**, including
 correct answers, policy-date mistakes, fabricated approvals, stale retrieval,

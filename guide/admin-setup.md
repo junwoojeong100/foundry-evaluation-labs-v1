@@ -115,7 +115,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 카탈로그 평가기 버전은 비공개 서비스 루브릭이 완전히 고정됐다는 증거가 아닙니다. 실제 정의·설정과 이 한계를 남깁니다. 재사용 dev12의 개선은 향후 점수·독립적 일반화·운영 승인을 보장하지 않습니다.
 
-**필수 비교는 [09의 Microsoft Foundry Compare runs](handbook.md#decision-compare)에서 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 독립 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 별도로 사용할 때는 이 도구의 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 언어를 일치시킵니다.
+**필수 비교는 [09에서 Microsoft Foundry의 Compare runs](handbook.md#decision-compare)로 수행합니다.** `scripts/compare_foundry_eval.py`는 선택 사항인 독립 비교 도구이며 이 경로에서 추가 실행하지 않습니다. 별도로 사용할 때는 이 도구의 `--language ko`/`--language en`으로 보고서 언어와 기본 dev12를 선택하고, 직접 지정한 데이터셋과 언어를 일치시킵니다.
 
 ### 평가 응답 매핑을 점검합니다 {#evaluation-mapping}
 

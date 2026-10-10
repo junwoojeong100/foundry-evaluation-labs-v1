@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, Agent Optimizer, comparison, and verified cleanup.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
   <meta property="og:title" content="Evaluate and improve a customer-support Agent · v1">
-  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, Agent Optimizer, comparison, and verified cleanup.">
   <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <meta name="twitter:card" content="summary">
   <title>Evaluate and improve a customer-support Agent · v1 · Microsoft Foundry Lab Guide</title>
@@ -61,9 +61,9 @@
 <li><a href="#agent">03. Connect policies and create the Agent</a></li>
 <li><a href="#start">04. Register the dataset</a></li>
 <li><a href="#prepare">05. Select evaluation criteria</a></li>
-<li><a href="#baseline">06. Run a Microsoft Foundry evaluation</a></li>
+<li><a href="#baseline">06. Run an evaluation in Microsoft Foundry</a></li>
 <li><a href="#analyze">07. Read scores and reasons</a></li>
-<li><a href="#optimize">08. Improve instructions with the agent optimizer</a></li>
+<li><a href="#optimize">08. Improve instructions with Agent Optimizer</a></li>
 <li><a href="#decision">09. Reevaluate and compare v1/v2</a></li>
 <li><a href="#cleanup">10. Save results and delete resources</a></li>
 </ul>
@@ -136,11 +136,11 @@
 <li><p class="phase-title"><strong>Evaluate</strong><span>04–07 · Score v1 on 12 questions</span></p><ul>
 <li><a href="#start"><strong>04</strong> Register the dataset</a></li>
 <li><a href="#prepare"><strong>05</strong> Select evaluation criteria</a></li>
-<li><a href="#baseline"><strong>06</strong> Run a Microsoft Foundry evaluation</a></li>
+<li><a href="#baseline"><strong>06</strong> Run an evaluation in Microsoft Foundry</a></li>
 <li><a href="#analyze"><strong>07</strong> Read scores and reasons</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Improve · Compare</strong><span>08–09 · v2 with new instructions only</span></p><ul>
-<li><a href="#optimize"><strong>08</strong> Improve instructions with the agent optimizer</a></li>
+<li><a href="#optimize"><strong>08</strong> Improve instructions with Agent Optimizer</a></li>
 <li><a href="#decision"><strong>09</strong> Reevaluate and compare v1/v2</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Clean up</strong><span>10 · Save records, then delete</span></p><ul>
@@ -249,7 +249,7 @@
 </div>
 <div>
 <dt>Project</dt>
-<dd>The Microsoft Foundry workspace for your Agents, data, and evaluations. Stay in the same project throughout the lab.</dd>
+<dd>The development boundary inside Microsoft Foundry for your Agents, data, and evaluations. Stay in the same project throughout the lab.</dd>
 </div>
 <div>
 <dt>Model</dt>
@@ -878,7 +878,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span><code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Save the actual project connection after successful creation.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare <strong>Microsoft Foundry Home → Project endpoint</strong>, not Azure OpenAI endpoint.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare <strong>Home → Project endpoint</strong> in Microsoft Foundry, not Azure OpenAI endpoint.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span>Role assignments and project/Search managed identities</td>
@@ -1645,7 +1645,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>client.embeddings.create(...)</code> in <code>embed()</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Send eight policy titles/contents to the actual embedding deployment.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Foundry <strong>View deployments → embedding deployment → Details</strong>: check the model/name. Vectors are stored in Search, not in the agent playground settings.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Foundry <strong>View deployments → embedding deployment → Details</strong>: check the model/name. Vectors are stored in Search, not in the Agent's Playground settings.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>PUT</code>/<code>POST</code> in <code>prepare_knowledge()</code></td>
@@ -2074,7 +2074,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: Agent configuration and fixed versions</summary>
 <h4 id="agent-code-portal">Code ↔ portal · inspect the full Agent configuration</h4>
-<p class="execution-guide"><strong>Where to act:</strong> Run <a href="#agent-create">v1 creation above</a>, then inspect the version, configuration, and actual response in the <a href="#agent-playground">agent playground below</a>. Do not recreate it or save another version in the portal.</p>
+<p class="execution-guide"><strong>Where to act:</strong> Run <a href="#agent-create">v1 creation above</a>, then inspect the version, configuration, and actual response in the <a href="#agent-playground">Playground below</a>. Do not recreate it or save another version in the portal.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -2257,7 +2257,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </details>
 <h3 id="agent-playground">Verify v1's response and tool call in Microsoft Foundry</h3>
 <figure class="portal-shot" id="portal-agent-configuration">
-<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Agent playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Playground tab of the Agent with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <a href="../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -2410,7 +2410,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <div class="lab-concept" data-learning-frame="prepare">
 <p><strong>What:</strong> Select Relevance, TaskAdherence, and the actual Judge deployment.</p>
 <p><strong>Why:</strong> Defining scales, pass rules, and mappings beforehand prevents moving the criteria after seeing results. These two evaluators use different scales.</p>
-<p><strong>How · where:</strong> Open each evaluator's settings in Microsoft Foundry Criteria and confirm the threshold and Judge. Send only query to the Agent.</p>
+<p><strong>How · where:</strong> Open each evaluator's settings in the <strong>Criteria</strong> step of Microsoft Foundry and confirm the threshold and Judge. Send only query to the Agent.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#criteria-configure">Microsoft Foundry · input/evaluators</a> → <a href="#portal-evaluation-criteria">Confirm criteria/Judge</a> → <a href="#baseline-submit">06 · review/submit</a>.</p>
@@ -2422,7 +2422,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <li>In <strong>Configure agents</strong>, leave the custom prompt override unset. Use <strong><code>{{item.query}}</code> only</strong> as user input. This template inserts each row's question: <strong>keep the braces and text unchanged</strong>, rather than replacing them with your own question or reference answer.</li>
 <li>If field mapping appears, connect the input <code>query</code> to the dataset's <code>query</code> column. Mapping pairs <strong>an input field with a data column</strong>. Do not append <code>context</code> or <code>ground_truth</code> to the Agent input.</li>
 <li>In <strong>Criteria → Add evaluators</strong>, retain only the two evaluators below and remove other defaults. TaskAdherence can also appear as <strong>Task Adherence</strong>.</li>
-<li>Open each evaluator's settings, set its pass rule below, and select <strong>Apply</strong>. Under <strong>Evaluation model/Judge</strong>, select the <strong>deployment name identified by <code>JUDGE_DEPLOYMENT</code></strong> in your own <code>.lab/lab-en/.env</code>.</li>
+<li>Open each evaluator's settings, set its pass rule below, and select <strong>Apply</strong>. Under <strong>Judge model</strong>, select the <strong>deployment name identified by <code>JUDGE_DEPLOYMENT</code></strong> in your own <code>.lab/lab-en/.env</code>.</li>
 </ol>
 <table>
 <thead>
@@ -2468,7 +2468,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>initialization_parameters.deployment_name</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span>Select your <code>JUDGE_DEPLOYMENT</code> under each evaluator's <strong>Evaluation model/Judge</strong>.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span>Select your <code>JUDGE_DEPLOYMENT</code> as the <strong>Judge model</strong>.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>data_mapping.query = {{item.query}}</code></td>
@@ -2563,9 +2563,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </figure>
 
 <p class="completion-check"><strong>Completion criteria:</strong> Confirm and record both evaluator scales, thresholds, mappings, and the actual Judge in the same unsubmitted wizard. Step 06 creates the remote evaluation definition when you submit. Reevaluation then uses that saved definition.</p>
-<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run a Microsoft Foundry evaluation →</a></p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run an evaluation in Microsoft Foundry →</a></p>
 
-<h2 id="baseline">06. Run a Microsoft Foundry evaluation</h2>
+<h2 id="baseline">06. Run an evaluation in Microsoft Foundry</h2>
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>What:</strong> Generate real responses from pinned v1 and collect managed scores and reasons.</p>
 <p><strong>Why:</strong> A candidate needs a recorded starting point for comparison. Completed means processing ended, not that every response was correct.</p>
@@ -2642,7 +2642,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: evaluation submission versus ID lookup</summary>
 <h4 id="baseline-code-portal">Code ↔ portal · distinguish submission from lookup</h4>
-<p class="execution-guide"><strong>Where to act:</strong> Submit with <a href="#baseline-submit">Microsoft Foundry Submit</a>, then retrieve IDs with <a href="#baseline-identifiers"><code>native-evals</code> above</a>. The lookup command never submits another evaluation.</p>
+<p class="execution-guide"><strong>Where to act:</strong> Submit the evaluation in <a href="#baseline-submit">Microsoft Foundry</a>, then retrieve IDs with <a href="#baseline-identifiers"><code>native-evals</code> above</a>. The lookup command never submits another evaluation.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -2874,18 +2874,18 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="share-checkpoint" id="share-baseline"><strong>Discuss:</strong> State the run ID, each metric's scale/pass count, a concrete problematic answer and the instruction behavior you want to improve.</p>
 
 <p class="completion-check"><strong>Completion criteria:</strong> Use an actual case to explain what you intend to change, or why you would retain the current instructions. An average score alone is insufficient.</p>
-<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with the agent optimizer →</a></p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
 
-<h2 id="optimize">08. Improve instructions with the agent optimizer</h2>
+<h2 id="optimize">08. Improve instructions with Agent Optimizer</h2>
 <p><a id="tune"></a></p>
 <div class="lab-concept" data-learning-frame="optimize">
-<p><strong>What:</strong> Generate instruction candidates with the agent optimizer and review the changes.</p>
+<p><strong>What:</strong> Generate instruction candidates with Agent Optimizer and review the changes.</p>
 <p><strong>Why:</strong> Candidate generation does not guarantee improvement. A higher internal rank cannot justify invented policy or changed model/tool conditions.</p>
 <p><strong>How · where:</strong> Run Instruction only in Microsoft Foundry and inspect View changes. Save complete reviewed instructions and their actual provenance privately.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#optimizer-configure">Microsoft Foundry · configure optimization</a> → <a href="#optimizer-results">Submit/inspect results</a> → <a href="#optimizer-candidate">Editor · save complete instructions</a>.</p>
-<p><strong>The agent optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
+<p><strong>Agent Optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
 <h3 id="optimizer-configure">Configure instruction-only optimization in Microsoft Foundry</h3>
 <ol>
 <li>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize</strong>.</li>
@@ -2931,13 +2931,13 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.</p>
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
 <figcaption><strong>Reuse the same English data.</strong> Select the dev12 registration/version used for the baseline and include all 12 cases. Editing or regenerating the file changes the comparison conditions. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -2969,7 +2969,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p><strong>Interpretation:</strong> The internal <strong>0–1 ranking</strong> is not the separate managed evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection.</p>
 <p><strong>Cost and waiting:</strong> One job includes multiple Agent, Judge, and retrieval calls. Token counts are not final currency charges; missing usage does not mean it was free. Stopping your wait does not cancel the job.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and keep the reason for the closing note in 10. <a href="../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -3038,7 +3038,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <div class="lab-concept" data-learning-frame="decision">
 <p><strong>What:</strong> Reevaluate changed instructions under the same definition and record retain v1, accept v2, or hold.</p>
 <p><strong>Why:</strong> A v2 label is not improvement evidence. Consider actual errors, latency/tokens, and statistical uncertainty alongside quality.</p>
-<p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case in Microsoft Foundry Compare runs. Do not publish to production.</p>
+<p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case with <strong>Compare runs</strong> in Microsoft Foundry. Do not publish to production.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#decision-agent">Terminal · create v2</a> → <a href="#decision-run">Add a run to the same evaluation</a> → <a href="#decision-compare">Microsoft Foundry · compare v1/v2</a>.</p>

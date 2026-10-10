@@ -115,7 +115,7 @@ Unable to create data source configuration from item schema
 | 필수 response 칸이 Unassigned입니다. | [매핑 점검](admin-setup.md#evaluation-mapping)에서 Agent 대상·query 열·서비스 생성 응답 매핑을 대조합니다. JSONL에 정답을 response 열로 추가하지 않으며 해결 전에는 제출하지 않습니다. |
 | 결과 행·점수가 빠졌습니다. | 실패·누락을 보관하고 분모 12를 줄이지 않습니다. 점수를 0이나 통과로 만들어 넣지 않습니다. |
 
-## Agent optimizer·결과 해석 {#optimizer}
+## Agent Optimizer·결과 해석 {#optimizer}
 
 | 증상 | 조치와 진행 기준 |
 |---|---|

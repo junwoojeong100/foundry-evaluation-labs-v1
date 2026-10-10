@@ -115,7 +115,7 @@ Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifier
 
 Catalog evaluator versions are not proof that the private service rubric is fully pinned. Preserve the actual definition, settings and this limitation. A passing gate on reused dev12 does not guarantee future scores, independent generalization or production approval.
 
-**The required comparison uses [Microsoft Foundry Compare runs in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, its `--language ko`/`--language en` option selects report language and default dev12; match any explicit dataset to that language.
+**The required comparison uses [Compare runs in Microsoft Foundry in 09](handbook.md#decision-compare).** `scripts/compare_foundry_eval.py` is an optional standalone tool, not another command required in this path. When using it separately, its `--language ko`/`--language en` option selects report language and default dev12; match any explicit dataset to that language.
 
 ### Check evaluation response mappings {#evaluation-mapping}
 

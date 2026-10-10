@@ -2,7 +2,7 @@
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
-**Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed evaluation and the agent optimizer to evaluate and improve an Agent against representative business tasks:
+**Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
 
 > Account, tools, and access → Microsoft Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
 
@@ -26,7 +26,7 @@ When returning, use the [resume instructions](https://junwoojeong100.github.io/f
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
 | Microsoft Foundry evaluation Judge | **gpt-6-luna / 2026-09-22** |
-| Agent optimizer generator | **gpt-5.5 / 2026-04-24** |
+| Agent Optimizer generator | **gpt-5.5 / 2026-04-24** |
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. Never weaken v1 to manufacture improvement.
 

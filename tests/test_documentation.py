@@ -1,4 +1,4 @@
-"""Check the published, native Microsoft Foundry evaluation and agent optimizer guide."""
+"""Check the published, native Microsoft Foundry evaluation and Agent Optimizer guide."""
 
 import hashlib
 from html.parser import HTMLParser
@@ -638,8 +638,8 @@ class DocumentationTests(unittest.TestCase):
         )
         unofficial_name = re.compile(
             r"Microsoft Azure (?:CLI|[Pp]ortal|AI Search|OpenAI|AI Projects)"
-            r"|Microsoft Foundry (?:IQ|Playground|account)"
-            r"|Foundry Evaluation|[Mm]anaged Evaluation|Agent Optimizer"
+            r"|Microsoft Foundry (?:IQ|Playground|account|Compare|Submit|Criteria|Knowledge|Home)"
+            r"|Foundry Evaluation|[Mm]anaged Evaluation|Agent Playground|Evaluation model/Judge"
             r"|Azure AI Foundry|Azure Cognitive Search|Azure OpenAI Service|Azure Active Directory"
         )
         for filename in ("index.html", "docs/english.html"):
@@ -734,7 +734,7 @@ class DocumentationTests(unittest.TestCase):
             source = self.source(language)
             with self.subTest(language=language):
                 for required in (
-                    "Foundry evaluation" if language == "en" else "Foundry 평가", "agent optimizer", "Evaluations", "Create",
+                    "Foundry evaluation" if language == "en" else "Foundry 평가", "Agent Optimizer", "Evaluations", "Create",
                     "Individual turns", "One time", "Existing dataset", "Relevance",
                     "TaskAdherence", "Submit", "Compare runs", "12",
                 ):

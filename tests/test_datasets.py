@@ -371,7 +371,7 @@ class DatasetContractTests(unittest.TestCase):
         self.assertEqual(manifest["holdout_checks"]["test_ids_in_tuning_or_optimizer"], 0)
         self.assertEqual(manifest["holdout_checks"]["test_queries_in_tuning_or_optimizer"], 0)
         optimizer = manifest["provenance"]["optimizer_export"]
-        self.assertEqual(optimizer["service"], "agent optimizer")
+        self.assertEqual(optimizer["service"], "Agent Optimizer")
         self.assertEqual(optimizer["lane"], "prompt-agent-portal")
         self.assertEqual(
             optimizer["schema_reference"],

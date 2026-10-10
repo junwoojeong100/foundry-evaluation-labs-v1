@@ -26,7 +26,7 @@
 <li><a href="#analyze"><strong>07</strong> 점수와 이유 읽기</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>개선·비교</strong><span>08–09 · 지침만 바꾼 v2</span></p><ul>
-<li><a href="#optimize"><strong>08</strong> agent optimizer로 지침 개선</a></li>
+<li><a href="#optimize"><strong>08</strong> Agent Optimizer로 지침 개선</a></li>
 <li><a href="#decision"><strong>09</strong> 재평가·v1/v2 비교</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>정리</strong><span>10 · 보관 후 삭제</span></p><ul>
@@ -573,7 +573,7 @@ python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/
 | `deployment group create`, `template.json`, `_parameters(...)` | [실제 ARM 템플릿](../infra/bootstrap.json)에 정의된 Microsoft Foundry·프로젝트·Search·관측 자원·모델·연결·역할을 배포합니다. | 그룹의 **Deployments → 해당 배포 → Deployment details/Inputs/Outputs**를 열어 템플릿 입력과 생성 항목을 대조합니다. |
 | `config["models"]`의 모델·버전·SKU·capacity | 네 모델 배포를 계획 그대로 생성합니다. | Microsoft Foundry **Home → View deployments → 배포 → Details**에서 모델·버전·배포 유형·Tokens per Minute Rate Limit을 확인합니다. |
 | `bootstrap status`의 기존 그룹·배포·리소스 조회 | 같은 계획의 실제 상태를 읽고 로컬 기록과 대조합니다. 새 ARM 배포를 제출하지 않습니다. | 같은 그룹 **Deployments → 기존 배포**와 실제 자원 목록을 새로고침합니다. Create로 다시 제출하지 않습니다. |
-| `.env`의 `AZURE_AI_PROJECT_ENDPOINT` | 생성 완료 후 실제 프로젝트 연결 설정을 저장합니다. | Microsoft Foundry **Home → Project endpoint**를 대조합니다. Azure OpenAI endpoint를 대신 쓰지 않습니다. |
+| `.env`의 `AZURE_AI_PROJECT_ENDPOINT` | 생성 완료 후 실제 프로젝트 연결 설정을 저장합니다. | Microsoft Foundry의 **Home → Project endpoint**를 대조합니다. Azure OpenAI endpoint를 대신 쓰지 않습니다. |
 | 역할 할당과 프로젝트·Search 관리 ID | 사용자와 서비스에 서로 다른 범위의 권한을 설정합니다. | Azure 포털의 해당 자원 **Identity**, **Access control (IAM) → Check access**에서 신원·Scope를 확인합니다. 이 확인을 위해 역할을 다시 추가하지 않습니다. |
 
 아래 `apply()`에서 **그룹 생성 → ARM 검증·배포 → 완료 상태 조회 → 인벤토리 대조 → .env 저장** 순서를 읽습니다. `bounded(...)`는 승인 유효기간·대기 한도를 확인한 뒤 원문에 표시된 Azure CLI 인자를 실행합니다. 로컬 파일·재개·소유권 보호도 실제 구현의 일부이므로 생략하지 않습니다.
@@ -729,9 +729,9 @@ python -m lab --config .lab/lab-ko/.env iq prepare --confirm
 | 실제 코드·설정 | 실제 동작 | 포털 조작·확인 위치 |
 |---|---|---|
 | `knowledge_payloads()["index"]`의 `fields`, `vectorSearch`, `semantic` | 정책 필드·1536차원 벡터·HNSW·embedding·semantic 설정을 정의합니다. | Azure 포털 → 해당 Search → **Indexes → 생성된 인덱스 → Fields/JSON**에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다. |
-| `embed()`의 `client.embeddings.create(...)` | 8개 정책의 제목·내용을 실제 embedding 배포에 보냅니다. | Microsoft Foundry **View deployments → embedding 배포 → Details**에서 모델·배포 이름을 확인합니다. 벡터 값 자체는 Search 인덱스에 저장되며 agent playground에 표시되는 설정이 아닙니다. |
+| `embed()`의 `client.embeddings.create(...)` | 8개 정책의 제목·내용을 실제 embedding 배포에 보냅니다. | Microsoft Foundry **View deployments → embedding 배포 → Details**에서 모델·배포 이름을 확인합니다. 벡터 값 자체는 Search 인덱스에 저장되며 Agent의 Playground에 표시되는 설정이 아닙니다. |
 | `prepare_knowledge()`의 `PUT`·`POST` | 인덱스 생성, 문서 업로드, knowledge source·knowledge base·프로젝트 연결을 순서대로 생성합니다. | Search의 **Indexes**, Microsoft Foundry **Build → Knowledge → Knowledge bases**에서 이름·Knowledge sources를 대조합니다. |
-| `connection.authType`, `audience`, `target` | 프로젝트 관리 ID로 Search의 MCP endpoint에 접근하는 연결입니다. | Microsoft Foundry Knowledge의 **Connection**을 확인합니다. UI에 authType·audience 편집란이 없다면 `knowledge/config-snapshot.json`을 읽으며 임의 값을 넣지 않습니다. |
+| `connection.authType`, `audience`, `target` | 프로젝트 관리 ID로 Search의 MCP endpoint에 접근하는 연결입니다. | Microsoft Foundry의 **Knowledge**에서 **Connection**을 확인합니다. UI에 authType·audience 편집란이 없다면 `knowledge/config-snapshot.json`을 읽으며 임의 값을 넣지 않습니다. |
 | `probe_knowledge()`의 `/retrieve`·`references`·`activity` | 실제 질문으로 정책 검색을 확인합니다. | 포털의 Active 상태와 구분합니다. 실제 검색 결과는 probe 출력·기록이고, Agent 경유 호출은 아래 Playground에서 별도로 확인합니다. |
 
 먼저 **서비스에 보내는 설정 객체 전체**, 이어서 **그 설정을 만들고 업로드하는 실제 코드**를 읽습니다. `config.*`는 02의 `.env`, `names`는 자신의 기록에 있는 실제 객체 이름입니다.
@@ -782,7 +782,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 
 #### 코드 ↔ 포털 · Agent의 전체 구성을 확인합니다 {#agent-code-portal}
 
-**실행 위치:** [위의 v1 생성 명령](#agent-create)을 실행한 뒤 [아래의 agent playground](#agent-playground)에서 버전·설정·실제 응답을 확인합니다. 포털에서 다시 생성하거나 새 버전으로 저장하지 않습니다.
+**실행 위치:** [위의 v1 생성 명령](#agent-create)을 실행한 뒤 [아래의 Playground](#agent-playground)에서 버전·설정·실제 응답을 확인합니다. 포털에서 다시 생성하거나 새 버전으로 저장하지 않습니다.
 {: .execution-guide}
 
 | 실제 코드·설정 | 포털 조작·확인 위치 |
@@ -806,7 +806,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 ### Microsoft Foundry에서 v1의 응답과 도구 호출을 확인합니다 {#agent-playground}
 
 <figure class="portal-shot" id="portal-agent-configuration">
-<img src="../web/assets/portal/27-agent-configuration.png" alt="Agent playground에서 Version·Model·Instructions·Knowledge와 Chat을 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/27-agent-configuration.png" alt="Agent의 Playground 탭에서 Version·Model·Instructions·Knowledge와 Chat을 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>버전·지침·Knowledge를 확인합니다.</strong> 위쪽 Version을 1로 선택하고 왼쪽 Model·Instructions와 아래쪽 Knowledge를 확인합니다. 정책 MCP 연결은 Knowledge에 표시되며 오른쪽 Chat에서 질문을 입력합니다. <a href="../web/assets/portal/27-agent-configuration.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -936,7 +936,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 1. **Configure agents**에서 지침을 덮어쓰는 custom prompt override는 비워 둡니다. 사용자 입력은 **`{{item.query}}`만** 사용합니다. 이는 각 행의 질문을 넣는 템플릿이므로 **중괄호까지 그대로 두고**, 자신의 질문이나 참고 답변으로 바꾸지 않습니다.
 2. 필드 매핑 화면이 나타나면 입력 `query`를 데이터의 `query` 열과 연결합니다. 매핑은 **입력 칸과 데이터 열의 짝을 정하는 설정**입니다. `context`·`ground_truth`를 Agent 입력에 붙이지 않습니다.
 3. **Criteria → Add evaluators**에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 **Task Adherence**로 표시될 수도 있습니다.
-4. 각 평가기의 설정을 열어 아래 기준을 적용하고 **Apply**를 누릅니다. **Evaluation model/Judge**에는 자신의 `.lab/lab-ko/.env`에서 **`JUDGE_DEPLOYMENT`에 해당하는 배포 이름**을 선택합니다.
+4. 각 평가기의 설정을 열어 아래 기준을 적용하고 **Apply**를 누릅니다. **Judge model**에는 자신의 `.lab/lab-ko/.env`에서 **`JUDGE_DEPLOYMENT`에 해당하는 배포 이름**을 선택합니다.
 
 | 평가기 | 의미 | 설정 |
 |---|---|---|
@@ -957,7 +957,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
 | `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → 이진 통과 1 → Apply** |
-| `initialization_parameters.deployment_name` | 각 평가기의 **Evaluation model/Judge**에 자신의 `JUDGE_DEPLOYMENT` 배포를 선택합니다. |
+| `initialization_parameters.deployment_name` | **Judge model**에 자신의 `JUDGE_DEPLOYMENT` 배포를 선택합니다. |
 | `data_mapping.query = {{item.query}}` | **Configure agents → User input**에서 query만 전달합니다. |
 | Relevance의 `{{sample.output_text}}`, TaskAdherence의 `{{sample.output_items}}` | 서비스 생성 응답 매핑입니다. 두 번째 값에는 지침·도구 호출 등 대화 항목이 포함됩니다. JSONL에 같은 이름의 열을 만들지 않습니다. |
 
@@ -1043,7 +1043,7 @@ python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 
 #### 코드 ↔ 포털 · 제출과 조회를 구분합니다 {#baseline-code-portal}
 
-**실행 위치:** [Microsoft Foundry Submit](#baseline-submit)으로 제출하고, [위의 `native-evals` 명령](#baseline-identifiers)으로 ID를 조회합니다. 조회 명령은 평가를 새로 제출하지 않습니다.
+**실행 위치:** Microsoft Foundry에서 [Submit](#baseline-submit)으로 제출하고, [위의 `native-evals` 명령](#baseline-identifiers)으로 ID를 조회합니다. 조회 명령은 평가를 새로 제출하지 않습니다.
 {: .execution-guide}
 
 | 실제 동작·코드 | 포털 조작·확인 위치 |
@@ -1146,14 +1146,14 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 **완료 기준:** 실제 사례를 근거로 무엇을 바꾸려는지, 또는 왜 현재 지침을 유지하려는지 설명할 수 있습니다. 평균 점수만 적고 끝내지 않습니다.
 {: .completion-check}
 
-<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 08. agent optimizer로 지침 개선 →</a></p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 08. Agent Optimizer로 지침 개선 →</a></p>
 
-## 08. agent optimizer로 지침을 개선합니다 {#optimize}
+## 08. Agent Optimizer로 지침을 개선합니다 {#optimize}
 
 <a id="tune"></a>
 
 <div class="lab-concept" data-learning-frame="optimize">
-<p><strong>이 단계에서 하는 일:</strong> agent optimizer로 지침 개선 후보를 만들고 변경 내용을 검토합니다.</p>
+<p><strong>이 단계에서 하는 일:</strong> Agent Optimizer로 지침 개선 후보를 만들고 변경 내용을 검토합니다.</p>
 <p><strong>중요한 이유:</strong> 후보 생성은 개선을 보장하지 않습니다. 내부 순위가 높아도 정책을 꾸미거나 도구·모델 조건을 바꿨다면 그대로 채택할 수 없습니다.</p>
 <p><strong>진행 방법·위치:</strong> Microsoft Foundry에서 Instruction only로 실행하고 View changes를 읽습니다. 검토한 지침 전체와 실제 출처를 비공개 파일에 보관합니다.</p>
 </div>
@@ -1161,7 +1161,7 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 **실행 순서:** [Microsoft Foundry · 최적화 설정](#optimizer-configure) → [제출·결과 확인](#optimizer-results) → [편집기 · 전체 후보 지침 저장](#optimizer-candidate).
 {: .step-route}
 
-**agent optimizer는 더 나은 지침을 제안하고 시험하는 기능**입니다. **후보(candidate)**는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.
+**Agent Optimizer는 더 나은 지침을 제안하고 시험하는 기능**입니다. **후보(candidate)**는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.
 
 ### Microsoft Foundry에서 지침만 최적화하도록 설정합니다 {#optimizer-configure}
 
@@ -1180,14 +1180,14 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 | Criteria | Relevance 4, TaskAdherence 이진 통과 1 |
 
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/07-optimizer-target.png" alt="agent optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
 <figcaption><strong>최적화 범위와 모델 역할을 구분합니다.</strong> 기준선 버전 1과 Instruction only를 선택하고 후보 수를 승인 한도 안으로 설정합니다. Optimization model과 Evaluation model에는 각 역할에 준비한 배포를 지정합니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. 각 기본 평가기의 임계값을 설정하고 Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/08-optimizer-dataset.png" alt="agent optimizer에서 등록된 데이터셋을 선택하는 목록입니다." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/08-optimizer-dataset.png" alt="Agent Optimizer에서 등록된 데이터셋을 선택하는 목록입니다." width="1210" height="968" loading="lazy">
 <figcaption><strong>같은 한국어 데이터를 재사용합니다.</strong> 기준선 평가에 사용한 dev12와 같은 등록 버전을 선택하고 12행 전체를 사용합니다. 파일을 수정하거나 새로 생성하면 비교 조건이 달라집니다. <a href="../web/assets/portal/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -1208,7 +1208,7 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 **비용·대기:** 작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/09-optimizer-results.png" alt="agent optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/09-optimizer-results.png" alt="Agent Optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 기준선과 후보의 평가기별 점수를 비교하고 지침 변경 내용을 검토합니다. 타당한 개선 후보가 없으면 v1을 유지하고 그 이유를 10의 마무리 노트에 남깁니다. <a href="../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 

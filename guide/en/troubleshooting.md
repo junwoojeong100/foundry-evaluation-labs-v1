@@ -115,7 +115,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 | A required response field is Unassigned | Use [mapping checks](admin-setup.md#evaluation-mapping) to compare the Agent target, query column, and service-generated response mapping. Do not add reference answers as a JSONL response column or submit before resolving the issue. |
 | Output items or scores are missing | Preserve failures/missing items and keep the denominator at twelve. Do not invent zero scores or passes. |
 
-## Agent optimizer and interpretation {#optimizer}
+## Agent Optimizer and interpretation {#optimizer}
 
 | Symptom | Action and completion criteria |
 |---|---|

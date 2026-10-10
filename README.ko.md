@@ -2,7 +2,7 @@
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
-**Microsoft Azure를 처음 확인하는 단계부터 승인된 정리 또는 보존까지 10단계로 진행합니다.** Microsoft Foundry 관리형 평가와 agent optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
+**Microsoft Azure를 처음 확인하는 단계부터 승인된 정리 또는 보존까지 10단계로 진행합니다.** Microsoft Foundry 관리형 평가와 Agent Optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
 
 > 계정·PC·권한 확인 → Microsoft Foundry 생성 → 정책·Agent 준비 → 데이터셋 → 평가기 → 평가 → 분석 → 최적화 → 재평가 → 삭제 확인
 
@@ -26,7 +26,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
 | Microsoft Foundry 평가 Judge | **gpt-6-luna / 2026-09-22** |
-| Agent optimizer 생성 | **gpt-5.5 / 2026-04-24** |
+| Agent Optimizer 생성 | **gpt-5.5 / 2026-04-24** |
 
 새 환경의 기본 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸면 실제 출력 이름을 사용합니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정을 유지하고 개선을 크게 보이게 하려고 v1을 약화하지 않습니다.
 

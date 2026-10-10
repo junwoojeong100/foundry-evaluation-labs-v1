@@ -4,7 +4,7 @@ English is the default. See the [main README](README.md) for fixed model roles a
 
 **[Start the English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html)** · [Korean guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)
 
-The ten-step guide starts with your Microsoft Azure account and GitHub Codespaces, then uses one guided environment-creation command; it ends with authorized cleanup or retention. The core is **Microsoft Foundry evaluation → agent optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
+The ten-step guide starts with your Microsoft Azure account and GitHub Codespaces, then uses one guided environment-creation command; it ends with authorized cleanup or retention. The core is **Microsoft Foundry evaluation → Agent Optimizer → same-criteria reevaluation** on 12 unchanged business cases. The Agent is `gpt-6-sol`, the Judge is `gpt-6-luna`, and the Optimizer generator is `gpt-5.5`.
 
 Every participant creates a dedicated environment and completes all ten steps with their own account and computer. Start with the basic terms, terminal instructions, and ordered portal actions. Steps 04–06 use one evaluation wizard. Setup references and checklists support your work rather than delegating it to separate roles. When resuming, use your original records and do not repeat completed creation or submissions.
 

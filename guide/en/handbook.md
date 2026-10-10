@@ -22,11 +22,11 @@
 <li><p class="phase-title"><strong>Evaluate</strong><span>04–07 · Score v1 on 12 questions</span></p><ul>
 <li><a href="#start"><strong>04</strong> Register the dataset</a></li>
 <li><a href="#prepare"><strong>05</strong> Select evaluation criteria</a></li>
-<li><a href="#baseline"><strong>06</strong> Run a Microsoft Foundry evaluation</a></li>
+<li><a href="#baseline"><strong>06</strong> Run an evaluation in Microsoft Foundry</a></li>
 <li><a href="#analyze"><strong>07</strong> Read scores and reasons</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Improve · Compare</strong><span>08–09 · v2 with new instructions only</span></p><ul>
-<li><a href="#optimize"><strong>08</strong> Improve instructions with the agent optimizer</a></li>
+<li><a href="#optimize"><strong>08</strong> Improve instructions with Agent Optimizer</a></li>
 <li><a href="#decision"><strong>09</strong> Reevaluate and compare v1/v2</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Clean up</strong><span>10 · Save records, then delete</span></p><ul>
@@ -92,7 +92,7 @@
 <div><dt>Tenant / Directory</dt><dd>The boundary that manages an organization's users and access. One account can access several organizations, so check the selected directory too.</dd></div>
 <div><dt>Subscription</dt><dd>The unit that groups Microsoft Azure usage and billing. Confirm which subscription will pay for this lab.</dd></div>
 <div><dt>Resource group</dt><dd>A group of Microsoft Azure resources managed together. A dedicated lab group makes the eventual deletion scope easier to identify.</dd></div>
-<div><dt>Project</dt><dd>The Microsoft Foundry workspace for your Agents, data, and evaluations. Stay in the same project throughout the lab.</dd></div>
+<div><dt>Project</dt><dd>The development boundary inside Microsoft Foundry for your Agents, data, and evaluations. Stay in the same project throughout the lab.</dd></div>
 <div><dt>Model</dt><dd>The AI that generates answers. Deploying makes a model available to call; the deployment name identifies that callable deployment.</dd></div>
 <div><dt>Role / Scope</dt><dd>A role defines allowed actions; its scope defines where they apply. Signing in does not automatically grant creation, evaluation, and deletion access.</dd></div>
 </dl>
@@ -573,7 +573,7 @@ Confirm `phase: succeeded`, the expected resources, and a generated `.lab/lab-en
 | `deployment group create`, `template.json`, `_parameters(...)` | Deploy the Microsoft Foundry resource/project, Search, monitoring, models, connections, and roles in the [actual ARM template](../../infra/bootstrap.json). | Group **Deployments → your deployment → Deployment details/Inputs/Outputs**: compare inputs and created resources. |
 | Model/version/SKU/capacity in `config["models"]` | Create four planned model deployments. | Microsoft Foundry **Home → View deployments → deployment → Details**: inspect model, version, type, and Tokens per Minute Rate Limit. |
 | Existing group/deployment/resource reads in `bootstrap status` | Compare actual state with the same plan/local records; do not submit another ARM deployment. | Refresh the same group's **Deployments → existing deployment** and actual inventory, not Create. |
-| `AZURE_AI_PROJECT_ENDPOINT` in `.env` | Save the actual project connection after successful creation. | Compare **Microsoft Foundry Home → Project endpoint**, not Azure OpenAI endpoint. |
+| `AZURE_AI_PROJECT_ENDPOINT` in `.env` | Save the actual project connection after successful creation. | Compare **Home → Project endpoint** in Microsoft Foundry, not Azure OpenAI endpoint. |
 | Role assignments and project/Search managed identities | Assign distinct permissions to user and service identities. | Inspect each Microsoft Azure resource's **Identity** and **Access control (IAM) → Check access**. Do not add the same roles again just to verify them. |
 
 Read **group creation → ARM validation/deployment → status polling → inventory verification → .env saving** in `apply()`. `bounded(...)` checks authorization/wait bounds before executing the Azure CLI argument lists shown in the source. Local records, resumption, and ownership protections are real parts of the implementation, not omitted details.
@@ -729,7 +729,7 @@ Confirm **`uploaded_documents: 8`**. The program prepares a search index (search
 | Actual code/setting | Actual action | Portal actions and verification |
 |---|---|---|
 | `fields`, `vectorSearch`, `semantic` in `knowledge_payloads()["index"]` | Define policy fields, 1536-dimensional vectors, HNSW, embeddings, and semantic settings. | Azure portal → Search → **Indexes → created index → Fields/JSON**. Inspect, do not recreate, the index. |
-| `client.embeddings.create(...)` in `embed()` | Send eight policy titles/contents to the actual embedding deployment. | Microsoft Foundry **View deployments → embedding deployment → Details**: check the model/name. Vectors are stored in Search, not in the agent playground settings. |
+| `client.embeddings.create(...)` in `embed()` | Send eight policy titles/contents to the actual embedding deployment. | Microsoft Foundry **View deployments → embedding deployment → Details**: check the model/name. Vectors are stored in Search, not in the Agent's Playground settings. |
 | `PUT`/`POST` in `prepare_knowledge()` | Create the index, upload documents, then create the knowledge source, base, and project connection. | Inspect Search **Indexes** and Microsoft Foundry **Build → Knowledge → Knowledge bases** for matching names/sources. |
 | Connection `authType`, `audience`, `target` | Connect the project's managed identity to Search's MCP endpoint. | Inspect Knowledge **Connection**. If the UI has no authType/audience editor, read `knowledge/config-snapshot.json`; do not guess settings. |
 | `/retrieve`, `references`, `activity` in `probe_knowledge()` | Verify actual policy retrieval. | Active is registration state, not a probe result. Inspect the probe's output/records, then verify the Agent's tool call separately in Playground. |
@@ -782,7 +782,7 @@ This creates **`lab-en-iq` version `1`** using the instructions in `prompts/en/b
 
 #### Code ↔ portal · inspect the full Agent configuration {#agent-code-portal}
 
-**Where to act:** Run [v1 creation above](#agent-create), then inspect the version, configuration, and actual response in the [agent playground below](#agent-playground). Do not recreate it or save another version in the portal.
+**Where to act:** Run [v1 creation above](#agent-create), then inspect the version, configuration, and actual response in the [Playground below](#agent-playground). Do not recreate it or save another version in the portal.
 {: .execution-guide}
 
 | Actual code/setting | Portal actions and verification |
@@ -806,7 +806,7 @@ Read the connected tool and Agent definition, then the **actual `project.agents.
 ### Verify v1's response and tool call in Microsoft Foundry {#agent-playground}
 
 <figure class="portal-shot" id="portal-agent-configuration">
-<img src="../../web/assets/portal/en/27-agent-configuration.png" alt="Agent playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
+<img src="../../web/assets/portal/en/27-agent-configuration.png" alt="Playground tab of the Agent with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <a href="../../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -921,7 +921,7 @@ In your own project, follow these actions. If you changed the environment name, 
 <div class="lab-concept" data-learning-frame="prepare">
 <p><strong>What:</strong> Select Relevance, TaskAdherence, and the actual Judge deployment.</p>
 <p><strong>Why:</strong> Defining scales, pass rules, and mappings beforehand prevents moving the criteria after seeing results. These two evaluators use different scales.</p>
-<p><strong>How · where:</strong> Open each evaluator's settings in Microsoft Foundry Criteria and confirm the threshold and Judge. Send only query to the Agent.</p>
+<p><strong>How · where:</strong> Open each evaluator's settings in the <strong>Criteria</strong> step of Microsoft Foundry and confirm the threshold and Judge. Send only query to the Agent.</p>
 </div>
 
 **Action order:** [Microsoft Foundry · input/evaluators](#criteria-configure) → [Confirm criteria/Judge](#portal-evaluation-criteria) → [06 · review/submit](#baseline-submit).
@@ -936,7 +936,7 @@ An **evaluator defines what to score**; the **Judge is the AI model doing the sc
 1. In **Configure agents**, leave the custom prompt override unset. Use **`{{item.query}}` only** as user input. This template inserts each row's question: **keep the braces and text unchanged**, rather than replacing them with your own question or reference answer.
 2. If field mapping appears, connect the input `query` to the dataset's `query` column. Mapping pairs **an input field with a data column**. Do not append `context` or `ground_truth` to the Agent input.
 3. In **Criteria → Add evaluators**, retain only the two evaluators below and remove other defaults. TaskAdherence can also appear as **Task Adherence**.
-4. Open each evaluator's settings, set its pass rule below, and select **Apply**. Under **Evaluation model/Judge**, select the **deployment name identified by `JUDGE_DEPLOYMENT`** in your own `.lab/lab-en/.env`.
+4. Open each evaluator's settings, set its pass rule below, and select **Apply**. Under **Judge model**, select the **deployment name identified by `JUDGE_DEPLOYMENT`** in your own `.lab/lab-en/.env`.
 
 | Evaluator | Meaning | Setting |
 |---|---|---|
@@ -957,7 +957,7 @@ Preserve the service-generated `response` mappings. If a response field is **Una
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
 | `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → binary pass 1 → Apply** |
-| `initialization_parameters.deployment_name` | Select your `JUDGE_DEPLOYMENT` under each evaluator's **Evaluation model/Judge**. |
+| `initialization_parameters.deployment_name` | Select your `JUDGE_DEPLOYMENT` as the **Judge model**. |
 | `data_mapping.query = {{item.query}}` | Send only query under **Configure agents → User input**. |
 | Relevance `{{sample.output_text}}`, TaskAdherence `{{sample.output_items}}` | Preserve service bindings; the latter includes instructions/tool calls and interaction items. Do not create matching JSONL columns. |
 
@@ -983,9 +983,9 @@ Agent, Judge, and Optimizer support can differ by role. Check the [Optimizer sup
 **Completion criteria:** Confirm and record both evaluator scales, thresholds, mappings, and the actual Judge in the same unsubmitted wizard. Step 06 creates the remote evaluation definition when you submit. Reevaluation then uses that saved definition.
 {: .completion-check}
 
-<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run a Microsoft Foundry evaluation →</a></p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run an evaluation in Microsoft Foundry →</a></p>
 
-## 06. Run a Microsoft Foundry evaluation {#baseline}
+## 06. Run an evaluation in Microsoft Foundry {#baseline}
 
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>What:</strong> Generate real responses from pinned v1 and collect managed scores and reasons.</p>
@@ -1043,7 +1043,7 @@ If several evaluations have the same name, compare their portal creation times, 
 
 #### Code ↔ portal · distinguish submission from lookup {#baseline-code-portal}
 
-**Where to act:** Submit with [Microsoft Foundry Submit](#baseline-submit), then retrieve IDs with [`native-evals` above](#baseline-identifiers). The lookup command never submits another evaluation.
+**Where to act:** Submit the evaluation in [Microsoft Foundry](#baseline-submit), then retrieve IDs with [`native-evals` above](#baseline-identifiers). The lookup command never submits another evaluation.
 {: .execution-guide}
 
 | Actual action/code | Portal actions and verification |
@@ -1146,14 +1146,14 @@ Write a short learning note from the table below. Saving it as **`.lab/lab-en/no
 **Completion criteria:** Use an actual case to explain what you intend to change, or why you would retain the current instructions. An average score alone is insufficient.
 {: .completion-check}
 
-<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with the agent optimizer →</a></p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
 
-## 08. Improve instructions with the agent optimizer {#optimize}
+## 08. Improve instructions with Agent Optimizer {#optimize}
 
 <a id="tune"></a>
 
 <div class="lab-concept" data-learning-frame="optimize">
-<p><strong>What:</strong> Generate instruction candidates with the agent optimizer and review the changes.</p>
+<p><strong>What:</strong> Generate instruction candidates with Agent Optimizer and review the changes.</p>
 <p><strong>Why:</strong> Candidate generation does not guarantee improvement. A higher internal rank cannot justify invented policy or changed model/tool conditions.</p>
 <p><strong>How · where:</strong> Run Instruction only in Microsoft Foundry and inspect View changes. Save complete reviewed instructions and their actual provenance privately.</p>
 </div>
@@ -1161,7 +1161,7 @@ Write a short learning note from the table below. Saving it as **`.lab/lab-en/no
 **Action order:** [Microsoft Foundry · configure optimization](#optimizer-configure) → [Submit/inspect results](#optimizer-results) → [Editor · save complete instructions](#optimizer-candidate).
 {: .step-route}
 
-**The agent optimizer proposes and tests instruction improvements.** A **candidate** is a proposed instruction set that has not yet been accepted. This does not retrain the model.
+**Agent Optimizer proposes and tests instruction improvements.** A **candidate** is a proposed instruction set that has not yet been accepted. This does not retrain the model.
 
 ### Configure instruction-only optimization in Microsoft Foundry {#optimizer-configure}
 
@@ -1180,14 +1180,14 @@ Write a short learning note from the table below. Saving it as **`.lab/lab-en/no
 | Criteria | Relevance 4; TaskAdherence binary pass 1 |
 
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../../web/assets/portal/en/07-optimizer-target.png" alt="Agent optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
+<img src="../../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 If Criteria shows **No custom evaluators available**, switch **Custom only OFF** or select **View built-in evaluators**. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.
 
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
+<img src="../../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
 <figcaption><strong>Reuse the same English data.</strong> Select the dev12 registration/version used for the baseline and include all 12 cases. Editing or regenerating the file changes the comparison conditions. <a href="../../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -1208,7 +1208,7 @@ Open the same job you just submitted in **Optimization runs** and act according 
 **Cost and waiting:** One job includes multiple Agent, Judge, and retrieval calls. Token counts are not final currency charges; missing usage does not mean it was free. Stopping your wait does not cancel the job.
 
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../../web/assets/portal/en/09-optimizer-results.png" alt="Agent optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
+<img src="../../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and keep the reason for the closing note in 10. <a href="../../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -1266,7 +1266,7 @@ Optimization runs in the Microsoft Foundry service. The complete instructions re
 <div class="lab-concept" data-learning-frame="decision">
 <p><strong>What:</strong> Reevaluate changed instructions under the same definition and record retain v1, accept v2, or hold.</p>
 <p><strong>Why:</strong> A v2 label is not improvement evidence. Consider actual errors, latency/tokens, and statistical uncertainty alongside quality.</p>
-<p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case in Microsoft Foundry Compare runs. Do not publish to production.</p>
+<p><strong>How · where:</strong> Prepare explicit v2 and its same-definition run in the terminal, then compare every case with <strong>Compare runs</strong> in Microsoft Foundry. Do not publish to production.</p>
 </div>
 
 **Action order:** [Terminal · create v2](#decision-agent) → [Add a run to the same evaluation](#decision-run) → [Microsoft Foundry · compare v1/v2](#decision-compare).

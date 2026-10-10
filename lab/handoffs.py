@@ -62,7 +62,7 @@ def prepare_optimizer(run_id: str) -> Path:
         "agent_name": metadata["agent_name"],
         "agent_version": metadata["agent_version"],
         "test_data_included": False,
-        "next": f"Continue at guide/{'en/' if selected_language() == 'en' else ''}handbook.md#optimize (step 05): use the agent optimizer portal wizard with one instruction-only candidate.",
+        "next": f"Continue at guide/{'en/' if selected_language() == 'en' else ''}handbook.md#optimize (step 05): use the Agent Optimizer portal wizard with one instruction-only candidate.",
         "not_created": ["optimizer job", "optimized prompt", "new deployed agent", "improved evaluation score"],
     })
     return target

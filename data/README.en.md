@@ -4,7 +4,7 @@
 
 ## One unchanged dataset for the comparison {#start}
 
-Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Microsoft Foundry evaluation, the agent optimizer, and reevaluation. In the project you created, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.
+Use **[data/en/optimizer/dev.jsonl](en/optimizer/dev.jsonl)**, exactly **12 JSONL records**, for Microsoft Foundry evaluation, Agent Optimizer, and reevaluation. In the project you created, follow [04](../guide/en/handbook.md#start) to register `lab-en-dev12` version `1`. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.
 
 **Where to act:** [Terminal · check all 12 rows/hash](../guide/en/handbook.md#dataset-check) → [Microsoft Foundry · upload/select](../guide/en/handbook.md#dataset-register). The local check uploads nothing and submits no evaluation.
 {: .execution-guide}
@@ -68,7 +68,7 @@ Compare the questions, responses, evaluator scores, and reasons for all 12 cases
 
 The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, **not a replacement local Judge**.
 
-The agent optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the complete candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Without a candidate worth retaining, record why you keep v1 and continue to 10.
+Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the complete candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Without a candidate worth retaining, record why you keep v1 and continue to 10.
 
 Before sharing results, remove credentials, signed URLs, and private account details. Keep every case, including errors and missing results.
 
