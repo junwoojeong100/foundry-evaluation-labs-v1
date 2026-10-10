@@ -397,8 +397,8 @@ def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, byt
         f"{data_prefix}/optimizer/dev.jsonl",
         [optimizer_record(row) for row in split_rows["dev"]],
         "dev",
-        "Prompt-agent Agent Optimizer portal evaluation JSONL"
-        if language == "en" else "프롬프트 에이전트 Agent Optimizer 포털 평가 JSONL",
+        "Prompt-agent optimizer portal evaluation JSONL"
+        if language == "en" else "프롬프트 에이전트 agent optimizer 포털 평가 JSONL",
     )
 
     restricted = [path for path in artifacts if "/tuning/" in path or "/optimizer/" in path]
@@ -431,7 +431,7 @@ def build_artifacts(root: Path = ROOT, *, language: str = "ko") -> dict[str, byt
             "authoring": "강사가 수동 작성한 완전 합성 정책·문의·모범 응답입니다.",
             "candidate_prompt": "강사 작성 비교 후보이며 공식 최적화 실행 결과가 아닙니다.",
             "optimizer_export": {
-                "service": "Agent Optimizer",
+                "service": "agent optimizer",
                 "lane": "prompt-agent-portal",
                 "schema_reference": AGENT_OPTIMIZER_PORTAL_DOC_URL,
                 "columns": ["query", "ground_truth", "context"],

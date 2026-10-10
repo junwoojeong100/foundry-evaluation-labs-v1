@@ -15,7 +15,7 @@
   "documents": 8,
   "exports": {
     "data/en/optimizer/dev.jsonl": {
-      "purpose": "Prompt-agent Agent Optimizer portal evaluation JSONL",
+      "purpose": "Prompt-agent optimizer portal evaluation JSONL",
       "rows": 12,
       "sha256": "db26e45288afc98a6cc48f91e8862edbf8346e793007970f931d968fd4647a3f",
       "source_splits": [
@@ -113,7 +113,7 @@
       "lane": "prompt-agent-portal",
       "query_includes_reference_context": false,
       "schema_reference": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites",
-      "service": "Agent Optimizer"
+      "service": "agent optimizer"
     },
     "paraphrase_review": "Scenario groups are preserved; identifier and lexical checks do not prove semantic independence.",
     "performance_metrics": "Not included; actual evaluation must be executed separately."

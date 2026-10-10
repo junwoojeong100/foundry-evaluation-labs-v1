@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
   <meta property="og:title" content="Environment setup reference · access, authorization, and cleanup">
-  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html">
   <meta name="twitter:card" content="summary">
   <title>Environment setup reference · access, authorization, and cleanup · Microsoft Foundry Lab Guide</title>
@@ -159,7 +159,7 @@
 <p>If an older <code>.env</code> lacks language, it is inferred from the <code>lab-en</code>/<code>lab-ko</code> rule in <code>LAB_PREFIX</code> without rewriting the file or plan hash. Only legacy custom names outside that rule and separate tools with no selected configuration keep their existing environment-variable/default behavior. Those variables are not additional setup for the default lab.</p>
 <p><strong>Existing records are never moved or merged automatically.</strong> If earlier work used shared <code>artifacts/</code> or another location, first compare the original configuration with the project, prefix, and language in <code>workspace.json</code>. Do not launch paid work against a different record folder or edit the original <code>.env</code>/manifest to bypass ownership checks.</p>
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../web/assets/portal/en/00-resource-group.png" alt="Microsoft Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
+<img src="../web/assets/portal/en/00-resource-group.png" alt="Azure portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
 <figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Microsoft Foundry project and supporting resources belong to your lab. <a href="../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -176,22 +176,22 @@
 <tr>
 <td>Agent</td>
 <td><code>MODEL_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 100</td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, Global Standard 100</td>
 </tr>
 <tr>
-<td>Managed Evaluation Judge</td>
+<td>Managed evaluation Judge</td>
 <td><code>JUDGE_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 100</td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, Global Standard 100</td>
 </tr>
 <tr>
 <td>Optimizer/search planner</td>
 <td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared GlobalStandard 100 deployment</td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared Global Standard 100 deployment</td>
 </tr>
 <tr>
 <td>Policy embeddings</td>
 <td><code>EMBEDDING_DEPLOYMENT</code></td>
-<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, GlobalStandard 10</td>
+<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, Global Standard 10</td>
 </tr>
 </tbody>
 </table>
@@ -216,7 +216,7 @@
 </figure>
 
 <h2 id="bootstrap">Prepare an executable Agent</h2>
-<p><a href="index.html#setup-codespaces">01's Codespaces path</a> prepares <strong>Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI</strong>, and the virtual environment. Only the local-computer path needs <a href="index.html#setup-local-install">OS-specific installation</a> and <a href="index.html#setup-verify">new-terminal version checks</a>. Sign in, then run <a href="index.html#resources-quickstart">quick provisioning</a>; language and record location are set automatically too. Do not treat fake IDs in <code>.env.example</code> as a live environment.</p>
+<p><a href="index.html#setup-codespaces">01's Codespaces path</a> prepares <strong>Python 3.12 within the supported 3.11–3.14 range, Git, Azure CLI</strong>, and the virtual environment. Only the local-computer path needs <a href="index.html#setup-local-install">OS-specific installation</a> and <a href="index.html#setup-verify">new-terminal version checks</a>. Sign in, then run <a href="index.html#resources-quickstart">quick provisioning</a>; language and record location are set automatically too. Do not treat fake IDs in <code>.env.example</code> as a live environment.</p>
 <p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <a href="index.html#agent-search-prepare">policy upload</a> and <a href="index.html#agent-search-probe">retrieval verification</a> succeed, create a policy-connected v1:</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
@@ -353,7 +353,7 @@
 </tr>
 <tr>
 <td><code>allow_global_inference</code></td>
-<td><code>true</code> only when GlobalStandard processing is authorized; it is not NCUS-only processing.</td>
+<td><code>true</code> only when Global Standard processing is authorized; it is not NCUS-only processing.</td>
 </tr>
 <tr>
 <td><code>allow_resource_creation</code>, <code>allow_rbac_assignments</code></td>
@@ -378,7 +378,7 @@
 </tbody>
 </table>
 <p>Validate with <a href="index.html#resources-approval">02's <code>bootstrap preflight --config ... --approval ...</code></a> and read <code>approval_reason</code> on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another lab, an automatic retry, or deletion.</p>
-<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Microsoft Azure Portal or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.</p>
+<p><strong>Enforcement boundary:</strong> Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Microsoft Azure or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.</p>
 <h2 id="rbac">Verify permissions and provider registration</h2>
 <p>Follow the <a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">current Microsoft Foundry RBAC guidance</a>. <strong>Foundry User/Owner/Account Owner/Project Manager</strong> may still appear under their former <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> names.</p>
 <p>Use <strong>Access control (IAM) → Check access</strong> to inspect active assignments and Scope. Older UI versions may use View my access. The <a href="index.html#portal-check-access">actual subscription/access illustration in 01</a> demonstrates inspection of existing access, not adding roles.</p>
@@ -396,7 +396,7 @@
 </tr>
 <tr>
 <td>Your Agent/evaluation operations</td>
-<td>Foundry User or the required data-plane permissions on your project. Microsoft Azure Contributor/Owner alone does not grant these data actions.</td>
+<td>Foundry User or the required data-plane permissions on your project. The built-in Contributor or Owner role alone does not grant these data actions.</td>
 </tr>
 <tr>
 <td>Your policy preparation</td>
@@ -419,7 +419,7 @@
 <p><strong>Authorized bootstrap assigns runtime roles at the new resources' scopes.</strong> It does not add subscription-wide roles. After creation, distinguish your user identity from service managed identities and use 03's actual tool call to verify propagation and data-plane access.</p>
 <p>A provider registration enables a service type in your subscription. Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">official provider-registration instructions</a>:</p>
 <ol>
-<li>Open Microsoft Azure Portal → <strong>Subscriptions → your subscription → Resource providers</strong>.</li>
+<li>Open the Azure portal → <strong>Subscriptions → your subscription → Resource providers</strong>.</li>
 <li>Search for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>; confirm <strong>Registered</strong> for each.</li>
 <li>Select a missing provider and <strong>Register</strong> only with your own <code>/register/action</code> permission and authorization. Do not register unrelated providers in bulk.</li>
 <li>After registration/propagation, rerun the same preflight. If access is missing, obtain an approved execution scope before resuming. Bootstrap never auto-registers providers or expands permissions.</li>
@@ -437,13 +437,13 @@
 </thead>
 <tbody>
 <tr>
-<td>Microsoft Azure AI Search (Basic, one replica)</td>
+<td>Azure AI Search (Basic, one replica)</td>
 <td>Per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared. Check the current <a href="https://azure.microsoft.com/pricing/details/search/">AI Search prices</a>.</td>
 <td>The largest continuing cost. Delete the group as soon as you finish, as in 10.</td>
 </tr>
 <tr>
 <td>Model deployments (Agent, Judge, Optimizer/planner, embeddings)</td>
-<td>GlobalStandard bills by tokens used; an idle deployment adds no token charge.</td>
+<td>Global Standard bills by tokens used; an idle deployment adds no token charge.</td>
 <td>Evaluation, Optimizer, and retrieval calls consume tokens. Do not resubmit work to "try again".</td>
 </tr>
 <tr>
@@ -458,7 +458,7 @@
 </tr>
 </tbody>
 </table>
-<p>In Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the <a href="#handoff">optional worksheet</a> has a place for them.</p>
+<p>In the Azure portal → <strong>Cost Management → Cost analysis</strong>, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the <a href="#handoff">optional worksheet</a> has a place for them.</p>
 <h2 id="handoff">Optional worksheet for actual values and completion evidence</h2>
 <p>This worksheet is <strong>optional</strong>; nothing in the lab reads it. If your organization or your own habits call for a fuller record, copy this table into your own notes (for example <code>.lab/lab-en/notes.md</code>), mark unexecuted items <strong>not run</strong>, and fill in actual values as each step completes. “The environment is ready” is not sufficient evidence.</p>
 <table>
@@ -479,7 +479,7 @@
 </tr>
 <tr>
 <td>Microsoft Azure environment</td>
-<td>Resource group, Microsoft Foundry account/project, project endpoint, and Search service</td>
+<td>Resource group, Microsoft Foundry resource/project, project endpoint, and Search service</td>
 </tr>
 <tr>
 <td>Models</td>

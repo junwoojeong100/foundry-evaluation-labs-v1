@@ -15,7 +15,7 @@
   "documents": 8,
   "exports": {
     "data/optimizer/dev.jsonl": {
-      "purpose": "프롬프트 에이전트 Agent Optimizer 포털 평가 JSONL",
+      "purpose": "프롬프트 에이전트 agent optimizer 포털 평가 JSONL",
       "rows": 12,
       "sha256": "fdaf4260e8a2ad823375e5d03e990e1ecc24e4ed115e094166f5cb571ac5b233",
       "source_splits": [
@@ -111,7 +111,7 @@
       "lane": "prompt-agent-portal",
       "query_includes_reference_context": false,
       "schema_reference": "https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent#prerequisites",
-      "service": "Agent Optimizer"
+      "service": "agent optimizer"
     },
     "paraphrase_review": "상황·판단 과제별로 수동 분리합니다. 식별자 검사만으로 의미 중복이 없음을 보증하지 않습니다.",
     "performance_metrics": "포함하지 않습니다. 실제 평가를 별도로 실행해야 합니다."

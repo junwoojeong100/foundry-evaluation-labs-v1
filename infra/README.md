@@ -10,7 +10,7 @@ Use the [environment setup reference](../guide/en/admin-setup.md) or
 [한국어 환경 설정 참고](../guide/admin-setup.md) for the current prerequisites.
 The template also provisions the read-only knowledge and monitoring connections
 used by the Contoso sample agent. The participant guide connects this setup to
-**Microsoft Foundry Evaluation → Agent Optimizer → same-criteria reevaluation → cleanup**.
+**Microsoft Foundry evaluation → agent optimizer → same-criteria reevaluation → cleanup**.
 Creating only an empty portal project does not prepare this complete sample.
 
 The recommended participant path is GitHub Codespaces and
@@ -28,7 +28,7 @@ rewritten. Existing `.env` files can infer language from their `LAB_PREFIX`.
 
 ## What bootstrap does
 
-`lab.bootstrap` uses Python's standard library and an authenticated Microsoft Azure CLI.
+`lab.bootstrap` uses Python's standard library and an authenticated Azure CLI.
 It separates local planning, read-only readiness checks, scope-bound approval,
 resource creation, ownership records, and runtime verification.
 
@@ -68,10 +68,10 @@ The current defaults are candidates that require a fresh availability check:
 
 | Role | Model | Version | Deployment type | Requested ARM capacity |
 |---|---|---|---|---:|
-| Prepared sample agent | gpt-6-sol | 2026-09-22 | GlobalStandard | 100 |
-| Microsoft Foundry Evaluation Judge | gpt-6-luna | 2026-09-22 | GlobalStandard | 100 |
-| Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | GlobalStandard | 100 |
-| Read-only knowledge embeddings | text-embedding-3-small | 1 | GlobalStandard | 10 |
+| Prepared sample agent | gpt-6-sol | 2026-09-22 | Global Standard | 100 |
+| Microsoft Foundry evaluation Judge | gpt-6-luna | 2026-09-22 | Global Standard | 100 |
+| Agent optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | Global Standard | 100 |
+| Read-only knowledge embeddings | text-embedding-3-small | 1 | Global Standard | 10 |
 
 For one environment running one evaluation/optimization job at a time, the
 recommended starting minimum is **100,000 TPM** for each generative deployment
@@ -89,11 +89,11 @@ even when TPM meets the recommendation.
 
 Runtime support is role-specific; catalog visibility alone is not sufficient.
 Verify the pinned Agent with its read-only knowledge tool and the separate Judge
-through actual managed Evaluation in the selected environment.
+through actual managed evaluation in the selected environment.
 
 `gpt-6-luna` is not in the current official list of supported **optimization
 models**, so that role remains `gpt-5.5`. See
-[Agent Optimizer model roles](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models).
+[Agent optimizer model roles](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models).
 
 Both released instruction variants use the same Sol model and generation
 settings. Changing the Agent model requires a new same-model baseline and
@@ -134,7 +134,7 @@ python3 -S -m lab.bootstrap status \
 and minimum required resource-scoped RBAC. The final `status` checks the same
 plan; it does not submit a second deployment.
 
-GlobalStandard processing location is not an NCUS-only data-residency guarantee.
+Global Standard processing location is not an NCUS-only data-residency guarantee.
 Quota is capacity, not free inference. ARM capacity units depend on the
 model/SKU; never apply a universal TPM conversion. Budget alerts are not spending
 cutoffs, and hosting/log costs can continue after a terminal closes.

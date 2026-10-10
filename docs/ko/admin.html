@@ -160,7 +160,7 @@
 <p><strong>기존 기록은 자동으로 이동하거나 합치지 않습니다.</strong> 과거에 공통 <code>artifacts/</code> 또는 별도 경로를 사용했다면 원래 설정과 <code>workspace.json</code>의 프로젝트·prefix·언어를 먼저 대조합니다. 경로가 다른 상태에서 유료 작업을 새로 실행하지 않으며, 원본 <code>.env</code>·manifest를 편집해 소유권 검사를 우회하지 않습니다.</p>
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../../web/assets/portal/01-project-overview.png" alt="Microsoft Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Microsoft Azure Portal의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Azure 포털의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <h2 id="prepare">모델 역할과 실제 배포를 확인합니다</h2>
@@ -176,22 +176,22 @@
 <tr>
 <td>Agent</td>
 <td><code>MODEL_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, GlobalStandard 100입니다.</td>
+<td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, Global Standard 100입니다.</td>
 </tr>
 <tr>
 <td>관리형 평가 Judge</td>
 <td><code>JUDGE_DEPLOYMENT</code></td>
-<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, GlobalStandard 100입니다.</td>
+<td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, Global Standard 100입니다.</td>
 </tr>
 <tr>
 <td>Optimizer·검색 planner</td>
 <td><code>OPTIMIZER_DEPLOYMENT</code>·<code>IQ_PLANNER_DEPLOYMENT</code></td>
-<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, 같은 GlobalStandard 100 배포를 사용합니다.</td>
+<td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, 같은 Global Standard 100 배포를 사용합니다.</td>
 </tr>
 <tr>
 <td>정책 embedding</td>
 <td><code>EMBEDDING_DEPLOYMENT</code></td>
-<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, GlobalStandard 10입니다.</td>
+<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, Global Standard 10입니다.</td>
 </tr>
 </tbody>
 </table>
@@ -216,7 +216,7 @@
 </figure>
 
 <h2 id="bootstrap">Agent를 실제로 준비합니다</h2>
-<p><a href="index.html#setup-codespaces">01의 Codespaces 경로</a>는 <strong>Python 3.11–3.14 지원 범위의 3.12·Git·Microsoft Azure CLI</strong>와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 <a href="index.html#setup-local-install">운영체제별 설치</a>와 <a href="index.html#setup-verify">새 터미널 버전 확인</a>을 수행합니다. 로그인 후 <a href="index.html#resources-quickstart">빠른 생성</a>을 실행하면 언어·기록 위치도 자동으로 정해집니다. <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
+<p><a href="index.html#setup-codespaces">01의 Codespaces 경로</a>는 <strong>Python 3.11–3.14 지원 범위의 3.12·Git·Azure CLI</strong>와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 <a href="index.html#setup-local-install">운영체제별 설치</a>와 <a href="index.html#setup-verify">새 터미널 버전 확인</a>을 수행합니다. 로그인 후 <a href="index.html#resources-quickstart">빠른 생성</a>을 실행하면 언어·기록 위치도 자동으로 정해집니다. <code>.env.example</code>의 가짜 식별자를 실환경으로 사용하지 않습니다.</p>
 <p>한국어 기준선은 <code>prompts/baseline.txt</code>, 영어는 <code>prompts/en/baseline.txt</code>입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. <a href="index.html#agent-search-prepare">정책 업로드</a>와 <a href="index.html#agent-search-probe">검색 확인</a>이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
@@ -353,7 +353,7 @@
 </tr>
 <tr>
 <td><code>allow_global_inference</code></td>
-<td>GlobalStandard의 처리 경계를 승인한 경우 <code>true</code>입니다. NCUS 내부 처리만 보장하지 않습니다.</td>
+<td>Global Standard의 처리 경계를 승인한 경우 <code>true</code>입니다. NCUS 내부 처리만 보장하지 않습니다.</td>
 </tr>
 <tr>
 <td><code>allow_resource_creation</code>, <code>allow_rbac_assignments</code></td>
@@ -378,7 +378,7 @@
 </tbody>
 </table>
 <p><a href="index.html#resources-approval">02의 <code>bootstrap preflight --config ... --approval ...</code></a>로 파일을 검증합니다. 오류가 있으면 <code>approval_reason</code>을 확인합니다. 한 파일의 승인은 정확한 계획 해시·모델·보존 범위에만 적용되며 다른 실습·재시도·삭제 승인을 포함하지 않습니다.</p>
-<p><strong>강제 범위를 구분합니다.</strong> bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Microsoft Azure Portal·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.</p>
+<p><strong>강제 범위를 구분합니다.</strong> bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Microsoft Azure·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.</p>
 <h2 id="rbac">권한과 공급자 등록을 확인합니다</h2>
 <p><a href="https://learn.microsoft.com/azure/foundry/concepts/rbac-foundry">현재 Microsoft Foundry RBAC 안내</a>를 기준으로 권한을 확인합니다. <strong>Foundry User/Owner/Account Owner/Project Manager</strong>는 이전 <strong>Azure AI User/Owner/Account Owner/Project Manager</strong> 이름으로 보일 수 있습니다.</p>
 <p>포털의 <strong>Access control (IAM) → Check access</strong>에서 활성 할당과 Scope를 확인합니다. 이전 UI의 View my access와 위치가 다를 수 있습니다. <a href="index.html#portal-check-access">01의 실제 구독·권한 그림</a>은 기존 권한을 읽는 예시이며 역할 추가 안내가 아닙니다.</p>
@@ -396,7 +396,7 @@
 </tr>
 <tr>
 <td>본인의 Agent·평가 실행</td>
-<td>자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. Microsoft Azure의 Contributor/Owner만으로 이 권한이 생기지는 않습니다.</td>
+<td>자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. 기본 제공 Contributor/Owner 역할만으로 이 권한이 생기지는 않습니다.</td>
 </tr>
 <tr>
 <td>본인의 정책 준비</td>
@@ -419,7 +419,7 @@
 <p><strong>새 자원의 실행 권한은 승인된 bootstrap이 해당 자원 범위에 할당합니다.</strong> 구독 전체 역할을 새로 부여하지 않습니다. 생성 후에는 본인과 서비스의 관리 ID가 서로 다른 신원임을 구분하고 03의 실제 도구 호출로 전파·데이터 평면 접근을 확인합니다.</p>
 <p>공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">공식 공급자 등록 안내</a>에 따라 다음을 확인합니다.</p>
 <ol>
-<li>Microsoft Azure Portal → <strong>Subscriptions → 사용할 구독 → Resource providers</strong>를 엽니다.</li>
+<li>Azure 포털 → <strong>Subscriptions → 사용할 구독 → Resource providers</strong>를 엽니다.</li>
 <li><code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, <code>Microsoft.Insights</code>를 각각 검색하여 <strong>Registered</strong>인지 확인합니다.</li>
 <li>미등록 항목은 본인에게 해당 <code>/register/action</code> 권한과 등록 승인이 있는 경우에만 선택하여 <strong>Register</strong>를 누릅니다. 필요한 네 항목 외 공급자를 일괄 등록하지 않습니다.</li>
 <li>등록 완료·전파 후 같은 preflight를 다시 실행합니다. 등록 권한이 없으면 승인된 실행 범위를 확보한 뒤 재개합니다. bootstrap은 공급자를 자동 등록하거나 권한을 확대하지 않습니다.</li>
@@ -437,13 +437,13 @@
 </thead>
 <tbody>
 <tr>
-<td>Microsoft Azure AI Search(Basic, 복제 1개)</td>
+<td>Azure AI Search(Basic, 복제 1개)</td>
 <td>존재하는 동안 유휴 상태에서도 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10이었습니다. 현재 <a href="https://azure.microsoft.com/pricing/details/search/">AI Search 가격</a>을 확인합니다.</td>
 <td>가장 큰 지속 비용입니다. 끝나는 대로 10단계처럼 그룹을 삭제합니다.</td>
 </tr>
 <tr>
 <td>모델 배포(Agent·Judge·Optimizer/planner·embedding)</td>
-<td>GlobalStandard는 사용한 토큰 기준으로 청구되며, 유휴 배포는 토큰 비용을 추가하지 않습니다.</td>
+<td>Global Standard는 사용한 토큰 기준으로 청구되며, 유휴 배포는 토큰 비용을 추가하지 않습니다.</td>
 <td>평가·Optimizer·검색 호출이 토큰을 사용합니다. "다시 시도"하려고 같은 작업을 재제출하지 않습니다.</td>
 </tr>
 <tr>
@@ -458,7 +458,7 @@
 </tr>
 </tbody>
 </table>
-<p>Microsoft Azure Portal → <strong>Cost Management → Cost analysis</strong>에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, <a href="#handoff">선택 기록표</a>에 적을 자리가 있습니다.</p>
+<p>Azure 포털 → <strong>Cost Management → Cost analysis</strong>에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, <a href="#handoff">선택 기록표</a>에 적을 자리가 있습니다.</p>
 <h2 id="handoff">실제 값과 완료 근거를 적는 선택 기록표</h2>
 <p>이 기록표는 <strong>선택 사항</strong>이며 실습 프로그램이 읽지 않습니다. 조직이나 본인의 습관상 더 자세한 기록이 필요하면 다음 표를 자신의 메모(예: <code>.lab/lab-ko/notes.md</code>)에 복사하고 아직 실행하지 않은 항목은 <strong>미실행</strong>으로 표시한 뒤 각 단계가 끝날 때 실제 값으로 채웁니다. “준비됨”이라는 문장만으로 완료를 표시하지 않습니다.</p>
 <table>
@@ -479,7 +479,7 @@
 </tr>
 <tr>
 <td>Microsoft Azure 환경</td>
-<td>리소스 그룹·Microsoft Foundry account·project·project endpoint·Search 이름입니다.</td>
+<td>리소스 그룹·Microsoft Foundry resource·project·project endpoint·Search 이름입니다.</td>
 </tr>
 <tr>
 <td>모델</td>

@@ -1081,7 +1081,7 @@ def _owned(config: dict, key: str, spec: dict, remote: dict, manifest: dict, obs
         ):
             raise BootstrapError(f"Model deployment drift: {key}; create a newly approved plan.")
     if key == "account" and (remote.get("kind") != "AIServices" or props.get("disableLocalAuth") is not True):
-        raise BootstrapError("Foundry account kind/local authentication differs from the plan.")
+        raise BootstrapError("Foundry resource kind/local authentication differs from the plan.")
     if key == "search" and (
         remote.get("sku", {}).get("name", "").lower() != "basic"
         or props.get("disableLocalAuth") is not True
@@ -1354,7 +1354,7 @@ def preflight(
     config_path: Path | str, *, run: Run = az_json, persist: bool = True,
     approval_path: Path | str | None = None,
 ) -> dict:
-    """Read-only Azure preflight, independent of the existence of a Foundry account."""
+    """Read-only Azure preflight, independent of the existence of a Foundry resource."""
     directory, config, manifest = _load(config_path)
     try:
         report, raw, observed = _preflight(config, manifest, run)
@@ -2198,10 +2198,10 @@ def setup(
     }))
     write(text(
         "이 계획은 전용 그룹, Microsoft Foundry 프로젝트·4개 모델 배포, Search·로그 및 자원 범위 역할을 만듭니다.\n"
-        "GlobalStandard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n"
+        "Global Standard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n"
         "예산·호출 한도는 기록이며 포털 과금을 자동 차단하지 않습니다. 삭제·학습·재시도는 승인하지 않습니다.",
         "This plan creates a dedicated group, Microsoft Foundry project/four model deployments, Search/logging, and resource-scoped roles.\n"
-        "Continue only with authorization for GlobalStandard worldwide processing, continuous hosting, and an unconfirmed total cost.\n"
+        "Continue only with authorization for Global Standard worldwide processing, continuous hosting, and an unconfirmed total cost.\n"
         "Budget/call limits are records, not automatic portal spending cutoffs. Deletion, training, and retries are not authorized.",
     ))
     existing_approval = approval_path.exists()

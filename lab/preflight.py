@@ -58,7 +58,7 @@ def az_json(args: list[str]) -> object:
     except azcli.AzureCliLaunchError as exc:
         raise LabError(text(
             "이 Azure CLI는 Windows 배치 파일로 시작되어 & | 따옴표 같은 특수 문자를 안전하게 전달할 수 없습니다. "
-            "Microsoft 설치 관리자(WinGet 또는 MSI)로 Azure CLI를 다시 설치하거나 GitHub Codespaces 또는 WSL2에서 실행해야 합니다.",
+            "Microsoft 설치 관리자(WinGet 또는 MSI)로 Azure CLI를 다시 설치하거나 GitHub Codespaces 또는 WSL 2에서 실행해야 합니다.",
             str(exc),
         )) from exc
     except subprocess.TimeoutExpired as exc:
@@ -246,8 +246,8 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
                 "Tenant access to Prompt Optimizer and Frontier Tuning",
             ),
             text(
-                "GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.",
-                "GlobalStandard does not guarantee processing inside North Central US.",
+                "Global Standard는 North Central US 내부 처리를 보장하지 않습니다.",
+                "Global Standard does not guarantee processing inside North Central US.",
             ),
             text(
                 "TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.",

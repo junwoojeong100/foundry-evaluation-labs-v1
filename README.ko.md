@@ -2,7 +2,7 @@
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
-**Microsoft Azure를 처음 확인하는 단계부터 승인된 정리 또는 보존까지 10단계로 진행합니다.** Microsoft Foundry 관리형 Evaluation과 Agent Optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
+**Microsoft Azure를 처음 확인하는 단계부터 승인된 정리 또는 보존까지 10단계로 진행합니다.** Microsoft Foundry 관리형 평가와 agent optimizer로 자사 대표 업무의 Agent 응답을 평가·개선합니다.
 
 > 계정·PC·권한 확인 → Microsoft Foundry 생성 → 정책·Agent 준비 → 데이터셋 → 평가기 → 평가 → 분석 → 최적화 → 재평가 → 삭제 확인
 
@@ -11,7 +11,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 ## 시작하기
 
 1. **[01부터 시작합니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup).** 계정·구독·생성 및 역할 할당 권한·비용 승인을 확인합니다. Microsoft Azure·Microsoft Foundry 경험은 필요하지 않습니다.
-2. **[GitHub Codespaces를 엽니다 · 권장](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces).** Python·Git·Microsoft Azure CLI·의존성이 준비됩니다. 내 PC를 쓰려면 [로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)에 따라 Python **3.11–3.14**·Git·Microsoft Azure CLI를 준비합니다. GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
+2. **[GitHub Codespaces를 엽니다 · 권장](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces).** Python·Git·Azure CLI·의존성이 준비됩니다. 내 PC를 쓰려면 [로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)에 따라 Python **3.11–3.14**·Git·Azure CLI를 준비합니다. GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
 3. **[로그인 후 02의 환경 생성 안내를 따릅니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-quickstart).** `python -m lab bootstrap setup --environment lab-ko`가 계획·승인 파일과 환경을 준비합니다. 현재 계정·구독·고정 모델과 실제 승인값을 확인하며, 생성 확인 전에는 자원을 만들지 않습니다.
 
 언어와 기록 위치는 환경 이름으로 정해집니다. `lab-ko`·`lab-ko-02`는 한국어, `lab-en`은 영어입니다. JSON이나 환경 변수를 직접 작성할 필요 없이 이후 명령은 기존 `--config`를 사용합니다.
@@ -26,7 +26,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
 | Microsoft Foundry 평가 Judge | **gpt-6-luna / 2026-09-22** |
-| Agent Optimizer 생성 | **gpt-5.5 / 2026-04-24** |
+| Agent optimizer 생성 | **gpt-5.5 / 2026-04-24** |
 
 새 환경의 기본 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸면 실제 출력 이름을 사용합니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정을 유지하고 개선을 크게 보이게 하려고 v1을 약화하지 않습니다.
 

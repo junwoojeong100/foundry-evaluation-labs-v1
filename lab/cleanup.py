@@ -79,8 +79,8 @@ def cleanup_plan(config: Config) -> dict:
         "workspace_id": state["workspace_id"],
         "actions": actions,
         "never_deleted": [
-            "resource group", "Foundry account/project", "shared model deployments",
-            "Search service", "Application Insights/Log Analytics", "RBAC assignments",
+            "resource group", "Foundry resource/project", "shared model deployments",
+            "Azure AI Search service", "Application Insights/Log Analytics", "RBAC assignments",
         ],
         "manual_follow_up": [
             "Managed evaluation jobs/files are retained for evidence; inspect recorded IDs and remove in the portal if required.",

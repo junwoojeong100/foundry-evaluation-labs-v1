@@ -34,7 +34,7 @@ If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rul
 **Existing records are never moved or merged automatically.** If earlier work used shared `artifacts/` or another location, first compare the original configuration with the project, prefix, and language in `workspace.json`. Do not launch paid work against a different record folder or edit the original `.env`/manifest to bypass ownership checks.
 
 <figure class="portal-shot" id="portal-resource-group">
-<img src="../../web/assets/portal/en/00-resource-group.png" alt="Microsoft Azure Portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
+<img src="../../web/assets/portal/en/00-resource-group.png" alt="Azure portal resource-group Overview for checking the lab subscription, region, and resource inventory." width="1600" height="1000" loading="lazy">
 <figcaption><strong>Check the isolated resource group.</strong> Open the group named in your provisioning records and confirm its subscription, region, and resource inventory. Verify that the Microsoft Foundry project and supporting resources belong to your lab. <a href="../../web/assets/portal/en/00-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -42,10 +42,10 @@ If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rul
 
 | Role | Configuration key | Default model/version |
 |---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 100 |
-| Managed Evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 100 |
-| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared GlobalStandard 100 deployment |
-| Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10 |
+| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100 |
+| Managed evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100 |
+| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared Global Standard 100 deployment |
+| Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, Global Standard 10 |
 
 Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
 
@@ -76,7 +76,7 @@ Use the [real response check in 03](handbook.md#agent) to verify Agent and `know
 
 ## Prepare an executable Agent {#bootstrap}
 
-[01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Microsoft Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Sign in, then run [quick provisioning](handbook.md#resources-quickstart); language and record location are set automatically too. Do not treat fake IDs in `.env.example` as a live environment.
+[01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Sign in, then run [quick provisioning](handbook.md#resources-quickstart); language and record location are set automatically too. Do not treat fake IDs in `.env.example` as a live environment.
 
 Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
 
@@ -147,7 +147,7 @@ Open `.lab/lab-en/approval.example.json` and **Save As approval.json in the same
 | `max_hosting_hours` | Approved positive integer hours. If 8, the approval interval must also be no longer than 8 hours. |
 | `max_wait_seconds` | Positive integer wait limit, for example 3600. Ending the wait does not cancel a remote job. |
 | `max_calls`, `max_candidates` | Approved call/candidate limits; 08 requests 2 candidates. Account for internal Agent, Judge, and search calls. These fields do not automatically cap every portal call or charge. |
-| `allow_global_inference` | `true` only when GlobalStandard processing is authorized; it is not NCUS-only processing. |
+| `allow_global_inference` | `true` only when Global Standard processing is authorized; it is not NCUS-only processing. |
 | `allow_resource_creation`, `allow_rbac_assignments` | Each is `true` only when this plan's resources and resource-scoped role assignments are authorized. |
 | `acknowledge_continuous_hosting`, `acknowledge_unknown_cost` | Each is `true` only after acknowledging continuing hosting charges and an unconfirmed final cost. |
 | `allow_training`, `allow_global_training` | `false` for this path. |
@@ -156,7 +156,7 @@ Open `.lab/lab-en/approval.example.json` and **Save As approval.json in the same
 
 Validate with [02's `bootstrap preflight --config ... --approval ...`](handbook.md#resources-approval) and read `approval_reason` on failure. Authorization covers only the exact plan hash, models, and retention scope. It does not authorize another lab, an automatic retry, or deletion.
 
-**Enforcement boundary:** Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Microsoft Azure Portal or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.
+**Enforcement boundary:** Bootstrap checks authorization validity, provisioning scope, and its wait bound. JSON budget and call limits do not automatically cap all Microsoft Azure or Optimizer spending. Budget alerts are not cutoffs. Monitor actual usage yourself and cancel jobs or clean up within the authorized scope.
 
 ## Verify permissions and provider registration {#rbac}
 
@@ -167,7 +167,7 @@ Use **Access control (IAM) → Check access** to inspect active assignments and 
 | Task or connection | Required permissions and scope |
 |---|---|
 | Your environment creation | Bootstrap checks effective subscription-scoped group/deployment/resource writes and `Microsoft.Authorization/roleAssignments/write`. Contributor alone cannot assign roles. Subscription quota-read access is also required. |
-| Your Agent/evaluation operations | Foundry User or the required data-plane permissions on your project. Microsoft Azure Contributor/Owner alone does not grant these data actions. |
+| Your Agent/evaluation operations | Foundry User or the required data-plane permissions on your project. The built-in Contributor or Owner role alone does not grant these data actions. |
 | Your policy preparation | Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on your Search service. |
 | Project managed identity | Search Index Data Reader on this Search service, model invocation, and telemetry submission to the assigned monitoring resource. |
 | Search managed identity | Model invocation on the assigned Microsoft Foundry resource. |
@@ -177,7 +177,7 @@ Use **Access control (IAM) → Check access** to inspect active assignments and 
 
 A provider registration enables a service type in your subscription. Follow the [official provider-registration instructions](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal):
 
-1. Open Microsoft Azure Portal → **Subscriptions → your subscription → Resource providers**.
+1. Open the Azure portal → **Subscriptions → your subscription → Resource providers**.
 2. Search for `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, and `Microsoft.Insights`; confirm **Registered** for each.
 3. Select a missing provider and **Register** only with your own `/register/action` permission and authorization. Do not register unrelated providers in bulk.
 4. After registration/propagation, rerun the same preflight. If access is missing, obtain an approved execution scope before resuming. Bootstrap never auto-registers providers or expands permissions.
@@ -190,12 +190,12 @@ Evaluation invokes the Agent and Judge; optimization makes additional internal c
 
 | Cost component | How it is billed | What to do |
 |---|---|---|
-| Microsoft Azure AI Search (Basic, one replica) | Per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared. Check the current [AI Search prices](https://azure.microsoft.com/pricing/details/search/). | The largest continuing cost. Delete the group as soon as you finish, as in 10. |
-| Model deployments (Agent, Judge, Optimizer/planner, embeddings) | GlobalStandard bills by tokens used; an idle deployment adds no token charge. | Evaluation, Optimizer, and retrieval calls consume tokens. Do not resubmit work to "try again". |
+| Azure AI Search (Basic, one replica) | Per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared. Check the current [AI Search prices](https://azure.microsoft.com/pricing/details/search/). | The largest continuing cost. Delete the group as soon as you finish, as in 10. |
+| Model deployments (Agent, Judge, Optimizer/planner, embeddings) | Global Standard bills by tokens used; an idle deployment adds no token charge. | Evaluation, Optimizer, and retrieval calls consume tokens. Do not resubmit work to "try again". |
 | Application Insights and Log Analytics | By data ingested and retained; the quick path keeps logs for 30 days. | Usually small for this lab; still removed with the group. |
 | GitHub Codespaces | Separate GitHub billing: compute while running, storage while it exists. | Stop or delete it as described in 10. |
 
-In Microsoft Azure Portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the [optional worksheet](#handoff) has a place for them.
+In the Azure portal → **Cost Management → Cost analysis**, select the subscription, resource group, and date range. Configure authorized budget alerts where needed, but do not treat them as enforced caps. Keep the actual budget, end time, and deletion/retention plan somewhere you can find them again; the [optional worksheet](#handoff) has a place for them.
 
 ## Optional worksheet for actual values and completion evidence {#handoff}
 
@@ -205,7 +205,7 @@ This worksheet is **optional**; nothing in the lab reads it. If your organizatio
 |---|---|
 | Identity | User, tenant ID, and subscription ID; never passwords or tokens |
 | Local paths | Your environment name, bootstrap config, and runtime `.env`; language/record location are automatic. Record `.env` only after successful creation. |
-| Microsoft Azure environment | Resource group, Microsoft Foundry account/project, project endpoint, and Search service |
+| Microsoft Azure environment | Resource group, Microsoft Foundry resource/project, project endpoint, and Search service |
 | Models | Actual names, product/version, SKU, and capacity for all four deployments |
 | Policy search | Source/language, eight uploaded documents, knowledge-base/connection names, and `retrieval_verified` |
 | Agent | Actual name, pinned v1, strict output, and a successful real Agent tool call |

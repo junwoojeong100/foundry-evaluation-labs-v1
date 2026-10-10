@@ -2,7 +2,7 @@
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
-**Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed Evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
+**Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed evaluation and the agent optimizer to evaluate and improve an Agent against representative business tasks:
 
 > Account, tools, and access → Microsoft Foundry creation → policies and Agent → dataset → criteria → evaluation → analysis → optimization → reevaluation → verified cleanup
 
@@ -11,7 +11,7 @@ The sample Contoso policies and questions are synthetic. The lesson is **evaluat
 ## Start here
 
 1. **[Start at 01](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup).** Check your account, subscription, provisioning/role-assignment permissions, and spending authorization. No Microsoft Azure or Microsoft Foundry experience is required.
-2. **[Open GitHub Codespaces · recommended](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-codespaces).** Python, Git, Microsoft Azure CLI, and dependencies are prepared for you. For your own computer, follow [local installation](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local) to prepare Python **3.11–3.14**, Git, and Microsoft Azure CLI. GitHub Codespaces and Microsoft Azure charges are separate.
+2. **[Open GitHub Codespaces · recommended](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-codespaces).** Python, Git, Azure CLI, and dependencies are prepared for you. For your own computer, follow [local installation](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#setup-local) to prepare Python **3.11–3.14**, Git, and Azure CLI. GitHub Codespaces and Microsoft Azure charges are separate.
 3. **[Sign in, then follow 02's provisioning instructions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html#resources-quickstart).** `python -m lab bootstrap setup --environment lab-en` prepares the plan, approval record, and environment. Review the active identity/subscription, pinned models, and actual authorization limits; no resources are created before confirmation.
 
 Environment names select language and record location: `lab-en` and `lab-en-02` use English; `lab-ko` uses Korean. No hand-edited JSON or manual environment variables are needed; subsequent commands use the existing `--config`.
@@ -25,8 +25,8 @@ When returning, use the [resume instructions](https://junwoojeong100.github.io/f
 | Role | Planned model/version |
 |---|---|
 | Agent | **gpt-6-sol / 2026-09-22** |
-| Microsoft Foundry Evaluation Judge | **gpt-6-luna / 2026-09-22** |
-| Agent Optimizer generator | **gpt-5.5 / 2026-04-24** |
+| Microsoft Foundry evaluation Judge | **gpt-6-luna / 2026-09-22** |
+| Agent optimizer generator | **gpt-5.5 / 2026-04-24** |
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. Never weaken v1 to manufacture improvement.
 

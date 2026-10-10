@@ -4,7 +4,7 @@
 
 ## 비교에는 변경 없는 데이터셋 하나 {#start}
 
-한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Microsoft Foundry Evaluation·Agent Optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
+한국어 절차는 **[data/optimizer/dev.jsonl](optimizer/dev.jsonl)**의 **JSONL 12행**을 Microsoft Foundry 평가·agent optimizer·재평가에 사용합니다. 본인이 만든 프로젝트에서 [04의 등록 절차](../guide/handbook.md#start)로 `lab-ko-dev12` 버전 `1`을 등록합니다. 자신의 같은 실습을 재개할 때는 기록한 이름·버전·해시를 대조하여 등록을 재사용합니다.
 
 **실행 위치:** [터미널에서 12행·해시 확인](../guide/handbook.md#dataset-check) → [Microsoft Foundry에서 업로드·선택](../guide/handbook.md#dataset-register). 로컬 확인 명령은 파일을 업로드하거나 평가를 제출하지 않습니다.
 {: .execution-guide}
@@ -68,7 +68,7 @@ custom prompt override는 비워 둡니다. 필드 매핑 화면이 나타나면
 
 helper는 질문·참고 자료와 실제 행별 Agent 버전·지시를 대조합니다. 오류·누락을 성공으로 바꾸거나 분모에서 빼지 않습니다. JSON·분류 검사는 부가 검증이며 **관리형 평가를 대신하는 로컬 Judge가 아닙니다**.
 
-Agent Optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침 전체를 검토하고 모델·도구·추론·스키마를 유지합니다. 검토한 v2를 한 번 비교하며 정식 버전을 계속 올리지 않습니다. 유지할 후보가 없으면 v1 유지 이유를 기록하고 10으로 진행합니다.
+Agent optimizer 내부 순위와 별도 관리형 실행의 평균·통과율을 구분합니다. 후보 지침 전체를 검토하고 모델·도구·추론·스키마를 유지합니다. 검토한 v2를 한 번 비교하며 정식 버전을 계속 올리지 않습니다. 유지할 후보가 없으면 v1 유지 이유를 기록하고 10으로 진행합니다.
 
 결과를 공유하기 전에 인증 정보·서명된 URL·비공개 계정 정보를 제거합니다. 오류·누락을 포함해 전체 사례를 기록합니다.
 

@@ -8,7 +8,7 @@ Use this checklist to review your own **evaluate → learn → improve → reeva
 
 **Every participant performs 01–10 directly.** Use your own account, computer, dedicated environment, and Agent; do not delegate creation, commands, or cleanup. Confirm provisioning and role-assignment access, spending authorization, and deletion/retention scope before starting.
 
-The default path is [GitHub Codespaces in 01](handbook.md#setup-codespaces). Follow [local installation](handbook.md#setup-local-install) and [version checks](handbook.md#setup-verify) only when installing **Python 3.11–3.14, Git, and Microsoft Azure CLI** on your computer. Confirm sign-in and the virtual environment in your selected lab environment.
+The default path is [GitHub Codespaces in 01](handbook.md#setup-codespaces). Follow [local installation](handbook.md#setup-local-install) and [version checks](handbook.md#setup-verify) only when installing **Python 3.11–3.14, Git, and Azure CLI** on your computer. Confirm sign-in and the virtual environment in your selected lab environment.
 
 Notes are optional. If you keep any, write them briefly in [07](handbook.md#analysis-notes), [09](handbook.md#decision-compare), and [10](handbook.md#cleanup-records); see [where the lab keeps its records](handbook.md#resources-notes). Never use another person's configuration, sign-in, or ownership records. In a new terminal, follow the [resume procedure](handbook.md#setup-resume) to continue with the same environment and records.
 
@@ -28,12 +28,12 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, and Microsoft Azure CLI. Step 02 sets language/record location automatically. | Matching identity, all three version checks, and successful local commands in the virtual environment |
+| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, and Azure CLI. Step 02 sets language/record location automatically. | Matching identity, all three version checks, and successful local commands in the virtual environment |
 | [02 Provisioning](handbook.md#resources) | Complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
 | [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Confirm the unsubmitted wizard settings and query-only input |
-| [06 Baseline](handbook.md#baseline) | Microsoft Foundry Evaluation against pinned v1 | Completed actual run ID and all 12 items |
+| [06 Baseline](handbook.md#baseline) | Microsoft Foundry evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | [07 Analysis](handbook.md#analyze) | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
 | [08 Optimization](handbook.md#optimize) | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |
 | [09 Reevaluation](handbook.md#decision) | With a reviewed candidate, evaluate same-criteria v2 and open Compare runs | Complete paired evidence and retain/accept/hold decision; without a different candidate, continue to 10 |

@@ -35,17 +35,17 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 
 <figure class="portal-shot" id="portal-resource-group">
 <img src="../web/assets/portal/01-project-overview.png" alt="Microsoft Foundry 프로젝트 홈에서 프로젝트 선택과 endpoint를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Microsoft Azure Portal의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>실습 프로젝트를 확인합니다.</strong> 프로젝트 이름과 endpoint를 자신의 생성 기록과 대조합니다. 리소스 그룹은 Azure 포털의 Resource groups에서 같은 구독과 그룹 이름으로 확인합니다. <a href="../web/assets/portal/01-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ## 모델 역할과 실제 배포를 확인합니다 {#prepare}
 
 | 역할 | 설정 키 | 기본 모델·버전 |
 |---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, GlobalStandard 100입니다. |
-| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, GlobalStandard 100입니다. |
-| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 GlobalStandard 100 배포를 사용합니다. |
-| 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, GlobalStandard 10입니다. |
+| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100입니다. |
+| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100입니다. |
+| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 Global Standard 100 배포를 사용합니다. |
+| 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, Global Standard 10입니다. |
 
 숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
 
@@ -76,7 +76,7 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 
 ## Agent를 실제로 준비합니다 {#bootstrap}
 
-[01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Microsoft Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 로그인 후 [빠른 생성](handbook.md#resources-quickstart)을 실행하면 언어·기록 위치도 자동으로 정해집니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
+[01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 로그인 후 [빠른 생성](handbook.md#resources-quickstart)을 실행하면 언어·기록 위치도 자동으로 정해집니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
 한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 
@@ -147,7 +147,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | `max_hosting_hours` | 승인된 양의 정수 시간입니다. 예를 들어 8이면 승인 시작부터 만료까지도 8시간 이하여야 합니다. |
 | `max_wait_seconds` | 양의 정수 대기 한도입니다. 예를 들어 3600입니다. 대기 종료는 원격 작업 취소가 아닙니다. |
 | `max_calls`, `max_candidates` | 승인된 호출·후보 한도입니다. 08의 요청 후보 수는 2입니다. 내부 Agent·Judge·검색 호출을 고려합니다. 이 필드가 포털의 모든 호출·비용을 자동 제한하지는 않습니다. |
-| `allow_global_inference` | GlobalStandard의 처리 경계를 승인한 경우 `true`입니다. NCUS 내부 처리만 보장하지 않습니다. |
+| `allow_global_inference` | Global Standard의 처리 경계를 승인한 경우 `true`입니다. NCUS 내부 처리만 보장하지 않습니다. |
 | `allow_resource_creation`, `allow_rbac_assignments` | 해당 계획의 리소스 생성·리소스 범위 역할 할당을 승인한 경우 각각 `true`입니다. |
 | `acknowledge_continuous_hosting`, `acknowledge_unknown_cost` | 지속 과금 가능성과 확정되지 않은 총비용을 확인한 경우 각각 `true`입니다. |
 | `allow_training`, `allow_global_training` | 이 경로는 `false`입니다. |
@@ -156,7 +156,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 [02의 `bootstrap preflight --config ... --approval ...`](handbook.md#resources-approval)로 파일을 검증합니다. 오류가 있으면 `approval_reason`을 확인합니다. 한 파일의 승인은 정확한 계획 해시·모델·보존 범위에만 적용되며 다른 실습·재시도·삭제 승인을 포함하지 않습니다.
 
-**강제 범위를 구분합니다.** bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Microsoft Azure Portal·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.
+**강제 범위를 구분합니다.** bootstrap은 승인 유효기간·생성 범위·대기 시간을 검사하지만 JSON 예산과 호출 한도가 Microsoft Azure·Optimizer 전체의 지출을 자동 차단하지 않습니다. 비용 알림도 차단 장치가 아닙니다. 본인이 실제 사용량을 확인하고 승인된 범위에서 작업을 취소하거나 자원을 정리합니다.
 
 ## 권한과 공급자 등록을 확인합니다 {#rbac}
 
@@ -167,7 +167,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | 작업·연결 | 확인할 권한과 범위 |
 |---|---|
 | 본인의 새 환경 생성 | bootstrap은 구독 범위의 그룹·배포·자원 생성과 `Microsoft.Authorization/roleAssignments/write` 유효 권한을 확인합니다. Contributor만으로는 역할 할당이 안 됩니다. 구독 quota 조회 권한도 필요합니다. |
-| 본인의 Agent·평가 실행 | 자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. Microsoft Azure의 Contributor/Owner만으로 이 권한이 생기지는 않습니다. |
+| 본인의 Agent·평가 실행 | 자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. 기본 제공 Contributor/Owner 역할만으로 이 권한이 생기지는 않습니다. |
 | 본인의 정책 준비 | 자신의 Search에 Search Service Contributor와 Search Index Data Contributor 등 스키마·업로드 권한이 필요합니다. |
 | 프로젝트 관리 ID | 해당 Search의 Search Index Data Reader, 모델 호출과 해당 관측 리소스 전송 권한입니다. |
 | Search 관리 ID | 해당 Microsoft Foundry 리소스의 모델 호출 권한입니다. |
@@ -177,7 +177,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. [공식 공급자 등록 안내](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal)에 따라 다음을 확인합니다.
 
-1. Microsoft Azure Portal → **Subscriptions → 사용할 구독 → Resource providers**를 엽니다.
+1. Azure 포털 → **Subscriptions → 사용할 구독 → Resource providers**를 엽니다.
 2. `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, `Microsoft.Insights`를 각각 검색하여 **Registered**인지 확인합니다.
 3. 미등록 항목은 본인에게 해당 `/register/action` 권한과 등록 승인이 있는 경우에만 선택하여 **Register**를 누릅니다. 필요한 네 항목 외 공급자를 일괄 등록하지 않습니다.
 4. 등록 완료·전파 후 같은 preflight를 다시 실행합니다. 등록 권한이 없으면 승인된 실행 범위를 확보한 뒤 재개합니다. bootstrap은 공급자를 자동 등록하거나 권한을 확대하지 않습니다.
@@ -190,12 +190,12 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 | 비용 구성 | 청구 방식 | 해야 할 일 |
 |---|---|---|
-| Microsoft Azure AI Search(Basic, 복제 1개) | 존재하는 동안 유휴 상태에서도 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10이었습니다. 현재 [AI Search 가격](https://azure.microsoft.com/pricing/details/search/)을 확인합니다. | 가장 큰 지속 비용입니다. 끝나는 대로 10단계처럼 그룹을 삭제합니다. |
-| 모델 배포(Agent·Judge·Optimizer/planner·embedding) | GlobalStandard는 사용한 토큰 기준으로 청구되며, 유휴 배포는 토큰 비용을 추가하지 않습니다. | 평가·Optimizer·검색 호출이 토큰을 사용합니다. "다시 시도"하려고 같은 작업을 재제출하지 않습니다. |
+| Azure AI Search(Basic, 복제 1개) | 존재하는 동안 유휴 상태에서도 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10이었습니다. 현재 [AI Search 가격](https://azure.microsoft.com/pricing/details/search/)을 확인합니다. | 가장 큰 지속 비용입니다. 끝나는 대로 10단계처럼 그룹을 삭제합니다. |
+| 모델 배포(Agent·Judge·Optimizer/planner·embedding) | Global Standard는 사용한 토큰 기준으로 청구되며, 유휴 배포는 토큰 비용을 추가하지 않습니다. | 평가·Optimizer·검색 호출이 토큰을 사용합니다. "다시 시도"하려고 같은 작업을 재제출하지 않습니다. |
 | Application Insights·Log Analytics | 수집·보존한 데이터량 기준입니다. 빠른 경로는 로그를 30일 보관합니다. | 이 실습에서는 보통 작지만 그룹 삭제 시 함께 삭제됩니다. |
 | GitHub Codespaces | GitHub의 별도 청구입니다. 실행 중에는 컴퓨팅, 존재하는 동안에는 저장소 비용이 듭니다. | 10단계에 따라 중지하거나 삭제합니다. |
 
-Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, [선택 기록표](#handoff)에 적을 자리가 있습니다.
+Azure 포털 → **Cost Management → Cost analysis**에서 구독·리소스 그룹·기간을 확인합니다. 필요하면 승인된 비용 알림을 설정하지만 이것은 강제 상한이 아닙니다. 실제 허용 예산·종료 시각·삭제/보존 계획은 나중에 다시 찾을 수 있는 곳에 보관하며, [선택 기록표](#handoff)에 적을 자리가 있습니다.
 
 ## 실제 값과 완료 근거를 적는 선택 기록표 {#handoff}
 
@@ -205,7 +205,7 @@ Microsoft Azure Portal → **Cost Management → Cost analysis**에서 구독·�
 |---|---|
 | 로그인 범위 | 사용자, tenant ID, subscription ID입니다. 비밀번호·토큰은 포함하지 않습니다. |
 | 로컬 경로 | 본인의 환경 이름, bootstrap config 경로, 런타임 `.env` 경로입니다. 언어·기록 폴더는 자동 설정되며 `.env`는 생성 완료 후 기록합니다. |
-| Microsoft Azure 환경 | 리소스 그룹·Microsoft Foundry account·project·project endpoint·Search 이름입니다. |
+| Microsoft Azure 환경 | 리소스 그룹·Microsoft Foundry resource·project·project endpoint·Search 이름입니다. |
 | 모델 | 네 배포의 실제 이름·제품명·버전·SKU·용량입니다. |
 | 정책 검색 | 정책 원본·언어, 업로드 8건, knowledge base·connection 이름, `retrieval_verified`입니다. |
 | Agent | 실제 이름, 고정 버전 1, 엄격한 출력 형식, 실제 Agent 도구 호출 확인입니다. |

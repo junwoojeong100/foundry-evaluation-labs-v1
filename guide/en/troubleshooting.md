@@ -22,7 +22,7 @@ Keep timestamps, steps, commands, target IDs, error codes and actions in your ow
 
 ## Environment, sign-in and local files {#environment}
 
-Resolve Python, Git, and Microsoft Azure CLI installation and PATH issues before signing in to Microsoft Azure.
+Resolve Python, Git, and Azure CLI installation and PATH issues before signing in to Microsoft Azure.
 
 | Symptom | Action | Completion criteria |
 |---|---|---|
@@ -115,7 +115,7 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 | A required response field is Unassigned | Use [mapping checks](admin-setup.md#evaluation-mapping) to compare the Agent target, query column, and service-generated response mapping. Do not add reference answers as a JSONL response column or submit before resolving the issue. |
 | Output items or scores are missing | Preserve failures/missing items and keep the denominator at twelve. Do not invent zero scores or passes. |
 
-## Agent Optimizer and interpretation {#optimizer}
+## Agent optimizer and interpretation {#optimizer}
 
 | Symptom | Action and completion criteria |
 |---|---|

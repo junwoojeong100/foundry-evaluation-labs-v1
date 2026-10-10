@@ -46,7 +46,7 @@ def run(args: list[str], *, timeout: float) -> subprocess.CompletedProcess[str]:
         raise AzureCliLaunchError(
             "This Azure CLI install starts through a Windows batch file, which cannot pass special "
             "characters such as & | or quotes safely. Reinstall Azure CLI with the Microsoft installer "
-            "(WinGet or MSI), or run the lab in GitHub Codespaces or WSL2."
+            "(WinGet or MSI), or run the lab in GitHub Codespaces or WSL 2."
         )
     return subprocess.run(
         [*prefix, *args], capture_output=True, text=True, errors="replace", check=False, timeout=timeout,

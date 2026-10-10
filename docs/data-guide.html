@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
   <meta property="og:title" content="Synthetic English evaluation data">
-  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html">
   <meta name="twitter:card" content="summary">
   <title>Synthetic English evaluation data · Microsoft Foundry Lab Guide</title>
@@ -113,7 +113,7 @@
         <h1 id="data-guide">Synthetic English evaluation data</h1>
 <p><a href="index.html#start">Dataset step</a> · <a href="admin.html#handoff">Optional worksheet</a> · <a href="ko/data-guide.html">Korean data guide</a></p>
 <h2 id="start">One unchanged dataset for the comparison</h2>
-<p>Use <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong>, exactly <strong>12 JSONL records</strong>, for Microsoft Foundry Evaluation, Agent Optimizer, and reevaluation. In the project you created, follow <a href="index.html#start">04</a> to register <code>lab-en-dev12</code> version <code>1</code>. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.</p>
+<p>Use <strong><a href="../data/en/optimizer/dev.jsonl">data/en/optimizer/dev.jsonl</a></strong>, exactly <strong>12 JSONL records</strong>, for Microsoft Foundry evaluation, the agent optimizer, and reevaluation. In the project you created, follow <a href="index.html#start">04</a> to register <code>lab-en-dev12</code> version <code>1</code>. When resuming your same lab, compare its recorded name, version, and hash before reusing registration.</p>
 <p class="execution-guide"><strong>Where to act:</strong> <a href="index.html#dataset-check">Terminal · check all 12 rows/hash</a> → <a href="index.html#dataset-register">Microsoft Foundry · upload/select</a>. The local check uploads nothing and submits no evaluation.</p>
 <p>Keep its exact bytes, SHA-256, questions, references, and language fixed throughout the comparison. Keep Korean and English data separate rather than mixing them in one comparison.</p>
 <p>Use <a href="index.html#dataset-code-portal">04's code ↔ portal table</a> to distinguish local count/hash checks from portal registration. <a href="index.html#criteria-code-portal">05's remote-settings verification</a> and <a href="index.html#decision-code-portal">09's actual SDK submission</a> show how data, mappings, and versions stay fixed. Do not run read-only source panels independently.</p>
@@ -190,7 +190,7 @@
 <h2 id="compare">Compare complete evidence</h2>
 <p>Compare the questions, responses, evaluator scores, and reasons for all 12 cases across same-model v1 and v2. Record your actual run IDs and dataset hash to identify the comparison.</p>
 <p>The helper checks matching questions/references and actual per-item Agent version/instructions. Missing/error rows cannot become successful rows or disappear from the denominator. JSON/route checks are supplementary validation, <strong>not a replacement local Judge</strong>.</p>
-<p>Agent Optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the complete candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Without a candidate worth retaining, record why you keep v1 and continue to 10.</p>
+<p>The agent optimizer's internal ranking is distinct from the separate managed run's means and pass counts. Review the complete candidate instructions and preserve model/tools/reasoning/schema. Compare one reviewed v2 without continually adding releases. Without a candidate worth retaining, record why you keep v1 and continue to 10.</p>
 <p>Before sharing results, remove credentials, signed URLs, and private account details. Keep every case, including errors and missing results.</p>
 <p><code>cleanup</code> does not remove every registered dataset. Follow <a href="index.html#cleanup">10</a> to preserve results and remove your dedicated group. Only with explicit retention authorization, record remaining registrations/evaluations, cost responsibility, and review date. Never delete shared or external resources.</p>
       </article>

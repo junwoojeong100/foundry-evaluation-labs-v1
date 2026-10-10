@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta name="description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Microsoft Foundry Lab Guide">
   <meta property="og:title" content="Evaluate and improve a customer-support Agent · v1">
-  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.">
+  <meta property="og:description" content="A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.">
   <meta property="og:url" content="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html">
   <meta name="twitter:card" content="summary">
   <title>Evaluate and improve a customer-support Agent · v1 · Microsoft Foundry Lab Guide</title>
@@ -61,9 +61,9 @@
 <li><a href="#agent">03. Connect policies and create the Agent</a></li>
 <li><a href="#start">04. Register the dataset</a></li>
 <li><a href="#prepare">05. Select evaluation criteria</a></li>
-<li><a href="#baseline">06. Run Microsoft Foundry Evaluation</a></li>
+<li><a href="#baseline">06. Run a Microsoft Foundry evaluation</a></li>
 <li><a href="#analyze">07. Read scores and reasons</a></li>
-<li><a href="#optimize">08. Improve instructions with Agent Optimizer</a></li>
+<li><a href="#optimize">08. Improve instructions with the agent optimizer</a></li>
 <li><a href="#decision">09. Reevaluate and compare v1/v2</a></li>
 <li><a href="#cleanup">10. Save results and delete resources</a></li>
 </ul>
@@ -136,11 +136,11 @@
 <li><p class="phase-title"><strong>Evaluate</strong><span>04–07 · Score v1 on 12 questions</span></p><ul>
 <li><a href="#start"><strong>04</strong> Register the dataset</a></li>
 <li><a href="#prepare"><strong>05</strong> Select evaluation criteria</a></li>
-<li><a href="#baseline"><strong>06</strong> Run Microsoft Foundry Evaluation</a></li>
+<li><a href="#baseline"><strong>06</strong> Run a Microsoft Foundry evaluation</a></li>
 <li><a href="#analyze"><strong>07</strong> Read scores and reasons</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Improve · Compare</strong><span>08–09 · v2 with new instructions only</span></p><ul>
-<li><a href="#optimize"><strong>08</strong> Improve instructions with Agent Optimizer</a></li>
+<li><a href="#optimize"><strong>08</strong> Improve instructions with the agent optimizer</a></li>
 <li><a href="#decision"><strong>09</strong> Reevaluate and compare v1/v2</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>Clean up</strong><span>10 · Save records, then delete</span></p><ul>
@@ -151,7 +151,7 @@
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>Subscription, permissions, spending:</strong> You need your own Microsoft Azure subscription, <strong>both provisioning and role-assignment permissions</strong> for resources, and spending authorization.</li>
-<li><strong>Lab terminal:</strong> <strong>GitHub Codespaces (recommended)</strong> needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Microsoft Azure CLI.</li>
+<li><strong>Lab terminal:</strong> <strong>GitHub Codespaces (recommended)</strong> needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Azure CLI.</li>
 <li><strong>Time:</strong> Allow roughly half a day, plus permission/quota approvals and service execution time. Service waits are usually short (provisioning in 02 about 10 minutes, a 12-case evaluation a few minutes, an Optimizer job often 10–20 minutes) but can be longer when the service is busy.</li>
 <li><strong>Ground rule:</strong> <strong>Every participant completes every step with their own account, from setup to cleanup.</strong> Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the <a href="#setup-resume">resume instructions</a> and verify completed work using your own <code>config.json</code>, manifest, and receipts.</li>
 </ul>
@@ -173,12 +173,12 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://portal.azure.com">Microsoft Azure Portal</a></td>
+<td><a href="https://portal.azure.com">Azure portal</a></td>
 <td>Verify identity, subscription, permissions, actual resources, and deletion scope.</td>
 </tr>
 <tr>
 <td>Lab terminal · Codespaces or your computer</td>
-<td>Run the supplied commands. Codespaces avoids installing Python, Git, and Microsoft Azure CLI on your computer.</td>
+<td>Run the supplied commands. Codespaces avoids installing Python, Git, and Azure CLI on your computer.</td>
 </tr>
 <tr>
 <td><a href="https://ai.azure.com">Microsoft Foundry</a></td>
@@ -197,7 +197,7 @@
 <tbody>
 <tr>
 <td><strong>Run in your terminal</strong></td>
-<td>Use your selected lab terminal. If you use Codespaces, edit files in its VS Code editor too.</td>
+<td>Use your selected lab terminal. If you use Codespaces, edit files in its Visual Studio Code (VS Code) editor too.</td>
 </tr>
 <tr>
 <td><strong>Portal actions</strong></td>
@@ -226,7 +226,7 @@
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>What:</strong> Confirm the Microsoft Azure subscription, access, and local execution environment.</p>
 <p><strong>Why:</strong> Different browser and CLI identities can cause access failures or create resources in the wrong environment.</p>
-<p><strong>How · where:</strong> Check subscription/access in Microsoft Azure Portal, then compare tools and the signed-in account in the terminal. No Microsoft Azure resources are created yet.</p>
+<p><strong>How · where:</strong> Check subscription/access in the Azure portal, then compare tools and the signed-in account in the terminal. No Microsoft Azure resources are created yet.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#setup-account">Check account/access</a> → <a href="#setup-codespaces">Open Codespaces · recommended</a> → <a href="#setup-login">Terminal · sign in</a>. If Codespaces is unavailable, use <a href="#setup-local-install">local installation</a>.</p>
@@ -264,7 +264,7 @@
 </details>
 <h3 id="setup-account">Confirm your Microsoft Azure account and subscription</h3>
 <ol>
-<li>Sign in to the <a href="https://portal.azure.com">Microsoft Azure portal</a> with <strong>your own lab account</strong>. If you have no account/subscription, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure account instructions</a>. For an organizational subscription, first obtain access and spending authorization for your own lab scope. A free or trial subscription does not guarantee the required model quota.</li>
+<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a> with <strong>your own lab account</strong>. If you have no account/subscription, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure account instructions</a>. For an organizational subscription, first obtain access and spending authorization for your own lab scope. A free or trial subscription does not guarantee the required model quota.</li>
 <li>Search for <strong>Subscriptions</strong> in the top search box and open the intended subscription. Confirm portal status <strong>Active</strong> and read its <strong>Subscription ID</strong> and <strong>Directory/Tenant ID</strong>. The CLI describes the same usable subscription as <strong>Enabled</strong>. If it is missing, check directory and subscription filters under your account.</li>
 <li>Open the permissions menu <strong>Access control (IAM) → Check access</strong> and inspect your role and scope. Older UI versions may label this <strong>View my access</strong>. You create resources and resource-scoped role assignments in this lab, so <strong>both provisioning and role-assignment permissions are required</strong>. Contributor alone cannot assign roles. See <a href="admin.html#rbac">permissions by task and provider registration</a>.</li>
 <li>Set a budget, end time, and deletion or retention scope for your dedicated group. If access or authorization is missing, obtain an approved execution scope through your organization's procedures before continuing. Do not delegate the remaining exercises to another person, grant new subscription-wide Owner, or disable security controls as a shortcut.</li>
@@ -280,7 +280,7 @@
 </figure>
 
 <h3 id="setup-local">Install tools and download the lab</h3>
-<p><strong>Recommended: use GitHub Codespaces.</strong> A GitHub account and browser can prepare this repository's Python, Git, Microsoft Azure CLI, and locked dependencies. <strong>Codespaces does not provide Microsoft Azure subscriptions, permissions, or model quota.</strong> If organizational policy does not permit Codespaces, use the local path below.</p>
+<p><strong>Recommended: use GitHub Codespaces.</strong> A GitHub account and browser can prepare this repository's Python, Git, Azure CLI, and locked dependencies. <strong>Codespaces does not provide Microsoft Azure subscriptions, permissions, or model quota.</strong> If organizational policy does not permit Codespaces, use the local path below.</p>
 <p><strong>Command rules</strong></p>
 <ul>
 <li>Run <strong>one command at a time</strong>, and stop at an error instead of running the next command. A long command can wrap across screen lines; do not insert a line break within it.</li>
@@ -303,14 +303,14 @@ az version
 python -m lab --help
 python scripts/build_datasets.py --language en --check
 </code></pre>
-<p>Confirm Python <strong>3.12.x</strong>, Git/Microsoft Azure CLI versions, the lab command list, and a successful dataset check. The command list is long, but this guide uses only <code>bootstrap</code>, <code>preflight</code>, <code>smoke</code>, <code>iq</code>, <code>native-agent</code>, <code>native-evals</code>, and <code>cleanup</code>; ignore the others. <strong>Continue to <a href="#setup-login">sign-in</a> without reinstalling tools, cloning, or recreating the virtual environment.</strong> If initial setup fails, see <a href="troubleshooting.html#codespaces">Codespaces troubleshooting</a>.</p>
+<p>Confirm Python <strong>3.12.x</strong>, Git/Azure CLI versions, the lab command list, and a successful dataset check. The command list is long, but this guide uses only <code>bootstrap</code>, <code>preflight</code>, <code>smoke</code>, <code>iq</code>, <code>native-agent</code>, <code>native-evals</code>, and <code>cleanup</code>; ignore the others. <strong>Continue to <a href="#setup-login">sign-in</a> without reinstalling tools, cloning, or recreating the virtual environment.</strong> If initial setup fails, see <a href="troubleshooting.html#codespaces">Codespaces troubleshooting</a>.</p>
 <p class="note"><strong>Keep the codespace active during waits.</strong> By default, a codespace stops after 30 minutes without interaction, and stopping it ends any running command. Stay with the terminal while 02 provisions and 09 waits for the reevaluation. If it stops, <a href="https://github.com/codespaces">restart it</a>, open <strong>Terminal → New Terminal</strong>, and follow the <a href="#setup-resume">resume instructions</a>; check status instead of repeating <code>apply</code> or a submission. A stopped codespace that stays unused is deleted after 30 days by default, so back up <code>.lab/</code> as described in <a href="#cleanup-codespaces">10</a> before a long break. Your account or organization may use different <a href="https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle">codespace lifecycle rules</a>.</p>
 <details class="guide-details optional-path">
 <summary>Local computer only · Windows/macOS/Linux installation</summary>
 <h4 id="setup-local-install">Select the local installation path</h4>
-<p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Microsoft Azure CLI</a>. Python runs the supplied programs, Git downloads the lab, and Microsoft Azure CLI provides the <code>az</code> sign-in/query commands. Obtain an approved installation path if your work computer restricts installation.</p>
+<p>Install <a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, and the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>. Python runs the supplied programs, Git downloads the lab, and Azure CLI provides the <code>az</code> sign-in/query commands. Obtain an approved installation path if your work computer restricts installation.</p>
 <p><strong>If the tools are already installed, start with <a href="#setup-verify">installation checks</a> and do not reinstall working tools.</strong> The Windows/macOS examples below explicitly select <strong>3.13</strong> so an unsupported newer Python is not selected. If you already use another supported version, replace <code>py -3.13</code> or <code>python3.13</code> with its version-specific command, using the same Python for verification and virtual-environment creation. Python 3.10 or earlier and 3.15 or later are outside this lab's supported range.</p>
-<p>First open <strong>your computer's terminal</strong>. Search for <strong>PowerShell</strong> in Windows Start, <strong>Terminal</strong> in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in Microsoft Azure Portal's Cloud Shell or the Python prompt showing <code>&gt;&gt;&gt;</code>. Follow the <a href="#setup-local">command rules</a> above.</p>
+<p>First open <strong>your computer's terminal</strong>. Search for <strong>PowerShell</strong> in Windows Start, <strong>Terminal</strong> in macOS Spotlight, or the terminal in your Linux app menu. This guide does not run in the Azure portal's Cloud Shell or the Python prompt showing <code>&gt;&gt;&gt;</code>. Follow the <a href="#setup-local">command rules</a> above.</p>
 <p>Follow <strong>only your own operating system's</strong> <a href="#setup-windows">Windows installation</a>, <a href="#setup-macos">macOS installation</a>, or <a href="#setup-linux">Linux installation</a>, then continue to <a href="#setup-verify">installation checks</a>.</p>
 <h4 id="setup-windows">Windows · install in PowerShell</h4>
 <p>Run <code>winget --version</code> in PowerShell. If it prints a version, use the Windows package manager <strong>WinGet</strong> to run the following commands one at a time. Personally review installation agreements and elevation prompts within your organization's authorization.</p>
@@ -337,7 +337,7 @@ winget install --exact --id Microsoft.AzureCLI --source winget
 <td>Download the appropriate installer from <a href="https://git-scm.com/install/windows">Git for Windows</a>. Keep <strong>Git from the command line and also from 3rd-party software</strong> on the PATH selection screen so Git works in PowerShell.</td>
 </tr>
 <tr>
-<td>Microsoft Azure CLI</td>
+<td>Azure CLI</td>
 <td>Follow <strong>Microsoft Installer (MSI)</strong> in the <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-windows?pivots=msi">official Windows instructions</a>. Choose the 64-bit MSI for a typical x64 computer.</td>
 </tr>
 </tbody>
@@ -349,9 +349,9 @@ winget install --exact --id Microsoft.AzureCLI --source winget
 <pre class="terminal-command"><code class="language-bash">brew update
 brew install python@3.13 git azure-cli
 </code></pre>
-<p>This uses <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew's versioned Python package</a> and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft's macOS Microsoft Azure CLI instructions</a>. <strong>Use <code>python3.13</code> for this path.</strong> An existing <code>python3</code> can still point to macOS's system Python or another version; do not overwrite or forcibly relink the system interpreter.</p>
+<p>This uses <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew's versioned Python package</a> and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft's macOS Azure CLI instructions</a>. <strong>Use <code>python3.13</code> for this path.</strong> An existing <code>python3</code> can still point to macOS's system Python or another version; do not overwrite or forcibly relink the system interpreter.</p>
 <h4 id="setup-linux">Linux · Ubuntu 24.04 LTS example</h4>
-<p>The following targets <strong>Ubuntu 24.04 LTS</strong>, which provides Python 3.12 by default. For another distribution, follow its Python instructions, <a href="https://git-scm.com/install/linux">Git installation guidance</a>, and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">official Microsoft Azure CLI installation instructions</a>. If Python is outside the supported range, request a supported execution environment rather than replacing the system interpreter.</p>
+<p>The following targets <strong>Ubuntu 24.04 LTS</strong>, which provides Python 3.12 by default. For another distribution, follow its Python instructions, <a href="https://git-scm.com/install/linux">Git installation guidance</a>, and <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">official Azure CLI installation instructions</a>. If Python is outside the supported range, request a supported execution environment rather than replacing the system interpreter.</p>
 <p class="command-label">Run in your terminal · Codespaces/macOS/Linux</p>
 <pre class="terminal-command"><code class="language-bash">sudo apt update
 sudo apt install python3 python3-venv python3-pip git curl
@@ -398,12 +398,12 @@ az version
 <td>An installed version such as <code>git version 2.x...</code>.</td>
 </tr>
 <tr>
-<td>Microsoft Azure CLI</td>
+<td>Azure CLI</td>
 <td>JSON containing a version such as <code>"azure-cli": "2.x..."</code>. <strong>This check does not require Microsoft Azure sign-in.</strong></td>
 </tr>
 </tbody>
 </table>
-<p>Python information in <code>az version</code> describes Microsoft Azure CLI's own runtime, not verification of the lab's Python installation. <strong>All three commands must succeed before</strong> downloading the lab or creating its virtual environment. For <code>command not found</code>, <code>not recognized</code>, or Microsoft Store opening instead of Python, see <a href="troubleshooting.html#environment">installation and PATH troubleshooting</a>.</p>
+<p>Python information in <code>az version</code> describes Azure CLI's own runtime, not verification of the lab's Python installation. <strong>All three commands must succeed before</strong> downloading the lab or creating its virtual environment. For <code>command not found</code>, <code>not recognized</code>, or Microsoft Store opening instead of Python, see <a href="troubleshooting.html#environment">installation and PATH troubleshooting</a>.</p>
 <h4 id="setup-download">Download the lab files</h4>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">git clone --depth 1 https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
@@ -488,7 +488,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>az login</code>, <code>az account set</code>, <code>az account show</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Check the signed-in account, tenant, subscription, and <code>state: Enabled</code>.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare Directory under your Microsoft Azure Portal account and the IDs/state under <strong>Subscriptions → intended subscription → Overview</strong> yourself.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare Directory under your Azure portal account and the IDs/state under <strong>Subscriptions → intended subscription → Overview</strong> yourself.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>--environment lab-en</code> → subsequent <code>--config</code></td>
@@ -498,7 +498,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 </details>
-<p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Microsoft Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Microsoft Foundry environment →</a></p>
 
 <h2 id="resources">02. Create the Microsoft Foundry environment</h2>
@@ -558,9 +558,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p><strong>How to size the numbers:</strong> Choose hours that cover provisioning (usually about 10 minutes), your work, and the cleanup in 10, and keep the resources only that long. The largest continuing cost is <strong>Microsoft Azure AI Search (Basic)</strong>, billed per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared, roughly US$2.4 per day. Model charges depend on tokens and current model prices. Estimate your own budget with the <a href="https://azure.microsoft.com/pricing/calculator/">Microsoft Azure pricing calculator</a>, the current <a href="https://azure.microsoft.com/pricing/details/search/">AI Search prices</a>, and Microsoft Foundry model prices, then add room for retries you did not plan. The prompts record your numbers; they are not spending caps.
+<p><strong>How to size the numbers:</strong> Choose hours that cover provisioning (usually about 10 minutes), your work, and the cleanup in 10, and keep the resources only that long. The largest continuing cost is <strong>Azure AI Search (Basic)</strong>, billed per hour while the service exists, even when idle: about US$0.10 per hour in North Central US when this guide was prepared, roughly US$2.4 per day. Model charges depend on tokens and current model prices. Estimate your own budget with the <a href="https://azure.microsoft.com/pricing/calculator/">Microsoft Azure pricing calculator</a>, the current <a href="https://azure.microsoft.com/pricing/details/search/">AI Search prices</a>, and Microsoft Foundry model prices, then add room for retries you did not plan. The prompts record your numbers; they are not spending caps.
 {: .note}
-<strong>Final review before creation:</strong> Read the displayed account, subscription, region, resources, models, and limits. This quick path records <strong>at most two candidates, a one-hour job wait, and 30-day log retention</strong>. Use the individual configuration path below if different limits are required. Type <strong><code>CREATE lab-en</code></strong> only if you actually authorize GlobalStandard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.</p>
+<strong>Final review before creation:</strong> Read the displayed account, subscription, region, resources, models, and limits. This quick path records <strong>at most two candidates, a one-hour job wait, and 30-day log retention</strong>. Use the individual configuration path below if different limits are required. Type <strong><code>CREATE lab-en</code></strong> only if you actually authorize Global Standard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.</p>
 <p class="note warning">No Microsoft Azure resources are created before confirmation, and Enter cancels. <strong>After confirmation, provisioning and charges can begin.</strong> Budget, call counts, and hosting hours are not automatic spending cutoffs, nor authorization for deletion, training, or automatic retries.</p>
 <p><strong>Successful result</strong></p>
 <ul>
@@ -593,9 +593,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <li><strong>Microsoft Foundry resource</strong><span>AI service and deployments</span></li>
 <li><strong>Project</strong><span>Agents, data, evaluations</span></li>
 </ol>
-<figcaption>Each item contains the next. The same lab group also contains <strong>Microsoft Azure AI Search</strong> for policy retrieval and <strong>Application Insights / Log Analytics</strong> for execution records.</figcaption>
+<figcaption>Each item contains the next. The same lab group also contains <strong>Azure AI Search</strong> for policy retrieval and <strong>Application Insights / Log Analytics</strong> for execution records.</figcaption>
 </figure>
-<p>An <strong>endpoint</strong> is the address a program uses to connect to a service. Use the project's <strong>Project endpoint</strong> for this lab, not the adjacent Microsoft Azure OpenAI endpoint.</p>
+<p>An <strong>endpoint</strong> is the address a program uses to connect to a service. Use the project's <strong>Project endpoint</strong> for this lab, not the adjacent Azure OpenAI endpoint.</p>
 <h3 id="resources-plan">Create a local provisioning plan</h3>
 <p>Replace the placeholders with the values from <code>az account show</code> (run it again if you need them). An <strong>ID identifies a resource; it is not its display name</strong>. Do not enter a subscription name in an ID field.</p>
 <table>
@@ -745,7 +745,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <th>Role/model</th>
 <th style="text-align: right;">Recommended minimum TPM to start</th>
-<th style="text-align: right;">ARM capacity in a new default plan</th>
+<th style="text-align: right;">Azure Resource Manager (ARM) capacity in a new default plan</th>
 </tr>
 </thead>
 <tbody>
@@ -858,11 +858,11 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span><code>config["names"]</code>, ARM <code>PUT</code> location/tags</td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Check for collisions and create a new dedicated group.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Azure Portal → <strong>Resource groups → your group → Overview</strong>: inspect name, region, and Tags. Do not create another group.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Azure portal → <strong>Resource groups → your group → Overview</strong>: inspect name, region, and Tags. Do not create another group.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span><code>deployment group create</code>, <code>template.json</code>, <code>_parameters(...)</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Deploy the Microsoft Foundry account/project, Search, monitoring, models, connections, and roles in the <a href="../infra/bootstrap.json">actual ARM template</a>.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Deploy the Microsoft Foundry resource/project, Search, monitoring, models, connections, and roles in the <a href="../infra/bootstrap.json">actual ARM template</a>.</td>
 <td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Group <strong>Deployments → your deployment → Deployment details/Inputs/Outputs</strong>: compare inputs and created resources.</td>
 </tr>
 <tr>
@@ -878,7 +878,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span><code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Save the actual project connection after successful creation.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare <strong>Microsoft Foundry Home → Project endpoint</strong>, not Microsoft Azure OpenAI endpoint.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare <strong>Microsoft Foundry Home → Project endpoint</strong>, not Azure OpenAI endpoint.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Code/input</span>Role assignments and project/Search managed identities</td>
@@ -887,7 +887,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p>Read <strong>group creation → ARM validation/deployment → status polling → inventory verification → .env saving</strong> in <code>apply()</code>. <code>bounded(...)</code> checks authorization/wait bounds before executing the Microsoft Azure CLI argument lists shown in the source. Local records, resumption, and ownership protections are real parts of the implementation, not omitted details.</p>
+<p>Read <strong>group creation → ARM validation/deployment → status polling → inventory verification → .env saving</strong> in <code>apply()</code>. <code>bounded(...)</code> checks authorization/wait bounds before executing the Azure CLI argument lists shown in the source. Local records, resumption, and ownership protections are real parts of the implementation, not omitted details.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/bootstrap.py:apply</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
@@ -1203,10 +1203,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
     }))
     write(text(
         &quot;이 계획은 전용 그룹, Microsoft Foundry 프로젝트·4개 모델 배포, Search·로그 및 자원 범위 역할을 만듭니다.\n&quot;
-        &quot;GlobalStandard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n&quot;
+        &quot;Global Standard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n&quot;
         &quot;예산·호출 한도는 기록이며 포털 과금을 자동 차단하지 않습니다. 삭제·학습·재시도는 승인하지 않습니다.&quot;,
         &quot;This plan creates a dedicated group, Microsoft Foundry project/four model deployments, Search/logging, and resource-scoped roles.\n&quot;
-        &quot;Continue only with authorization for GlobalStandard worldwide processing, continuous hosting, and an unconfirmed total cost.\n&quot;
+        &quot;Continue only with authorization for Global Standard worldwide processing, continuous hosting, and an unconfirmed total cost.\n&quot;
         &quot;Budget/call limits are records, not automatic portal spending cutoffs. Deletion, training, and retries are not authorized.&quot;,
     ))
     existing_approval = approval_path.exists()
@@ -1265,7 +1265,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </details>
 <h3 id="resources-runtime-check">Verify the created environment and runtime settings</h3>
 <ol>
-<li>In <a href="https://portal.azure.com">Microsoft Azure Portal</a> → <strong>Resource groups</strong>, search for <code>names.resource_group</code> from <code>config.json</code>. Confirm the subscription, region, and complete resource list.</li>
+<li>In the <a href="https://portal.azure.com">Azure portal</a> → <strong>Resource groups</strong>, search for <code>names.resource_group</code> from <code>config.json</code>. Confirm the subscription, region, and complete resource list.</li>
 <li>Open <a href="https://ai.azure.com">Microsoft Foundry</a> with <strong>New Foundry</strong> enabled. If <strong>Select a project to continue</strong> appears, choose <code>names.project</code> and select <strong>Let's go</strong>. Read and <strong>Close</strong> the welcome tour if shown. If already in New Foundry, use the upper-left project selector. Do not use a Classic hub-based project.</li>
 <li>In the project's <strong>Home</strong> (Overview in some layouts), find <strong>Project endpoint</strong>. It must match <code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code>, in the form <code>https://account.services.ai.azure.com/api/projects/project</code>.</li>
 <li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, locate the deployments matching <code>.env</code> values <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, and <code>EMBEDDING_DEPLOYMENT</code>. See <a href="admin.html#prepare">portal orientation</a> if labels differ.</li>
@@ -1281,8 +1281,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </figure>
 
 <figure class="portal-shot" id="portal-project-endpoint">
-<img src="../web/assets/portal/en/25-project-overview.png" alt="Microsoft Foundry project Home with the project selector, View deployments, Project endpoint, and Microsoft Azure OpenAI endpoint." width="1440" height="492" loading="lazy">
-<figcaption><strong>Check the project and endpoint.</strong> Compare the upper-left project name and <strong>Project endpoint</strong> with your configuration. Do not substitute Microsoft Azure OpenAI endpoint. Open the model list through View deployments. <a href="../web/assets/portal/en/25-project-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<img src="../web/assets/portal/en/25-project-overview.png" alt="Microsoft Foundry project Home with the project selector, View deployments, Project endpoint, and Azure OpenAI endpoint." width="1440" height="492" loading="lazy">
+<figcaption><strong>Check the project and endpoint.</strong> Compare the upper-left project name and <strong>Project endpoint</strong> with your configuration. Do not substitute Azure OpenAI endpoint. Open the model list through View deployments. <a href="../web/assets/portal/en/25-project-overview.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <h4 id="resources-preflight">Check identity, deployments, and TPM in your terminal</h4>
@@ -1307,7 +1307,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Command/setting</span><code>AZURE_SUBSCRIPTION_ID</code>, <code>AZURE_TENANT_ID</code>, and <code>EXPECTED_AZURE_USER</code> from <code>--config .lab/lab-en/.env</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Read the subscription, tenant, and user recorded for this provisioned environment.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the Microsoft Azure Portal account's Directory and subscription Overview checked in 01.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the Azure portal account's Directory and subscription Overview checked in 01.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Command/setting</span><code>az account show --subscription ...</code> inside <code>check_identity()</code></td>
@@ -1495,8 +1495,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                 &quot;Tenant access to Prompt Optimizer and Frontier Tuning&quot;,
             ),
             text(
-                &quot;GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
-                &quot;GlobalStandard does not guarantee processing inside North Central US.&quot;,
+                &quot;Global Standard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
+                &quot;Global Standard does not guarantee processing inside North Central US.&quot;,
             ),
             text(
                 &quot;TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.&quot;,
@@ -1545,7 +1545,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code</span><code>AzureCliCredential(subscription=...)</code> in <code>credential_for()</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Recheck the CLI identity against 02's configuration and create a credential object. The SDK requests tokens with that identity when calling the service. Do not switch to API keys or another credential.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the signed-in Microsoft Foundry account and project subscription with the configuration. There is no action to paste tokens into the portal.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal verification</span>Compare the signed-in Microsoft Foundry resource and project subscription with the configuration. There is no action to paste tokens into the portal.</td>
 </tr>
 </tbody>
 </table>
@@ -1640,12 +1640,12 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>fields</code>, <code>vectorSearch</code>, <code>semantic</code> in <code>knowledge_payloads()["index"]</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Define policy fields, 1536-dimensional vectors, HNSW, embeddings, and semantic settings.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Azure Portal → Search → <strong>Indexes → created index → Fields/JSON</strong>. Inspect, do not recreate, the index.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Azure portal → Search → <strong>Indexes → created index → Fields/JSON</strong>. Inspect, do not recreate, the index.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>client.embeddings.create(...)</code> in <code>embed()</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Send eight policy titles/contents to the actual embedding deployment.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Foundry <strong>View deployments → embedding deployment → Details</strong>: check the model/name. Vectors are stored in Search, not Agent Playground settings.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Microsoft Foundry <strong>View deployments → embedding deployment → Details</strong>: check the model/name. Vectors are stored in Search, not in the agent playground settings.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>PUT</code>/<code>POST</code> in <code>prepare_knowledge()</code></td>
@@ -1917,7 +1917,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
         return setup
 </code></pre>
 </details>
-<p>Embedding is not hidden local scoring. This function invokes Microsoft Azure OpenAI's embedding API and preserves the original response, input hash, model, and usage.</p>
+<p>Embedding is not hidden local scoring. This function invokes the Azure OpenAI embeddings API and preserves the original response, input hash, model, and usage.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/embeddings.py:embed</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
@@ -2062,7 +2062,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 
 <p>In the portal, open <strong>Build → Knowledge → Knowledge bases</strong> and inspect Connection, the created knowledge base, and Knowledge sources. One knowledge-base row does not mean there is only one policy document.</p>
 <figure class="portal-shot" id="portal-policy-connection">
-<img src="../web/assets/portal/en/26-knowledge-base.png" alt="Knowledge Microsoft Foundry IQ page with Connection, knowledge-base name, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
+<img src="../web/assets/portal/en/26-knowledge-base.png" alt="Knowledge page for Foundry IQ with Connection, knowledge-base name, Knowledge sources, and Active status." width="1440" height="374" loading="lazy">
 <figcaption><strong>Confirm the policy connection.</strong> Inspect Connection, Knowledge sources, and Active for the intended base. Active is registration state; verify actual retrieval with <code>iq probe</code>. The free-retrieval banner does not make the whole lab free, and setup inspection does not require changing the billing plan. <a href="../web/assets/portal/en/26-knowledge-base.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -2074,7 +2074,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: Agent configuration and fixed versions</summary>
 <h4 id="agent-code-portal">Code ↔ portal · inspect the full Agent configuration</h4>
-<p class="execution-guide"><strong>Where to act:</strong> Run <a href="#agent-create">v1 creation above</a>, then inspect the version, configuration, and actual response in <a href="#agent-playground">Microsoft Foundry Playground below</a>. Do not recreate it or save another version in the portal.</p>
+<p class="execution-guide"><strong>Where to act:</strong> Run <a href="#agent-create">v1 creation above</a>, then inspect the version, configuration, and actual response in the <a href="#agent-playground">agent playground below</a>. Do not recreate it or save another version in the portal.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -2257,7 +2257,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </details>
 <h3 id="agent-playground">Verify v1's response and tool call in Microsoft Foundry</h3>
 <figure class="portal-shot" id="portal-agent-configuration">
-<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Agent Playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/en/27-agent-configuration.png" alt="Agent playground with Version, Model, Instructions, connected Knowledge, and Chat controls." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <a href="../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -2563,9 +2563,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </figure>
 
 <p class="completion-check"><strong>Completion criteria:</strong> Confirm and record both evaluator scales, thresholds, mappings, and the actual Judge in the same unsubmitted wizard. Step 06 creates the remote evaluation definition when you submit. Reevaluation then uses that saved definition.</p>
-<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run Microsoft Foundry Evaluation →</a></p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>Next: 06. Run a Microsoft Foundry evaluation →</a></p>
 
-<h2 id="baseline">06. Run Microsoft Foundry Evaluation</h2>
+<h2 id="baseline">06. Run a Microsoft Foundry evaluation</h2>
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>What:</strong> Generate real responses from pinned v1 and collect managed scores and reasons.</p>
 <p><strong>Why:</strong> A candidate needs a recorded starting point for comparison. Completed means processing ended, not that every response was correct.</p>
@@ -2701,7 +2701,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 </details>
 </details>
-<p class="completion-check"><strong>Completion criteria:</strong> The real Microsoft Foundry run is Completed and exposes 12 output items. Check failed/error counts in <code>result_counts</code> too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed Evaluation.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> The real Microsoft Foundry run is Completed and exposes 12 output items. Check failed/error counts in <code>result_counts</code> too. A failed or incomplete run stays failed/incomplete. No local custom Judge substitutes for this managed evaluation.</p>
 <p class="step-next no-print"><a href="#analyze" data-next-step>Next: 07. Read scores and reasons →</a></p>
 
 <h2 id="analyze">07. Read scores and reasons</h2>
@@ -2874,18 +2874,18 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="share-checkpoint" id="share-baseline"><strong>Discuss:</strong> State the run ID, each metric's scale/pass count, a concrete problematic answer and the instruction behavior you want to improve.</p>
 
 <p class="completion-check"><strong>Completion criteria:</strong> Use an actual case to explain what you intend to change, or why you would retain the current instructions. An average score alone is insufficient.</p>
-<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with Agent Optimizer →</a></p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>Next: 08. Improve instructions with the agent optimizer →</a></p>
 
-<h2 id="optimize">08. Improve instructions with Agent Optimizer</h2>
+<h2 id="optimize">08. Improve instructions with the agent optimizer</h2>
 <p><a id="tune"></a></p>
 <div class="lab-concept" data-learning-frame="optimize">
-<p><strong>What:</strong> Generate instruction candidates with Agent Optimizer and review the changes.</p>
+<p><strong>What:</strong> Generate instruction candidates with the agent optimizer and review the changes.</p>
 <p><strong>Why:</strong> Candidate generation does not guarantee improvement. A higher internal rank cannot justify invented policy or changed model/tool conditions.</p>
 <p><strong>How · where:</strong> Run Instruction only in Microsoft Foundry and inspect View changes. Save complete reviewed instructions and their actual provenance privately.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#optimizer-configure">Microsoft Foundry · configure optimization</a> → <a href="#optimizer-results">Submit/inspect results</a> → <a href="#optimizer-candidate">Editor · save complete instructions</a>.</p>
-<p><strong>Agent Optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
+<p><strong>The agent optimizer proposes and tests instruction improvements.</strong> A <strong>candidate</strong> is a proposed instruction set that has not yet been accepted. This does not retrain the model.</p>
 <h3 id="optimizer-configure">Configure instruction-only optimization in Microsoft Foundry</h3>
 <ol>
 <li>Open <strong>Build → Agents → lab-en-iq → Optimize Preview/Optimize</strong>.</li>
@@ -2931,13 +2931,13 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.</p>
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
+<img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
 <figcaption><strong>Reuse the same English data.</strong> Select the dev12 registration/version used for the baseline and include all 12 cases. Editing or regenerating the file changes the comparison conditions. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -2966,10 +2966,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p><strong>Interpretation:</strong> The internal <strong>0–1 ranking</strong> is not the separate managed Evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection.</p>
+<p><strong>Interpretation:</strong> The internal <strong>0–1 ranking</strong> is not the separate managed evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection.</p>
 <p><strong>Cost and waiting:</strong> One job includes multiple Agent, Judge, and retrieval calls. Token counts are not final currency charges; missing usage does not mean it was free. Stopping your wait does not cancel the job.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent Optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
+<img src="../web/assets/portal/en/09-optimizer-results.png" alt="Agent optimizer results comparing the baseline with candidate scores and rankings." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read the candidate, not just the ranking.</strong> Compare per-evaluator scores and review the instruction changes. If no candidate offers a sound improvement, retain v1 and keep the reason for the closing note in 10. <a href="../web/assets/portal/en/09-optimizer-results.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
@@ -3050,7 +3050,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 <p>Confirm <code>agent_name: lab-en-iq</code> and <code>version: "2"</code>. If a different v2 already exists or the model deployment changed, stop and preserve the original records. A new version alone does not demonstrate improvement.</p>
 <h3 id="decision-run">2. Add a v2 run to the same evaluation in your terminal</h3>
-<p>The helper below is a supplied Python program. It uses the official Microsoft Azure AI Projects/OpenAI SDK to reuse the baseline's dataset and evaluator settings, rather than creating a different evaluation.</p>
+<p>The helper below is a supplied Python program. It uses the official Azure AI Projects client library (part of the Microsoft Foundry SDK) and OpenAI SDK to reuse the baseline's dataset and evaluator settings, rather than creating a different evaluation.</p>
 <table>
 <thead>
 <tr>
@@ -3407,7 +3407,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <div class="lab-concept" data-learning-frame="cleanup">
 <p><strong>What:</strong> Preserve results, then delete the dedicated lab resources you created. Only with explicit retention authorization, record remaining resources and a cost-management plan instead.</p>
 <p><strong>Why:</strong> Search and logs can remain after the browser closes. Deleting the wrong shared group can also remove someone else's resources.</p>
-<p><strong>How · where:</strong> Verify exact targets, ownership, and authorization in Microsoft Azure Portal and the terminal, then verify absence after deletion.</p>
+<p><strong>How · where:</strong> Verify exact targets, ownership, and authorization in the Azure portal and the terminal, then verify absence after deletion.</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#cleanup-records">Preserve results</a> → <a href="#cleanup-scope">Check deletion/retention scope</a> → <a href="#cleanup-delete">Delete the authorized dedicated group</a> → <a href="#cleanup-verify">Terminal · verify absence</a>. Do not delete an environment approved for retention.</p>
@@ -3494,7 +3494,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p>Read <strong>returning a plan without confirmation → ownership/etag checks → individual DELETE → remaining-item verification</strong>. Group deletion is not inside this function; it is performed separately by the existing Microsoft Azure CLI command or portal in the next section.</p>
+<p>Read <strong>returning a plan without confirmation → ownership/etag checks → individual DELETE → remaining-item verification</strong>. Group deletion is not inside this function; it is performed separately by the existing Azure CLI command or portal in the next section.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/cleanup.py:cleanup_plan</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
@@ -3563,8 +3563,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
         &quot;workspace_id&quot;: state[&quot;workspace_id&quot;],
         &quot;actions&quot;: actions,
         &quot;never_deleted&quot;: [
-            &quot;resource group&quot;, &quot;Foundry account/project&quot;, &quot;shared model deployments&quot;,
-            &quot;Search service&quot;, &quot;Application Insights/Log Analytics&quot;, &quot;RBAC assignments&quot;,
+            &quot;resource group&quot;, &quot;Foundry resource/project&quot;, &quot;shared model deployments&quot;,
+            &quot;Azure AI Search service&quot;, &quot;Application Insights/Log Analytics&quot;, &quot;RBAC assignments&quot;,
         ],
         &quot;manual_follow_up&quot;: [
             &quot;Managed evaluation jobs/files are retained for evidence; inspect recorded IDs and remove in the portal if required.&quot;,
@@ -3690,7 +3690,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </code></pre>
 <p class="note warning"><strong>Resource-group deletion is irreversible and removes the group's Microsoft Foundry resources, model deployments, Search, and monitoring together.</strong> After saving evidence and receiving approval for that exact group, choose <strong>one of the two methods</strong> below.</p>
 <p>The default Application Insights Smart Detection action group can also serve alerts in other resource groups. A dedicated lab group does not establish that every resource is independent. Review shared dependencies with the owner before deletion, or retain the group; do not delete alerts, permissions, or locks simply to bypass a check.</p>
-<p><strong>Method A · Portal:</strong> Microsoft Azure Portal → Resource groups → exact group → <strong>Delete resource group</strong>. Read the deletion inventory, type the requested group name, and confirm.</p>
+<p><strong>Method A · Portal:</strong> Azure portal → Resource groups → exact group → <strong>Delete resource group</strong>. Read the deletion inventory, type the requested group name, and confirm.</p>
 <figure class="portal-shot" id="portal-delete-review">
 <img src="../web/assets/portal/en/28-delete-review.png" alt="Resource-group deletion review with the target inventory, group-name confirmation field, and Delete and Cancel buttons." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Read the proposed inventory and confirmation field first.</strong> Verify the group name and every resource. Only after authorization, enter the group name and proceed with Delete. Use Cancel if the target is wrong or deletion is not approved. <a href="../web/assets/portal/en/28-delete-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
@@ -3720,7 +3720,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <li>In <a href="https://github.com/codespaces">your Codespaces</a>, choose that environment's <strong>… → Stop codespace</strong>. If you retain Microsoft Azure resources for resumption, keep the codespace stopped too. When the lab is finished and backup is verified, you can <strong>Delete</strong> it. Stopping ends compute charges but storage charges can remain; deletion loses files you did not back up.</li>
 </ol>
 <p>Skip this section for the local-computer path. Neither Microsoft Azure cleanup nor Codespaces cleanup substitutes for the other.</p>
-<p><strong>Local computer · sign out when finished.</strong> After the verification above, run <code>az logout</code> on a shared or work computer, or whenever you no longer need this sign-in. It removes only the local Microsoft Azure CLI session and changes no cloud resources. If you resume later, sign in again with <code>az login --use-device-code</code>.</p>
+<p><strong>Local computer · sign out when finished.</strong> After the verification above, run <code>az logout</code> on a shared or work computer, or whenever you no longer need this sign-in. It removes only the local Azure CLI session and changes no cloud resources. If you resume later, sign in again with <code>az login --use-device-code</code>.</p>
 <p class="completion-check"><strong>Final completion criteria:</strong> For authorized deletion of your dedicated group, record <code>az group exists</code> returning <code>false</code> and the verification time. For explicitly authorized retention, record the actual remaining items, reasons, cost responsibility, review date, and subsequent deletion plan. Verify the outcome matching your authorization; do not delete <code>.lab</code> first and lose ownership evidence. See the <a href="admin.html#cleanup">cleanup checklist</a> and <a href="troubleshooting.html#cleanup">deletion troubleshooting</a>.</p>
       </article>
 

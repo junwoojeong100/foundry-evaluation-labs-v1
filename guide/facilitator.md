@@ -8,7 +8,7 @@
 
 **모든 실습 참여자가 01–10을 직접 수행합니다.** 본인의 계정·PC·전용 환경·Agent를 사용하며 다른 사람에게 생성·명령·정리를 맡기지 않습니다. 시작 전에 필요한 생성·역할 할당 권한과 비용·삭제/보존 범위를 확인합니다.
 
-기본 경로는 [01의 GitHub Codespaces](handbook.md#setup-codespaces)입니다. **Python 3.11–3.14·Git·Microsoft Azure CLI**를 내 PC에 설치하는 경우에만 [로컬 설치](handbook.md#setup-local-install)와 [버전 확인](handbook.md#setup-verify)을 따릅니다. 선택한 실습 환경에서 로그인과 가상환경 확인을 마칩니다.
+기본 경로는 [01의 GitHub Codespaces](handbook.md#setup-codespaces)입니다. **Python 3.11–3.14·Git·Azure CLI**를 내 PC에 설치하는 경우에만 [로컬 설치](handbook.md#setup-local-install)와 [버전 확인](handbook.md#setup-verify)을 따릅니다. 선택한 실습 환경에서 로그인과 가상환경 확인을 마칩니다.
 
 메모는 선택 사항입니다. 쓴다면 [07](handbook.md#analysis-notes), [09](handbook.md#decision-compare), [10](handbook.md#cleanup-records)에서만 짧게 남기며 [기록이 저장되는 곳](handbook.md#resources-notes)을 참고합니다. 다른 사람의 설정·로그인·소유권 기록을 사용하지 않습니다. 새 터미널에서는 [재개 절차](handbook.md#setup-resume)로 같은 환경과 기록을 이어갑니다.
 
@@ -28,12 +28,12 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 
 | 단계 | 필수 동작 | 완료 근거 |
 |---|---|---|
-| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Microsoft Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
+| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
 | [02 환경 생성](handbook.md#resources) | `bootstrap setup`의 준비 검사·실제 승인 입력·생성 확인을 수행합니다. | APPLIED, 생성된 `.env`, 포털 배포와 런타임 preflight PASS를 확인합니다. |
 | [03 Agent 준비](handbook.md#agent) | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
 | [04 데이터셋](handbook.md#start) | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 확인합니다. |
 | [05 평가기](handbook.md#prepare) | Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 확인합니다. |
-| [06 기준선](handbook.md#baseline) | 고정 v1에 Microsoft Foundry Evaluation을 실행합니다. | 완료된 실제 run ID와 전체 12건을 확인합니다. |
+| [06 기준선](handbook.md#baseline) | 고정 v1에 Microsoft Foundry 평가를 실행합니다. | 완료된 실제 run ID와 전체 12건을 확인합니다. |
 | [07 분석](handbook.md#analyze) | 실제 답변·점수·이유·정책을 읽습니다. | 실패를 포함한 구체적인 개선 가설을 기록합니다. |
 | [08 최적화](handbook.md#optimize) | Instruction only로 실행하고 지침 diff를 검토합니다. | job/candidate ID·후보 파일·출처를 확인하거나 다른 후보가 없어 v1을 유지할 이유를 정리합니다. |
 | [09 재평가](handbook.md#decision) | 검토한 후보가 있을 때 같은 조건의 v2를 실행하고 Compare runs를 엽니다. | 전체 행 대응과 유지·채택·보류 이유를 기록합니다. 다른 후보가 없으면 10으로 이동합니다. |

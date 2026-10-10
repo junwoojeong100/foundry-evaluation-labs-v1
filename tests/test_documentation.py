@@ -1,4 +1,4 @@
-"""Check the published, native Foundry Evaluation and Agent Optimizer guide."""
+"""Check the published, native Microsoft Foundry evaluation and agent optimizer guide."""
 
 import hashlib
 from html.parser import HTMLParser
@@ -629,16 +629,28 @@ class DocumentationTests(unittest.TestCase):
         self.assertNotRegex(hooks, r"\baz\s+|bootstrap|--confirm|AZURE_CLIENT_SECRET|access.token")
         self.assertIn(".devcontainer/devcontainer.json", {path.relative_to(ROOT).as_posix() for path in package_files(ROOT)})
 
-    def test_learner_prose_uses_full_product_names_except_exact_ui_and_roles(self):
+    def test_learner_prose_uses_official_microsoft_product_names(self):
         short_name = re.compile(r"(?<!Microsoft )(?<!New )(?<![A-Za-z0-9_])(?:Azure|Foundry)(?![A-Za-z0-9_/-])")
         role_name = re.compile(r"(?:Foundry|Azure AI) (?:Account Owner|Project Manager|User|Owner)(?![A-Za-z0-9_])")
+        official_name = re.compile(
+            r"(?<![A-Za-z0-9_])(?:Azure (?:CLI|portal|포털|AI Search|OpenAI|AI Projects|Resource Manager)"
+            r"|Foundry IQ)(?![A-Za-z0-9_-])"
+        )
+        unofficial_name = re.compile(
+            r"Microsoft Azure (?:CLI|[Pp]ortal|AI Search|OpenAI|AI Projects)"
+            r"|Microsoft Foundry (?:IQ|Playground|account)"
+            r"|Foundry Evaluation|[Mm]anaged Evaluation|Agent Optimizer"
+            r"|Azure AI Foundry|Azure Cognitive Search|Azure OpenAI Service|Azure Active Directory"
+        )
         for filename in ("index.html", "docs/english.html"):
             self.assertIn("<title>Microsoft Foundry Lab Guide", (ROOT / filename).read_text())
         for document in DOCUMENTS:
             with self.subTest(document=document.output):
                 page = ArticleTextParser(exclude_implementation=True)
                 page.feed((SITE / document.output).read_text())
-                prose = role_name.sub("", " ".join(page.text + page.alt))
+                text = " ".join(page.text + page.alt)
+                self.assertEqual([match.group(0) for match in unofficial_name.finditer(text)], [])
+                prose = official_name.sub("", role_name.sub("", text))
                 matches = [prose[max(0, match.start() - 25):match.end() + 45] for match in short_name.finditer(prose)]
                 self.assertEqual(matches, [])
                 self.assertNotIn("Microsoft Microsoft", prose)
@@ -722,7 +734,7 @@ class DocumentationTests(unittest.TestCase):
             source = self.source(language)
             with self.subTest(language=language):
                 for required in (
-                    "Foundry Evaluation", "Agent Optimizer", "Evaluations", "Create",
+                    "Foundry evaluation" if language == "en" else "Foundry 평가", "agent optimizer", "Evaluations", "Create",
                     "Individual turns", "One time", "Existing dataset", "Relevance",
                     "TaskAdherence", "Submit", "Compare runs", "12",
                 ):
@@ -1163,7 +1175,8 @@ class DocumentationTests(unittest.TestCase):
                 self.assertEqual([identifier for identifier, chapter in page.step_figures if chapter == step], identifiers)
             intro = self.source(language).split("## 01.", 1)[0]
             for term in (
-                "hero-summary", "Contoso Atlas Cloud", "12", "Azure Portal", "Microsoft Foundry",
+                "hero-summary", "Contoso Atlas Cloud", "12",
+                "Azure portal" if language == "en" else "Azure 포털", "Microsoft Foundry",
                 "WHY IT MATTERS" if language == "en" else "중요한 이유",
                 "model weights" if language == "en" else "모델 가중치",
             ):

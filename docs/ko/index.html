@@ -61,9 +61,9 @@
 <li><a href="#agent">03. 정책을 연결하고 Agent를 생성합니다</a></li>
 <li><a href="#start">04. 데이터셋을 등록합니다</a></li>
 <li><a href="#prepare">05. 평가 기준을 선택합니다</a></li>
-<li><a href="#baseline">06. Microsoft Foundry Evaluation을 실행합니다</a></li>
+<li><a href="#baseline">06. Microsoft Foundry 평가를 실행합니다</a></li>
 <li><a href="#analyze">07. 점수와 이유를 읽습니다</a></li>
-<li><a href="#optimize">08. Agent Optimizer로 지침을 개선합니다</a></li>
+<li><a href="#optimize">08. agent optimizer로 지침을 개선합니다</a></li>
 <li><a href="#decision">09. 재평가하고 v1/v2를 비교합니다</a></li>
 <li><a href="#cleanup">10. 결과를 보관하고 리소스를 삭제합니다</a></li>
 </ul>
@@ -136,11 +136,11 @@
 <li><p class="phase-title"><strong>평가</strong><span>04–07 · v1을 12문항으로 채점</span></p><ul>
 <li><a href="#start"><strong>04</strong> 데이터셋 등록</a></li>
 <li><a href="#prepare"><strong>05</strong> 평가 기준 선택</a></li>
-<li><a href="#baseline"><strong>06</strong> Microsoft Foundry Evaluation 실행</a></li>
+<li><a href="#baseline"><strong>06</strong> Microsoft Foundry 평가 실행</a></li>
 <li><a href="#analyze"><strong>07</strong> 점수와 이유 읽기</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>개선·비교</strong><span>08–09 · 지침만 바꾼 v2</span></p><ul>
-<li><a href="#optimize"><strong>08</strong> Agent Optimizer로 지침 개선</a></li>
+<li><a href="#optimize"><strong>08</strong> agent optimizer로 지침 개선</a></li>
 <li><a href="#decision"><strong>09</strong> 재평가·v1/v2 비교</a></li>
 </ul></li>
 <li><p class="phase-title"><strong>정리</strong><span>10 · 보관 후 삭제</span></p><ul>
@@ -151,7 +151,7 @@
 <p><strong>시작 전 확인</strong></p>
 <ul>
 <li><strong>구독·권한·비용:</strong> 본인이 사용할 Microsoft Azure 구독, 리소스 <strong>생성 권한과 역할 할당 권한</strong>, 비용 승인이 필요합니다.</li>
-<li><strong>실습 터미널:</strong> <strong>GitHub Codespaces(권장)</strong>는 GitHub 계정과 브라우저만 있으면 됩니다. 내 PC를 쓰면 Python 3.11–3.14·Git·Microsoft Azure CLI를 설치합니다.</li>
+<li><strong>실습 터미널:</strong> <strong>GitHub Codespaces(권장)</strong>는 GitHub 계정과 브라우저만 있으면 됩니다. 내 PC를 쓰면 Python 3.11–3.14·Git·Azure CLI를 설치합니다.</li>
 <li><strong>시간:</strong> 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다. 서비스 대기는 보통 짧지만(02의 생성 약 10분, 12문항 평가 몇 분, Optimizer 작업은 흔히 10~20분) 서비스가 붐비면 더 길어질 수 있습니다.</li>
 <li><strong>진행 원칙:</strong> <strong>모든 실습 참여자가 본인 계정으로 준비부터 정리까지 직접 수행합니다.</strong> 다른 사람의 설정·로그인 세션·소유권 기록을 복사하거나 이미 완료한 작업을 다시 생성·제출하지 않습니다. 재개할 때는 <a href="#setup-resume">재개 안내</a>에 따라 자신의 <code>config.json</code>·manifest·receipt로 완료한 작업을 확인합니다.</li>
 </ul>
@@ -173,12 +173,12 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://portal.azure.com">Microsoft Azure Portal</a></td>
+<td><a href="https://portal.azure.com">Azure 포털</a></td>
 <td>계정·구독·권한, 실제 리소스 목록과 삭제 범위를 확인합니다.</td>
 </tr>
 <tr>
 <td>실습 터미널 · Codespaces 또는 내 PC</td>
-<td>제공된 명령을 실행합니다. Codespaces에서는 내 PC에 Python·Git·Microsoft Azure CLI를 설치하지 않습니다.</td>
+<td>제공된 명령을 실행합니다. Codespaces에서는 내 PC에 Python·Git·Azure CLI를 설치하지 않습니다.</td>
 </tr>
 <tr>
 <td><a href="https://ai.azure.com">Microsoft Foundry</a></td>
@@ -197,7 +197,7 @@
 <tbody>
 <tr>
 <td><strong>터미널에서 실행</strong></td>
-<td>선택한 실습 터미널에서 실행합니다. Codespaces를 쓰면 파일 편집도 그 안의 VS Code에서 합니다.</td>
+<td>선택한 실습 터미널에서 실행합니다. Codespaces를 쓰면 파일 편집도 그 안의 Visual Studio Code(VS Code)에서 합니다.</td>
 </tr>
 <tr>
 <td><strong>포털 작업</strong></td>
@@ -226,7 +226,7 @@
 <div class="lab-concept" data-learning-frame="setup">
 <p><strong>이 단계에서 하는 일:</strong> 사용할 Microsoft Azure 구독·권한과 로컬 실행 환경을 확인합니다.</p>
 <p><strong>중요한 이유:</strong> 브라우저와 CLI가 다른 계정이나 구독을 사용하면 권한 오류가 나거나 잘못된 환경에 자원을 만들 수 있습니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구와 로그인 계정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
+<p><strong>진행 방법·위치:</strong> Azure 포털에서 구독과 접근 권한을 확인한 뒤 터미널에서 도구와 로그인 계정을 대조합니다. 아직 Microsoft Azure 리소스는 생성하지 않습니다.</p>
 </div>
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#setup-account">계정·권한 확인</a> → <a href="#setup-codespaces">Codespaces 열기 · 권장</a> → <a href="#setup-login">터미널 · 로그인</a>. Codespaces를 사용할 수 없으면 <a href="#setup-local-install">내 PC 설치</a>를 선택합니다.</p>
@@ -264,7 +264,7 @@
 </details>
 <h3 id="setup-account">Microsoft Azure 계정과 구독을 확인합니다</h3>
 <ol>
-<li><a href="https://portal.azure.com">Microsoft Azure Portal</a>에 <strong>본인의 실습용 계정</strong>으로 로그인합니다. 사용할 계정·구독이 없다면 <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure 계정 안내</a>를 따라 준비합니다. 조직 구독은 본인이 사용할 범위의 접근·비용 승인을 먼저 확보합니다. 무료·체험 구독이라고 필요한 모델의 할당량까지 보장되지는 않습니다.</li>
+<li><a href="https://portal.azure.com">Azure 포털</a>에 <strong>본인의 실습용 계정</strong>으로 로그인합니다. 사용할 계정·구독이 없다면 <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure 계정 안내</a>를 따라 준비합니다. 조직 구독은 본인이 사용할 범위의 접근·비용 승인을 먼저 확보합니다. 무료·체험 구독이라고 필요한 모델의 할당량까지 보장되지는 않습니다.</li>
 <li>상단 검색창에 <strong>Subscriptions</strong>를 입력하고 사용할 구독을 엽니다. 포털 상태가 <strong>Active</strong>인지 보고, <strong>Subscription ID</strong>와 <strong>Directory/Tenant ID</strong>를 확인합니다. 같은 정상 구독은 CLI에서 <strong>Enabled</strong>로 표시합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.</li>
 <li><strong>Access control (IAM, 권한 관리) → Check access</strong>에서 본인의 역할과 적용 범위를 확인합니다. 이전 UI에서는 <strong>View my access</strong>로 표시할 수 있습니다. 이 실습은 본인이 리소스를 생성하고 리소스 범위 역할을 할당하므로 <strong>생성 권한과 역할 할당 권한이 모두 필요합니다.</strong> Contributor만으로는 역할 할당이 가능하지 않습니다. <a href="admin.html#rbac">작업별 필요 권한·공급자 등록</a>을 확인합니다.</li>
 <li>비용 한도, 사용 종료 시각, 전용 리소스 그룹의 삭제 또는 보존 범위를 정합니다. 권한·구독·비용 승인이 부족하면 조직 절차에 따라 본인에게 허용된 실행 범위를 확보한 뒤 계속합니다. 다른 사람에게 이후 실습을 대신 실행하게 하거나 구독 전체 Owner·보안 정책 해제로 우회하지 않습니다.</li>
@@ -280,7 +280,7 @@
 </figure>
 
 <h3 id="setup-local">도구와 실습 파일을 준비합니다</h3>
-<p><strong>권장: GitHub Codespaces를 사용합니다.</strong> GitHub 계정과 브라우저만 있으면 이 저장소의 Python·Git·Microsoft Azure CLI·잠금 의존성을 갖춘 개발환경을 준비할 수 있습니다. <strong>Codespaces가 Microsoft Azure 구독·권한·모델 할당량까지 제공하는 것은 아닙니다.</strong> 조직에서 Codespaces를 허용하지 않으면 아래 내 PC 경로를 사용합니다.</p>
+<p><strong>권장: GitHub Codespaces를 사용합니다.</strong> GitHub 계정과 브라우저만 있으면 이 저장소의 Python·Git·Azure CLI·잠금 의존성을 갖춘 개발환경을 준비할 수 있습니다. <strong>Codespaces가 Microsoft Azure 구독·권한·모델 할당량까지 제공하는 것은 아닙니다.</strong> 조직에서 Codespaces를 허용하지 않으면 아래 내 PC 경로를 사용합니다.</p>
 <p><strong>명령 실행 규칙</strong></p>
 <ul>
 <li><strong>한 줄씩</strong> 실행하고, 오류가 나면 다음 명령으로 넘어가지 않습니다. 긴 명령이 여러 줄로 보여도 중간에 줄바꿈을 넣지 않습니다.</li>
@@ -303,14 +303,14 @@ az version
 python -m lab --help
 python scripts/build_datasets.py --language ko --check
 </code></pre>
-<p>Python <strong>3.12.x</strong>, Git·Microsoft Azure CLI 버전, 실습 명령 목록과 데이터 검사 성공을 확인합니다. 명령 목록이 길지만 이 가이드는 <code>bootstrap</code>, <code>preflight</code>, <code>smoke</code>, <code>iq</code>, <code>native-agent</code>, <code>native-evals</code>, <code>cleanup</code>만 사용하므로 나머지는 무시합니다. <strong>도구 설치·clone·가상환경 생성을 다시 하지 않고 <a href="#setup-login">로그인</a>으로 이동합니다.</strong> 초기 준비에 실패했으면 <a href="troubleshooting.html#codespaces">Codespaces 문제 해결</a>을 확인합니다.</p>
+<p>Python <strong>3.12.x</strong>, Git·Azure CLI 버전, 실습 명령 목록과 데이터 검사 성공을 확인합니다. 명령 목록이 길지만 이 가이드는 <code>bootstrap</code>, <code>preflight</code>, <code>smoke</code>, <code>iq</code>, <code>native-agent</code>, <code>native-evals</code>, <code>cleanup</code>만 사용하므로 나머지는 무시합니다. <strong>도구 설치·clone·가상환경 생성을 다시 하지 않고 <a href="#setup-login">로그인</a>으로 이동합니다.</strong> 초기 준비에 실패했으면 <a href="troubleshooting.html#codespaces">Codespaces 문제 해결</a>을 확인합니다.</p>
 <p class="note"><strong>대기하는 동안 Codespace를 활성 상태로 유지합니다.</strong> 기본적으로 30분 동안 조작이 없으면 Codespace가 중지되고, 중지되면 실행 중이던 명령도 끝납니다. 02의 생성과 09의 재평가를 기다리는 동안에는 터미널을 지켜봅니다. 중지되면 <a href="https://github.com/codespaces">Codespace를 다시 시작</a>하고 <strong>Terminal → New Terminal</strong>을 연 뒤 <a href="#setup-resume">재개 절차</a>를 따릅니다. <code>apply</code>나 제출 명령을 반복하지 않고 상태를 먼저 조회합니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로, 오래 쉬기 전에 <a href="#cleanup-codespaces">10의 백업 절차</a>로 <code>.lab/</code>을 보관합니다. 계정이나 조직에 따라 <a href="https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle">Codespace 수명 주기 규칙</a>이 다를 수 있습니다.</p>
 <details class="guide-details optional-path">
 <summary>내 PC에서 진행할 때만 · Windows/macOS/Linux 설치</summary>
 <h4 id="setup-local-install">로컬 설치 경로를 선택합니다</h4>
-<p><a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Microsoft Azure CLI</a>를 설치합니다. Python은 제공된 프로그램 실행용, Git은 실습 파일 내려받기용, Microsoft Azure CLI는 <code>az</code> 명령으로 Microsoft Azure에 로그인·조회하는 도구입니다. 회사 PC에서 설치가 제한되면 담당자에게 요청합니다.</p>
+<p><a href="https://www.python.org/downloads/">Python</a> <strong>3.11–3.14</strong>, <a href="https://git-scm.com/downloads">Git</a>, <a href="https://learn.microsoft.com/cli/azure/install-azure-cli">Azure CLI</a>를 설치합니다. Python은 제공된 프로그램 실행용, Git은 실습 파일 내려받기용, Azure CLI는 <code>az</code> 명령으로 Microsoft Azure에 로그인·조회하는 도구입니다. 회사 PC에서 설치가 제한되면 담당자에게 요청합니다.</p>
 <p><strong>이미 설치했다면 <a href="#setup-verify">설치 확인</a>부터 진행하고, 정상인 도구는 다시 설치하지 않습니다.</strong> Windows·macOS의 아래 예시는 지원 범위를 벗어난 최신 Python이 선택되지 않도록 <strong>3.13</strong>을 지정합니다. 이미 다른 지원 버전을 사용한다면 <code>py -3.13</code>·<code>python3.13</code>을 해당 버전의 명령으로 바꾸고, 버전 확인과 가상환경 생성에 같은 Python을 사용합니다. 3.10 이하·3.15 이상은 이 실습의 지원 범위가 아닙니다.</p>
-<p>먼저 <strong>내 PC의 터미널</strong>을 엽니다. Windows는 시작 메뉴에서 <strong>PowerShell</strong>, macOS는 Spotlight에서 <strong>Terminal(터미널)</strong>, Linux는 앱 메뉴에서 터미널을 검색합니다. Microsoft Azure Portal의 Cloud Shell이나 <code>&gt;&gt;&gt;</code>가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다. 명령은 위의 <a href="#setup-local">명령 실행 규칙</a>을 따릅니다.</p>
+<p>먼저 <strong>내 PC의 터미널</strong>을 엽니다. Windows는 시작 메뉴에서 <strong>PowerShell</strong>, macOS는 Spotlight에서 <strong>Terminal(터미널)</strong>, Linux는 앱 메뉴에서 터미널을 검색합니다. Azure 포털의 Cloud Shell이나 <code>&gt;&gt;&gt;</code>가 보이는 Python 입력창은 이 가이드의 실행 위치가 아닙니다. 명령은 위의 <a href="#setup-local">명령 실행 규칙</a>을 따릅니다.</p>
 <p><a href="#setup-windows">Windows 설치</a> · <a href="#setup-macos">macOS 설치</a> · <a href="#setup-linux">Linux 설치</a> 중 <strong>자신의 운영체제 하나만</strong> 따라 한 뒤 <a href="#setup-verify">설치 확인</a>으로 이동합니다.</p>
 <h4 id="setup-windows">Windows · PowerShell에서 설치합니다</h4>
 <p>PowerShell에서 <code>winget --version</code>을 실행합니다. 버전이 나오면 Windows 패키지 관리 도구인 <strong>WinGet</strong>으로 아래 명령을 한 줄씩 실행합니다. 설치 동의나 설치 권한 요청은 조직의 승인 범위에서 직접 확인합니다.</p>
@@ -337,7 +337,7 @@ winget install --exact --id Microsoft.AzureCLI --source winget
 <td><a href="https://git-scm.com/install/windows">Git for Windows</a>에서 PC에 맞는 설치 파일을 받습니다. PATH 선택 화면의 <strong>Git from the command line and also from 3rd-party software</strong>를 유지하여 PowerShell에서도 사용할 수 있게 합니다.</td>
 </tr>
 <tr>
-<td>Microsoft Azure CLI</td>
+<td>Azure CLI</td>
 <td><a href="https://learn.microsoft.com/cli/azure/install-azure-cli-windows?pivots=msi">Windows 공식 설치 안내</a>의 <strong>Microsoft Installer (MSI)</strong>를 사용합니다. 일반적인 x64 PC는 64-bit MSI를 선택합니다.</td>
 </tr>
 </tbody>
@@ -349,9 +349,9 @@ winget install --exact --id Microsoft.AzureCLI --source winget
 <pre class="terminal-command"><code class="language-bash">brew update
 brew install python@3.13 git azure-cli
 </code></pre>
-<p>Python은 <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew의 버전 지정 패키지</a>, Microsoft Azure CLI는 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft의 macOS 설치 안내</a>를 따릅니다. <strong>이 경로에서는 <code>python3.13</code>을 사용합니다.</strong> 기존 <code>python3</code>는 macOS 기본 Python이나 다른 버전을 가리킬 수 있으므로 시스템 Python을 덮어쓰거나 강제로 연결하지 않습니다.</p>
+<p>Python은 <a href="https://formulae.brew.sh/formula/python@3.13">Homebrew의 버전 지정 패키지</a>, Azure CLI는 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-macos">Microsoft의 macOS 설치 안내</a>를 따릅니다. <strong>이 경로에서는 <code>python3.13</code>을 사용합니다.</strong> 기존 <code>python3</code>는 macOS 기본 Python이나 다른 버전을 가리킬 수 있으므로 시스템 Python을 덮어쓰거나 강제로 연결하지 않습니다.</p>
 <h4 id="setup-linux">Linux · Ubuntu 24.04 LTS 예시입니다</h4>
-<p>다음은 기본 Python 3.12를 제공하는 <strong>Ubuntu 24.04 LTS</strong> 기준입니다. 다른 배포판은 해당 배포판의 Python·<a href="https://git-scm.com/install/linux">Git 설치 안내</a>와 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">Microsoft Azure CLI 공식 설치 안내</a>를 따릅니다. Python 버전이 지원 범위 밖이면 시스템 Python을 교체하지 말고 담당자에게 지원되는 실행 환경을 요청합니다.</p>
+<p>다음은 기본 Python 3.12를 제공하는 <strong>Ubuntu 24.04 LTS</strong> 기준입니다. 다른 배포판은 해당 배포판의 Python·<a href="https://git-scm.com/install/linux">Git 설치 안내</a>와 <a href="https://learn.microsoft.com/cli/azure/install-azure-cli-linux">Azure CLI 공식 설치 안내</a>를 따릅니다. Python 버전이 지원 범위 밖이면 시스템 Python을 교체하지 말고 담당자에게 지원되는 실행 환경을 요청합니다.</p>
 <p class="command-label">터미널에서 실행 · Codespaces/macOS/Linux</p>
 <pre class="terminal-command"><code class="language-bash">sudo apt update
 sudo apt install python3 python3-venv python3-pip git curl
@@ -398,12 +398,12 @@ az version
 <td><code>git version 2.x...</code>처럼 설치된 버전이 나옵니다.</td>
 </tr>
 <tr>
-<td>Microsoft Azure CLI</td>
+<td>Azure CLI</td>
 <td>JSON에 <code>"azure-cli": "2.x..."</code>처럼 버전이 나옵니다. <strong>이 확인에는 Microsoft Azure 로그인이 필요하지 않습니다.</strong></td>
 </tr>
 </tbody>
 </table>
-<p><code>az version</code>에 표시되는 Python은 Microsoft Azure CLI 자체의 실행 환경이며, 실습용 Python 설치 확인을 대신하지 않습니다. <strong>세 명령이 모두 성공한 뒤에만</strong> 파일 다운로드·가상환경 생성으로 진행합니다. <code>command not found</code>, <code>not recognized</code>, Python 대신 Microsoft Store가 열리는 경우는 <a href="troubleshooting.html#environment">설치·PATH 문제 해결</a>을 확인합니다.</p>
+<p><code>az version</code>에 표시되는 Python은 Azure CLI 자체의 실행 환경이며, 실습용 Python 설치 확인을 대신하지 않습니다. <strong>세 명령이 모두 성공한 뒤에만</strong> 파일 다운로드·가상환경 생성으로 진행합니다. <code>command not found</code>, <code>not recognized</code>, Python 대신 Microsoft Store가 열리는 경우는 <a href="troubleshooting.html#environment">설치·PATH 문제 해결</a>을 확인합니다.</p>
 <h4 id="setup-download">실습 파일을 내려받습니다</h4>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">git clone --depth 1 https://github.com/junwoojeong100/foundry-evaluation-labs-v1.git
@@ -488,7 +488,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실행한 명령·설정값</span><code>az login</code>, <code>az account set</code>, <code>az account show</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">지금 확인하는 내용</span>로그인 계정·테넌트·구독과 <code>state: Enabled</code>를 확인합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal 우측 상단 계정의 Directory와 <strong>Subscriptions → 사용할 구독 → Overview</strong>의 ID·상태를 직접 대조합니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털 우측 상단 계정의 Directory와 <strong>Subscriptions → 사용할 구독 → Overview</strong>의 ID·상태를 직접 대조합니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실행한 명령·설정값</span><code>--environment lab-ko</code> → 이후 명령의 <code>--config</code></td>
@@ -498,7 +498,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 </details>
-<p class="completion-check"><strong>완료 기준:</strong> Python 3.11–3.14·Git·Microsoft Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 <a href="troubleshooting.html#environment">환경 오류 해결</a>을 확인합니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> Python 3.11–3.14·Git·Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 <a href="troubleshooting.html#environment">환경 오류 해결</a>을 확인합니다.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>다음: 02. Microsoft Foundry 환경 생성 →</a></p>
 
 <h2 id="resources">02. Microsoft Foundry 환경을 생성합니다</h2>
@@ -558,9 +558,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p><strong>숫자를 정하는 방법:</strong> 시간은 생성(보통 약 10분), 실습 진행, 10단계 정리까지를 포함하고 자원도 그 시간만큼만 유지합니다. 가장 큰 지속 비용은 <strong>Microsoft Azure AI Search(Basic)</strong>이며, 유휴 상태에서도 존재하는 동안 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10, 하루 약 US$2.4였습니다. 모델 비용은 토큰 사용량과 현재 모델 단가에 따라 달라집니다. <a href="https://azure.microsoft.com/pricing/calculator/">Microsoft Azure 가격 계산기</a>, 현재 <a href="https://azure.microsoft.com/pricing/details/search/">AI Search 가격</a>, Microsoft Foundry 모델 단가로 예산을 직접 산정하고 예상하지 못한 재시도 여유를 더합니다. 프롬프트에 입력한 값은 기록이며 지출 상한이 아닙니다.
+<p><strong>숫자를 정하는 방법:</strong> 시간은 생성(보통 약 10분), 실습 진행, 10단계 정리까지를 포함하고 자원도 그 시간만큼만 유지합니다. 가장 큰 지속 비용은 <strong>Azure AI Search(Basic)</strong>이며, 유휴 상태에서도 존재하는 동안 시간 단위로 청구됩니다. 이 가이드를 준비할 때 North Central US 기준 시간당 약 US$0.10, 하루 약 US$2.4였습니다. 모델 비용은 토큰 사용량과 현재 모델 단가에 따라 달라집니다. <a href="https://azure.microsoft.com/pricing/calculator/">Microsoft Azure 가격 계산기</a>, 현재 <a href="https://azure.microsoft.com/pricing/details/search/">AI Search 가격</a>, Microsoft Foundry 모델 단가로 예산을 직접 산정하고 예상하지 못한 재시도 여유를 더합니다. 프롬프트에 입력한 값은 기록이며 지출 상한이 아닙니다.
 {: .note}
-<strong>생성 전 마지막 확인:</strong> 출력된 계정·구독·지역·자원·모델과 한도를 읽습니다. 이 빠른 경로는 <strong>후보 최대 2개·작업 대기 최대 1시간·로그 보존 30일</strong>을 기록합니다. 다른 한도가 필요하면 아래 개별 설정 경로를 사용합니다. GlobalStandard의 전 세계 처리, 자원 생성·자원 범위 역할 할당, 지속 과금과 불확정 총비용을 실제로 승인한 경우에만 <strong><code>CREATE lab-ko</code></strong>를 직접 입력합니다.</p>
+<strong>생성 전 마지막 확인:</strong> 출력된 계정·구독·지역·자원·모델과 한도를 읽습니다. 이 빠른 경로는 <strong>후보 최대 2개·작업 대기 최대 1시간·로그 보존 30일</strong>을 기록합니다. 다른 한도가 필요하면 아래 개별 설정 경로를 사용합니다. Global Standard의 전 세계 처리, 자원 생성·자원 범위 역할 할당, 지속 과금과 불확정 총비용을 실제로 승인한 경우에만 <strong><code>CREATE lab-ko</code></strong>를 직접 입력합니다.</p>
 <p class="note warning">확인 전에는 Microsoft Azure 자원을 생성하지 않으며 Enter로 취소할 수 있습니다. <strong>확인 후에는 실제 생성·과금이 시작될 수 있습니다.</strong> 입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며, 삭제·학습·자동 재시도 승인도 아닙니다.</p>
 <p><strong>정상 결과</strong></p>
 <ul>
@@ -593,9 +593,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <li><strong>Microsoft Foundry 리소스</strong><span>AI 서비스와 모델 배포</span></li>
 <li><strong>프로젝트</strong><span>Agent·데이터·평가 작업</span></li>
 </ol>
-<figcaption>앞 항목이 다음 항목을 포함합니다. 같은 실습 그룹에 <strong>Microsoft Azure AI Search</strong>(정책 검색)와 <strong>Application Insights·Log Analytics</strong>(실행 기록)도 준비합니다.</figcaption>
+<figcaption>앞 항목이 다음 항목을 포함합니다. 같은 실습 그룹에 <strong>Azure AI Search</strong>(정책 검색)와 <strong>Application Insights·Log Analytics</strong>(실행 기록)도 준비합니다.</figcaption>
 </figure>
-<p><strong>Endpoint(엔드포인트)</strong>는 프로그램이 서비스에 연결할 때 쓰는 주소입니다. 이 실습은 프로젝트의 <strong>Project endpoint</strong>를 사용합니다. 옆에 있는 Microsoft Azure OpenAI endpoint와 서로 바꾸어 사용하지 않습니다.</p>
+<p><strong>Endpoint(엔드포인트)</strong>는 프로그램이 서비스에 연결할 때 쓰는 주소입니다. 이 실습은 프로젝트의 <strong>Project endpoint</strong>를 사용합니다. 옆에 있는 Azure OpenAI endpoint와 서로 바꾸어 사용하지 않습니다.</p>
 <h3 id="resources-plan">로컬 생성 계획을 만듭니다</h3>
 <p><code>az account show</code>에서 확인한 값(필요하면 다시 실행합니다)을 아래 표대로 교체합니다. <strong>ID는 이름이 아니라 자원을 식별하는 값</strong>입니다. 구독의 표시 이름을 ID 자리에 넣지 않습니다.</p>
 <table>
@@ -745,7 +745,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <th>역할·모델</th>
 <th style="text-align: right;">실습 시작 최소 권장 TPM</th>
-<th style="text-align: right;">새 기본 계획의 ARM 용량</th>
+<th style="text-align: right;">새 기본 계획의 Azure Resource Manager(ARM) 용량</th>
 </tr>
 </thead>
 <tbody>
@@ -858,7 +858,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드·입력값</span><code>config["names"]</code>, ARM <code>PUT</code>의 <code>location</code>·<code>tags</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>이름 충돌을 검사하고 새 전용 리소스 그룹을 생성합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal → <strong>Resource groups → 해당 그룹 → Overview</strong>에서 이름·지역·Tags를 확인합니다. 같은 이름으로 새 그룹을 만들지 않습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털 → <strong>Resource groups → 해당 그룹 → Overview</strong>에서 이름·지역·Tags를 확인합니다. 같은 이름으로 새 그룹을 만들지 않습니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드·입력값</span><code>deployment group create</code>, <code>template.json</code>, <code>_parameters(...)</code></td>
@@ -878,16 +878,16 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드·입력값</span><code>.env</code>의 <code>AZURE_AI_PROJECT_ENDPOINT</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>생성 완료 후 실제 프로젝트 연결 설정을 저장합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Foundry <strong>Home → Project endpoint</strong>를 대조합니다. Microsoft Azure OpenAI endpoint를 대신 쓰지 않습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Foundry <strong>Home → Project endpoint</strong>를 대조합니다. Azure OpenAI endpoint를 대신 쓰지 않습니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드·입력값</span>역할 할당과 프로젝트·Search 관리 ID</td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>사용자와 서비스에 서로 다른 범위의 권한을 설정합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal의 해당 자원 <strong>Identity</strong>, <strong>Access control (IAM) → Check access</strong>에서 신원·Scope를 확인합니다. 이 확인을 위해 역할을 다시 추가하지 않습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털의 해당 자원 <strong>Identity</strong>, <strong>Access control (IAM) → Check access</strong>에서 신원·Scope를 확인합니다. 이 확인을 위해 역할을 다시 추가하지 않습니다.</td>
 </tr>
 </tbody>
 </table>
-<p>아래 <code>apply()</code>에서 <strong>그룹 생성 → ARM 검증·배포 → 완료 상태 조회 → 인벤토리 대조 → .env 저장</strong> 순서를 읽습니다. <code>bounded(...)</code>는 승인 유효기간·대기 한도를 확인한 뒤 원문에 표시된 Microsoft Azure CLI 인자를 실행합니다. 로컬 파일·재개·소유권 보호도 실제 구현의 일부이므로 생략하지 않습니다.</p>
+<p>아래 <code>apply()</code>에서 <strong>그룹 생성 → ARM 검증·배포 → 완료 상태 조회 → 인벤토리 대조 → .env 저장</strong> 순서를 읽습니다. <code>bounded(...)</code>는 승인 유효기간·대기 한도를 확인한 뒤 원문에 표시된 Azure CLI 인자를 실행합니다. 로컬 파일·재개·소유권 보호도 실제 구현의 일부이므로 생략하지 않습니다.</p>
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/bootstrap.py:apply</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
@@ -1203,10 +1203,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
     }))
     write(text(
         &quot;이 계획은 전용 그룹, Microsoft Foundry 프로젝트·4개 모델 배포, Search·로그 및 자원 범위 역할을 만듭니다.\n&quot;
-        &quot;GlobalStandard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n&quot;
+        &quot;Global Standard의 전 세계 처리, 지속 과금, 확정되지 않은 총비용을 승인한 경우에만 계속합니다.\n&quot;
         &quot;예산·호출 한도는 기록이며 포털 과금을 자동 차단하지 않습니다. 삭제·학습·재시도는 승인하지 않습니다.&quot;,
         &quot;This plan creates a dedicated group, Microsoft Foundry project/four model deployments, Search/logging, and resource-scoped roles.\n&quot;
-        &quot;Continue only with authorization for GlobalStandard worldwide processing, continuous hosting, and an unconfirmed total cost.\n&quot;
+        &quot;Continue only with authorization for Global Standard worldwide processing, continuous hosting, and an unconfirmed total cost.\n&quot;
         &quot;Budget/call limits are records, not automatic portal spending cutoffs. Deletion, training, and retries are not authorized.&quot;,
     ))
     existing_approval = approval_path.exists()
@@ -1265,7 +1265,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </details>
 <h3 id="resources-runtime-check">생성된 환경과 런타임 설정을 확인합니다</h3>
 <ol>
-<li><a href="https://portal.azure.com">Microsoft Azure Portal</a> → <strong>Resource groups</strong>에서 <code>config.json</code>의 <code>names.resource_group</code>을 검색합니다. 구독·지역·리소스 목록을 확인합니다.</li>
+<li><a href="https://portal.azure.com">Azure 포털</a> → <strong>Resource groups</strong>에서 <code>config.json</code>의 <code>names.resource_group</code>을 검색합니다. 구독·지역·리소스 목록을 확인합니다.</li>
 <li><a href="https://ai.azure.com">Microsoft Foundry</a>를 열고 <strong>New Foundry</strong>를 사용합니다. <strong>Select a project to continue</strong>가 나타나면 <code>names.project</code>와 같은 프로젝트를 선택하고 <strong>Let's go</strong>를 누릅니다. 환영 안내가 나타나면 읽고 <strong>Close</strong>로 닫습니다. 이미 New Foundry라면 좌측 상단 프로젝트 선택을 사용합니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.</li>
 <li>프로젝트의 <strong>Home</strong>(일부 UI의 Overview)에서 <strong>Project endpoint</strong>를 확인합니다. <code>.env</code>의 <code>AZURE_AI_PROJECT_ENDPOINT</code>와 같은 <code>https://계정명.services.ai.azure.com/api/projects/프로젝트명</code> 형식이어야 합니다.</li>
 <li><strong>Models + endpoints</strong> 또는 <strong>Build → Models</strong>에서 <code>.env</code>의 <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, <code>EMBEDDING_DEPLOYMENT</code>에 대응하는 실제 배포를 확인합니다. 메뉴 명칭이 달라지면 <a href="admin.html#prepare">화면 위치 안내</a>를 참고합니다.</li>
@@ -1281,8 +1281,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </figure>
 
 <figure class="portal-shot" id="portal-project-endpoint">
-<img src="../../web/assets/portal/25-project-overview.png" alt="Microsoft Foundry 프로젝트 Home의 프로젝트 선택, View deployments, Project endpoint와 Microsoft Azure OpenAI endpoint 위치입니다." width="1440" height="492" loading="lazy">
-<figcaption><strong>프로젝트와 endpoint를 확인합니다.</strong> 좌측 상단 프로젝트 이름과 <strong>Project endpoint</strong>를 자신의 설정과 대조합니다. Microsoft Azure OpenAI endpoint와 혼동하지 않으며 모델 목록은 View deployments로 엽니다. <a href="../../web/assets/portal/25-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<img src="../../web/assets/portal/25-project-overview.png" alt="Microsoft Foundry 프로젝트 Home의 프로젝트 선택, View deployments, Project endpoint와 Azure OpenAI endpoint 위치입니다." width="1440" height="492" loading="lazy">
+<figcaption><strong>프로젝트와 endpoint를 확인합니다.</strong> 좌측 상단 프로젝트 이름과 <strong>Project endpoint</strong>를 자신의 설정과 대조합니다. Azure OpenAI endpoint와 혼동하지 않으며 모델 목록은 View deployments로 엽니다. <a href="../../web/assets/portal/25-project-overview.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <h4 id="resources-preflight">터미널에서 신원·배포·TPM을 검사합니다</h4>
@@ -1307,7 +1307,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">명령·설정값</span><code>--config .lab/lab-ko/.env</code>의 <code>AZURE_SUBSCRIPTION_ID</code>, <code>AZURE_TENANT_ID</code>, <code>EXPECTED_AZURE_USER</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>생성된 환경에 기록한 구독·테넌트·사용자를 읽습니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 확인 위치</span>01에서 확인한 Microsoft Azure Portal 계정의 Directory와 구독 Overview를 대조합니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 확인 위치</span>01에서 확인한 Azure 포털 계정의 Directory와 구독 Overview를 대조합니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">명령·설정값</span><code>check_identity()</code>의 <code>az account show --subscription ...</code></td>
@@ -1495,8 +1495,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                 &quot;Tenant access to Prompt Optimizer and Frontier Tuning&quot;,
             ),
             text(
-                &quot;GlobalStandard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
-                &quot;GlobalStandard does not guarantee processing inside North Central US.&quot;,
+                &quot;Global Standard는 North Central US 내부 처리를 보장하지 않습니다.&quot;,
+                &quot;Global Standard does not guarantee processing inside North Central US.&quot;,
             ),
             text(
                 &quot;TPM 충족은 남은 토큰, 공유 부하, RPM·버스트 제한 또는 429 없는 실행을 보장하지 않습니다.&quot;,
@@ -1640,12 +1640,12 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 코드·설정</span><code>knowledge_payloads()["index"]</code>의 <code>fields</code>, <code>vectorSearch</code>, <code>semantic</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>정책 필드·1536차원 벡터·HNSW·embedding·semantic 설정을 정의합니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal → 해당 Search → <strong>Indexes → 생성된 인덱스 → Fields/JSON</strong>에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털 → 해당 Search → <strong>Indexes → 생성된 인덱스 → Fields/JSON</strong>에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 코드·설정</span><code>embed()</code>의 <code>client.embeddings.create(...)</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>8개 정책의 제목·내용을 실제 embedding 배포에 보냅니다.</td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Foundry <strong>View deployments → embedding 배포 → Details</strong>에서 모델·배포 이름을 확인합니다. 벡터 값 자체는 Search 인덱스에 저장되며 Agent Playground에 표시되는 설정이 아닙니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Foundry <strong>View deployments → embedding 배포 → Details</strong>에서 모델·배포 이름을 확인합니다. 벡터 값 자체는 Search 인덱스에 저장되며 agent playground에 표시되는 설정이 아닙니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 코드·설정</span><code>prepare_knowledge()</code>의 <code>PUT</code>·<code>POST</code></td>
@@ -1917,7 +1917,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
         return setup
 </code></pre>
 </details>
-<p>embedding 호출도 감춰진 로컬 점수 계산이 아닙니다. 다음 함수가 Microsoft Azure OpenAI의 embedding API를 호출하고 원본 응답·입력 해시·모델·토큰 사용량을 보관합니다.</p>
+<p>embedding 호출도 감춰진 로컬 점수 계산이 아닙니다. 다음 함수가 Azure OpenAI의 embedding API를 호출하고 원본 응답·입력 해시·모델·토큰 사용량을 보관합니다.</p>
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/embeddings.py:embed</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
@@ -2062,7 +2062,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 
 <p>포털에서도 <strong>Build → Knowledge → Knowledge bases</strong>를 열고 Connection과 생성된 지식 베이스·Knowledge sources를 확인합니다. 목록의 지식 베이스 한 개가 정책 문서 한 개를 뜻하지는 않습니다.</p>
 <figure class="portal-shot" id="portal-policy-connection">
-<img src="../../web/assets/portal/26-knowledge-base.png" alt="Knowledge Microsoft Foundry IQ에서 Connection·지식 베이스·Knowledge sources·Active 상태를 확인하는 화면입니다." width="1440" height="374" loading="lazy">
+<img src="../../web/assets/portal/26-knowledge-base.png" alt="Knowledge Foundry IQ에서 Connection·지식 베이스·Knowledge sources·Active 상태를 확인하는 화면입니다." width="1440" height="374" loading="lazy">
 <figcaption><strong>정책 연결이 있는지 확인합니다.</strong> Connection 선택과 해당 지식 베이스의 Knowledge sources·Active를 확인합니다. Active는 등록 상태이며 실제 검색 성공은 <code>iq probe</code>로 확인합니다. 무료 검색 배너는 전체 실습이 무료라는 뜻이 아니며, 준비 확인을 위해 요금제 변경 버튼을 누르지 않습니다. <a href="../../web/assets/portal/26-knowledge-base.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -2074,7 +2074,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: Agent 구성과 고정 버전</summary>
 <h4 id="agent-code-portal">코드 ↔ 포털 · Agent의 전체 구성을 확인합니다</h4>
-<p class="execution-guide"><strong>실행 위치:</strong> <a href="#agent-create">위의 v1 생성 명령</a>을 실행한 뒤 <a href="#agent-playground">아래의 Microsoft Foundry Playground</a>에서 버전·설정·실제 응답을 확인합니다. 포털에서 다시 생성하거나 새 버전으로 저장하지 않습니다.</p>
+<p class="execution-guide"><strong>실행 위치:</strong> <a href="#agent-create">위의 v1 생성 명령</a>을 실행한 뒤 <a href="#agent-playground">아래의 agent playground</a>에서 버전·설정·실제 응답을 확인합니다. 포털에서 다시 생성하거나 새 버전으로 저장하지 않습니다.</p>
 <table class="code-portal-map">
 <thead>
 <tr>
@@ -2257,7 +2257,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </details>
 <h3 id="agent-playground">Microsoft Foundry에서 v1의 응답과 도구 호출을 확인합니다</h3>
 <figure class="portal-shot" id="portal-agent-configuration">
-<img src="../../web/assets/portal/27-agent-configuration.png" alt="Agent Playground에서 Version·Model·Instructions·Knowledge와 Chat을 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
+<img src="../../web/assets/portal/27-agent-configuration.png" alt="Agent playground에서 Version·Model·Instructions·Knowledge와 Chat을 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>버전·지침·Knowledge를 확인합니다.</strong> 위쪽 Version을 1로 선택하고 왼쪽 Model·Instructions와 아래쪽 Knowledge를 확인합니다. 정책 MCP 연결은 Knowledge에 표시되며 오른쪽 Chat에서 질문을 입력합니다. <a href="../../web/assets/portal/27-agent-configuration.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -2563,9 +2563,9 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </figure>
 
 <p class="completion-check"><strong>완료 기준:</strong> 아직 제출하지 않은 같은 생성 화면에서 두 평가기 척도·임계값·매핑·실제 Judge를 확인하고 기록했습니다. 원격 평가 정의는 06에서 제출한 뒤 생성됩니다. 이후 재평가는 그 저장된 정의를 사용합니다.</p>
-<p class="step-next no-print"><a href="#baseline" data-next-step>다음: 06. Microsoft Foundry Evaluation 실행 →</a></p>
+<p class="step-next no-print"><a href="#baseline" data-next-step>다음: 06. Microsoft Foundry 평가 실행 →</a></p>
 
-<h2 id="baseline">06. Microsoft Foundry Evaluation을 실행합니다</h2>
+<h2 id="baseline">06. Microsoft Foundry 평가를 실행합니다</h2>
 <div class="lab-concept" data-learning-frame="baseline">
 <p><strong>이 단계에서 하는 일:</strong> 고정된 v1의 실제 답변을 생성하고 관리형 평가 점수·이유를 수집합니다.</p>
 <p><strong>중요한 이유:</strong> 이후 후보와 비교할 출발점이 필요합니다. Completed는 처리가 끝났다는 뜻이지 모든 답변이 정확하다는 뜻은 아닙니다.</p>
@@ -2701,7 +2701,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 </details>
 </details>
-<p class="completion-check"><strong>완료 기준:</strong> 실제 Microsoft Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 확인합니다. 실패·부분 실행을 그대로 보존하며 관리형 Evaluation을 자체 로컬 Judge로 대신하지 않습니다.</p>
+<p class="completion-check"><strong>완료 기준:</strong> 실제 Microsoft Foundry run이 Completed이고 결과 12건을 확인할 수 있습니다. <code>result_counts</code>의 오류·실패도 확인합니다. 실패·부분 실행을 그대로 보존하며 관리형 평가를 자체 로컬 Judge로 대신하지 않습니다.</p>
 <p class="step-next no-print"><a href="#analyze" data-next-step>다음: 07. 점수와 이유 읽기 →</a></p>
 
 <h2 id="analyze">07. 점수와 이유를 읽습니다</h2>
@@ -2874,18 +2874,18 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="share-checkpoint" id="share-baseline"><strong>공유:</strong> 실제 run ID·지표별 척도·통과 건수와 문제 응답을 제시하고 어떤 지침 행동을 개선할지 설명합니다.</p>
 
 <p class="completion-check"><strong>완료 기준:</strong> 실제 사례를 근거로 무엇을 바꾸려는지, 또는 왜 현재 지침을 유지하려는지 설명할 수 있습니다. 평균 점수만 적고 끝내지 않습니다.</p>
-<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 08. Agent Optimizer로 지침 개선 →</a></p>
+<p class="step-next no-print"><a href="#optimize" data-next-step>다음: 08. agent optimizer로 지침 개선 →</a></p>
 
-<h2 id="optimize">08. Agent Optimizer로 지침을 개선합니다</h2>
+<h2 id="optimize">08. agent optimizer로 지침을 개선합니다</h2>
 <p><a id="tune"></a></p>
 <div class="lab-concept" data-learning-frame="optimize">
-<p><strong>이 단계에서 하는 일:</strong> Agent Optimizer로 지침 개선 후보를 만들고 변경 내용을 검토합니다.</p>
+<p><strong>이 단계에서 하는 일:</strong> agent optimizer로 지침 개선 후보를 만들고 변경 내용을 검토합니다.</p>
 <p><strong>중요한 이유:</strong> 후보 생성은 개선을 보장하지 않습니다. 내부 순위가 높아도 정책을 꾸미거나 도구·모델 조건을 바꿨다면 그대로 채택할 수 없습니다.</p>
 <p><strong>진행 방법·위치:</strong> Microsoft Foundry에서 Instruction only로 실행하고 View changes를 읽습니다. 검토한 지침 전체와 실제 출처를 비공개 파일에 보관합니다.</p>
 </div>
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#optimizer-configure">Microsoft Foundry · 최적화 설정</a> → <a href="#optimizer-results">제출·결과 확인</a> → <a href="#optimizer-candidate">편집기 · 전체 후보 지침 저장</a>.</p>
-<p><strong>Agent Optimizer는 더 나은 지침을 제안하고 시험하는 기능</strong>입니다. <strong>후보(candidate)</strong>는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.</p>
+<p><strong>agent optimizer는 더 나은 지침을 제안하고 시험하는 기능</strong>입니다. <strong>후보(candidate)</strong>는 아직 채택하지 않은 지침 개선안입니다. 모델을 다시 학습시키는 기능으로 이해하지 않습니다.</p>
 <h3 id="optimizer-configure">Microsoft Foundry에서 지침만 최적화하도록 설정합니다</h3>
 <ol>
 <li><strong>Build → Agents → lab-ko-iq → Optimize Preview/Optimize</strong>를 엽니다.</li>
@@ -2931,13 +2931,13 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 <figure class="portal-shot" id="portal-optimizer-target">
-<img src="../../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
+<img src="../../web/assets/portal/07-optimizer-target.png" alt="agent optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
 <figcaption><strong>최적화 범위와 모델 역할을 구분합니다.</strong> 기준선 버전 1과 Instruction only를 선택하고 후보 수를 승인 한도 안으로 설정합니다. Optimization model과 Evaluation model에는 각 역할에 준비한 배포를 지정합니다. <a href="../../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <p>Criteria가 <strong>No custom evaluators available</strong>이면 <strong>Custom only OFF</strong> 또는 <strong>View built-in evaluators</strong>를 선택합니다. 각 기본 평가기의 임계값을 설정하고 Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.</p>
 <figure class="portal-shot" id="portal-optimizer-data">
-<img src="../../web/assets/portal/08-optimizer-dataset.png" alt="Agent Optimizer에서 등록된 데이터셋을 선택하는 목록입니다." width="1210" height="968" loading="lazy">
+<img src="../../web/assets/portal/08-optimizer-dataset.png" alt="agent optimizer에서 등록된 데이터셋을 선택하는 목록입니다." width="1210" height="968" loading="lazy">
 <figcaption><strong>같은 한국어 데이터를 재사용합니다.</strong> 기준선 평가에 사용한 dev12와 같은 등록 버전을 선택하고 12행 전체를 사용합니다. 파일을 수정하거나 새로 생성하면 비교 조건이 달라집니다. <a href="../../web/assets/portal/08-optimizer-dataset.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -2966,10 +2966,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p><strong>결과 해석:</strong> 내부 <strong>0–1 순위</strong>는 별도 관리형 Evaluation 평균·통과율이 아닙니다. 지침만 검토하며 모델·도구·추론·출력 스키마는 유지합니다. 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다.</p>
+<p><strong>결과 해석:</strong> 내부 <strong>0–1 순위</strong>는 별도 관리형 평가 평균·통과율이 아닙니다. 지침만 검토하며 모델·도구·추론·출력 스키마는 유지합니다. 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다.</p>
 <p><strong>비용·대기:</strong> 작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
-<img src="../../web/assets/portal/09-optimizer-results.png" alt="Agent Optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
+<img src="../../web/assets/portal/09-optimizer-results.png" alt="agent optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>순위뿐 아니라 후보를 확인합니다.</strong> 기준선과 후보의 평가기별 점수를 비교하고 지침 변경 내용을 검토합니다. 타당한 개선 후보가 없으면 v1을 유지하고 그 이유를 10의 마무리 노트에 남깁니다. <a href="../../web/assets/portal/09-optimizer-results.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
@@ -3050,7 +3050,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 <p><code>agent_name: lab-ko-iq</code>, <code>version: "2"</code>를 확인합니다. 다른 내용의 v2가 이미 있거나 모델 배포가 바뀌었으면 중단하고 기존 기록을 보존합니다. 새 버전이 있다는 사실만으로 개선이 입증되지 않습니다.</p>
 <h3 id="decision-run">2. 터미널에서 같은 평가에 v2의 run을 추가합니다</h3>
-<p>아래 helper는 이 저장소가 제공하는 Python 보조 프로그램입니다. 공식 Microsoft Azure AI Projects/OpenAI SDK로 기준선의 데이터·평가기 설정을 재사용합니다. 다른 평가를 새로 만드는 것이 아닙니다.</p>
+<p>아래 helper는 이 저장소가 제공하는 Python 보조 프로그램입니다. 공식 Azure AI Projects 클라이언트 라이브러리(Microsoft Foundry SDK의 일부)와 OpenAI SDK로 기준선의 데이터·평가기 설정을 재사용합니다. 다른 평가를 새로 만드는 것이 아닙니다.</p>
 <table>
 <thead>
 <tr>
@@ -3407,7 +3407,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <div class="lab-concept" data-learning-frame="cleanup">
 <p><strong>이 단계에서 하는 일:</strong> 결과를 보관한 뒤 자신이 만든 전용 실습 자원을 삭제합니다. 보존을 승인받은 경우에만 남은 자원과 비용 관리 계획을 기록합니다.</p>
 <p><strong>중요한 이유:</strong> 브라우저를 닫아도 Search·로그 등은 남을 수 있습니다. 반대로 공유 그룹을 잘못 삭제하면 다른 사람의 자원도 잃을 수 있습니다.</p>
-<p><strong>진행 방법·위치:</strong> Microsoft Azure Portal과 터미널에서 정확한 대상·소유권·승인을 확인하고 삭제 후 부재를 검증합니다.</p>
+<p><strong>진행 방법·위치:</strong> Azure 포털과 터미널에서 정확한 대상·소유권·승인을 확인하고 삭제 후 부재를 검증합니다.</p>
 </div>
 
 <p class="step-route"><strong>실행 순서:</strong> <a href="#cleanup-records">결과 보관</a> → <a href="#cleanup-scope">삭제·보존 범위 확인</a> → <a href="#cleanup-delete">승인된 전용 그룹 삭제</a> → <a href="#cleanup-verify">터미널 · 부재 확인</a>. 보존 승인된 환경은 삭제하지 않습니다.</p>
@@ -3482,7 +3482,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">기존 명령·실제 구현</span>아래의 <code>az group show</code>, <code>az resource list</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Microsoft Azure Portal <strong>Resource groups → 자신의 그룹 → Overview/Resources</strong>에서 전체 인벤토리와 태그를 읽습니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털 <strong>Resource groups → 자신의 그룹 → Overview/Resources</strong>에서 전체 인벤토리와 태그를 읽습니다.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">기존 명령·실제 구현</span>아래의 <code>az group delete</code></td>
@@ -3494,7 +3494,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tr>
 </tbody>
 </table>
-<p>원문에서 <strong>확인 인자가 없으면 계획 반환</strong>, <strong>원격 소유권·etag 확인</strong>, <strong>개별 DELETE</strong>, <strong>다시 조회하여 remaining 검사</strong> 순서를 읽습니다. 그룹 전체 삭제는 이 함수 안에 없고 다음 절의 기존 Microsoft Azure CLI 명령 또는 포털에서 별도로 수행합니다.</p>
+<p>원문에서 <strong>확인 인자가 없으면 계획 반환</strong>, <strong>원격 소유권·etag 확인</strong>, <strong>개별 DELETE</strong>, <strong>다시 조회하여 remaining 검사</strong> 순서를 읽습니다. 그룹 전체 삭제는 이 함수 안에 없고 다음 절의 기존 Azure CLI 명령 또는 포털에서 별도로 수행합니다.</p>
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/cleanup.py:cleanup_plan</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
@@ -3563,8 +3563,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
         &quot;workspace_id&quot;: state[&quot;workspace_id&quot;],
         &quot;actions&quot;: actions,
         &quot;never_deleted&quot;: [
-            &quot;resource group&quot;, &quot;Foundry account/project&quot;, &quot;shared model deployments&quot;,
-            &quot;Search service&quot;, &quot;Application Insights/Log Analytics&quot;, &quot;RBAC assignments&quot;,
+            &quot;resource group&quot;, &quot;Foundry resource/project&quot;, &quot;shared model deployments&quot;,
+            &quot;Azure AI Search service&quot;, &quot;Application Insights/Log Analytics&quot;, &quot;RBAC assignments&quot;,
         ],
         &quot;manual_follow_up&quot;: [
             &quot;Managed evaluation jobs/files are retained for evidence; inspect recorded IDs and remove in the portal if required.&quot;,
@@ -3690,7 +3690,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 </code></pre>
 <p class="note warning"><strong>그룹 전체 삭제는 되돌릴 수 없으며 그룹 안의 Microsoft Foundry·모델·Search·모니터링 자원이 함께 삭제됩니다.</strong> 보관이 끝났고 정확한 그룹 전체를 삭제하도록 승인받은 경우에만 아래 <strong>두 방법 중 하나</strong>를 선택합니다.</p>
 <p>Application Insights의 기본 Smart Detection Action group은 다른 그룹의 경고에서도 공유할 수 있습니다. 전용 실습 그룹이라는 이유만으로 모든 항목이 독립적이라고 가정하지 않습니다. 공유 연결이 있으면 담당자와 종속성을 먼저 정리하거나 해당 그룹을 보존하며, 확인을 위해 경고·권한·잠금을 임의로 삭제하지 않습니다.</p>
-<p><strong>방법 A · 포털:</strong> Microsoft Azure Portal → Resource groups → 정확한 그룹 → <strong>Delete resource group</strong>을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.</p>
+<p><strong>방법 A · 포털:</strong> Azure 포털 → Resource groups → 정확한 그룹 → <strong>Delete resource group</strong>을 선택합니다. 삭제 목록을 읽고 요구하는 그룹 이름을 직접 입력한 뒤 확인합니다.</p>
 <figure class="portal-shot" id="portal-delete-review">
 <img src="../../web/assets/portal/28-delete-review.png" alt="리소스 그룹 삭제 확인 창의 대상 목록, 그룹 이름 입력란과 Delete·Cancel 버튼입니다." width="1440" height="1000" loading="lazy">
 <figcaption><strong>삭제 예정 목록과 확인란을 먼저 읽습니다.</strong> 그룹 이름과 전체 자원 목록을 대조합니다. 승인받은 경우에만 확인란에 그룹 이름을 입력하고 Delete로 진행합니다. 대상이 다르거나 승인되지 않았다면 Cancel로 닫습니다. <a href="../../web/assets/portal/28-delete-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
@@ -3720,7 +3720,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
 <li><a href="https://github.com/codespaces">내 Codespaces</a>에서 해당 환경의 <strong>… → Stop codespace</strong>를 선택합니다. Microsoft Azure 환경을 보존해 재개할 계획이면 Codespace도 중지 상태로 유지합니다. 실습이 끝났고 백업을 확인했다면 <strong>Delete</strong>로 삭제할 수 있습니다. 중지는 실행 요금만 멈추며 저장소 요금은 남을 수 있습니다. 삭제하면 백업하지 않은 파일은 잃습니다.</li>
 </ol>
 <p>내 PC 경로에서는 이 절을 건너뜁니다. 두 경로 모두 Microsoft Azure 과금과 Codespaces 과금을 서로 대신 정리한 것으로 간주하지 않습니다.</p>
-<p><strong>내 PC · 마무리할 때 로그아웃합니다.</strong> 위 확인이 끝난 뒤 공용·업무용 컴퓨터이거나 이 로그인이 더 필요하지 않다면 <code>az logout</code>을 실행합니다. 로컬 Microsoft Azure CLI 세션만 지우며 클라우드 자원은 바꾸지 않습니다. 나중에 재개하면 <code>az login --use-device-code</code>로 다시 로그인합니다.</p>
+<p><strong>내 PC · 마무리할 때 로그아웃합니다.</strong> 위 확인이 끝난 뒤 공용·업무용 컴퓨터이거나 이 로그인이 더 필요하지 않다면 <code>az logout</code>을 실행합니다. 로컬 Azure CLI 세션만 지우며 클라우드 자원은 바꾸지 않습니다. 나중에 재개하면 <code>az login --use-device-code</code>로 다시 로그인합니다.</p>
 <p class="completion-check"><strong>최종 완료 기준:</strong> 삭제 승인된 자신의 전용 그룹에 대해 <code>az group exists</code>의 <code>false</code>와 확인 시각을 기록했습니다. 보존 승인된 경우에는 실제 남은 항목·이유·비용 책임·보존 검토일과 후속 삭제 계획을 기록했습니다. 둘 중 자신의 승인 범위에 맞는 상태를 확인하고 <code>.lab</code> 기록을 먼저 지워 소유권 근거를 잃지 않습니다. <a href="admin.html#cleanup">정리 체크리스트</a> · <a href="troubleshooting.html#cleanup">삭제 문제 해결</a>을 참고합니다.</p>
       </article>
 

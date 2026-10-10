@@ -2,7 +2,7 @@
   "en": {
     "shell": {
       "SITE_TITLE": "Microsoft Foundry Lab Guide",
-      "DESCRIPTION": "A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed Evaluation, Agent Optimizer, comparison, and verified cleanup.",
+      "DESCRIPTION": "A bilingual Microsoft Foundry lab using GitHub Codespaces and guided Microsoft Azure setup, followed by managed evaluation, the agent optimizer, comparison, and verified cleanup.",
       "SKIP_LINK": "Skip to content",
       "MENU_OPEN": "Open contents",
       "MENU_CLOSE": "Close contents",
