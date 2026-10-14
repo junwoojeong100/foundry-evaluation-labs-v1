@@ -59,6 +59,8 @@ The SDK helper adds a real run to the existing Microsoft Foundry definition. It 
 
 Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay execution records. The portal walkthroughs record the authenticated Microsoft Azure/Microsoft Foundry UI, with personal fields redacted, using existing resources and completed runs without resubmitting evaluations or optimization. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
 
+**Change note (2026-10-15):** the default embedding model and the retained lab environments changed from `text-embedding-3-small` to `text-embedding-3-large` (Global Standard). The portal walkthroughs were recorded earlier, so the embedding deployment's Details screen in chapter 03 ("Model roles and actual TPM") still shows `text-embedding-3-small`; nothing else in the recordings changed.
+
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
 Hands-on sidebars show only the ten main steps. Detailed headings and direct links remain in the body; reference documents keep their own navigation. Existing reference filenames and section links remain valid.

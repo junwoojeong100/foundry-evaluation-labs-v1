@@ -59,6 +59,8 @@ SDK helper는 기존 Microsoft Foundry 정의에 실제 run을 추가합니다. 
 
 두 영상 모두 내레이션·자막·챕터를 포함하며 재사용 실습 가이드와 분리해 제공합니다. CLI/SDK 영상은 실행 기록을 재생하는 요약입니다. 포털 영상은 인증된 Microsoft Azure/Microsoft Foundry의 실제 화면을 녹화하고 개인정보를 가린 것으로, 기존 자원과 완료된 결과를 조회하며 평가·Optimizer를 다시 제출하지 않습니다. 외부 자막: CLI/SDK [한국어](docs/media/Foundry-Lab-Replay-KO.srt) · [English](docs/media/Foundry-Lab-Replay-EN.srt), 포털 [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt) · [English](docs/media/Foundry-Portal-Walkthrough-EN.srt).
 
+**변경 안내 (2026-10-15):** embedding 기본 모델과 보존 중인 실습 환경을 `text-embedding-3-small`에서 `text-embedding-3-large`(Global Standard)로 변경했습니다. 포털 영상은 변경 전에 녹화되어 03 챕터(모델 역할과 실제 TPM)의 embedding 배포 Details 화면에 `text-embedding-3-small`이 표시되며, 영상의 나머지 화면은 달라지지 않았습니다.
+
 기본 언어는 영어입니다. 언어를 전환해도 대응 절·읽음 기록·테마를 유지합니다. 로그인·JavaScript 없이 열람할 수 있으며 오프라인에서는 저장소 전체의 폴더 구조를 유지합니다.
 
 실습 가이드의 왼쪽 목차는 주요 10단계만 표시합니다. 상세 제목과 직접 링크는 본문에 유지하며 참고 문서의 목차는 별도로 제공합니다. 기존 참고 문서의 파일 이름과 절 링크도 유지합니다.

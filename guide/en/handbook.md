@@ -497,7 +497,7 @@ Use your text editor's **Open file** action to inspect these files. `.lab` store
 
 The model roles are **answer generation (Agent), scoring (Judge), instruction suggestions/search planning (Optimizer/planner), and numerical representations for search (embedding)**. You do not develop a new model in this lab.
 
-This repository's setup region is **North Central US (`northcentralus`)**. Defaults are Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/search planner `gpt-5.5`, and embedding `text-embedding-3-small`. Check the exact versions, SKUs (deployment types), and capacity units in the [model table](admin-setup.md#prepare) and plan. Do not silently substitute a different region or model.
+This repository's setup region is **North Central US (`northcentralus`)**. Defaults are Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/search planner `gpt-5.5`, and embedding `text-embedding-3-large`. Check the exact versions, SKUs (deployment types), and capacity units in the [model table](admin-setup.md#prepare) and plan. Do not silently substitute a different region or model.
 
 ### Allocate the recommended minimum TPM {#resources-tpm}
 
@@ -508,7 +508,7 @@ This repository's setup region is **North Central US (`northcentralus`)**. Defau
 | Agent · `gpt-6-sol` | **100,000** | 100 |
 | Judge · `gpt-6-luna` | **100,000** | 100 |
 | Optimizer / search planner · `gpt-5.5` | **100,000** | 100, one deployment shared by both roles |
-| Embedding · `text-embedding-3-small` | **10,000** | 10 |
+| Embedding · `text-embedding-3-large` | **10,000** | 10 |
 
 New `bootstrap plan` output requests these capacities. **ARM units depend on the model/SKU**; do not universally multiply capacity by 1,000. After deployment, confirm actual TPM with runtime preflight below. Unallocated subscription quota does not establish that an individual deployment has enough TPM assigned.
 
@@ -728,7 +728,7 @@ Confirm **`uploaded_documents: 8`**. The program prepares a search index (search
 
 | Actual code/setting | Actual action | Portal actions and verification |
 |---|---|---|
-| `fields`, `vectorSearch`, `semantic` in `knowledge_payloads()["index"]` | Define policy fields, 1536-dimensional vectors, HNSW, embeddings, and semantic settings. | Azure portal → Search → **Indexes → created index → Fields/JSON**. Inspect, do not recreate, the index. |
+| `fields`, `vectorSearch`, `semantic` in `knowledge_payloads()["index"]` | Define policy fields, 3072-dimensional vectors, HNSW, embeddings, and semantic settings. | Azure portal → Search → **Indexes → created index → Fields/JSON**. Inspect, do not recreate, the index. |
 | `client.embeddings.create(...)` in `embed()` | Send eight policy titles/contents to the actual embedding deployment. | Microsoft Foundry **View deployments → embedding deployment → Details**: check the model/name. Vectors are stored in Search, not in the Agent's Playground settings. |
 | `PUT`/`POST` in `prepare_knowledge()` | Create the index, upload documents, then create the knowledge source, base, and project connection. | Inspect Search **Indexes** and Microsoft Foundry **Build → Knowledge → Knowledge bases** for matching names/sources. |
 | Connection `authType`, `audience`, `target` | Connect the project's managed identity to Search's MCP endpoint. | Inspect Knowledge **Connection**. If the UI has no authType/audience editor, read `knowledge/config-snapshot.json`; do not guess settings. |

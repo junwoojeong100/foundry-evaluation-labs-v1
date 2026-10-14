@@ -191,11 +191,12 @@
 <tr>
 <td>Policy embeddings</td>
 <td><code>EMBEDDING_DEPLOYMENT</code></td>
-<td><strong><code>text-embedding-3-small</code> / <code>1</code></strong>, Global Standard 10</td>
+<td><strong><code>text-embedding-3-large</code> / <code>1</code></strong>, Global Standard 10</td>
 </tr>
 </tbody>
 </table>
 <p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
+<p><strong>The embedding model must match the index contract.</strong> The policy index uses 3072-dimensional <code>text-embedding-3-large</code> vectors, and <code>embedding_supported_model</code> in <code>preflight</code> checks the deployed model. An environment created with the former default <code>text-embedding-3-small</code> reports <code>BLOCKED</code>. Do not edit its plan or deployment; plan a new environment name instead.</p>
 <p><strong>Distinguish additional monitoring resources.</strong> Application Insights can automatically add a <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">default Failure Anomalies alert and Smart Detection action group</a>. Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same <code>bootstrap status</code> again; do not edit the manifest or delete the alert to bypass the check.</p>
 <h3 id="throughput">Set TPM before starting model calls</h3>
 <p>The <a href="index.html#resources-tpm">step-02 recommendations</a> require <strong>100,000 TPM</strong> per Agent, Judge, and shared Optimizer/planner deployment, and <strong>10,000 TPM</strong> for embeddings. This assumes sequential jobs in one environment; quota pools remain model/SKU/region-specific. Sum per-model allocations across simultaneous dedicated environments. Count the Optimizer/planner deployment shared within one environment only once.</p>

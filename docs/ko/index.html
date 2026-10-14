@@ -737,7 +737,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 </details>
 <p>모델 역할은 <strong>답변 생성(Agent), 채점(Judge), 지침 제안·검색 계획(Optimizer/planner), 검색용 숫자 변환(embedding)</strong>으로 나눕니다. 여기서 모델 자체를 직접 개발하지는 않습니다.</p>
-<p>이 저장소의 기본 생성 지역은 <strong>North Central US (<code>northcentralus</code>)</strong>입니다. 기본 배포는 Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/검색 planner <code>gpt-5.5</code>, embedding <code>text-embedding-3-small</code>입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 <a href="admin.html#prepare">모델 표</a>와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.</p>
+<p>이 저장소의 기본 생성 지역은 <strong>North Central US (<code>northcentralus</code>)</strong>입니다. 기본 배포는 Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/검색 planner <code>gpt-5.5</code>, embedding <code>text-embedding-3-large</code>입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 <a href="admin.html#prepare">모델 표</a>와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.</p>
 <h3 id="resources-tpm">모델별 최소 권장 TPM을 확보합니다</h3>
 <p><strong>TPM(Tokens Per Minute)은 배포별 분당 토큰 처리 한도</strong>이며, 모델의 최대 입력 길이나 실제 처리 속도와는 다릅니다. 아래는 <strong>한 환경에서 평가·Optimizer를 한 번에 하나씩 실행하는 12문항 실습</strong>의 시작 기준입니다. 모든 요청에서 입증된 절대 최소치나 429 오류가 없다는 보장이 아니라, 평가기·검색 호출을 고려한 여유 포함 최소 권장값입니다.</p>
 <table>
@@ -765,7 +765,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <td style="text-align: right;">100, 두 역할이 같은 배포를 공유</td>
 </tr>
 <tr>
-<td>Embedding · <code>text-embedding-3-small</code></td>
+<td>Embedding · <code>text-embedding-3-large</code></td>
 <td style="text-align: right;"><strong>10,000</strong></td>
 <td style="text-align: right;">10</td>
 </tr>
@@ -1464,8 +1464,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             observed_model = (deployment or {}).get(&quot;properties&quot;, {}).get(&quot;model&quot;, {}).get(&quot;name&quot;)
             checks.append({
                 &quot;name&quot;: &quot;embedding_supported_model&quot;,
-                &quot;status&quot;: &quot;PASS&quot; if observed_model == &quot;text-embedding-3-small&quot; else &quot;BLOCKED&quot;,
-                &quot;observed&quot;: observed_model, &quot;expected&quot;: &quot;text-embedding-3-small&quot;,
+                &quot;status&quot;: &quot;PASS&quot; if observed_model == &quot;text-embedding-3-large&quot; else &quot;BLOCKED&quot;,
+                &quot;observed&quot;: observed_model, &quot;expected&quot;: &quot;text-embedding-3-large&quot;,
             })
     public_access = account.get(&quot;properties&quot;, {}).get(&quot;publicNetworkAccess&quot;)
     if public_access == &quot;Disabled&quot;:
@@ -1639,7 +1639,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tbody>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">실제 코드·설정</span><code>knowledge_payloads()["index"]</code>의 <code>fields</code>, <code>vectorSearch</code>, <code>semantic</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>정책 필드·1536차원 벡터·HNSW·embedding·semantic 설정을 정의합니다.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">실제 동작</span>정책 필드·3072차원 벡터·HNSW·embedding·semantic 설정을 정의합니다.</td>
 <td><span class="mobile-cell-label" aria-hidden="true">포털 조작·확인 위치</span>Azure 포털 → 해당 Search → <strong>Indexes → 생성된 인덱스 → Fields/JSON</strong>에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다.</td>
 </tr>
 <tr>
@@ -1694,7 +1694,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                     &quot;name&quot;: &quot;contoso-embedding&quot;, &quot;kind&quot;: &quot;azureOpenAI&quot;,
                     &quot;azureOpenAIParameters&quot;: {
                         &quot;resourceUri&quot;: config.openai_endpoint, &quot;deploymentId&quot;: config.embedding,
-                        &quot;modelName&quot;: &quot;text-embedding-3-small&quot;,
+                        &quot;modelName&quot;: &quot;text-embedding-3-large&quot;,
                     },
                 }],
             },
@@ -1781,7 +1781,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/knowledge.py:prepare_knowledge</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/knowledge.py#L137-L269">전체 구현 파일 · 137–269</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L137-L269">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/knowledge.py#L137-L274">전체 구현 파일 · 137–274</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L137-L274">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:prepare_knowledge"><code class="language-python">def prepare_knowledge(config: Config) -&gt; dict:
     state = workspace(config, create=True)
     names = resource_names(config, state)
@@ -1799,7 +1799,12 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                 &quot;The source or scope differs from the earlier knowledge preparation. A different experiment is never written over the existing index.&quot;,
             ))
         if previous.get(&quot;status&quot;) in {&quot;created_not_retrieval_tested&quot;, &quot;retrieval_verified&quot;}:
-            if previous.get(&quot;retrieval&quot;, {}).get(&quot;embedding_deployment&quot;) != config.embedding:
+            retrieval = previous.get(&quot;retrieval&quot;, {})
+            if (
+                retrieval.get(&quot;embedding_deployment&quot;) != config.embedding
+                or retrieval.get(&quot;embedding_model&quot;) != &quot;text-embedding-3-large&quot;
+                or retrieval.get(&quot;dimensions&quot;) != DIMENSIONS
+            ):
                 raise LabError(text(
                     &quot;준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.&quot;,
                     &quot;The embedding contract of the prepared index differs. Create a new experiment.&quot;,
@@ -1840,7 +1845,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             &quot;payload_sha256&quot;: payload_hash,
             &quot;retrieval&quot;: {
                 &quot;reasoning&quot;: &quot;low&quot;, &quot;output&quot;: &quot;extractiveData&quot;,
-                &quot;embedding_model&quot;: &quot;text-embedding-3-small&quot;, &quot;embedding_deployment&quot;: config.embedding,
+                &quot;embedding_model&quot;: &quot;text-embedding-3-large&quot;, &quot;embedding_deployment&quot;: config.embedding,
                 &quot;dimensions&quot;: DIMENSIONS, &quot;index_algorithm&quot;: &quot;hnsw&quot;, &quot;metric&quot;: &quot;cosine&quot;,
                 &quot;query_modes&quot;: [&quot;vector&quot;, &quot;hybrid&quot;, &quot;agentic-iq-mcp&quot;],
                 &quot;direct_probe_is_agent_evidence&quot;: False,
@@ -1929,10 +1934,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             &quot;EMBEDDING_DEPLOYMENT and non-empty embedding input are required.&quot;,
         ))
     deployment = model_snapshot(config, config.embedding)
-    if deployment[&quot;model&quot;].get(&quot;name&quot;) != &quot;text-embedding-3-small&quot;:
+    if deployment[&quot;model&quot;].get(&quot;name&quot;) != &quot;text-embedding-3-large&quot;:
         raise LabError(localized_text(
-            &quot;이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.&quot;,
-            &quot;This index&#x27;s frozen contract is text-embedding-3-small/1536. It is never replaced automatically.&quot;,
+            &quot;이 인덱스의 동결 계약은 text-embedding-3-large/3072입니다. 자동 대체하지 않습니다.&quot;,
+            &quot;This index&#x27;s frozen contract is text-embedding-3-large/3072. It is never replaced automatically.&quot;,
         ))
     contract = {
         &quot;endpoint&quot;: config.openai_endpoint, &quot;deployment&quot;: deployment,
@@ -2006,7 +2011,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/knowledge.py:probe_knowledge</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/knowledge.py#L289-L338">전체 구현 파일 · 289–338</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L289-L338">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/knowledge.py#L294-L343">전체 구현 파일 · 294–343</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L294-L343">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:probe_knowledge"><code class="language-python">def probe_knowledge(config: Config, query: str) -&gt; dict:
     setup = load_knowledge(config)
     if not query.strip():
@@ -2109,7 +2114,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>lab/knowledge.py:knowledge_tool</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../lab/knowledge.py#L395-L409">전체 구현 파일 · 395–409</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L395-L409">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../lab/knowledge.py#L400-L414">전체 구현 파일 · 400–414</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L400-L414">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:knowledge_tool"><code class="language-python">def knowledge_tool(config: Config) -&gt; MCPTool:
     setup = load_knowledge(config)
     if setup[&quot;status&quot;] != &quot;retrieval_verified&quot;:

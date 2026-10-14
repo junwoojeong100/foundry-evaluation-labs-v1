@@ -1,15 +1,21 @@
 from pathlib import Path
 import os
+from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-from lab.config import load_config
-from lab.knowledge import SEARCH_API, knowledge_payloads, resource_names, search_url
+from lab.config import LabError, load_config
+from lab.content import content_path
+from lab.files import sha256_file
+from lab.knowledge import SEARCH_API, knowledge_payloads, prepare_knowledge, resource_names, search_url
+from lab.preflight import save_json
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class KnowledgeTests(unittest.TestCase):
     def setUp(self):
-        self.config = load_config(Path(__file__).resolve().parents[1] / ".env.example")
+        self.config = load_config(ROOT / ".env.example")
         self.names = resource_names(self.config, {"workspace_id": "12345678-1234-1234-1234-123456789012"})
         self.payloads = knowledge_payloads(self.config, self.names, "gpt-5.5")
 
@@ -27,7 +33,7 @@ class KnowledgeTests(unittest.TestCase):
                 fields = {field["name"]: field for field in payload["index"]["fields"]}
                 self.assertEqual(fields["title"]["analyzer"], f"{language}.microsoft")
                 self.assertEqual(fields["content"]["analyzer"], f"{language}.microsoft")
-                self.assertEqual(fields["content_vector"]["dimensions"], 1536)
+                self.assertEqual(fields["content_vector"]["dimensions"], 3072)
 
     def test_source_data_fields_are_on_the_source_not_the_base(self):
         self.assertIn("sourceDataFields", self.payloads["source"]["searchIndexParameters"])
@@ -57,12 +63,38 @@ class KnowledgeTests(unittest.TestCase):
     def test_real_vector_schema_and_query_vectorizer_are_bound(self):
         index = self.payloads["index"]
         vector = next(field for field in index["fields"] if field["name"] == "content_vector")
-        self.assertEqual(vector["dimensions"], 1536)
+        self.assertEqual(vector["dimensions"], 3072)
         self.assertEqual(vector["vectorSearchProfile"], "contoso-vector")
         vectorizer = index["vectorSearch"]["vectorizers"][0]["azureOpenAIParameters"]
         self.assertEqual(vectorizer["deploymentId"], self.config.embedding)
-        self.assertEqual(vectorizer["modelName"], "text-embedding-3-small")
+        self.assertEqual(vectorizer["modelName"], "text-embedding-3-large")
         self.assertIn({"name": "content_vector"}, self.payloads["source"]["searchIndexParameters"]["searchFields"])
+
+    def test_a_setup_prepared_with_another_embedding_contract_is_never_reused(self):
+        names = resource_names(self.config, {"workspace_id": "12345678-1234-1234-1234-123456789012"})
+        documents_path = content_path(ROOT, "data/knowledge/documents.json")
+        current = {"embedding_model": "text-embedding-3-large", "embedding_deployment": self.config.embedding,
+                   "dimensions": 3072}
+        cases = (
+            ("current contract", current, True),
+            ("previous small model", {**current, "embedding_model": "text-embedding-3-small", "dimensions": 1536}, False),
+            ("previous dimensions", {**current, "dimensions": 1536}, False),
+            ("another deployment", {**current, "embedding_deployment": "another-embedding"}, False),
+        )
+        for label, retrieval, reusable in cases:
+            with self.subTest(label), TemporaryDirectory() as directory, \
+                    patch.dict(os.environ, {"LAB_LANGUAGE": "ko"}), \
+                    patch("lab.knowledge.artifacts_dir", return_value=Path(directory)), \
+                    patch("lab.knowledge.workspace", return_value={"workspace_id": "12345678-1234-1234-1234-123456789012"}), \
+                    patch("lab.knowledge.credential_for", side_effect=AssertionError("no cloud call expected")):
+                setup = {"status": "retrieval_verified", "names": names, "retrieval": retrieval,
+                         "documents_sha256": sha256_file(documents_path)}
+                save_json(Path(directory) / "knowledge/setup.json", setup)
+                if reusable:
+                    self.assertEqual(prepare_knowledge(self.config), setup)
+                else:
+                    with self.assertRaises(LabError):
+                        prepare_knowledge(self.config)
 
 
 if __name__ == "__main__":

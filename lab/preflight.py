@@ -215,8 +215,8 @@ def run_preflight(config: Config, *, run: Callable = az_json) -> dict:
             observed_model = (deployment or {}).get("properties", {}).get("model", {}).get("name")
             checks.append({
                 "name": "embedding_supported_model",
-                "status": "PASS" if observed_model == "text-embedding-3-small" else "BLOCKED",
-                "observed": observed_model, "expected": "text-embedding-3-small",
+                "status": "PASS" if observed_model == "text-embedding-3-large" else "BLOCKED",
+                "observed": observed_model, "expected": "text-embedding-3-large",
             })
     public_access = account.get("properties", {}).get("publicNetworkAccess")
     if public_access == "Disabled":

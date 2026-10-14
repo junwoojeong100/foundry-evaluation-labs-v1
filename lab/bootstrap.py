@@ -60,7 +60,7 @@ DEFAULT_MODELS = (
     {"roles": ["agent"], "name": "gpt-6-sol", "version": "2026-09-22", "sku": "GlobalStandard", "capacity": 100},
     {"roles": ["judge"], "name": "gpt-6-luna", "version": "2026-09-22", "capacity": 100},
     {"roles": ["planner", "optimizer"], "name": "gpt-5.5", "version": "2026-04-24", "capacity": 100},
-    {"roles": ["embedding"], "name": "text-embedding-3-small", "version": "1", "capacity": 10},
+    {"roles": ["embedding"], "name": "text-embedding-3-large", "version": "1", "sku": "GlobalStandard", "capacity": 10},
 )
 Run = Callable[[list[str]], Any]
 

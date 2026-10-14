@@ -497,7 +497,7 @@ python -m lab bootstrap plan --subscription "YOUR_SUBSCRIPTION_ID" --tenant "YOU
 
 모델 역할은 **답변 생성(Agent), 채점(Judge), 지침 제안·검색 계획(Optimizer/planner), 검색용 숫자 변환(embedding)**으로 나눕니다. 여기서 모델 자체를 직접 개발하지는 않습니다.
 
-이 저장소의 기본 생성 지역은 **North Central US (`northcentralus`)**입니다. 기본 배포는 Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/검색 planner `gpt-5.5`, embedding `text-embedding-3-small`입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 [모델 표](admin-setup.md#prepare)와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.
+이 저장소의 기본 생성 지역은 **North Central US (`northcentralus`)**입니다. 기본 배포는 Agent `gpt-6-sol`, Judge `gpt-6-luna`, Optimizer/검색 planner `gpt-5.5`, embedding `text-embedding-3-large`입니다. 정확한 버전·SKU(배포 유형)·요청 용량은 [모델 표](admin-setup.md#prepare)와 계획 파일에서 확인합니다. 다른 지역·모델로 조용히 대체하지 않습니다.
 
 ### 모델별 최소 권장 TPM을 확보합니다 {#resources-tpm}
 
@@ -508,7 +508,7 @@ python -m lab bootstrap plan --subscription "YOUR_SUBSCRIPTION_ID" --tenant "YOU
 | Agent · `gpt-6-sol` | **100,000** | 100 |
 | Judge · `gpt-6-luna` | **100,000** | 100 |
 | Optimizer / 검색 planner · `gpt-5.5` | **100,000** | 100, 두 역할이 같은 배포를 공유 |
-| Embedding · `text-embedding-3-small` | **10,000** | 10 |
+| Embedding · `text-embedding-3-large` | **10,000** | 10 |
 
 새 `bootstrap plan`은 이 용량으로 계획을 만듭니다. **ARM 용량은 모델·SKU별 단위**이므로 다른 모델에 무조건 1,000을 곱하지 않습니다. 생성 후 실제 배포의 TPM을 아래 runtime preflight로 확인합니다. 구독에 남은 할당량이 있어도 해당 배포에 충분히 할당되지 않았다면 준비 완료가 아닙니다.
 
@@ -728,7 +728,7 @@ python -m lab --config .lab/lab-ko/.env iq prepare --confirm
 
 | 실제 코드·설정 | 실제 동작 | 포털 조작·확인 위치 |
 |---|---|---|
-| `knowledge_payloads()["index"]`의 `fields`, `vectorSearch`, `semantic` | 정책 필드·1536차원 벡터·HNSW·embedding·semantic 설정을 정의합니다. | Azure 포털 → 해당 Search → **Indexes → 생성된 인덱스 → Fields/JSON**에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다. |
+| `knowledge_payloads()["index"]`의 `fields`, `vectorSearch`, `semantic` | 정책 필드·3072차원 벡터·HNSW·embedding·semantic 설정을 정의합니다. | Azure 포털 → 해당 Search → **Indexes → 생성된 인덱스 → Fields/JSON**에서 필드와 검색 구성을 확인합니다. 인덱스를 다시 만들지 않습니다. |
 | `embed()`의 `client.embeddings.create(...)` | 8개 정책의 제목·내용을 실제 embedding 배포에 보냅니다. | Microsoft Foundry **View deployments → embedding 배포 → Details**에서 모델·배포 이름을 확인합니다. 벡터 값 자체는 Search 인덱스에 저장되며 Agent의 Playground에 표시되는 설정이 아닙니다. |
 | `prepare_knowledge()`의 `PUT`·`POST` | 인덱스 생성, 문서 업로드, knowledge source·knowledge base·프로젝트 연결을 순서대로 생성합니다. | Search의 **Indexes**, Microsoft Foundry **Build → Knowledge → Knowledge bases**에서 이름·Knowledge sources를 대조합니다. |
 | `connection.authType`, `audience`, `target` | 프로젝트 관리 ID로 Search의 MCP endpoint에 접근하는 연결입니다. | Microsoft Foundry의 **Knowledge**에서 **Connection**을 확인합니다. UI에 authType·audience 편집란이 없다면 `knowledge/config-snapshot.json`을 읽으며 임의 값을 넣지 않습니다. |

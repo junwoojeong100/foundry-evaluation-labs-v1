@@ -737,7 +737,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 </details>
 <p>The model roles are <strong>answer generation (Agent), scoring (Judge), instruction suggestions/search planning (Optimizer/planner), and numerical representations for search (embedding)</strong>. You do not develop a new model in this lab.</p>
-<p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-small</code>. Check the exact versions, SKUs (deployment types), and capacity units in the <a href="admin.html#prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
+<p>This repository's setup region is <strong>North Central US (<code>northcentralus</code>)</strong>. Defaults are Agent <code>gpt-6-sol</code>, Judge <code>gpt-6-luna</code>, Optimizer/search planner <code>gpt-5.5</code>, and embedding <code>text-embedding-3-large</code>. Check the exact versions, SKUs (deployment types), and capacity units in the <a href="admin.html#prepare">model table</a> and plan. Do not silently substitute a different region or model.</p>
 <h3 id="resources-tpm">Allocate the recommended minimum TPM</h3>
 <p><strong>TPM (Tokens Per Minute) is a per-deployment token rate limit</strong>, not the model's context window or guaranteed processing speed. These starting requirements cover <strong>one environment running one 12-case evaluation or Optimizer job at a time</strong>. They are recommended minimums with headroom for evaluation/retrieval calls, not proven absolute lower bounds or a guarantee against 429 errors.</p>
 <table>
@@ -765,7 +765,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <td style="text-align: right;">100, one deployment shared by both roles</td>
 </tr>
 <tr>
-<td>Embedding · <code>text-embedding-3-small</code></td>
+<td>Embedding · <code>text-embedding-3-large</code></td>
 <td style="text-align: right;"><strong>10,000</strong></td>
 <td style="text-align: right;">10</td>
 </tr>
@@ -1464,8 +1464,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             observed_model = (deployment or {}).get(&quot;properties&quot;, {}).get(&quot;model&quot;, {}).get(&quot;name&quot;)
             checks.append({
                 &quot;name&quot;: &quot;embedding_supported_model&quot;,
-                &quot;status&quot;: &quot;PASS&quot; if observed_model == &quot;text-embedding-3-small&quot; else &quot;BLOCKED&quot;,
-                &quot;observed&quot;: observed_model, &quot;expected&quot;: &quot;text-embedding-3-small&quot;,
+                &quot;status&quot;: &quot;PASS&quot; if observed_model == &quot;text-embedding-3-large&quot; else &quot;BLOCKED&quot;,
+                &quot;observed&quot;: observed_model, &quot;expected&quot;: &quot;text-embedding-3-large&quot;,
             })
     public_access = account.get(&quot;properties&quot;, {}).get(&quot;publicNetworkAccess&quot;)
     if public_access == &quot;Disabled&quot;:
@@ -1639,7 +1639,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <tbody>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Actual code/setting</span><code>fields</code>, <code>vectorSearch</code>, <code>semantic</code> in <code>knowledge_payloads()["index"]</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Define policy fields, 1536-dimensional vectors, HNSW, embeddings, and semantic settings.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Actual action</span>Define policy fields, 3072-dimensional vectors, HNSW, embeddings, and semantic settings.</td>
 <td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Azure portal → Search → <strong>Indexes → created index → Fields/JSON</strong>. Inspect, do not recreate, the index.</td>
 </tr>
 <tr>
@@ -1694,7 +1694,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                     &quot;name&quot;: &quot;contoso-embedding&quot;, &quot;kind&quot;: &quot;azureOpenAI&quot;,
                     &quot;azureOpenAIParameters&quot;: {
                         &quot;resourceUri&quot;: config.openai_endpoint, &quot;deploymentId&quot;: config.embedding,
-                        &quot;modelName&quot;: &quot;text-embedding-3-small&quot;,
+                        &quot;modelName&quot;: &quot;text-embedding-3-large&quot;,
                     },
                 }],
             },
@@ -1781,7 +1781,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:prepare_knowledge</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L137-L269">Full source file · 137–269</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L137-L269">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L137-L274">Full source file · 137–274</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L137-L274">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:prepare_knowledge"><code class="language-python">def prepare_knowledge(config: Config) -&gt; dict:
     state = workspace(config, create=True)
     names = resource_names(config, state)
@@ -1799,7 +1799,12 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
                 &quot;The source or scope differs from the earlier knowledge preparation. A different experiment is never written over the existing index.&quot;,
             ))
         if previous.get(&quot;status&quot;) in {&quot;created_not_retrieval_tested&quot;, &quot;retrieval_verified&quot;}:
-            if previous.get(&quot;retrieval&quot;, {}).get(&quot;embedding_deployment&quot;) != config.embedding:
+            retrieval = previous.get(&quot;retrieval&quot;, {})
+            if (
+                retrieval.get(&quot;embedding_deployment&quot;) != config.embedding
+                or retrieval.get(&quot;embedding_model&quot;) != &quot;text-embedding-3-large&quot;
+                or retrieval.get(&quot;dimensions&quot;) != DIMENSIONS
+            ):
                 raise LabError(text(
                     &quot;준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.&quot;,
                     &quot;The embedding contract of the prepared index differs. Create a new experiment.&quot;,
@@ -1840,7 +1845,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             &quot;payload_sha256&quot;: payload_hash,
             &quot;retrieval&quot;: {
                 &quot;reasoning&quot;: &quot;low&quot;, &quot;output&quot;: &quot;extractiveData&quot;,
-                &quot;embedding_model&quot;: &quot;text-embedding-3-small&quot;, &quot;embedding_deployment&quot;: config.embedding,
+                &quot;embedding_model&quot;: &quot;text-embedding-3-large&quot;, &quot;embedding_deployment&quot;: config.embedding,
                 &quot;dimensions&quot;: DIMENSIONS, &quot;index_algorithm&quot;: &quot;hnsw&quot;, &quot;metric&quot;: &quot;cosine&quot;,
                 &quot;query_modes&quot;: [&quot;vector&quot;, &quot;hybrid&quot;, &quot;agentic-iq-mcp&quot;],
                 &quot;direct_probe_is_agent_evidence&quot;: False,
@@ -1929,10 +1934,10 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
             &quot;EMBEDDING_DEPLOYMENT and non-empty embedding input are required.&quot;,
         ))
     deployment = model_snapshot(config, config.embedding)
-    if deployment[&quot;model&quot;].get(&quot;name&quot;) != &quot;text-embedding-3-small&quot;:
+    if deployment[&quot;model&quot;].get(&quot;name&quot;) != &quot;text-embedding-3-large&quot;:
         raise LabError(localized_text(
-            &quot;이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.&quot;,
-            &quot;This index&#x27;s frozen contract is text-embedding-3-small/1536. It is never replaced automatically.&quot;,
+            &quot;이 인덱스의 동결 계약은 text-embedding-3-large/3072입니다. 자동 대체하지 않습니다.&quot;,
+            &quot;This index&#x27;s frozen contract is text-embedding-3-large/3072. It is never replaced automatically.&quot;,
         ))
     contract = {
         &quot;endpoint&quot;: config.openai_endpoint, &quot;deployment&quot;: deployment,
@@ -2006,7 +2011,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:probe_knowledge</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L289-L338">Full source file · 289–338</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L289-L338">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L294-L343">Full source file · 294–343</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L294-L343">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:probe_knowledge"><code class="language-python">def probe_knowledge(config: Config, query: str) -&gt; dict:
     setup = load_knowledge(config)
     if not query.strip():
@@ -2109,7 +2114,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:knowledge_tool</code></summary>
 <p class="implementation-note">Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.</p>
-<p class="implementation-links"><a href="../lab/knowledge.py#L395-L409">Full source file · 395–409</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L395-L409">View on GitHub</a></p>
+<p class="implementation-links"><a href="../lab/knowledge.py#L400-L414">Full source file · 400–414</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/lab/knowledge.py#L400-L414">View on GitHub</a></p>
 <pre class="implementation-source" data-source-reference="lab/knowledge.py:knowledge_tool"><code class="language-python">def knowledge_tool(config: Config) -&gt; MCPTool:
     setup = load_knowledge(config)
     if setup[&quot;status&quot;] != &quot;retrieval_verified&quot;:

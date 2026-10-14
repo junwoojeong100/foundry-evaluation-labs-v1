@@ -71,7 +71,7 @@ The current defaults are candidates that require a fresh availability check:
 | Prepared sample agent | gpt-6-sol | 2026-09-22 | Global Standard | 100 |
 | Microsoft Foundry evaluation Judge | gpt-6-luna | 2026-09-22 | Global Standard | 100 |
 | Agent Optimizer / knowledge planner | gpt-5.5 | 2026-04-24 | Global Standard | 100 |
-| Read-only knowledge embeddings | text-embedding-3-small | 1 | Global Standard | 10 |
+| Read-only knowledge embeddings | text-embedding-3-large | 1 | Global Standard | 10 |
 
 For one environment running one evaluation/optimization job at a time, the
 recommended starting minimum is **100,000 TPM** for each generative deployment

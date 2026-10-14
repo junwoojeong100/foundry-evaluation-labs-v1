@@ -507,6 +507,9 @@ class BootstrapTests(unittest.TestCase):
         for role in ("agent", "judge", "planner", "optimizer"):
             self.assertEqual(by_role[role]["capacity"], 100)
         self.assertEqual(by_role["embedding"]["capacity"], 10)
+        self.assertEqual(
+            (by_role["embedding"]["name"], by_role["embedding"]["sku"]), ("text-embedding-3-large", "GlobalStandard"),
+        )
         self.assertEqual(by_role["planner"]["deployment"], by_role["optimizer"]["deployment"])
         self.assertEqual(self.azure.mutations, [])
 

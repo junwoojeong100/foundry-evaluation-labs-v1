@@ -13,7 +13,7 @@ from lab.files import code_provenance, read_json
 from lab.preflight import model_snapshot, save_json
 
 
-DIMENSIONS = 1536
+DIMENSIONS = 3072
 
 
 def validate_vectors(payload: dict, count: int) -> list[list[float]]:
@@ -41,8 +41,8 @@ def validate_vectors(payload: dict, count: int) -> list[list[float]]:
             or not any(value != 0 for value in vector)
         ):
             raise LabError(localized_text(
-                "실제 1536차원의 유한한 비영 벡터가 필요합니다. 가짜/빈 벡터는 허용하지 않습니다.",
-                "A real, finite, non-zero 1536-dimension vector is required. Fake or empty vectors are not accepted.",
+                "실제 3072차원의 유한한 비영 벡터가 필요합니다. 가짜/빈 벡터는 허용하지 않습니다.",
+                "A real, finite, non-zero 3072-dimension vector is required. Fake or empty vectors are not accepted.",
             ))
         vectors.append(vector)
     return vectors
@@ -55,10 +55,10 @@ def embed(config: Config, texts: list[str], cache_path: Path) -> dict:
             "EMBEDDING_DEPLOYMENT and non-empty embedding input are required.",
         ))
     deployment = model_snapshot(config, config.embedding)
-    if deployment["model"].get("name") != "text-embedding-3-small":
+    if deployment["model"].get("name") != "text-embedding-3-large":
         raise LabError(localized_text(
-            "이 인덱스의 동결 계약은 text-embedding-3-small/1536입니다. 자동 대체하지 않습니다.",
-            "This index's frozen contract is text-embedding-3-small/1536. It is never replaced automatically.",
+            "이 인덱스의 동결 계약은 text-embedding-3-large/3072입니다. 자동 대체하지 않습니다.",
+            "This index's frozen contract is text-embedding-3-large/3072. It is never replaced automatically.",
         ))
     contract = {
         "endpoint": config.openai_endpoint, "deployment": deployment,

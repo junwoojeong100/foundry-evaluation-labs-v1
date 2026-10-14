@@ -15,7 +15,8 @@ class PreflightTests(unittest.TestCase):
     def setUp(self):
         self.config = load_config(ROOT / ".env.example")
 
-    def fake_az(self, *, region="North Central US", missing_model=False, limits=None, raw_limits=None, calls=None):
+    def fake_az(self, *, region="North Central US", missing_model=False, limits=None, raw_limits=None, calls=None,
+                embedding_model="text-embedding-3-large"):
         c = self.config
         names = [c.model, c.judge] if missing_model else [c.model, c.judge, c.optimizer, c.embedding]
         deployments = [{
@@ -23,7 +24,7 @@ class PreflightTests(unittest.TestCase):
             "name": name,
             "properties": {
                 "provisioningState": "Succeeded",
-                "model": {"name": "gpt-5.5" if name == c.planner else "text-embedding-3-small" if name == c.embedding else "fixture-model"},
+                "model": {"name": "gpt-5.5" if name == c.planner else embedding_model if name == c.embedding else "fixture-model"},
                 "rateLimits": (limits or {}).get(name, [
                     {"key": "request", "count": 100, "renewalPeriod": 60},
                     {"key": "token", "count": 10_000 if name == c.embedding else 100_000, "renewalPeriod": 60},
@@ -81,6 +82,14 @@ class PreflightTests(unittest.TestCase):
                     check = next(item for item in result["checks"] if item["name"] == f"{role}_tpm")
                     self.assertEqual(check["status"], "BLOCKED")
                     self.assertLess(check["observed"], check["expected"])
+
+    def test_an_embedding_deployment_of_another_model_breaks_the_frozen_index_contract(self):
+        for model, status in (("text-embedding-3-large", "PASS"), ("text-embedding-3-small", "BLOCKED")):
+            with self.subTest(model=model):
+                result = run_preflight(self.config, run=self.fake_az(embedding_model=model))
+                check = next(item for item in result["checks"] if item["name"] == "embedding_supported_model")
+                self.assertEqual((check["status"], check["expected"]), (status, "text-embedding-3-large"))
+                self.assertEqual(result["status"], "PASS" if status == "PASS" else "BLOCKED")
 
     def test_token_limits_are_not_multiplied_by_sku_capacity(self):
         limits = {self.config.model: [{"key": "token", "count": 20_000, "renewalPeriod": 60}]}

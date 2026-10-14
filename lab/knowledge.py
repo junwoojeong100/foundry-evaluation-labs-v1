@@ -55,7 +55,7 @@ def knowledge_payloads(config: Config, names: dict, planner_model: str) -> dict:
                     "name": "contoso-embedding", "kind": "azureOpenAI",
                     "azureOpenAIParameters": {
                         "resourceUri": config.openai_endpoint, "deploymentId": config.embedding,
-                        "modelName": "text-embedding-3-small",
+                        "modelName": "text-embedding-3-large",
                     },
                 }],
             },
@@ -151,7 +151,12 @@ def prepare_knowledge(config: Config) -> dict:
                 "The source or scope differs from the earlier knowledge preparation. A different experiment is never written over the existing index.",
             ))
         if previous.get("status") in {"created_not_retrieval_tested", "retrieval_verified"}:
-            if previous.get("retrieval", {}).get("embedding_deployment") != config.embedding:
+            retrieval = previous.get("retrieval", {})
+            if (
+                retrieval.get("embedding_deployment") != config.embedding
+                or retrieval.get("embedding_model") != "text-embedding-3-large"
+                or retrieval.get("dimensions") != DIMENSIONS
+            ):
                 raise LabError(text(
                     "준비된 인덱스의 embedding 계약이 다릅니다. 새 실험을 생성해야 합니다.",
                     "The embedding contract of the prepared index differs. Create a new experiment.",
@@ -192,7 +197,7 @@ def prepare_knowledge(config: Config) -> dict:
             "payload_sha256": payload_hash,
             "retrieval": {
                 "reasoning": "low", "output": "extractiveData",
-                "embedding_model": "text-embedding-3-small", "embedding_deployment": config.embedding,
+                "embedding_model": "text-embedding-3-large", "embedding_deployment": config.embedding,
                 "dimensions": DIMENSIONS, "index_algorithm": "hnsw", "metric": "cosine",
                 "query_modes": ["vector", "hybrid", "agentic-iq-mcp"],
                 "direct_probe_is_agent_evidence": False,

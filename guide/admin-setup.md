@@ -45,9 +45,11 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 | Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100입니다. |
 | 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100입니다. |
 | Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 Global Standard 100 배포를 사용합니다. |
-| 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, Global Standard 10입니다. |
+| 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10입니다. |
 
 숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
+
+**embedding은 인덱스 계약과 같은 모델이어야 합니다.** 정책 인덱스는 `text-embedding-3-large`의 3072차원 벡터로 만들며, `preflight`의 `embedding_supported_model`이 배포된 모델을 확인합니다. 이전 기본값인 `text-embedding-3-small`로 만든 환경은 `BLOCKED`로 표시됩니다. 계획이나 배포를 직접 고치지 말고 새 환경 이름으로 계획합니다.
 
 **관측 리소스의 추가 항목을 구분합니다.** Application Insights는 [기본 Failure Anomalies 경고와 Smart Detection Action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation)을 자동으로 추가할 수 있습니다. bootstrap은 경고가 자신의 Application Insights만 대상으로 하는지, 연결된 Action group이 기본 역할 수신자만 사용하는지 읽기 전용으로 확인합니다. 이름만 같은 항목을 인수하지 않으며, 다른 그룹의 공유 Action group도 변경·삭제하지 않습니다. 생성 중 연결이 아직 확인되지 않으면 같은 `bootstrap status`로 다시 확인하고 manifest를 편집하거나 경고를 삭제하여 우회하지 않습니다.
 

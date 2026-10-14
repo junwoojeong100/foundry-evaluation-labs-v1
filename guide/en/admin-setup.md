@@ -45,9 +45,11 @@ If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rul
 | Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100 |
 | Managed evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100 |
 | Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared Global Standard 100 deployment |
-| Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-small` / `1`**, Global Standard 10 |
+| Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10 |
 
 Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
+
+**The embedding model must match the index contract.** The policy index uses 3072-dimensional `text-embedding-3-large` vectors, and `embedding_supported_model` in `preflight` checks the deployed model. An environment created with the former default `text-embedding-3-small` reports `BLOCKED`. Do not edit its plan or deployment; plan a new environment name instead.
 
 **Distinguish additional monitoring resources.** Application Insights can automatically add a [default Failure Anomalies alert and Smart Detection action group](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation). Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same `bootstrap status` again; do not edit the manifest or delete the alert to bypass the check.
 
