@@ -438,7 +438,9 @@ az provider register --namespace Microsoft.Insights --wait
 
 #### 모델 할당량을 확인합니다 {#resources-prereq-quota}
 
-이 실습은 `northcentralus`에서 **Global Standard** 배포 네 개를 만듭니다. 할당량이 모자라도 다른 지역이나 모델로 **자동 대체하지 않으며** 이 가이드는 그 경로를 제공하지 않습니다. 구독에 할당량이 없으면 아래에서 해결하지 않는 한 진행할 수 없습니다. `YOUR_SUBSCRIPTION_ID`는 01에서 확인한 구독 ID로 바꿉니다.
+이 실습은 `northcentralus`에서 **Global Standard** 배포 네 개를 만듭니다. 할당량이 모자라도 다른 지역이나 모델로 **자동 대체하지 않으며** 이 가이드는 그 경로를 제공하지 않습니다. 구독에 할당량이 없으면 아래에서 해결하지 않는 한 진행할 수 없습니다.
+
+**①과 ③ 명령의 `YOUR_SUBSCRIPTION_ID`를 모두 01에서 확인한 구독 ID로 바꾼 뒤 실행합니다.**
 
 **① 구독의 쿼터 Tier를 확인합니다.**
 
@@ -456,7 +458,7 @@ az cognitiveservices usage list --location northcentralus --query "[?starts_with
 
 네 줄이 모두 보이고 각 줄의 **`limit − used`가 요청 용량 이상**이어야 합니다. 요청 용량은 `gpt-6-sol` 100, `gpt-6-luna` 100, `gpt-5.5` 100(Optimizer와 검색 planner가 한 배포를 공유), `text-embedding-3-large` 10입니다. 이 네 모델에서 `100`은 100,000 TPM에 해당합니다([TPM 표](#resources-tpm)). 줄이 없거나 모자라면 `bootstrap setup`이 `Free quota cannot be verified` 또는 `Insufficient unallocated quota`로 막힙니다.
 
-**③ 구독 유형을 확인합니다.** 아래 명령의 앞부분(`FreeTrial`, `PayAsYouGo`, `MSDN` 등)이 구독 유형입니다.
+**③ 구독 유형을 확인합니다.** `YOUR_SUBSCRIPTION_ID`는 ①과 같은 구독 ID로 바꿉니다. 아래 명령의 앞부분(`FreeTrial`, `PayAsYouGo`, `MSDN` 등)이 구독 유형입니다.
 
 ```sh
 az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01" --query "subscriptionPolicies.quotaId" -o tsv
@@ -1562,7 +1564,7 @@ python -m lab --config .lab/lab-ko/.env cleanup --confirm-prefix lab-ko
 
 ### 전용 리소스 그룹을 삭제하고 부재를 확인합니다 {#cleanup-delete}
 
-`YOUR_LAB_RESOURCE_GROUP`을 `config.json`의 **`names.resource_group`**으로 교체합니다. 이름의 prefix만 보고 판단하지 않고 구독·소유 태그·목록 전체를 확인합니다.
+`YOUR_SUBSCRIPTION_ID`를 `config.json`의 **`subscription_id`**로, `YOUR_LAB_RESOURCE_GROUP`을 `config.json`의 **`names.resource_group`**으로 교체합니다. 이름의 prefix만 보고 판단하지 않고 구독·소유 태그·목록 전체를 확인합니다.
 
 ```sh
 az group show --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GROUP" --query "{name:name,location:location,tags:tags}" -o json

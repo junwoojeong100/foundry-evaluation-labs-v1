@@ -246,6 +246,11 @@
 <td>승인한 세 값이 모두 일치합니다. 다른 신원이나 토큰 복사로 우회하지 않습니다.</td>
 </tr>
 <tr>
+<td><code>az account set</code>이 <code>The subscription of 'your_subscription_id' doesn't exist</code>로, 다른 <code>az</code> 명령이 <code>Subscription 'YOUR_SUBSCRIPTION_ID' not found</code> 또는 <code>InvalidSubscriptionId</code>로, <code>bootstrap plan</code>이 <code>must be explicit UUIDs</code>로 실패합니다.</td>
+<td><code>YOUR_</code>로 시작하는 자리 표시나 구독 이름을 명령에 그대로 두었습니다. 구독을 찾지 못해 멈춘 것이므로 자원은 변경되지 않았습니다. <a href="index.html#setup-login">01의 <code>az account show</code></a> 출력에서 <code>subscription</code> 값을 복사해 자리 표시를 바꾸고 다시 실행합니다. 구독 이름이 아니라 ID(UUID)를 넣습니다.</td>
+<td>같은 명령이 그 오류 없이 실행됩니다.</td>
+</tr>
+<tr>
 <td><code>AzureCliCredential</code>의 tenant·subscription 동시 지정이 실패합니다.</td>
 <td>tenant 일치를 먼저 확인한 뒤 credential에는 subscription을 지정하는 저장소 인증 경로를 사용합니다.</td>
 <td>tenant 확인을 생략하지 않고 같은 구독으로 호출합니다.</td>

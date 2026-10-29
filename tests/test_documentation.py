@@ -545,6 +545,28 @@ class DocumentationTests(unittest.TestCase):
                     self.assertRegex(part, r"5[~–-]10")
                     self.assertIn("troubleshooting.md#knowledge-first-failure", part)
 
+    def test_placeholders_are_explained_next_to_the_commands_that_use_them(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            source = self.source(language)
+            with self.subTest(language=language):
+                quota = source.split("{#resources-prereq-quota}", 1)[1].split("{#resources-quickstart}", 1)[0]
+                first = quota.index("YOUR_SUBSCRIPTION_ID")
+                self.assertLess(first, quota.index("```sh"))
+                line = quota[quota.rfind("\n", 0, first) + 1:quota.index("\n", first)]
+                self.assertTrue("①" in line and "③" in line, line)
+                intro = source.split("{#cleanup-delete}", 1)[1].split("```sh", 1)[0]
+                for term in (
+                    "YOUR_SUBSCRIPTION_ID", "YOUR_LAB_RESOURCE_GROUP", "`subscription_id`", "`names.resource_group`",
+                ):
+                    self.assertIn(term, intro)
+                troubleshooting = (folder / "troubleshooting.md").read_text()
+                for term in (
+                    "The subscription of 'your_subscription_id' doesn't exist",
+                    "Subscription 'YOUR_SUBSCRIPTION_ID' not found", "InvalidSubscriptionId", "must be explicit UUIDs",
+                ):
+                    self.assertIn(term, troubleshooting)
+
     def test_first_failure_recovery_is_documented_with_commands_the_program_accepts(self):
         from lab.cli import parser
 

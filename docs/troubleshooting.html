@@ -246,6 +246,11 @@
 <td>All three approved values match. Do not substitute another identity or copy tokens to bypass authentication.</td>
 </tr>
 <tr>
+<td><code>az account set</code> fails with <code>The subscription of 'your_subscription_id' doesn't exist</code>, another <code>az</code> command with <code>Subscription 'YOUR_SUBSCRIPTION_ID' not found</code> or <code>InvalidSubscriptionId</code>, or <code>bootstrap plan</code> with <code>must be explicit UUIDs</code></td>
+<td>A <code>YOUR_</code> placeholder or a subscription name was left in the command. It stopped because the subscription could not be found, so no resource was changed. Copy the <code>subscription</code> value from the output of <a href="index.html#setup-login">01's <code>az account show</code></a>, replace the placeholder, and run the command again. Enter the ID (UUID), not the display name.</td>
+<td>The same command runs without that error.</td>
+</tr>
+<tr>
 <td><code>AzureCliCredential</code> fails with both tenant and subscription</td>
 <td>Use the repository authentication path: verify the tenant first, then specify the subscription on the credential.</td>
 <td>Calls use the intended subscription without dropping tenant checks.</td>

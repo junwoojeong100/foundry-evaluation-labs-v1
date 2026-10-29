@@ -438,7 +438,9 @@ az provider register --namespace Microsoft.Insights --wait
 
 #### Check model quota {#resources-prereq-quota}
 
-This lab creates four **Global Standard** deployments in `northcentralus`. Even when quota is short, it **never substitutes** another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below. Replace `YOUR_SUBSCRIPTION_ID` with the subscription ID you confirmed in 01.
+This lab creates four **Global Standard** deployments in `northcentralus`. Even when quota is short, it **never substitutes** another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below.
+
+**Replace `YOUR_SUBSCRIPTION_ID` in both ① and ③ with the subscription ID you confirmed in 01 before you run them.**
 
 **① Check the subscription's quota tier.**
 
@@ -456,7 +458,7 @@ az cognitiveservices usage list --location northcentralus --query "[?starts_with
 
 All four rows must appear, and each row's **`limit − used` must be at least the requested capacity**: `gpt-6-sol` 100, `gpt-6-luna` 100, `gpt-5.5` 100 (Optimizer and the search planner share one deployment), and `text-embedding-3-large` 10. For these four models, `100` corresponds to 100,000 TPM (see the [TPM table](#resources-tpm)). A missing or short row makes `bootstrap setup` stop with `Free quota cannot be verified` or `Insufficient unallocated quota`.
 
-**③ Check the subscription type.** The first part of the output below (`FreeTrial`, `PayAsYouGo`, `MSDN`, and so on) is the subscription type.
+**③ Check the subscription type.** Replace `YOUR_SUBSCRIPTION_ID` with the same subscription ID as in ①. The first part of the output below (`FreeTrial`, `PayAsYouGo`, `MSDN`, and so on) is the subscription type.
 
 ```sh
 az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01" --query "subscriptionPolicies.quotaId" -o tsv
@@ -1562,7 +1564,7 @@ Read **returning a plan without confirmation → ownership/etag checks → indiv
 
 ### Delete a dedicated group and verify its absence {#cleanup-delete}
 
-Replace `YOUR_LAB_RESOURCE_GROUP` with **`names.resource_group`** from `config.json`. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.
+Replace `YOUR_SUBSCRIPTION_ID` with **`subscription_id`** and `YOUR_LAB_RESOURCE_GROUP` with **`names.resource_group`**, both from `config.json`. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.
 
 ```sh
 az group show --subscription "YOUR_SUBSCRIPTION_ID" --name "YOUR_LAB_RESOURCE_GROUP" --query "{name:name,location:location,tags:tags}" -o json

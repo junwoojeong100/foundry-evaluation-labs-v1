@@ -588,7 +588,8 @@ az provider register --namespace Microsoft.Insights --wait
 </code></pre>
 <p><strong>Run only the lines for providers that are not registered.</strong> Do not bulk-register anything beyond these four. If <code>AuthorizationFailed</code> appears, you lack registration permission; obtain an approved execution scope through <a href="admin.html#rbac">permissions and provider registration</a>. After registering, run the first command block again and confirm <code>Registered</code>.</p>
 <h4 id="resources-prereq-quota">Check model quota</h4>
-<p>This lab creates four <strong>Global Standard</strong> deployments in <code>northcentralus</code>. Even when quota is short, it <strong>never substitutes</strong> another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below. Replace <code>YOUR_SUBSCRIPTION_ID</code> with the subscription ID you confirmed in 01.</p>
+<p>This lab creates four <strong>Global Standard</strong> deployments in <code>northcentralus</code>. Even when quota is short, it <strong>never substitutes</strong> another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below.</p>
+<p><strong>Replace <code>YOUR_SUBSCRIPTION_ID</code> in both ① and ③ with the subscription ID you confirmed in 01 before you run them.</strong></p>
 <p><strong>① Check the subscription's quota tier.</strong></p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">az rest --method get --url &quot;https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID/providers/Microsoft.CognitiveServices/quotaTiers?api-version=2025-10-01-preview&quot; --query &quot;value[0].properties.currentTierName&quot; -o tsv
@@ -599,7 +600,7 @@ az provider register --namespace Microsoft.Insights --wait
 <pre class="terminal-command"><code class="language-sh">az cognitiveservices usage list --location northcentralus --query &quot;[?starts_with(name.value, 'OpenAI.GlobalStandard.') &amp;&amp; (contains(name.value, 'gpt-6-sol') || contains(name.value, 'gpt-6-luna') || contains(name.value, 'gpt-5.5') || contains(name.value, 'text-embedding-3-large'))].{quota:name.value,used:currentValue,limit:limit}&quot; -o table
 </code></pre>
 <p>All four rows must appear, and each row's <strong><code>limit − used</code> must be at least the requested capacity</strong>: <code>gpt-6-sol</code> 100, <code>gpt-6-luna</code> 100, <code>gpt-5.5</code> 100 (Optimizer and the search planner share one deployment), and <code>text-embedding-3-large</code> 10. For these four models, <code>100</code> corresponds to 100,000 TPM (see the <a href="#resources-tpm">TPM table</a>). A missing or short row makes <code>bootstrap setup</code> stop with <code>Free quota cannot be verified</code> or <code>Insufficient unallocated quota</code>.</p>
-<p><strong>③ Check the subscription type.</strong> The first part of the output below (<code>FreeTrial</code>, <code>PayAsYouGo</code>, <code>MSDN</code>, and so on) is the subscription type.</p>
+<p><strong>③ Check the subscription type.</strong> Replace <code>YOUR_SUBSCRIPTION_ID</code> with the same subscription ID as in ①. The first part of the output below (<code>FreeTrial</code>, <code>PayAsYouGo</code>, <code>MSDN</code>, and so on) is the subscription type.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">az rest --method get --url &quot;https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01&quot; --query &quot;subscriptionPolicies.quotaId&quot; -o tsv
 </code></pre>
@@ -3813,7 +3814,7 @@ az provider register --namespace Microsoft.Insights --wait
 </details>
 </details>
 <h3 id="cleanup-delete">Delete a dedicated group and verify its absence</h3>
-<p>Replace <code>YOUR_LAB_RESOURCE_GROUP</code> with <strong><code>names.resource_group</code></strong> from <code>config.json</code>. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.</p>
+<p>Replace <code>YOUR_SUBSCRIPTION_ID</code> with <strong><code>subscription_id</code></strong> and <code>YOUR_LAB_RESOURCE_GROUP</code> with <strong><code>names.resource_group</code></strong>, both from <code>config.json</code>. Verify subscription, ownership tags, and the entire inventory, not just a familiar prefix.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">az group show --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --name &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;{name:name,location:location,tags:tags}&quot; -o json
 az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-group &quot;YOUR_LAB_RESOURCE_GROUP&quot; --query &quot;[].{name:name,type:type}&quot; -o table
