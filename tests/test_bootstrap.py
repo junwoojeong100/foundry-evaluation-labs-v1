@@ -523,6 +523,69 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")
         self.assertEqual(len(self.azure.calls), 2)
 
+    def test_guest_account_is_blocked_and_its_upn_cannot_be_planned_as_the_expected_user(self):
+        sign_in_name = "student@gmail.com"
+        guest_upn = "student_gmail.com#EXT#@example.onmicrosoft.com"
+        planned = b.plan(
+            subscription_id=SUB, tenant_id=TENANT, expected_user=sign_in_name,
+            environment="lab-guest", root=self.root,
+        )
+        path = Path(planned["config_path"])
+        azure = FakeAzure(path)
+        azure.account["user"]["name"] = sign_in_name
+        azure.user["userPrincipalName"] = guest_upn
+        report = b.preflight(path, run=azure)
+        self.assertEqual(report["status"], "BLOCKED")
+        self.assertIn("not independently verified", report["reason"])
+        self.assertEqual(azure.mutations, [])
+        with self.assertRaises(b.BootstrapError):
+            b.plan(
+                subscription_id=SUB, tenant_id=TENANT, expected_user=guest_upn,
+                environment="lab-guest-upn", root=self.root,
+            )
+        # When the CLI itself prints the #EXT# name, setup stops before any environment folder exists.
+        with self.assertRaisesRegex(b.BootstrapError, "explicit expected Azure user principal name"):
+            b.setup(
+                "lab-guest-setup", root=self.root, read=lambda _: "", write=lambda _: None,
+                run=lambda args: {**deepcopy(self.azure.account), "user": {"name": guest_upn, "type": "user"}},
+            )
+        self.assertFalse((self.root / "lab-guest-setup").exists())
+
+    def test_failed_setup_deployment_is_retried_once_the_saved_approval_allows_it(self):
+        root = self.root / "guided"
+        config_path = root / "lab-guided" / "config.json"
+        clouds = []
+
+        def run(args):
+            if not config_path.exists():
+                return deepcopy(self.azure.account)
+            if not clouds:
+                clouds.append(FakeAzure(config_path))
+                clouds[0].fail_terminal = True
+            return clouds[0](args)
+
+        answers = iter(["USD", "20", "4", "100", "Private test authorization", "CREATE lab-guided"])
+        with self.assertRaises(b.AzureCommandError):
+            b.setup("lab-guided", root=root, run=run, read=lambda _: next(answers), write=lambda _: None)
+        cloud = clouds[0]
+        approval_path = config_path.parent / "approval.json"
+        approval = b._read(approval_path)
+        self.assertNotIn("max_provisioning_retries", approval)
+        observed = b.status(config_path, run=cloud, approval_path=approval_path)
+        self.assertEqual(observed["resources"]["arm_deployment"]["provisioning_state"], "Failed")
+        for retry, code in ((False, "RETRY_REQUIRED"), (True, "RETRY_BUDGET_EXHAUSTED")):
+            with self.subTest(retry=retry), self.assertRaises(b.ProvisioningRetryError) as caught:
+                b.apply(config_path, approval_path, run=cloud, retry=retry)
+            self.assertEqual(caught.exception.code, code)
+        cloud.mutations.clear()
+        again = b.setup("lab-guided", root=root, run=cloud, read=lambda _: "", write=lambda _: None)
+        self.assertFalse(again["mutations_performed"])
+        self.assertEqual(cloud.mutations, [])
+        approval["max_provisioning_retries"] = 1
+        approval_path.write_text(json.dumps(approval))
+        self.assertEqual(b.apply(config_path, approval_path, run=cloud, retry=True)["status"], "APPLIED")
+        self.assertTrue((config_path.parent / ".env").is_file())
+
     def test_provider_and_permission_failures_never_register_or_escalate(self):
         self.azure.provider_state = "NotRegistered"
         self.assertEqual(b.preflight(self.path, run=self.azure)["status"], "BLOCKED")

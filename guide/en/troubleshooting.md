@@ -10,8 +10,10 @@ Executable commands appear in **Run in your terminal** blocks. Use each step's *
 |---|---|
 | HTML shows an explanation but the execution command is hard to find | Use the step's **Action order**; there is no need to open optional explanations. [Sign-in commands](handbook.md#setup-login) · [Runtime check](handbook.md#resources-runtime-check). |
 | Terms, installation, sign-in or file paths are unclear | [Basic terms](handbook.md#basics) · [Codespaces](#codespaces) · [Environment and sign-in](#environment) |
-| Authorization, permissions or model capacity blocks provisioning | [Provisioning](#provisioning) |
+| Authorization, permissions, account type, providers or model quota block provisioning | [Provisioning](#provisioning) |
+| The first provisioning failed and `setup`/`apply` will not submit again | [First provisioning failure recovery](#provisioning-retry) |
 | Policy retrieval or Agent responses fail | [Policies and Agent](#knowledge) |
+| After one failed `smoke`, `iq`, or `native-agent` call in 03, the same command is refused | [Recovery after a first call failure](#knowledge-first-failure) |
 | Evaluation is unfinished or scores/reasons are missing | [Evaluation and results](#evaluation) |
 | Optimize is unavailable or candidate selection is unclear | [Optimizer](#optimizer) |
 | Deletion fails or resources must be retained | [Cleanup and retention](#cleanup) |
@@ -59,20 +61,48 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 
 | Symptom | Action | Completion criteria |
 |---|---|---|
+| Blocked with `The signed-in principal is not independently verified` | The CLI sign-in name differs from the Microsoft Entra ID user name. Personal Microsoft accounts (Gmail, Outlook, and similar) and guest invitations are affected. [Check with two commands](handbook.md#setup-account-type) and sign in again with a work or school (member) account. Do not change inputs to bypass it. If you already ran `setup`, start again with a new environment name (`lab-en-02`). | The two commands print the same value and `bootstrap setup` passes the identity check. |
+| `Bootstrap blocked: … user principal name is required.` at the very start | The CLI sign-in name (`az account show --query user.name`) contains a character that is not allowed, such as the `#` in `#EXT#` or an apostrophe. `bootstrap` accepts only a `name@domain` made of letters, digits, and `. _ + -`, and no environment folder is created in that case. Do not change inputs; follow the [member account check](handbook.md#setup-account-type) and sign in with another member account. | The sign-in name has the allowed form and `bootstrap setup` proceeds through the identity check. |
+| Blocked with `Active Azure CLI subscription/tenant/user differs` | The signed-in account, subscription, or tenant changed after the plan was made. Sign in again with the original account and subscription. If you meant to change them, start again with a new environment name; there is no automatic switch and no editing of `config.json`. | The user, tenant, and subscription in `az account show` match the plan. |
 | `setup` was canceled or stopped on invalid input | Before resource creation, rerun `bootstrap setup` with the same environment name to reuse its plan. Supply actual approved values, not invented amounts, durations, or empty evidence. | No Microsoft Azure changes occur before the final `CREATE ...` confirmation; prior creation records are inspected only. |
 | `setup requires an interactive terminal` | Run it directly in VS Code **Terminal → New Terminal**. Pipes and automation use the [individual plan/approval path](handbook.md#resources-plan). | Noninteractive execution never becomes automatic authorization. |
 | Existing `approval.json` expired or differs in scope | Preserve it and use the [approval worksheet](admin-setup.md#approval) to verify actual reauthorization and timestamps. Setup does not overwrite approvals or extend expiry. | Use only current authorization bound to the exact plan. |
 | Plan reports `BLOCKED_AWAITING_APPROVAL` | Inspect `plan_status` and `mutations_performed`, then prepare the [actual authorization](admin-setup.md#approval). | Distinguish local planning from Microsoft Azure provisioning. |
 | Approval fails despite `approved: true` | Check hashes, models, approver, validity, budget, acknowledgments and `approval_reason`. | Readiness is READY and authorization is READY_FOR_APPROVED_APPLY. |
-| Provider is not Registered | Follow [provider registration](admin-setup.md#rbac), verify your registration permission/authorization, and register only the required providers. | Rerun the same preflight after all four providers are Registered. |
+| Provider is not Registered (`is not registered; bootstrap never registers providers`) | Read the state of the four providers with the [provider check and registration commands](handbook.md#resources-prereq-providers) and register only those that are `NotRegistered` with `az provider register --namespace ... --wait`. If you lack registration permission, verify your registration permission/authorization in [provider registration](admin-setup.md#rbac). | Rerun the same `bootstrap setup` after all four providers are Registered. |
 | Contributor cannot assign roles | Resource creation and role assignment are separate permissions. Obtain authorization for an execution scope in which you can perform this lab yourself. | Verify effective permissions and resume the same plan. Do not add subscription-wide Owner to bypass the issue. |
-| Model, SKU, version, quota or capacity error | Inspect the planned role requirements and preflight reason. A replacement needs a separate plan and authorization. | Confirm support and capacity, then verify actual calls. |
+| Model, SKU, version, quota or capacity error (`Insufficient unallocated quota`, `Free quota cannot be verified`, `Insufficient regional model capacity`) | Inspect the planned role requirements and preflight reason. If quota is missing or short, resolve it in this order using the [quota pre-check](handbook.md#resources-prereq-quota): check the tier and remaining quota, upgrade a free-trial subscription, and request quota. This lab supports only `northcentralus`, so the region cannot change, and replacing a pinned model needs a separate plan and authorization and changes the comparison conditions. Do not bypass the block. | Each of the four models has `limit − used` at or above its requested capacity, and the readiness check of the same `bootstrap setup` becomes READY. |
 | Runtime `*_tpm` is BLOCKED | Check the real allocation using the [TPM setup instructions](admin-setup.md#throughput). | All five TPM checks and overall preflight report PASS. |
 | `unknown resource` after creation | Check whether this is verified default Smart Detection linked to your Application Insights, another workload, or changed receivers. Allow link propagation during creation. | Inspect the same `bootstrap status`; do not delete alerts or edit the manifest to bypass it. |
 | Apply times out or its outcome is unknown | Preserve the original config, manifest and deployment ID; read [02's `bootstrap status` command](handbook.md#resources-status) and the group's Deployments. Do not repeat `apply`. | Wait for active work; do not resubmit an unknown outcome. |
 | The local environment already exists | Resume the same lab with its original configuration. A different lab needs a new environment name and authorization. | Do not adopt or overwrite existing plans, settings or resources. |
 
 Use `--retry` only for a verified terminal owned failure and a separate retry allowance. `repair-dependencies` and `repair-trace-routing` also require matching failure evidence and scoped authorization. `APPLIED` describes infrastructure, not answer quality, production approval or confirmed trace ingestion.
+
+### First provisioning failure recovery {#provisioning-retry}
+
+**Symptom:** `bootstrap setup` ended with an error such as `DeploymentFailed`. In `bootstrap status`, `resources.arm_deployment.provisioning_state` is `Failed`, or the group's **Deployments** in the portal lists a `Failed` deployment.
+
+**Why can't I just run it again?** Provisioning is designed to be submitted only once. Running `setup` again only inspects status, and `bootstrap apply` is refused with `RETRY_REQUIRED`. The approval written by the quick path has no retry allowance (`max_provisioning_retries`), so even `--retry` is refused with `RETRY_BUDGET_EXHAUSTED`. This is a safeguard, not a broken environment, and you do not submit the same deployment again under another name.
+
+**Retry once with the same plan.**
+
+**1. Read the cause.** In the portal, open the resource group → **Deployments** → the failed deployment and read its error details together with the `bootstrap status` output. Quota or capacity shortage, an unregistered provider, and transient service errors are common. If a [pre-check](handbook.md#resources-prereq) can fix the cause, fix it first.
+
+**2. Decide whether to try once more.** Only if you can authorize the cost and time of one more attempt, open `.lab/lab-en/approval.json` in your editor and add `"max_provisioning_retries": 1`. The approval's start and expiry times must still be valid; if they have expired, reauthorize with the [approval worksheet](admin-setup.md#approval). Do not change any other field or edit `config.json` or `manifest.json`.
+
+**3. Run it with the retry stated explicitly.** Do not run the same command in another window at the same time.
+
+```sh
+python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json --retry
+```
+
+**4. Check the result.** When `status: APPLIED` appears, continue with the [portal and runtime checks](handbook.md#resources-runtime-check) in 02. If it fails again, the allowed attempts are used up, so start again in a new environment as described below.
+
+**If you cannot retry, start again in a new environment.** Do not revive the same environment when the failure cannot be confirmed (`UNKNOWN_SUBMISSION`, where a submission was made but no deployment is visible, or `UNRESOLVED_DEPLOYMENT_STATE`) or when it fails again after the retry.
+
+1. Some resources may exist and Search is billed hourly, so first clean up the group named `names.resource_group` in `config.json` with the [group deletion procedure in 10](handbook.md#cleanup-delete). Deletion is separate from the creation authorization, so go through every confirmation in that procedure.
+2. Run [`bootstrap setup`](handbook.md#resources-quickstart) again with a new environment name (for example `lab-en-02`), and change the `.lab/lab-en` path in later commands to `.lab/lab-en-02`.
 
 ## Policy retrieval and Agent setup {#knowledge}
 
@@ -85,6 +115,53 @@ Use `--retry` only for a verified terminal owned failure and a separate retry al
 | Existing v2 has different instructions or model | Fixed-comparison protection is working. Compare the original owned environment, instructions and model snapshot; do not overwrite v2 or create v3. |
 | Retrieval differs between languages | Check the selected language's source documents, index, analyzer and hashes. Renaming another language's index is not reuse. |
 | Private-network or `PublicNetworkAccess=Disabled` failure | Use an approved VNet/VPN/execution environment and check DNS. Do not disable the firewall or private endpoint. |
+
+### Recovery after a first call failure {#knowledge-first-failure}
+
+**Symptom:** After one failed `smoke`, `iq prepare`, `iq probe`, or `native-agent` call in 03, the same command is **refused immediately** with a message such as `failed or its outcome is unknown` or `outcome is unknown`.
+
+**Why does this happen?** These commands save a receipt before each call and never retry automatically. This protects against submitting a request whose outcome is unknown twice; it does not mean the environment is broken. The most common first failure is a 401 or 403 right after 02, before the roles take effect. Read the printed error first and fix the cause. Roles can take up to about 10 minutes, so wait 5–10 minutes and also check the deployment names and quota. **Preserve the original records instead of deleting them.** The steps below assume the request was clearly rejected.
+
+| Command | Record that blocks the same command (under `.lab/lab-en/artifacts/`) | Recovery |
+|---|---|---|
+| `smoke` | `runs/model-smoke/model-smoke.json` | Run it with a **new `--run-id`**. |
+| `iq probe` | `knowledge/probes/<question hash>/iq-request.json` | Run it with **a differently worded `--query`**. |
+| `iq prepare` | `knowledge/document-embeddings.json` or `knowledge/upload-response.json` | Rename **only the one record** the refusal names to keep it, then rerun the same command. |
+| `native-agent` | `agents/native-v1.json` | Check whether v1 exists remotely, then decide. |
+
+**`smoke`:** Run it with a new run-id. If it fails again, raise the number, as in `model-smoke-3`. The first record stays, and later steps do not depend on the run-id.
+
+```sh
+python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke-2 --confirm
+```
+
+**`iq probe`:** A different question text is handled as a new request. Confirm `status: retrieval_verified` with nonempty references. Do not repeat the retrieval preparation (`iq prepare`).
+
+```sh
+python -m lab --config .lab/lab-en/.env iq probe --confirm --query "Tell me about the Contoso Atlas Cloud refund policy."
+```
+
+**`iq prepare`:** If the refusal says `This embedding request failed or its outcome is unknown`, the cause is `knowledge/document-embeddings.json`; if it says `The upload contract changed or its outcome is unknown`, it is `knowledge/upload-response.json`. If the error printed in the terminal was a rejection such as 401, 403, 404, or 429 (for embeddings it is also in the record's `error.type`), fix the cause, rename **only that one record** to keep it, and rerun the same command. Even when you cannot tell whether the service received the request, embedding the 8 documents costs little and the upload uses `mergeOrUpload`, so it creates no duplicate documents. Indexes, sources, and knowledge bases you already created are confirmed through the ownership record and reused, not overwritten.
+
+```sh
+python -c "import pathlib,sys,time; p=pathlib.Path(sys.argv[1]); p.rename(p.with_name(p.name+'.failed-'+time.strftime('%Y%m%d-%H%M%S')))" ".lab/lab-en/artifacts/knowledge/document-embeddings.json"
+python -m lab --config .lab/lab-en/.env iq prepare --confirm
+```
+
+Change the path in the first command to match the rejected record. Renaming the file in your editor is equivalent; never delete it or edit its contents.
+
+**`native-agent`:** The refusal is `The creation outcome is unknown; inspect the receipt and remote state, do not resubmit.`, because `agents/native-v1.json` was saved with `"status": "creating"` before the call.
+
+1. In Microsoft Foundry, open **Build → Agents** and check whether `lab-en-iq` has **Version 1**.
+2. **If v1 exists,** it was created but the response was lost. Running the same `native-agent --version 1 --confirm` again compares the remote v1 with the configuration and completes without creating a new version. Do not move the record.
+3. **If v1 does not exist,** the request was rejected and nothing was created. Rename the record to keep it, then rerun the same command.
+
+```sh
+python -c "import pathlib,sys,time; p=pathlib.Path(sys.argv[1]); p.rename(p.with_name(p.name+'.failed-'+time.strftime('%Y%m%d-%H%M%S')))" ".lab/lab-en/artifacts/agents/native-v1.json"
+python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
+```
+
+The v2 in 09 works the same way with `agents/native-v2.json` and `--version 2 --prompt .lab/lab-en/candidate.txt`. If the records disagree (for example, the portal shows it but no local record exists) or you cannot resolve the cause, do not bypass the check by renaming; [start again in a new environment](#provisioning-retry).
 
 ## Microsoft Foundry evaluation and safe resumption {#evaluation}
 

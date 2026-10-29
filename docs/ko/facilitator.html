@@ -107,7 +107,7 @@
 <a class="back-to-main no-print" href="index.html">← 실습 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-15">2026-10-15</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-29">2026-10-29</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
       <article id="guide-start" class="guide-content" lang="ko" aria-label="실습 체크리스트 · 실제 측정 결과 개선하기">
@@ -136,13 +136,13 @@
 <tbody>
 <tr>
 <td><a href="index.html#setup">01 환경 확인</a></td>
-<td>계정·구독·권한·Python 3.11–3.14·Git·Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다.</td>
-<td>신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다.</td>
+<td>회사·학교(멤버) 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다.</td>
+<td>신원이 일치하고(CLI 로그인 이름과 디렉터리 사용자 이름이 같음) 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다.</td>
 </tr>
 <tr>
 <td><a href="index.html#resources">02 환경 생성</a></td>
-<td><code>bootstrap setup</code>의 준비 검사·실제 승인 입력·생성 확인을 수행합니다.</td>
-<td>APPLIED, 생성된 <code>.env</code>, 포털 배포와 런타임 preflight PASS를 확인합니다.</td>
+<td>공급자 4종 등록과 모델 할당량을 <a href="index.html#resources-prereq">사전 점검</a>한 뒤 <code>bootstrap setup</code>의 준비 검사·실제 승인 입력·생성 확인을 수행합니다.</td>
+<td>APPLIED, 생성된 <code>.env</code>, 포털 배포와 런타임 preflight PASS를 확인하고 5~10분 뒤 03을 시작합니다.</td>
 </tr>
 <tr>
 <td><a href="index.html#agent">03 Agent 준비</a></td>
@@ -208,7 +208,15 @@
 <tbody>
 <tr>
 <td>다른 신원, 401/403</td>
-<td>승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다.</td>
+<td>승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다. 게스트·개인 계정이면 <a href="index.html#setup-account-type">멤버 계정 확인</a>을 따릅니다.</td>
+</tr>
+<tr>
+<td>첫 생성이 실패하고 <code>setup</code>·<code>apply</code>가 다시 제출되지 않음</td>
+<td><a href="troubleshooting.html#provisioning-retry">첫 생성 실패 복구</a>의 재시도 승인 또는 새 환경 절차를 따릅니다.</td>
+</tr>
+<tr>
+<td>03의 첫 호출이 실패한 뒤 같은 명령이 거부됨</td>
+<td>기록을 지우지 않고 <a href="troubleshooting.html#knowledge-first-failure">명령별 복구</a>를 따릅니다. 02 직후 5~10분을 기다립니다.</td>
 </tr>
 <tr>
 <td>카탈로그·배포 성공 후 Agent 실패</td>
@@ -297,7 +305,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-15">2026-10-15</time></p>
+        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
         <div class="footer-links"><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>

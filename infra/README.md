@@ -140,10 +140,16 @@ model/SKU; never apply a universal TPM conversion. Budget alerts are not spendin
 cutoffs, and hosting/log costs can continue after a terminal closes.
 
 Verify your intended user, tenant, and subscription for CLI, SDK, and portal
-separately. Do not infer an MCP principal from a subscription list. Register
-only the required providers through the documented authorized procedure;
-bootstrap does not register them automatically. Shared permission expansion,
-cross-region fallback, rollback, and resource deletion are not automatic.
+separately. The identity check accepts only a work or school (member) account
+whose Azure CLI sign-in name equals its Microsoft Entra ID user principal name;
+guest and personal Microsoft accounts are blocked (see
+[how to check](../guide/en/handbook.md#setup-account-type)). Do not infer an MCP
+principal from a subscription list. A new subscription may not have the four
+required providers registered; register only those through the documented
+authorized procedure ([commands](../guide/en/handbook.md#resources-prereq-providers)),
+because bootstrap does not register them automatically. Shared permission
+expansion, cross-region fallback, rollback, and resource deletion are not
+automatic.
 
 ## Resume and retain accurate evidence
 
@@ -151,7 +157,10 @@ cross-region fallback, rollback, and resource deletion are not automatic.
 - A timeout does not mean a request was never accepted. Inspect remote state
   before retrying.
 - `--retry` is only for a verified terminal owned failure and a separately
-  authorized retry allowance. It cannot resubmit an unknown outcome.
+  authorized retry allowance. It cannot resubmit an unknown outcome. The approval
+  written by the quick `bootstrap setup` has no allowance; add
+  `max_provisioning_retries` as described in
+  [first provisioning failure recovery](../guide/en/troubleshooting.md#provisioning-retry).
 - The `repair-dependencies` and `repair-trace-routing` commands preserve
   failure receipts and require their own validated scope; they are not silent
   edits to a previously approved plan.

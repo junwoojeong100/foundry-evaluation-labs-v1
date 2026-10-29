@@ -28,8 +28,8 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 
 | 단계 | 필수 동작 | 완료 근거 |
 |---|---|---|
-| [01 환경 확인](handbook.md#setup) | 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다. | 신원이 일치하고 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
-| [02 환경 생성](handbook.md#resources) | `bootstrap setup`의 준비 검사·실제 승인 입력·생성 확인을 수행합니다. | APPLIED, 생성된 `.env`, 포털 배포와 런타임 preflight PASS를 확인합니다. |
+| [01 환경 확인](handbook.md#setup) | 회사·학교(멤버) 계정·구독·권한·Python 3.11–3.14·Git·Azure CLI를 확인합니다. 언어·기록 위치는 02에서 자동 설정합니다. | 신원이 일치하고(CLI 로그인 이름과 디렉터리 사용자 이름이 같음) 세 도구의 버전 확인과 가상환경의 로컬 명령이 성공합니다. |
+| [02 환경 생성](handbook.md#resources) | 공급자 4종 등록과 모델 할당량을 [사전 점검](handbook.md#resources-prereq)한 뒤 `bootstrap setup`의 준비 검사·실제 승인 입력·생성 확인을 수행합니다. | APPLIED, 생성된 `.env`, 포털 배포와 런타임 preflight PASS를 확인하고 5~10분 뒤 03을 시작합니다. |
 | [03 Agent 준비](handbook.md#agent) | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
 | [04 데이터셋](handbook.md#start) | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 확인합니다. |
 | [05 평가기](handbook.md#prepare) | Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 확인합니다. |
@@ -65,7 +65,9 @@ Optimizer 내부 순위는 후보 선택 근거이지 별도 관리형 재평가
 
 | 증상 | 대응 |
 |---|---|
-| 다른 신원, 401/403 | 승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다. |
+| 다른 신원, 401/403 | 승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다. 게스트·개인 계정이면 [멤버 계정 확인](handbook.md#setup-account-type)을 따릅니다. |
+| 첫 생성이 실패하고 `setup`·`apply`가 다시 제출되지 않음 | [첫 생성 실패 복구](troubleshooting.md#provisioning-retry)의 재시도 승인 또는 새 환경 절차를 따릅니다. |
+| 03의 첫 호출이 실패한 뒤 같은 명령이 거부됨 | 기록을 지우지 않고 [명령별 복구](troubleshooting.md#knowledge-first-failure)를 따릅니다. 02 직후 5~10분을 기다립니다. |
 | 카탈로그·배포 성공 후 Agent 실패 | 실제 API·런타임 오류를 남기고 해당 역할의 지원을 확인합니다. |
 | 포털 Add run item-schema 오류 | 기존 기준선 data source의 공식 SDK helper를 사용하며 다른 채점기로 대체하지 않습니다. |
 | No custom evaluators available | **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. |

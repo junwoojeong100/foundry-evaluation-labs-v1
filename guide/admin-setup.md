@@ -47,7 +47,7 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 | Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 Global Standard 100 배포를 사용합니다. |
 | 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10입니다. |
 
-숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
+숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. 구독의 쿼터 Tier와 네 모델의 남은 할당량은 [02의 할당량 점검](handbook.md#resources-prereq-quota)으로 미리 확인하며, 무료 체험·Free Tier 구독은 네 모델의 할당량이 없습니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
 
 **embedding은 인덱스 계약과 같은 모델이어야 합니다.** 정책 인덱스는 `text-embedding-3-large`의 3072차원 벡터로 만들며, `preflight`의 `embedding_supported_model`이 배포된 모델을 확인합니다. 이전 기본값인 `text-embedding-3-small`로 만든 환경은 `BLOCKED`로 표시됩니다. 계획이나 배포를 직접 고치지 말고 새 환경 이름으로 계획합니다.
 
@@ -149,6 +149,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | `max_hosting_hours` | 승인된 양의 정수 시간입니다. 예를 들어 8이면 승인 시작부터 만료까지도 8시간 이하여야 합니다. |
 | `max_wait_seconds` | 양의 정수 대기 한도입니다. 예를 들어 3600입니다. 대기 종료는 원격 작업 취소가 아닙니다. |
 | `max_calls`, `max_candidates` | 승인된 호출·후보 한도입니다. 08의 요청 후보 수는 2입니다. 내부 Agent·Judge·검색 호출을 고려합니다. 이 필드가 포털의 모든 호출·비용을 자동 제한하지는 않습니다. |
+| `max_provisioning_retries` | 선택 필드이며 생략하면 0입니다. 빠른 `bootstrap setup`은 이 필드를 넣지 않습니다. 첫 ARM 배포가 `Failed`로 끝난 뒤 같은 계획으로 한 번 다시 제출하려면 `1`을 추가하고 `bootstrap apply ... --retry`를 실행합니다([복구 절차](troubleshooting.md#provisioning-retry)). 결과가 불명인 제출에는 쓸 수 없으며 무제한 재시도를 뜻하지 않습니다. |
 | `allow_global_inference` | Global Standard의 처리 경계를 승인한 경우 `true`입니다. NCUS 내부 처리만 보장하지 않습니다. |
 | `allow_resource_creation`, `allow_rbac_assignments` | 해당 계획의 리소스 생성·리소스 범위 역할 할당을 승인한 경우 각각 `true`입니다. |
 | `acknowledge_continuous_hosting`, `acknowledge_unknown_cost` | 지속 과금 가능성과 확정되지 않은 총비용을 확인한 경우 각각 `true`입니다. |
@@ -168,6 +169,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 | 작업·연결 | 확인할 권한과 범위 |
 |---|---|
+| 로그인 계정 유형 | `bootstrap`의 신원 검사는 CLI 로그인 이름과 Microsoft Entra ID의 사용자 이름이 같은 **회사·학교(멤버) 계정**만 통과시킵니다. 개인 Microsoft 계정과 게스트 계정은 [확인 방법](handbook.md#setup-account-type)에 따라 멤버 계정으로 바꿉니다. |
 | 본인의 새 환경 생성 | bootstrap은 구독 범위의 그룹·배포·자원 생성과 `Microsoft.Authorization/roleAssignments/write` 유효 권한을 확인합니다. Contributor만으로는 역할 할당이 안 됩니다. 구독 quota 조회 권한도 필요합니다. |
 | 본인의 Agent·평가 실행 | 자신의 프로젝트에 Foundry User 등 필요한 데이터 평면 권한이 있어야 합니다. 기본 제공 Contributor/Owner 역할만으로 이 권한이 생기지는 않습니다. |
 | 본인의 정책 준비 | 자신의 Search에 Search Service Contributor와 Search Index Data Contributor 등 스키마·업로드 권한이 필요합니다. |
@@ -177,7 +179,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 **새 자원의 실행 권한은 승인된 bootstrap이 해당 자원 범위에 할당합니다.** 구독 전체 역할을 새로 부여하지 않습니다. 생성 후에는 본인과 서비스의 관리 ID가 서로 다른 신원임을 구분하고 03의 실제 도구 호출로 전파·데이터 평면 접근을 확인합니다.
 
-공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. [공식 공급자 등록 안내](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal)에 따라 다음을 확인합니다.
+공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. 새 구독에는 아래 네 공급자가 등록되어 있지 않을 수 있으며, `bootstrap`은 미등록이면 곧바로 `BLOCKED`로 멈추고 자동 등록하지 않습니다. 포털 대신 CLI로 상태를 읽고 등록하는 명령은 [02의 공급자 등록](handbook.md#resources-prereq-providers)에 있습니다. [공식 공급자 등록 안내](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal)에 따라 다음을 확인합니다.
 
 1. Azure 포털 → **Subscriptions → 사용할 구독 → Resource providers**를 엽니다.
 2. `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, `Microsoft.Insights`를 각각 검색하여 **Registered**인지 확인합니다.

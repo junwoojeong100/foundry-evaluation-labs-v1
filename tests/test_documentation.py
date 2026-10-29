@@ -24,7 +24,7 @@ PAGES = tuple(document.output for document in DOCUMENTS) + ("english.html",)
 STEPS = ["setup", "resources", "agent", "start", "prepare", "baseline", "analyze", "optimize", "decision", "cleanup"]
 SUBSTEPS = {
     "setup": ["setup-account", "setup-local", "setup-login"],
-    "resources": ["resources-quickstart", "resources-plan", "resources-tpm", "resources-approval", "resources-create", "resources-runtime-check"],
+    "resources": ["resources-prereq", "resources-quickstart", "resources-plan", "resources-tpm", "resources-approval", "resources-create", "resources-runtime-check"],
     "agent": ["agent-knowledge", "agent-create", "agent-playground"],
     "start": ["dataset-check", "dataset-register"],
     "prepare": ["criteria-configure"],
@@ -509,6 +509,100 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("{#operator-guide}", source)
                 self.assertIn("{#handoff}", source)
                 self.assertIn("{#facilitator-guide}", (folder / "facilitator.md").read_text())
+
+    def test_account_provider_and_quota_prechecks_come_before_the_creation_command(self):
+        from lab import bootstrap
+
+        for language in ("en", "ko"):
+            source = self.source(language)
+            setup = source.split("## 01.", 1)[1].split("## 02.", 1)[0]
+            resources = source.split("## 02.", 1)[1].split("## 03.", 1)[0]
+            agent = source.split("## 03.", 1)[1].split("## 04.", 1)[0]
+            with self.subTest(language=language):
+                for term in (
+                    "{#setup-account-type}", "az account show --query user.name -o tsv",
+                    "az ad signed-in-user show --query userPrincipalName -o tsv", "#EXT#",
+                    "user principal name is required",
+                ):
+                    self.assertIn(term, setup)
+                self.assertLess(resources.index("{#resources-prereq}"), resources.index("python -m lab bootstrap setup"))
+                prerequisites = resources.split("{#resources-prereq}", 1)[1].split("{#resources-quickstart}", 1)[0]
+                for namespace in (
+                    "Microsoft.CognitiveServices", "Microsoft.Search", "Microsoft.OperationalInsights", "Microsoft.Insights",
+                ):
+                    self.assertIn(f"az provider show --namespace {namespace} ", prerequisites)
+                    self.assertIn(f"az provider register --namespace {namespace} --wait", prerequisites)
+                for term in (
+                    "quotaTiers?api-version=2025-10-01-preview", "subscriptionPolicies.quotaId",
+                    f"az cognitiveservices usage list --location {bootstrap.REGION}",
+                    "https://aka.ms/oai/stuquotarequest", "Free Tier", "Manage → Quota",
+                ):
+                    self.assertIn(term, prerequisites)
+                for model in bootstrap.DEFAULT_MODELS:
+                    self.assertIn(f"`{model['name']}` {model['capacity']}", prerequisites)
+                runtime = resources.split("{#resources-runtime-check}", 1)[1]
+                for part in (runtime, agent):
+                    self.assertRegex(part, r"5[~–-]10")
+                    self.assertIn("troubleshooting.md#knowledge-first-failure", part)
+
+    def test_first_failure_recovery_is_documented_with_commands_the_program_accepts(self):
+        from lab.cli import parser
+
+        schema = json.loads((ROOT / "infra/approval.schema.json").read_text())
+        self.assertIn("max_provisioning_retries", schema["properties"])
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            troubleshooting = (folder / "troubleshooting.md").read_text()
+            admin = (folder / "admin-setup.md").read_text()
+            with self.subTest(language=language):
+                for term in (
+                    "{#provisioning-retry}", "{#knowledge-first-failure}", "max_provisioning_retries",
+                    "RETRY_BUDGET_EXHAUSTED", "UNKNOWN_SUBMISSION", "--run-id model-smoke-2",
+                    "iq probe --confirm --query", "knowledge/document-embeddings.json",
+                    "knowledge/upload-response.json", "agents/native-v1.json",
+                ):
+                    self.assertIn(term, troubleshooting)
+                self.assertIn("`max_provisioning_retries`", admin)
+                self.assertIn("troubleshooting.md#provisioning-retry", self.source(language))
+                lines = [
+                    line for block in re.findall(r"```sh\n(.*?)```", troubleshooting, re.DOTALL)
+                    for line in block.splitlines() if line.startswith("python -m lab ")
+                ]
+                self.assertTrue(any(" bootstrap apply " in line and " --retry" in line for line in lines))
+                for line in lines:
+                    command = shlex.split(line)
+                    if command[3] == "bootstrap":
+                        helped = subprocess.run(
+                            [sys.executable, "-m", "lab", "bootstrap", command[4], "--help"],
+                            cwd=ROOT, capture_output=True, text=True, timeout=60, check=True,
+                        ).stdout
+                        for flag in (token for token in command[5:] if token.startswith("--")):
+                            self.assertIn(flag, helped, line)
+                    else:
+                        parser().parse_args(command[3:])
+
+    def test_documented_receipt_rename_command_keeps_the_original_record(self):
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            lines = [
+                line for line in (folder / "troubleshooting.md").read_text().splitlines()
+                if line.startswith('python -c "import pathlib,sys,time;')
+            ]
+            with self.subTest(language=language):
+                self.assertEqual(len(lines), 2)
+                for line in lines:
+                    command = shlex.split(line)
+                    with TemporaryDirectory() as directory:
+                        receipt = Path(directory) / "receipt.json"
+                        receipt.write_text('{"status": "creating"}')
+                        subprocess.run(
+                            [sys.executable, *command[1:-1], str(receipt)],
+                            cwd=ROOT, capture_output=True, text=True, timeout=30, check=True,
+                        )
+                        self.assertFalse(receipt.exists())
+                        kept = list(Path(directory).glob("receipt.json.failed-*"))
+                        self.assertEqual(len(kept), 1)
+                        self.assertEqual(kept[0].read_text(), '{"status": "creating"}')
 
     def test_optimizer_requires_complete_instructions_and_documents_safe_waits(self):
         for language in ("en", "ko"):

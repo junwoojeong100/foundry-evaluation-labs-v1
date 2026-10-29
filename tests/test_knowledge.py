@@ -1,13 +1,14 @@
 from pathlib import Path
 import os
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 from lab.config import LabError, load_config
 from lab.content import content_path
 from lab.files import sha256_file
-from lab.knowledge import SEARCH_API, knowledge_payloads, prepare_knowledge, resource_names, search_url
+from lab.knowledge import SEARCH_API, knowledge_payloads, prepare_knowledge, probe_knowledge, resource_names, search_url
 from lab.preflight import save_json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -95,6 +96,40 @@ class KnowledgeTests(unittest.TestCase):
                 else:
                     with self.assertRaises(LabError):
                         prepare_knowledge(self.config)
+
+    def test_failed_probe_blocks_the_same_question_but_a_different_one_is_a_new_request(self):
+        setup = {
+            "names": {"source": "source", "base": "base", "index": "index", "connection": "connection"},
+            "status": "created_not_retrieval_tested",
+        }
+        body = {"response": [{"text": "answer"}], "references": [{"id": 1}], "activity": [{"kind": "search"}]}
+        outcomes = [OSError("403 before the roles apply"), SimpleNamespace(body=body)]
+        calls = []
+
+        class Http:
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def request(self, *args, **kwargs):
+                calls.append(args)
+                outcome = outcomes[len(calls) - 1]
+                if isinstance(outcome, Exception):
+                    raise outcome
+                return outcome
+
+        with TemporaryDirectory() as directory, patch.dict(os.environ, {"LAB_LANGUAGE": "ko"}), \
+                patch("lab.knowledge.artifacts_dir", return_value=Path(directory)), \
+                patch("lab.knowledge.load_knowledge", return_value=dict(setup)), \
+                patch("lab.knowledge.credential_for"), patch("lab.knowledge.JsonHttp", Http):
+            with self.assertRaises(OSError):
+                probe_knowledge(self.config, "What are the refund conditions?")
+            with self.assertRaises(LabError):
+                probe_knowledge(self.config, "What are the refund conditions?")
+            self.assertEqual(len(calls), 1)
+            result = probe_knowledge(self.config, "Tell me about the refund policy.")
+            self.assertEqual(result["status"], "retrieval_verified")
+            self.assertEqual(len(calls), 2)
+            self.assertEqual(len(list((Path(directory) / "knowledge/probes").iterdir())), 2)
 
 
 if __name__ == "__main__":

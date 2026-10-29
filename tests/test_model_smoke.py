@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
@@ -42,6 +43,25 @@ class ModelSmokeTests(unittest.TestCase):
             with self.assertRaises(LabError):
                 smoke_model(config, "fixture")
             self.assertEqual(client.responses.create.call_count, 1)
+    def test_new_run_id_recovers_after_a_failed_call_and_keeps_the_first_record(self):
+        config = load_config(ROOT / ".env.example")
+        response = SimpleNamespace(
+            id="resp-fixture", output_text="READY",
+            model_dump=lambda **_: {"id": "resp-fixture", "status": "completed", "usage": {}},
+        )
+        with TemporaryDirectory() as directory, patch("lab.files.artifacts_dir", return_value=Path(directory)), \
+                patch("lab.agents.model_snapshot", return_value={"model": {"name": "fixture", "version": "1"}}), \
+                patch("lab.agents.credential_for"), patch("lab.agents.AIProjectClient") as project:
+            client = project.return_value.__enter__.return_value.get_openai_client.return_value.__enter__.return_value
+            client.responses.create.side_effect = [OSError("403 before the roles apply"), response]
+            with self.assertRaises(OSError):
+                smoke_model(config, "model-smoke")
+            with self.assertRaises(LabError):
+                smoke_model(config, "model-smoke")
+            self.assertEqual(smoke_model(config, "model-smoke-2")["status"], "completed")
+            self.assertEqual(client.responses.create.call_count, 2)
+            first = json.loads((Path(directory) / "runs/model-smoke/model-smoke.json").read_text())
+            self.assertEqual(first["status"], "submitting")
 
 
 if __name__ == "__main__":

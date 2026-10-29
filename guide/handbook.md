@@ -36,7 +36,8 @@
 
 **시작 전 확인**
 
-- **구독·권한·비용:** 본인이 사용할 Microsoft Azure 구독, 리소스 **생성 권한과 역할 할당 권한**, 비용 승인이 필요합니다.
+- **계정 유형:** **회사·학교(Microsoft Entra 멤버) 계정**으로 로그인해야 합니다. 개인 Microsoft 계정(Gmail·Outlook 등)과 다른 조직의 게스트 초대 계정은 02에서 막히므로 로그인한 뒤 [두 명령으로 확인](#setup-account-type)합니다.
+- **구독·권한·비용:** 본인이 사용할 Microsoft Azure 구독, 리소스 **생성 권한과 역할 할당 권한**, 비용 승인이 필요합니다. **무료 체험 구독이나 모델 쿼터 Tier가 Free Tier인 구독은 이 실습의 모델 네 개에 할당량이 없어** 진행할 수 없습니다. 종량제 같은 유료 구독을 사용하고 [02의 사전 점검](#resources-prereq)에서 미리 확인합니다.
 - **실습 터미널:** **GitHub Codespaces(권장)**는 GitHub 계정과 브라우저만 있으면 됩니다. 내 PC를 쓰면 Python 3.11–3.14·Git·Azure CLI를 설치합니다.
 - **시간:** 반나절 정도의 여유를 확보합니다. 권한·할당량 승인과 서비스 실행 시간은 별도입니다. 서비스 대기는 보통 짧지만(02의 생성 약 10분, 12문항 평가 몇 분, Optimizer 작업은 흔히 10~20분) 서비스가 붐비면 더 길어질 수 있습니다.
 - **진행 원칙:** **모든 실습 참여자가 본인 계정으로 준비부터 정리까지 직접 수행합니다.** 다른 사람의 설정·로그인 세션·소유권 기록을 복사하거나 이미 완료한 작업을 다시 생성·제출하지 않습니다. 재개할 때는 [재개 안내](#setup-resume)에 따라 자신의 `config.json`·manifest·receipt로 완료한 작업을 확인합니다.
@@ -102,7 +103,7 @@
 
 ### Microsoft Azure 계정과 구독을 확인합니다 {#setup-account}
 
-1. [Azure 포털](https://portal.azure.com)에 **본인의 실습용 계정**으로 로그인합니다. 사용할 계정·구독이 없다면 [Microsoft Azure 계정 안내](https://azure.microsoft.com/pricing/purchase-options/azure-account)를 따라 준비합니다. 조직 구독은 본인이 사용할 범위의 접근·비용 승인을 먼저 확보합니다. 무료·체험 구독이라고 필요한 모델의 할당량까지 보장되지는 않습니다.
+1. [Azure 포털](https://portal.azure.com)에 **본인의 실습용 계정**으로 로그인합니다. 계정은 **회사·학교(Microsoft Entra 멤버) 계정**이어야 하며 개인 Microsoft 계정과 게스트 초대 계정은 사용할 수 없습니다([이유와 확인 방법](#setup-account-type)). 사용할 계정·구독이 없다면 [Microsoft Azure 계정 안내](https://azure.microsoft.com/pricing/purchase-options/azure-account)를 따라 준비합니다. 조직 구독은 본인이 사용할 범위의 접근·비용 승인을 먼저 확보합니다. **개인 Microsoft 계정으로 새로 만든 무료 계정은 대개 멤버 계정도 아니고 모델 할당량도 없어** 이 실습을 진행할 수 없습니다. 조직이 제공하는 계정과 종량제 같은 유료 구독을 준비하고, 할당량은 [02의 사전 점검](#resources-prereq)에서 확인합니다.
 2. 상단 검색창에 **Subscriptions**를 입력하고 사용할 구독을 엽니다. 포털 상태가 **Active**인지 보고, **Subscription ID**와 **Directory/Tenant ID**를 확인합니다. 같은 정상 구독은 CLI에서 **Enabled**로 표시합니다. 구독이 보이지 않으면 우측 상단 계정의 디렉터리·구독 필터를 확인합니다.
 3. **Access control (IAM, 권한 관리) → Check access**에서 본인의 역할과 적용 범위를 확인합니다. 이전 UI에서는 **View my access**로 표시할 수 있습니다. 이 실습은 본인이 리소스를 생성하고 리소스 범위 역할을 할당하므로 **생성 권한과 역할 할당 권한이 모두 필요합니다.** Contributor만으로는 역할 할당이 가능하지 않습니다. [작업별 필요 권한·공급자 등록](admin-setup.md#rbac)을 확인합니다.
 4. 비용 한도, 사용 종료 시각, 전용 리소스 그룹의 삭제 또는 보존 범위를 정합니다. 권한·구독·비용 승인이 부족하면 조직 절차에 따라 본인에게 허용된 실행 범위를 확보한 뒤 계속합니다. 다른 사람에게 이후 실습을 대신 실행하게 하거나 구독 전체 Owner·보안 정책 해제로 우회하지 않습니다.
@@ -308,6 +309,25 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 마지막 출력의 **`state`가 `Enabled`인지 확인**하고 `user`, `tenant`, `subscription`을 포털과 대조합니다. 브라우저와 CLI의 로그인은 별개입니다. 다른 디렉터리가 선택됐다면 `az login --use-device-code --tenant "YOUR_TENANT_ID"`로 승인된 디렉터리를 지정합니다. 조직에서 device-code 로그인을 차단하면 우회하지 말고 [로그인 문제 해결](troubleshooting.md#codespaces)을 확인합니다.
 
+#### 로그인 계정이 멤버 계정인지 확인합니다 {#setup-account-type}
+
+02의 `bootstrap setup`은 CLI의 로그인 이름과 Microsoft Entra ID가 알려 주는 사용자 이름(UPN)이 **같은지** 확인한 뒤에만 진행합니다. 두 값이 다르면 `not independently verified`로 막히며 입력값을 바꾸어 우회할 수 없습니다. 먼저 다음 두 명령의 출력을 비교합니다.
+
+```sh
+az account show --query user.name -o tsv
+az ad signed-in-user show --query userPrincipalName -o tsv
+```
+
+- **두 줄이 같고(대소문자 차이 제외) `#`이 없습니다.** 회사·학교 멤버 계정입니다. 다음으로 진행합니다.
+- **두 줄이 다르거나 어느 줄이든 `#EXT#`을 포함합니다.** 게스트(외부) 계정이며 `이름_gmail.com#EXT#@디렉터리.onmicrosoft.com`이 그 형식입니다. 개인 Microsoft 계정(Gmail·Outlook·Hotmail 등)으로 만든 구독과 다른 조직의 게스트 초대 계정이 여기에 해당하며, 이 상태로는 02를 끝낼 수 없습니다. 아래 중 하나를 선택합니다.
+    - 회사·학교(멤버) 계정이 있으면 `az logout`을 실행한 뒤 그 계정으로 [다시 로그인](#setup-login)합니다.
+    - 본인 소유의 구독·디렉터리라면 [Microsoft Entra 관리 센터](https://entra.microsoft.com)(또는 Azure 포털의 **Microsoft Entra ID**)에서 **Users → New user → Create new user**로 같은 디렉터리의 멤버 사용자(`이름@디렉터리.onmicrosoft.com`)를 만듭니다([사용자 만들기 안내](https://learn.microsoft.com/entra/fundamentals/how-to-create-delete-users)). 그 사용자에게 이 실습에 필요한 **생성 권한과 역할 할당 권한**을 부여한 뒤 로그인합니다. 조직 구독이면 디렉터리를 관리하는 담당자에게 멤버 계정과 필요한 권한을 요청합니다.
+- **둘째 명령이 오류를 냅니다.** 02의 같은 검사도 실패하므로 원인을 해결하거나 다른 멤버 계정으로 로그인합니다.
+
+`bootstrap setup`은 로그인 이름이 영문자·숫자·`. _ + -`로만 이루어진 `이름@도메인` 형식일 때만 계획을 만듭니다. `#EXT#`의 `#`이나 작은따옴표처럼 이 밖의 문자가 있으면 `BLOCKED` 대신 시작 단계에서 `Bootstrap blocked: … user principal name is required.` 오류로 멈추며 환경 폴더도 만들어지지 않습니다. 그런 이름은 쓸 수 없으므로 위와 같이 다른 멤버 계정을 사용합니다.
+
+계정을 바꾼 뒤에는 위 두 명령을 다시 비교하고 `az account set`·`az account show`로 구독을 맞춥니다. **이미 `bootstrap setup --environment lab-ko`를 실행해 `.lab/lab-ko`가 생겼다면** 그 환경은 이전 계정·구독·테넌트에 묶여 있으므로 `lab-ko-02`처럼 **새 환경 이름**으로 다시 시작하고 이후 명령의 `lab-ko` 경로도 함께 바꿉니다. 그 환경에는 Microsoft Azure 자원이 만들어지지 않았으므로 정리할 것이 없습니다.
+
 #### 언어와 기록 위치는 자동으로 적용됩니다 {#setup-language}
 
 **따로 실행할 설정 명령은 없습니다.** 02의 생성 명령에서 `--environment lab-ko`를 사용하면 한국어와 해당 환경의 기록 위치를 자동으로 저장합니다. 영어 가이드는 `lab-en`을 사용합니다. 다음 단계부터는 명령에 있는 `--config`가 같은 설정을 읽으므로 새 터미널에서도 환경 변수를 다시 지정하지 않습니다.
@@ -360,11 +380,12 @@ Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 `En
 | 실행한 명령·설정값 | 지금 확인하는 내용 | 포털 조작·확인 위치 |
 |---|---|---|
 | `az login`, `az account set`, `az account show` | 로그인 계정·테넌트·구독과 `state: Enabled`를 확인합니다. | Azure 포털 우측 상단 계정의 Directory와 **Subscriptions → 사용할 구독 → Overview**의 ID·상태를 직접 대조합니다. |
+| `az account show --query user.name`, `az ad signed-in-user show` | CLI 로그인 이름과 Microsoft Entra ID의 사용자 이름이 같은 멤버 계정인지 확인합니다. 02의 신원 검사가 같은 두 값을 비교합니다. | Azure 포털 → **Microsoft Entra ID → Users → 내 계정**의 **User principal name**과 **User type**을 대조합니다. `#EXT#`이 있거나 User type이 Guest이면 사용할 수 없습니다. |
 | `--environment lab-ko` → 이후 명령의 `--config` | 02에서 언어·기록 위치를 저장하고 이후 명령이 읽습니다. 터미널 변수 설정은 없습니다. | 포털 언어 선택과 무관한 실습 설정입니다. 한국어 자료와 해당 환경의 기록을 사용합니다. |
 
 </details>
 
-**완료 기준:** Python 3.11–3.14·Git·Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 [환경 오류 해결](troubleshooting.md#environment)을 확인합니다.
+**완료 기준:** Python 3.11–3.14·Git·Azure CLI의 버전을 확인했고, 같은 사용자·테넌트·구독을 사용하며, CLI 로그인 이름과 디렉터리 사용자 이름이 같은 멤버 계정이고, 가상환경의 Python 명령과 한국어 데이터 검사가 성공합니다. 문제가 있으면 [환경 오류 해결](troubleshooting.md#environment)을 확인합니다.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#resources" data-next-step>다음: 02. Microsoft Foundry 환경 생성 →</a></p>
@@ -379,12 +400,84 @@ Python 3.11–3.14와 명령 목록, 원래 사용자·테넌트·구독 및 `En
 <p><strong>진행 방법·위치:</strong> 실습 터미널의 생성 명령 한 개가 계획·준비 검사·승인 기록·생성을 안내합니다. 완료 후 포털의 실제 배포와 런타임 검사를 확인합니다.</p>
 </div>
 
-**실행 순서:** [터미널 · 빠른 생성](#resources-quickstart) → [저장된 기록](#resources-notes) → [포털·런타임 확인](#resources-runtime-check).
+**실행 순서:** [사전 점검](#resources-prereq) → [터미널 · 빠른 생성](#resources-quickstart) → [저장된 기록](#resources-notes) → [포털·런타임 확인](#resources-runtime-check).
 {: .step-route}
+
+### 구독을 사전 점검합니다 {#resources-prereq}
+
+**`bootstrap setup`은 아래 네 가지를 이 순서로 읽기 전용 검사하고, 하나라도 막히면 `BLOCKED`와 `reason`을 표시한 채 멈춥니다.** 이때는 자원이 만들어지지 않습니다. 다만 할당량 요청처럼 오래 걸릴 수 있는 조치가 있으므로 생성 명령 전에 먼저 확인합니다.
+
+| 순서 | 검사 | 막힐 때 `reason`의 일부 | 점검과 조치 |
+|---|---|---|---|
+| 1 | 로그인 계정이 멤버 계정인지 | `not independently verified` 또는 시작 단계의 `user principal name is required` | 01에서 통과했다면 건너뜁니다. 아니면 [계정 유형 확인](#setup-account-type) |
+| 2 | 리소스 공급자 4종이 등록됐는지 | `is not registered; bootstrap never registers providers` | [공급자 등록](#resources-prereq-providers) |
+| 3 | 생성·역할 할당 권한이 있는지 | `Existing permissions do not cover provisioning plus scoped role assignment` | 01의 [권한 확인](#setup-account)과 [권한 안내](admin-setup.md#rbac). Contributor만으로는 역할 할당이 안 됩니다. |
+| 4 | 모델 4개의 할당량과 용량 | `Insufficient unallocated quota`, `Free quota cannot be verified` | [할당량 점검](#resources-prereq-quota) |
+
+#### 리소스 공급자 4종을 등록합니다 {#resources-prereq-providers}
+
+**새 구독은 아래 공급자가 등록되어 있지 않을 수 있습니다.** `bootstrap`은 공급자를 자동으로 등록하지 않고 하나라도 미등록이면 곧바로 `BLOCKED`로 멈춥니다. 먼저 상태를 읽습니다. 각 줄에 이름과 상태가 표시되며 Insights의 이름은 소문자 `microsoft.insights`로 나올 수 있습니다.
+
+```sh
+az provider show --namespace Microsoft.CognitiveServices --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.Search --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.OperationalInsights --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.Insights --query "{namespace:namespace,state:registrationState}" -o tsv
+```
+
+네 줄이 모두 `Registered`이면 이 절을 마칩니다. `NotRegistered`인 공급자만 등록합니다. 등록에는 구독의 `/register/action` 권한이 필요하며 Contributor·Owner 역할에 포함됩니다. `--wait`는 등록이 끝날 때까지 기다립니다(보통 수 분).
+
+```sh
+az provider register --namespace Microsoft.CognitiveServices --wait
+az provider register --namespace Microsoft.Search --wait
+az provider register --namespace Microsoft.OperationalInsights --wait
+az provider register --namespace Microsoft.Insights --wait
+```
+
+**미등록인 공급자의 줄만 실행합니다.** 이 네 개 외의 공급자를 일괄 등록하지 않습니다. `AuthorizationFailed`가 나오면 등록 권한이 없는 것이므로 [권한·공급자 안내](admin-setup.md#rbac)에 따라 승인된 실행 범위를 확보합니다. 등록한 뒤에는 첫 번째 명령 블록을 다시 실행하여 `Registered`를 확인합니다.
+
+#### 모델 할당량을 확인합니다 {#resources-prereq-quota}
+
+이 실습은 `northcentralus`에서 **Global Standard** 배포 네 개를 만듭니다. 할당량이 모자라도 다른 지역이나 모델로 **자동 대체하지 않으며** 이 가이드는 그 경로를 제공하지 않습니다. 구독에 할당량이 없으면 아래에서 해결하지 않는 한 진행할 수 없습니다. `YOUR_SUBSCRIPTION_ID`는 01에서 확인한 구독 ID로 바꿉니다.
+
+**① 구독의 쿼터 Tier를 확인합니다.**
+
+```sh
+az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID/providers/Microsoft.CognitiveServices/quotaTiers?api-version=2025-10-01-preview" --query "value[0].properties.currentTierName" -o tsv
+```
+
+`Tier 1` 이상이면 보통 충족합니다. Tier 1의 Global Standard 한도는 gpt-6-sol·gpt-6-luna가 각 250,000 TPM, gpt-5.5·text-embedding-3-large가 각 1,000,000 TPM으로 이 실습의 요청량(100,000·100,000·100,000·10,000 TPM)보다 큽니다([Tier별 한도](https://learn.microsoft.com/azure/foundry/openai/quotas-limits#quota-tiers)). **`Free Tier`(참조 표의 Tier 0)는 이 네 모델이 모두 없어 진행할 수 없습니다.** 이 명령은 미리 보기 API라서 값이 비어 있거나 오류가 나면 ②의 결과를 기준으로 합니다.
+
+**② 네 모델의 남은 할당량을 확인합니다.** `bootstrap`의 준비 검사가 읽는 것과 같은 목록입니다.
+
+```sh
+az cognitiveservices usage list --location northcentralus --query "[?starts_with(name.value, 'OpenAI.GlobalStandard.') && (contains(name.value, 'gpt-6-sol') || contains(name.value, 'gpt-6-luna') || contains(name.value, 'gpt-5.5') || contains(name.value, 'text-embedding-3-large'))].{quota:name.value,used:currentValue,limit:limit}" -o table
+```
+
+네 줄이 모두 보이고 각 줄의 **`limit − used`가 요청 용량 이상**이어야 합니다. 요청 용량은 `gpt-6-sol` 100, `gpt-6-luna` 100, `gpt-5.5` 100(Optimizer와 검색 planner가 한 배포를 공유), `text-embedding-3-large` 10입니다. 이 네 모델에서 `100`은 100,000 TPM에 해당합니다([TPM 표](#resources-tpm)). 줄이 없거나 모자라면 `bootstrap setup`이 `Free quota cannot be verified` 또는 `Insufficient unallocated quota`로 막힙니다.
+
+**③ 구독 유형을 확인합니다.** 아래 명령의 앞부분(`FreeTrial`, `PayAsYouGo`, `MSDN` 등)이 구독 유형입니다.
+
+```sh
+az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01" --query "subscriptionPolicies.quotaId" -o tsv
+```
+
+| 구독 유형 | 이 실습 |
+|---|---|
+| 종량제(Pay-As-You-Go)·Enterprise Agreement 같은 유료 구독 | 할당량이 있는 경우가 많지만 보장되지는 않습니다. ①②로 확인합니다. |
+| 무료 체험(`FreeTrial`) 구독, `Free Tier` | **사용할 수 없습니다.** 네 모델의 할당량이 없습니다. |
+| Microsoft Azure Pass·학생용·Visual Studio(`MSDN`) 등 그 밖의 유형 | 유형마다 상한이 다릅니다. ①②의 결과가 유일한 기준입니다. |
+
+**할당량이 없거나 모자랄 때:**
+
+1. **무료 체험 구독이면 유료로 업그레이드합니다.** [무료 계정을 종량제로 업그레이드](https://learn.microsoft.com/azure/cost-management-billing/manage/upgrade-azure-subscription)한 뒤 ①②를 다시 실행합니다. 업그레이드한 직후에는 할당량이 바로 늘지 않을 수 있습니다.
+2. **할당량을 요청합니다.** [Microsoft Foundry](https://ai.azure.com)의 **Manage → Quota → Request quota** 또는 [할당량 증가 요청 양식](https://aka.ms/oai/stuquotarequest)에서 구독 ID, 배포 유형 `Global Standard`, 지역 North Central US(`northcentralus`), 위 네 모델의 필요 용량을 요청합니다. 요청은 접수 순서로 처리되고 승인되지 않을 수도 있어 시간이 걸리므로 실습 일정보다 먼저 제출합니다. 승인되어도 구독의 Tier는 그대로이고 승인된 할당량이 추가됩니다([요청 안내](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#request-more-quota)).
+3. **승인되기 전에는 `bootstrap setup`을 진행하지 않습니다.** 막힌 채로 지역·모델을 바꾸거나 `config.json`을 고쳐 우회하지 않습니다.
+4. **할당량이 있는 다른 구독을 쓰려면** `az account set`으로 구독을 바꾸고 ①②를 다시 확인한 뒤 새 환경 이름(예: `lab-ko-02`)으로 `bootstrap setup`을 실행합니다. 이미 `.lab/lab-ko`가 있다면 그 계획은 처음 구독에 묶여 있어 같은 이름으로 계속할 수 없습니다. 01의 권한·비용 승인도 새 구독 기준으로 다시 확인합니다.
 
 ### 생성 명령 하나로 환경을 준비합니다 {#resources-quickstart}
 
-01의 로그인을 마쳤다면 바로 실행합니다. **구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 언어·기록 위치·자원 이름·설정 파일은 자동으로 정합니다.** 별도 환경 변수나 언어 옵션을 입력하거나 JSON 승인서를 직접 작성할 필요가 없습니다.
+[사전 점검](#resources-prereq)을 마쳤다면 실행합니다. **구독·테넌트·사용자는 현재 CLI 로그인에서 읽고, 언어·기록 위치·자원 이름·설정 파일은 자동으로 정합니다.** 별도 환경 변수나 언어 옵션을 입력하거나 JSON 승인서를 직접 작성할 필요가 없습니다.
 
 ```sh
 python -m lab bootstrap setup --environment lab-ko
@@ -397,7 +490,7 @@ python -m lab bootstrap setup --environment lab-ko
 1. **계획:** 지역은 `northcentralus`, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.
     - **네 배포의 역할:** **Agent(답변), Judge(채점), Optimizer/검색 planner(지침 개선·검색 계획), embedding(검색용 숫자 변환)**
     - 모델을 직접 만드는 실습이 아니라 준비된 모델을 호출할 환경을 만듭니다.
-2. **권한·모델·할당량 검사:** 생성 전에 준비 상태를 확인합니다.
+2. **신원·공급자·권한·모델·할당량 검사:** 생성 전에 읽기 전용으로 확인합니다. 막히면 `BLOCKED`와 `reason`을 표시하고 자원을 만들지 않습니다. 원인을 해결한 뒤 같은 명령을 다시 실행하며, 로그인 계정·구독·테넌트를 바꾼 경우에만 새 환경 이름(`lab-ko-02`)을 사용합니다.
 3. **실제 승인 내용 입력:** 준비 검사가 통과하면 아래 다섯 가지를 입력합니다.
 4. **생성:** 마지막 확인에서 승인한 경우에만 만듭니다.
 
@@ -421,7 +514,7 @@ python -m lab bootstrap setup --environment lab-ko
 **정상 결과**
 
 - 출력에 **`status: APPLIED`**가 표시되고 **`.lab/lab-ko/.env`**가 생성됩니다.
-- `config.json`·`approval.json`·`manifest.json`도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다.
+- `config.json`·`approval.json`·`manifest.json`도 같은 폴더에 보관됩니다. 이 파일을 편집하여 검사를 우회하지 않습니다. 첫 생성이 실패했을 때 재시도 허용 횟수를 추가하는 [복구 절차](troubleshooting.md#provisioning-retry)만 예외입니다.
 - **`.env`는 프로젝트 연결 주소(Project endpoint)와 모델 배포 이름을 담은 설정 파일**이며 Python 패키지 폴더인 `.venv`와 다릅니다. 이후 명령이 `--config`로 읽으므로 직접 실행하거나 `source`하지 않습니다. 생성이 실패했다면 `.env.example`을 복사하여 대신하지 않습니다.
 - 오류가 있으면 [생성 문제 해결](troubleshooting.md#provisioning)로 이동합니다.
 
@@ -429,6 +522,7 @@ python -m lab bootstrap setup --environment lab-ko
 
 - 아직 생성 시도가 없는 계획만 이어 준비합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 [status 조회](#resources-status)로 확인합니다.
 - 기존의 유효한 승인 파일이 있으면 입력을 반복하지 않고 기록된 한도를 확인합니다. 기존 계획·승인값을 새 기본값으로 바꾸거나 만료 시각을 자동 연장하지 않습니다.
+- **생성이 `DeploymentFailed` 등으로 실패했다면** `setup`을 반복해도 새 배포는 제출되지 않고, `bootstrap apply --retry`도 재시도 승인(`max_provisioning_retries`)이 없으면 `RETRY_BUDGET_EXHAUSTED`로 거부됩니다. 같은 계획으로 한 번 다시 시도하거나 새 환경에서 다시 시작하는 절차는 [첫 생성 실패 복구](troubleshooting.md#provisioning-retry)에 있습니다.
 
 <details class="guide-details optional-path" markdown="1">
 <summary>이전 버전 환경을 쓰거나 환경 변수를 직접 설정한 적이 있을 때만</summary>
@@ -651,7 +745,10 @@ python -m lab --config .lab/lab-ko/.env preflight
 
 </details>
 
-**완료 기준:** 런타임 preflight 전체와 다섯 TPM 항목이 `PASS`이고, 자신의 프로젝트와 역할별 배포를 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.
+**`APPLIED`가 표시된 뒤 5~10분을 기다린 다음 03을 시작합니다.** bootstrap이 만든 역할 할당이 서비스 전체에 적용되기까지 최대 약 10분이 걸릴 수 있습니다([적용 시간 안내](https://learn.microsoft.com/azure/role-based-access-control/troubleshooting#azure-role-assignments)). 위 포털 확인과 런타임 preflight를 하는 동안 대부분 지나가지만, 읽기 전용 preflight는 이 적용 여부를 확인하지 못하므로 `PASS`여도 시간이 모자라면 기다립니다. 적용 전에 03의 호출 명령을 실행하면 401·403으로 실패하고, 03의 명령은 호출 전에 기록(receipt)을 먼저 남기므로 **한 번 실패한 같은 명령이 거부됩니다.** 그때의 복구는 [첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure)를 따릅니다.
+{: .note .warning}
+
+**완료 기준:** 런타임 preflight 전체와 다섯 TPM 항목이 `PASS`이고, 자신의 프로젝트와 역할별 배포를 확인합니다. `APPLIED` 표시 뒤 5분 이상 지났는지도 확인합니다. 이는 읽기 전용 구성 확인이며 실제 모델 응답 성공은 다음 단계에서 확인합니다.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#agent" data-next-step>다음: 03. 정책 연결·Agent 생성 →</a></p>
@@ -674,6 +771,9 @@ python -m lab --config .lab/lab-ko/.env preflight
 **이 세 명령은 실제 업로드·모델 호출을 수행하며 비용이 발생할 수 있습니다.** 본인이 각 명령의 정상 결과를 확인한 뒤 다음 명령으로 이동합니다. 재개할 때는 저장된 receipt에서 이미 완료한 작업을 확인하고 불필요한 호출을 반복하지 않습니다.
 {: .note .warning}
 
+**02의 `APPLIED` 뒤 5~10분이 지난 다음 시작합니다.** 이 명령들은 호출 전에 receipt를 먼저 저장하고 자동으로 다시 시도하지 않습니다. 역할이 적용되기 전에 호출해 한 번 실패하면 **같은 명령이 거부될 수 있습니다.** 거부되면 기록을 지우지 말고 [첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure)의 명령별 절차를 따릅니다(예: `smoke`는 새 `--run-id`를 사용합니다).
+{: .note .warning}
+
 #### 1. 모델이 실제로 응답하는지 확인합니다 {#agent-smoke}
 
 `smoke`는 짧은 동작 확인입니다.
@@ -684,7 +784,7 @@ python -m lab --config .lab/lab-ko/.env preflight
 python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
 ```
 
-출력의 **`status: completed`**를 확인합니다.
+출력의 **`status: completed`**를 확인합니다. 실패하면 같은 `--run-id`로는 다시 실행되지 않습니다. 원인(대개 401·403)을 해결한 뒤 `model-smoke-2`처럼 **새 `--run-id`**로 다시 실행하고 첫 기록은 삭제하지 않고 보관합니다([복구 절차](troubleshooting.md#knowledge-first-failure)).
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: SDK 인증과 모델 호출</summary>
@@ -756,7 +856,7 @@ embedding 호출도 감춰진 로컬 점수 계산이 아닙니다. 다음 함�
 python -m lab --config .lab/lab-ko/.env iq probe --confirm
 ```
 
-**`status: retrieval_verified`**와 비어 있지 않은 출처를 확인합니다. `created_not_retrieval_tested`는 생성만 성공했다는 뜻입니다. 오류가 발생하면 기록을 지우지 않고 [검색 오류 해결](troubleshooting.md#knowledge)을 확인합니다.
+**`status: retrieval_verified`**와 비어 있지 않은 출처를 확인합니다. `created_not_retrieval_tested`는 생성만 성공했다는 뜻입니다. 오류가 발생하면 기록을 지우지 않고 [첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure)와 [검색 오류 해결](troubleshooting.md#knowledge)을 확인합니다. `iq prepare`·`iq probe`가 같은 명령을 거부하면 명령별 복구 절차를 따릅니다.
 
 아래 `POST .../retrieve`의 질문·출처 요청과 실제 응답 검사를 읽습니다. **직접 검색 성공은 로그인한 사용자 경로의 근거**이며, 프로젝트 관리 ID의 Agent 도구 호출 근거와 같지 않습니다.
 
@@ -775,7 +875,7 @@ python -m lab --config .lab/lab-ko/.env iq probe --confirm
 python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 ```
 
-이 명령은 `prompts/baseline.txt`의 지침과 방금 확인한 정책 도구로 **`lab-ko-iq` 버전 `1`**을 만듭니다. 출력의 `agent_name`, `version`, `receipt`를 확인합니다. **Receipt는 실행 결과를 저장한 기록 파일**이라 Agent 이름과 버전을 나중에도 읽을 수 있습니다. 같은 소유 환경·동일 구성이면 기존 v1을 재사용하며, 다른 Agent를 인수하거나 v3를 만들지 않습니다.
+이 명령은 `prompts/baseline.txt`의 지침과 방금 확인한 정책 도구로 **`lab-ko-iq` 버전 `1`**을 만듭니다. 출력의 `agent_name`, `version`, `receipt`를 확인합니다. **Receipt는 실행 결과를 저장한 기록 파일**이라 Agent 이름과 버전을 나중에도 읽을 수 있습니다. 같은 소유 환경·동일 구성이면 기존 v1을 재사용하며, 다른 Agent를 인수하거나 v3를 만들지 않습니다. 생성이 오류로 끝난 뒤 같은 명령이 `The creation outcome is unknown`으로 거부되면 [첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure)에서 원격에 v1이 있는지 먼저 확인합니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: Agent 구성과 고정 버전</summary>

@@ -118,7 +118,7 @@
 <a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-15">2026-10-15</time></span>
+        <span class="document-date">As of <time datetime="2026-10-29">2026-10-29</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Environment setup reference · access, authorization, and cleanup">
@@ -195,7 +195,7 @@
 </tr>
 </tbody>
 </table>
-<p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
+<p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Check the subscription's quota tier and the remaining quota for the four models ahead of time with the <a href="index.html#resources-prereq-quota">quota pre-check in 02</a>; free-trial and Free Tier subscriptions have no quota for these four models. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
 <p><strong>The embedding model must match the index contract.</strong> The policy index uses 3072-dimensional <code>text-embedding-3-large</code> vectors, and <code>embedding_supported_model</code> in <code>preflight</code> checks the deployed model. An environment created with the former default <code>text-embedding-3-small</code> reports <code>BLOCKED</code>. Do not edit its plan or deployment; plan a new environment name instead.</p>
 <p><strong>Distinguish additional monitoring resources.</strong> Application Insights can automatically add a <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">default Failure Anomalies alert and Smart Detection action group</a>. Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same <code>bootstrap status</code> again; do not edit the manifest or delete the alert to bypass the check.</p>
 <h3 id="throughput">Set TPM before starting model calls</h3>
@@ -353,6 +353,10 @@
 <td>Approved call/candidate limits; 08 requests 2 candidates. Account for internal Agent, Judge, and search calls. These fields do not automatically cap every portal call or charge.</td>
 </tr>
 <tr>
+<td><code>max_provisioning_retries</code></td>
+<td>Optional; omitted means 0. The quick <code>bootstrap setup</code> does not write this field. To submit the same plan once more after the first ARM deployment ended <code>Failed</code>, add <code>1</code> and run <code>bootstrap apply ... --retry</code> (<a href="troubleshooting.html#provisioning-retry">recovery steps</a>). It cannot be used for a submission whose outcome is unknown, and it never means unlimited retries.</td>
+</tr>
+<tr>
 <td><code>allow_global_inference</code></td>
 <td><code>true</code> only when Global Standard processing is authorized; it is not NCUS-only processing.</td>
 </tr>
@@ -392,6 +396,10 @@
 </thead>
 <tbody>
 <tr>
+<td>Sign-in account type</td>
+<td>The identity check in <code>bootstrap</code> accepts only a <strong>work or school (member) account</strong> whose CLI sign-in name equals the Microsoft Entra ID user name. Switch a personal Microsoft account or guest account to a member account as described in <a href="index.html#setup-account-type">how to check</a>.</td>
+</tr>
+<tr>
 <td>Your environment creation</td>
 <td>Bootstrap checks effective subscription-scoped group/deployment/resource writes and <code>Microsoft.Authorization/roleAssignments/write</code>. Contributor alone cannot assign roles. Subscription quota-read access is also required.</td>
 </tr>
@@ -418,7 +426,7 @@
 </tbody>
 </table>
 <p><strong>Authorized bootstrap assigns runtime roles at the new resources' scopes.</strong> It does not add subscription-wide roles. After creation, distinguish your user identity from service managed identities and use 03's actual tool call to verify propagation and data-plane access.</p>
-<p>A provider registration enables a service type in your subscription. Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">official provider-registration instructions</a>:</p>
+<p>A provider registration enables a service type in your subscription. A new subscription may not have the four providers below registered, and <code>bootstrap</code> stops with <code>BLOCKED</code> as soon as one is missing and never registers them automatically. The commands that read and register them from the CLI instead of the portal are in <a href="index.html#resources-prereq-providers">provider registration in 02</a>. Follow the <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">official provider-registration instructions</a>:</p>
 <ol>
 <li>Open the Azure portal → <strong>Subscriptions → your subscription → Resource providers</strong>.</li>
 <li>Search for <code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, and <code>Microsoft.Insights</code>; confirm <strong>Registered</strong> for each.</li>
@@ -565,7 +573,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-15">2026-10-15</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

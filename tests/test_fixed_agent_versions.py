@@ -107,6 +107,33 @@ class FixedAgentVersionTests(unittest.TestCase):
         self.assertEqual(result["agent"]["definition"], returned)
         agents.create_version.assert_called_once()
 
+    def test_rejected_creation_needs_the_receipt_set_aside_but_a_lost_response_resolves_itself(self):
+        stored = agent("1", self.definition)
+        rejected = SimpleNamespace(agents=SimpleNamespace(
+            get_version=Mock(side_effect=ResourceNotFoundError()), list_versions=Mock(return_value=[]),
+            create_version=Mock(side_effect=[PermissionError("403 before the roles apply"), stored]),
+        ))
+        with TemporaryDirectory() as directory:
+            receipt = Path(directory) / "v1.json"
+            with self.assertRaises(PermissionError):
+                self.invoke(rejected, "1", receipt)
+            self.assertEqual(read_json(receipt)["status"], "creating")
+            with self.assertRaisesRegex(LabError, "outcome is unknown"):
+                self.invoke(rejected, "1", receipt)
+            receipt.rename(receipt.with_name("v1.json.failed-1"))
+            self.assertEqual(self.invoke(rejected, "1", receipt)["status"], "created")
+            self.assertEqual(rejected.agents.create_version.call_count, 2)
+        lost = SimpleNamespace(agents=SimpleNamespace(
+            get_version=Mock(side_effect=[ResourceNotFoundError(), stored]), list_versions=Mock(return_value=[]),
+            create_version=Mock(side_effect=TimeoutError("response lost after the service accepted it")),
+        ))
+        with TemporaryDirectory() as directory:
+            receipt = Path(directory) / "v1.json"
+            with self.assertRaises(TimeoutError):
+                self.invoke(lost, "1", receipt)
+            self.assertEqual(self.invoke(lost, "1", receipt)["status"], "verified")
+            lost.agents.create_version.assert_called_once()
+
     def test_immutable_v2_cannot_be_silently_replaced_or_incremented(self):
         existing = agent("2", {**self.definition, "instructions": "Existing v2"})
         project = SimpleNamespace(agents=SimpleNamespace(

@@ -107,7 +107,7 @@
 <a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-15">2026-10-15</time></span>
+        <span class="document-date">As of <time datetime="2026-10-29">2026-10-29</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Lab checklist · improve the measured result">
@@ -136,13 +136,13 @@
 <tbody>
 <tr>
 <td><a href="index.html#setup">01 Environment</a></td>
-<td>Check account, subscription, permissions, Python 3.11–3.14, Git, and Azure CLI. Step 02 sets language/record location automatically.</td>
-<td>Matching identity, all three version checks, and successful local commands in the virtual environment</td>
+<td>Check the work or school (member) account, subscription, permissions, Python 3.11–3.14, Git, and Azure CLI. Step 02 sets language/record location automatically.</td>
+<td>Matching identity (the CLI sign-in name equals the directory user name), all three version checks, and successful local commands in the virtual environment</td>
 </tr>
 <tr>
 <td><a href="index.html#resources">02 Provisioning</a></td>
-<td>Complete <code>bootstrap setup</code> readiness checks, actual authorization inputs, and creation confirmation</td>
-<td>APPLIED, generated <code>.env</code>, portal deployments, and runtime preflight PASS</td>
+<td><a href="index.html#resources-prereq">Pre-check</a> provider registration and model quota, then complete <code>bootstrap setup</code> readiness checks, actual authorization inputs, and creation confirmation</td>
+<td>APPLIED, generated <code>.env</code>, portal deployments, and runtime preflight PASS, then wait 5–10 minutes before starting 03</td>
 </tr>
 <tr>
 <td><a href="index.html#agent">03 Agent setup</a></td>
@@ -208,7 +208,15 @@
 <tbody>
 <tr>
 <td>Wrong identity, 401/403</td>
-<td>Confirm the approved account/project; do not widen shared permissions</td>
+<td>Confirm the approved account/project; do not widen shared permissions. For a guest or personal account, follow the <a href="index.html#setup-account-type">member account check</a></td>
+</tr>
+<tr>
+<td>First provisioning failed and <code>setup</code>/<code>apply</code> will not submit again</td>
+<td>Follow the retry allowance or new-environment steps in <a href="troubleshooting.html#provisioning-retry">first provisioning failure recovery</a></td>
+</tr>
+<tr>
+<td>The same command is refused after a first failed call in 03</td>
+<td>Keep the records and follow <a href="troubleshooting.html#knowledge-first-failure">recovery for each command</a>; wait 5–10 minutes after 02</td>
 </tr>
 <tr>
 <td>Catalog or deployment succeeds but Agent fails</td>
@@ -297,7 +305,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-15">2026-10-15</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

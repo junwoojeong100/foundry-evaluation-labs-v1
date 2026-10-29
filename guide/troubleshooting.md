@@ -10,8 +10,10 @@
 |---|---|
 | HTML에서 설명만 보이고 실행 명령을 찾을 수 없습니다. | 단계 상단의 **실행 순서**를 사용합니다. 선택 설명을 펼칠 필요는 없습니다. [로그인 명령](handbook.md#setup-login) · [런타임 검사](handbook.md#resources-runtime-check). |
 | 용어·설치·로그인·파일 경로가 어렵습니다. | [기본 용어](handbook.md#basics) · [Codespaces](#codespaces) · [환경·로그인](#environment) |
-| 승인·권한·모델 용량 때문에 생성할 수 없습니다. | [생성 준비](#provisioning) |
+| 승인·권한·계정 유형·공급자·모델 할당량 때문에 생성할 수 없습니다. | [생성 준비](#provisioning) |
+| 첫 생성이 실패했고 `setup`·`apply`가 다시 제출되지 않습니다. | [첫 생성 실패 복구](#provisioning-retry) |
 | 정책 검색이나 Agent 응답이 실패합니다. | [정책·Agent](#knowledge) |
+| 03의 `smoke`·`iq`·`native-agent`가 한 번 실패한 뒤 같은 명령이 거부됩니다. | [첫 호출 실패 후 복구](#knowledge-first-failure) |
 | 평가가 끝나지 않거나 점수·이유가 보이지 않습니다. | [평가·결과 조회](#evaluation) |
 | Optimize가 없거나 후보를 선택하기 어렵습니다. | [Optimizer](#optimizer) |
 | 삭제가 안 되거나 자원을 보존해야 합니다. | [정리·보존](#cleanup) |
@@ -59,20 +61,48 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그인 전에
 
 | 증상 | 조치 | 진행 기준 |
 |---|---|---|
+| `The signed-in principal is not independently verified`로 막힙니다. | CLI 로그인 이름과 Microsoft Entra ID의 사용자 이름이 달라서입니다. 개인 Microsoft 계정(Gmail·Outlook 등)과 게스트 초대 계정이 해당합니다. [두 명령으로 확인](handbook.md#setup-account-type)하고 회사·학교(멤버) 계정으로 다시 로그인합니다. 입력값을 바꾸어 우회하지 않습니다. 이미 `setup`을 실행했다면 새 환경 이름(`lab-ko-02`)으로 다시 시작합니다. | 두 명령의 출력이 같고 `bootstrap setup`이 신원 검사를 통과합니다. |
+| `Bootstrap blocked: … user principal name is required.`로 시작 단계에서 멈춥니다. | CLI 로그인 이름(`az account show --query user.name`)에 `#EXT#`의 `#`이나 작은따옴표처럼 허용되지 않는 문자가 있습니다. `bootstrap`은 영문자·숫자·`. _ + -`로 된 `이름@도메인`만 받으며 이때는 환경 폴더도 만들어지지 않습니다. 입력값을 바꾸지 말고 [멤버 계정 확인](handbook.md#setup-account-type)에 따라 다른 멤버 계정으로 로그인합니다. | 로그인 이름이 허용된 형식이고 `bootstrap setup`이 신원 검사까지 진행합니다. |
+| `Active Azure CLI subscription/tenant/user differs`로 막힙니다. | 계획을 만든 뒤 로그인 계정·구독·테넌트가 바뀌었습니다. 원래 계정·구독으로 다시 로그인합니다. 바꿀 계획이었다면 새 환경 이름으로 다시 시작하며, 자동 전환이나 `config.json` 편집은 없습니다. | `az account show`의 사용자·테넌트·구독이 계획과 같습니다. |
 | `setup`을 취소했거나 입력 오류로 끝났습니다. | 자원이 생성되기 전이라면 같은 환경 이름으로 `bootstrap setup`을 다시 실행해 원래 계획을 사용합니다. 실제 승인값을 입력하며 잘못된 금액·시간·빈 승인 근거를 임의로 채우지 않습니다. | 마지막 `CREATE ...` 확인 전에 Microsoft Azure 변경은 없습니다. 기존 생성 기록이 있으면 조회만 수행합니다. |
 | `setup requires an interactive terminal`입니다. | VS Code의 **Terminal → New Terminal**에서 직접 실행합니다. 셸 파이프·자동 작업은 [개별 계획·승인 경로](handbook.md#resources-plan)를 사용합니다. | 비대화형 실행이 자동으로 승인되지 않습니다. |
 | 기존 `approval.json`이 만료됐거나 범위가 다릅니다. | 원본을 보존하고 [승인 작성표](admin-setup.md#approval)로 실제 재승인 범위와 시각을 확인합니다. setup은 승인 파일을 덮어쓰거나 만료를 연장하지 않습니다. | 현재 유효하고 정확한 계획에 연결된 승인만 사용합니다. |
 | plan이 `BLOCKED_AWAITING_APPROVAL`입니다. | `plan_status`와 `mutations_performed`를 확인하고 [실제 승인서](admin-setup.md#approval)를 준비합니다. | 로컬 계획 생성과 Microsoft Azure 생성 완료를 구분합니다. |
 | `approved: true`인데 승인 오류입니다. | 해시·모델·승인자·유효기간·예산·동의 항목과 `approval_reason`을 확인합니다. | readiness가 READY이고 승인이 READY_FOR_APPROVED_APPLY입니다. |
-| Provider가 Registered가 아닙니다. | [공급자 등록 절차](admin-setup.md#rbac)에서 본인의 등록 권한·승인을 확인하고 필요한 공급자만 등록합니다. | 네 공급자가 Registered가 된 뒤 같은 preflight를 실행합니다. |
+| Provider가 Registered가 아닙니다(`is not registered; bootstrap never registers providers`). | [공급자 확인·등록 명령](handbook.md#resources-prereq-providers)으로 네 공급자의 상태를 읽고 `NotRegistered`인 것만 `az provider register --namespace ... --wait`로 등록합니다. 등록 권한이 없으면 [공급자 등록 절차](admin-setup.md#rbac)에서 본인의 등록 권한·승인을 확인합니다. | 네 공급자가 Registered가 된 뒤 같은 `bootstrap setup`을 다시 실행합니다. |
 | Contributor인데 역할 할당이 막힙니다. | 자원 생성과 역할 할당은 별도 권한입니다. 본인이 이 실습을 수행할 수 있도록 필요한 실행 범위의 승인을 확보합니다. | 필요한 유효 권한을 확인한 뒤 같은 계획으로 재개합니다. 구독 전체 Owner를 새로 부여해 우회하지 않습니다. |
-| 모델·SKU·버전·quota·capacity 오류입니다. | 계획의 역할별 요청과 preflight 이유를 확인합니다. 대체가 필요하면 별도 계획·승인을 받습니다. | 지원 모델과 할당량을 확인하고 실제 호출까지 확인합니다. |
+| 모델·SKU·버전·quota·capacity 오류입니다(`Insufficient unallocated quota`, `Free quota cannot be verified`, `Insufficient regional model capacity`). | 계획의 역할별 요청과 preflight 이유를 확인합니다. 할당량이 없거나 모자라면 [할당량 사전 점검](handbook.md#resources-prereq-quota)의 Tier·남은 할당량 확인, 무료 체험 구독 업그레이드, 할당량 요청 순서로 해결합니다. 이 실습은 `northcentralus`만 지원하므로 지역은 바꿀 수 없고, 고정된 모델을 바꾸려면 별도 계획·승인이 필요하며 비교 조건도 달라집니다. 막힌 채로 우회하지 않습니다. | 네 모델의 `limit − used`가 요청 용량 이상이고 같은 `bootstrap setup`의 준비 검사가 READY가 됩니다. |
 | 런타임 `*_tpm` 항목이 BLOCKED입니다. | [모델별 TPM 설정](admin-setup.md#throughput)에서 실제 배포 한도를 확인합니다. | 다섯 TPM 항목과 전체 preflight가 PASS입니다. |
 | 생성 후 `unknown resource`가 나옵니다. | 자신의 Application Insights에 연결된 기본 Smart Detection인지, 다른 업무 자원이나 변경된 수신자인지 확인합니다. 생성 중이면 연결 전파를 기다립니다. | 같은 `bootstrap status`로 확인합니다. 경고 삭제나 manifest 편집으로 우회하지 않습니다. |
 | apply가 시간 초과 또는 결과 불명입니다. | 원래 config·manifest·deployment ID를 보관하고 [02의 `bootstrap status` 명령](handbook.md#resources-status)과 그룹의 Deployments를 읽습니다. `apply`는 다시 실행하지 않습니다. | 진행 중이면 기다리며 결과 불명 상태에서 다시 제출하지 않습니다. |
 | 같은 로컬 환경이 이미 있습니다. | 같은 실습은 원본 config로 재개합니다. 별도 실습만 새 환경 이름과 승인을 사용합니다. | 기존 계획·설정·자원을 임의로 인수하거나 덮어쓰지 않습니다. |
 
 `--retry`는 확인된 소유 배포의 종료된 실패와 별도 재시도 승인 한도에만 사용합니다. `repair-dependencies`, `repair-trace-routing`도 일치하는 실패 근거와 해당 범위의 승인이 필요한 복구 명령입니다. `APPLIED`는 인프라 상태이며 품질·운영 승인·로그 수집 성공을 뜻하지 않습니다.
+
+### 첫 생성 실패 복구 {#provisioning-retry}
+
+**증상:** `bootstrap setup`이 `DeploymentFailed` 같은 오류로 끝났습니다. `bootstrap status`의 `resources.arm_deployment.provisioning_state`가 `Failed`이거나 포털 리소스 그룹의 **Deployments**에 `Failed`가 있습니다.
+
+**왜 그냥 다시 실행할 수 없나요?** 생성은 한 번만 제출하도록 설계되어 있습니다. `setup`을 다시 실행하면 상태만 조회하고, `bootstrap apply`는 `RETRY_REQUIRED`로 거부합니다. 빠른 경로의 승인서에는 재시도 허용 횟수 `max_provisioning_retries`가 없어서 `--retry`를 붙여도 `RETRY_BUDGET_EXHAUSTED`로 거부됩니다. 이는 막힌 환경이 아니라 보호 장치이며, 이름을 바꾸어 같은 배포를 반복 제출하지 않습니다.
+
+**같은 계획으로 한 번 다시 시도합니다.**
+
+**1. 원인을 읽습니다.** 포털 → 리소스 그룹 → **Deployments** → 실패한 배포의 오류 세부 정보와 `bootstrap status` 출력을 확인합니다. 할당량·용량 부족, 공급자 미등록, 일시적인 서비스 오류가 흔합니다. [사전 점검](handbook.md#resources-prereq)으로 해결할 수 있는 원인이면 먼저 해결합니다.
+
+**2. 한 번 더 시도할지 정합니다.** 추가 시도의 비용·시간을 본인이 승인할 수 있을 때만 `.lab/lab-ko/approval.json`을 편집기로 열어 `"max_provisioning_retries": 1`을 추가합니다. 승인서가 정한 시작·만료 시각이 지금도 유효해야 하며 만료됐다면 [승인서 작성표](admin-setup.md#approval)에 따라 다시 승인합니다. 다른 필드와 `config.json`·`manifest.json`은 고치지 않습니다.
+
+**3. 재시도를 명시하여 실행합니다.** 다른 창에서 같은 명령을 함께 실행하지 않습니다.
+
+```sh
+python -m lab bootstrap apply --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json --retry
+```
+
+**4. 결과를 확인합니다.** `status: APPLIED`가 나오면 02의 [포털·런타임 확인](handbook.md#resources-runtime-check)으로 이동합니다. 다시 실패하면 허용한 횟수를 모두 쓴 것이므로 아래 새 환경으로 시작합니다.
+
+**재시도할 수 없다면 새 환경에서 다시 시작합니다.** `UNKNOWN_SUBMISSION`(제출은 했지만 배포가 보이지 않음), `UNRESOLVED_DEPLOYMENT_STATE`처럼 실패를 확인할 수 없거나 재시도 후에도 실패한 경우에는 같은 환경을 되살리지 않습니다.
+
+1. 자원이 일부 만들어졌고 Search는 시간 단위로 청구되므로 `config.json`의 `names.resource_group`을 [10의 그룹 삭제 절차](handbook.md#cleanup-delete)로 먼저 정리합니다. 삭제는 생성 승인과 별개이므로 그 절차의 확인을 모두 거칩니다.
+2. 새 환경 이름(예: `lab-ko-02`)으로 [`bootstrap setup`](handbook.md#resources-quickstart)을 다시 실행합니다. 이후 명령의 `.lab/lab-ko` 경로도 `.lab/lab-ko-02`로 바꿉니다.
 
 ## 정책 검색·Agent 준비 {#knowledge}
 
@@ -85,6 +115,53 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그인 전에
 | 기존 v2와 지침 또는 모델이 다릅니다. | 고정 비교 보호 동작입니다. v2를 덮어쓰거나 v3를 만들지 않고 원래 소유 환경·지침·모델 snapshot을 대조합니다. |
 | 언어별 검색 결과가 다릅니다. | 선택 언어의 원본 문서·인덱스·analyzer·해시를 확인합니다. 이름만 바꾸어 다른 언어의 인덱스를 재사용하지 않습니다. |
 | 사설망 또는 `PublicNetworkAccess=Disabled` 오류입니다. | 승인된 VNet/VPN/실행 환경과 DNS를 확인합니다. 방화벽·private endpoint를 해제하지 않습니다. |
+
+### 첫 호출 실패 후 복구 {#knowledge-first-failure}
+
+**증상:** 03의 `smoke`·`iq prepare`·`iq probe`·`native-agent`가 한 번 실패한 뒤 같은 명령이 `실패 또는 결과 불명입니다`, `결과 불명입니다` 같은 메시지로 **바로 거부됩니다.**
+
+**왜 그런가요?** 이 명령들은 호출 전에 기록(receipt)을 먼저 저장하고 자동으로 다시 시도하지 않습니다. 결과가 불명인 요청을 중복 제출하지 않기 위한 보호이며 환경이 망가졌다는 뜻이 아닙니다. 가장 흔한 첫 실패는 02 직후 역할이 아직 적용되지 않아 생기는 401·403입니다. 먼저 출력된 오류를 읽고 원인을 해결합니다. 역할은 최대 약 10분이 걸리므로 5~10분을 기다리고, 배포 이름과 할당량도 확인합니다. **원본 기록은 삭제하지 않고 보관합니다.** 아래 절차는 요청이 거부된 것이 분명할 때를 기준으로 합니다.
+
+| 명령 | 같은 명령을 막는 기록(`.lab/lab-ko/artifacts/` 아래) | 복구 |
+|---|---|---|
+| `smoke` | `runs/model-smoke/model-smoke.json` | **새 `--run-id`**로 실행합니다. |
+| `iq probe` | `knowledge/probes/<질문 해시>/iq-request.json` | **다른 문장의 `--query`**로 실행합니다. |
+| `iq prepare` | `knowledge/document-embeddings.json` 또는 `knowledge/upload-response.json` | 거부 메시지가 가리키는 기록 **하나만** 이름을 바꿔 보관하고 같은 명령을 다시 실행합니다. |
+| `native-agent` | `agents/native-v1.json` | 원격에 v1이 있는지 확인한 뒤 판단합니다. |
+
+**`smoke`:** 새 run-id로 실행합니다. 또 실패하면 `model-smoke-3`처럼 번호를 올립니다. 첫 기록은 그대로 남고 이후 단계는 run-id에 의존하지 않습니다.
+
+```sh
+python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke-2 --confirm
+```
+
+**`iq probe`:** 질문 문장이 다르면 새 요청으로 처리됩니다. 출처가 비어 있지 않은 `status: retrieval_verified`를 확인합니다. 검색 준비(`iq prepare`)를 다시 하지 않습니다.
+
+```sh
+python -m lab --config .lab/lab-ko/.env iq probe --confirm --query "Contoso Atlas Cloud 환불 정책을 알려주세요."
+```
+
+**`iq prepare`:** 거부 메시지가 `이 embedding 요청은 실패 또는 결과 불명입니다`이면 `knowledge/document-embeddings.json`, `업로드 계약 변경 또는 결과 불명입니다`이면 `knowledge/upload-response.json`이 원인입니다. 터미널에 출력됐던 오류가 401·403·404·429처럼 요청이 거부된 것이면(embedding은 기록의 `error.type`에도 남습니다) 원인을 해결한 뒤 해당 기록 **하나만** 이름을 바꿔 보관하고 같은 명령을 다시 실행합니다. 시간 초과처럼 서비스가 받았는지 알 수 없어도 8개 문서의 embedding은 비용이 작고 업로드는 `mergeOrUpload`라 중복 문서를 만들지 않습니다. 이미 만든 인덱스·소스·지식 베이스는 소유 기록으로 확인하여 재사용하며 덮어쓰지 않습니다.
+
+```sh
+python -c "import pathlib,sys,time; p=pathlib.Path(sys.argv[1]); p.rename(p.with_name(p.name+'.failed-'+time.strftime('%Y%m%d-%H%M%S')))" ".lab/lab-ko/artifacts/knowledge/document-embeddings.json"
+python -m lab --config .lab/lab-ko/.env iq prepare --confirm
+```
+
+첫 명령의 경로는 거부된 기록에 맞게 바꿉니다. 편집기에서 파일 이름을 직접 바꾸어도 같으며, 삭제하거나 내용을 고치지 않습니다.
+
+**`native-agent`:** 거부 메시지는 `The creation outcome is unknown; inspect the receipt and remote state, do not resubmit.`이며 호출 전에 `agents/native-v1.json`이 `"status": "creating"`으로 저장되었기 때문입니다.
+
+1. Microsoft Foundry의 **Build → Agents**에서 `lab-ko-iq`에 **Version 1이 있는지** 확인합니다.
+2. **v1이 있으면** 만들어졌지만 응답이 유실된 것입니다. 같은 `native-agent --version 1 --confirm`을 다시 실행하면 원격 v1과 구성을 대조해 마무리하며 새 버전을 만들지 않습니다. 기록을 옮기지 않습니다.
+3. **v1이 없으면** 요청이 거부되어 아무것도 만들어지지 않은 것입니다. 기록을 이름만 바꿔 보관한 뒤 같은 명령을 다시 실행합니다.
+
+```sh
+python -c "import pathlib,sys,time; p=pathlib.Path(sys.argv[1]); p.rename(p.with_name(p.name+'.failed-'+time.strftime('%Y%m%d-%H%M%S')))" ".lab/lab-ko/artifacts/agents/native-v1.json"
+python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
+```
+
+09의 v2는 `agents/native-v2.json`과 `--version 2 --prompt .lab/lab-ko/candidate.txt`로 같은 방식입니다. 기록이 서로 맞지 않거나(예: 포털에는 있는데 로컬 기록이 없음) 원인을 해결할 수 없으면 이름만 바꾸어 우회하지 말고 [새 환경에서 다시 시작](#provisioning-retry)합니다.
 
 ## Microsoft Foundry 평가·재개 {#evaluation}
 

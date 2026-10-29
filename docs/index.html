@@ -110,7 +110,7 @@
 
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-15">2026-10-15</time></span>
+        <span class="document-date">As of <time datetime="2026-10-29">2026-10-29</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Evaluate and improve a customer-support Agent · v1">
@@ -150,7 +150,8 @@
 
 <p><strong>Before you start</strong></p>
 <ul>
-<li><strong>Subscription, permissions, spending:</strong> You need your own Microsoft Azure subscription, <strong>both provisioning and role-assignment permissions</strong> for resources, and spending authorization.</li>
+<li><strong>Account type:</strong> Sign in with a <strong>work or school (Microsoft Entra member) account</strong>. Personal Microsoft accounts (Gmail, Outlook, and similar) and guest invitations from another organization are blocked in 02, so <a href="#setup-account-type">verify with two commands</a> after you sign in.</li>
+<li><strong>Subscription, permissions, spending:</strong> You need your own Microsoft Azure subscription, <strong>both provisioning and role-assignment permissions</strong> for resources, and spending authorization. <strong>A free-trial subscription, or one whose model quota tier is Free Tier, has no quota for this lab's four models</strong> and cannot continue. Use a paid subscription such as pay-as-you-go and confirm it ahead of time in the <a href="#resources-prereq">pre-checks in 02</a>.</li>
 <li><strong>Lab terminal:</strong> <strong>GitHub Codespaces (recommended)</strong> needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Azure CLI.</li>
 <li><strong>Time:</strong> Allow roughly half a day, plus permission/quota approvals and service execution time. Service waits are usually short (provisioning in 02 about 10 minutes, a 12-case evaluation a few minutes, an Optimizer job often 10–20 minutes) but can be longer when the service is busy.</li>
 <li><strong>Ground rule:</strong> <strong>Every participant completes every step with their own account, from setup to cleanup.</strong> Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the <a href="#setup-resume">resume instructions</a> and verify completed work using your own <code>config.json</code>, manifest, and receipts.</li>
@@ -264,7 +265,7 @@
 </details>
 <h3 id="setup-account">Confirm your Microsoft Azure account and subscription</h3>
 <ol>
-<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a> with <strong>your own lab account</strong>. If you have no account/subscription, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure account instructions</a>. For an organizational subscription, first obtain access and spending authorization for your own lab scope. A free or trial subscription does not guarantee the required model quota.</li>
+<li>Sign in to the <a href="https://portal.azure.com">Azure portal</a> with <strong>your own lab account</strong>. The account must be a <strong>work or school (Microsoft Entra member) account</strong>; personal Microsoft accounts and guest invitations cannot be used (<a href="#setup-account-type">why, and how to check</a>). If you have no account/subscription, follow the <a href="https://azure.microsoft.com/pricing/purchase-options/azure-account">Microsoft Azure account instructions</a>. For an organizational subscription, first obtain access and spending authorization for your own lab scope. <strong>A new free account created with a personal Microsoft account is usually neither a member account nor eligible for model quota</strong>, so it cannot run this lab. Prepare an account from your organization and a paid subscription such as pay-as-you-go, and confirm quota in the <a href="#resources-prereq">pre-checks in 02</a>.</li>
 <li>Search for <strong>Subscriptions</strong> in the top search box and open the intended subscription. Confirm portal status <strong>Active</strong> and read its <strong>Subscription ID</strong> and <strong>Directory/Tenant ID</strong>. The CLI describes the same usable subscription as <strong>Enabled</strong>. If it is missing, check directory and subscription filters under your account.</li>
 <li>Open the permissions menu <strong>Access control (IAM) → Check access</strong> and inspect your role and scope. Older UI versions may label this <strong>View my access</strong>. You create resources and resource-scoped role assignments in this lab, so <strong>both provisioning and role-assignment permissions are required</strong>. Contributor alone cannot assign roles. See <a href="admin.html#rbac">permissions by task and provider registration</a>.</li>
 <li>Set a budget, end time, and deletion or retention scope for your dedicated group. If access or authorization is missing, obtain an approved execution scope through your organization's procedures before continuing. Do not delegate the remaining exercises to another person, grant new subscription-wide Owner, or disable security controls as a shortcut.</li>
@@ -447,6 +448,23 @@ az account set --subscription &quot;YOUR_SUBSCRIPTION_ID&quot;
 az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,state:state}&quot; -o json
 </code></pre>
 <p>Confirm <strong><code>state</code> is <code>Enabled</code></strong> and compare <code>user</code>, <code>tenant</code>, and <code>subscription</code> with the portal. Browser and CLI sign-ins are separate. For another authorized directory, use <code>az login --use-device-code --tenant "YOUR_TENANT_ID"</code>. If your organization blocks device-code sign-in, follow <a href="troubleshooting.html#codespaces">sign-in troubleshooting</a>, not a policy bypass.</p>
+<h4 id="setup-account-type">Check that the signed-in account is a member account</h4>
+<p><code>bootstrap setup</code> in 02 continues only if the CLI sign-in name <strong>equals</strong> the user name (UPN) that Microsoft Entra ID reports. If the two differ, it stops with <code>not independently verified</code>, and no input can be changed to bypass it. First compare the output of these two commands.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az account show --query user.name -o tsv
+az ad signed-in-user show --query userPrincipalName -o tsv
+</code></pre>
+<ul>
+<li><strong>The two lines match (ignoring case) and contain no <code>#</code>.</strong> This is a work or school member account. Continue.</li>
+<li><strong>The two lines differ, or either line contains <code>#EXT#</code>.</strong> It is a guest (external) account, and <code>name_gmail.com#EXT#@directory.onmicrosoft.com</code> is that format. Subscriptions created with a personal Microsoft account (Gmail, Outlook, Hotmail, and similar) and guest invitations from another organization belong to this group, and you cannot finish 02 with them. Choose one of these:<ul>
+<li>If you have a work or school (member) account, run <code>az logout</code> and <a href="#setup-login">sign in again</a> with it.</li>
+<li>If you own the subscription and the directory, create a member user in the same directory (<code>name@directory.onmicrosoft.com</code>) in the <a href="https://entra.microsoft.com">Microsoft Entra admin center</a> (or <strong>Microsoft Entra ID</strong> in the Azure portal) under <strong>Users → New user → Create new user</strong> (<a href="https://learn.microsoft.com/entra/fundamentals/how-to-create-delete-users">how to create users</a>). Give that user the <strong>provisioning and role-assignment permissions</strong> this lab needs, then sign in with it. For an organizational subscription, ask the person who manages the directory for a member account and the required permissions.</li>
+</ul>
+</li>
+<li><strong>The second command fails with an error.</strong> The same check fails in 02, so fix the cause or sign in with another member account.</li>
+</ul>
+<p><code>bootstrap setup</code> creates a plan only when the sign-in name has the form <code>name@domain</code> made of letters, digits, and <code>. _ + -</code>. If it contains any other character, such as the <code>#</code> in <code>#EXT#</code> or an apostrophe, it stops at the very start with <code>Bootstrap blocked: … user principal name is required.</code> instead of <code>BLOCKED</code>, and no environment folder is created. Such a name cannot be used, so sign in with another member account as described above.</p>
+<p>After you change accounts, compare the two commands again and match the subscription with <code>az account set</code> and <code>az account show</code>. <strong>If you already ran <code>bootstrap setup --environment lab-en</code> and <code>.lab/lab-en</code> exists</strong>, that environment is tied to the earlier account, subscription, and tenant. Start again with a <strong>new environment name</strong> such as <code>lab-en-02</code> and change the <code>lab-en</code> path in later commands as well. No Microsoft Azure resources were created for that environment, so there is nothing to clean up.</p>
 <h4 id="setup-language">Language and record location are applied automatically</h4>
 <p><strong>There is no separate settings command to run.</strong> Step 02's <code>--environment lab-en</code> automatically saves English and that environment's record location. The Korean guide uses <code>lab-ko</code>. Subsequent commands read the same settings through their <code>--config</code> argument, including in a new terminal; no environment-variable setup is needed.</p>
 <p>Resume the existing environment for the same lab. For a separate English lab, use a name <strong>starting with <code>lab-en-</code></strong>, such as <code>lab-en-02</code>, and update subsequent paths consistently. Records are saved automatically; do not delete them before cleanup.</p>
@@ -491,6 +509,11 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>Compare Directory under your Azure portal account and the IDs/state under <strong>Subscriptions → intended subscription → Overview</strong> yourself.</td>
 </tr>
 <tr>
+<td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>az account show --query user.name</code>, <code>az ad signed-in-user show</code></td>
+<td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Check that the CLI sign-in name and the Microsoft Entra ID user name match, which means a member account. The identity check in 02 compares the same two values.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>In the Azure portal, open <strong>Microsoft Entra ID → Users → your account</strong> and compare <strong>User principal name</strong> and <strong>User type</strong>. A name containing <code>#EXT#</code> or the type Guest cannot be used.</td>
+</tr>
+<tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Executed command/setting</span><code>--environment lab-en</code> → subsequent <code>--config</code></td>
 <td><span class="mobile-cell-label" aria-hidden="true">What to check now</span>Step 02 saves language/record settings; later commands read them. No shell-variable setup is needed.</td>
 <td><span class="mobile-cell-label" aria-hidden="true">Portal actions and verification</span>This is separate from portal display language. Use the English corpus and that environment's records.</td>
@@ -498,7 +521,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </tbody>
 </table>
 </details>
-<p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the CLI sign-in name equals the directory user name (a member account); the virtual environment's Python commands and English dataset check succeed. For blockers, see <a href="troubleshooting.html#environment">environment troubleshooting</a>.</p>
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Microsoft Foundry environment →</a></p>
 
 <h2 id="resources">02. Create the Microsoft Foundry environment</h2>
@@ -509,9 +532,108 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p><strong>How · where:</strong> One command in your lab terminal guides planning, readiness, authorization records, and provisioning. Then verify actual portal deployments and runtime checks.</p>
 </div>
 
-<p class="step-route"><strong>Action order:</strong> <a href="#resources-quickstart">Terminal · quick setup</a> → <a href="#resources-notes">Where records live</a> → <a href="#resources-runtime-check">Portal/runtime checks</a>.</p>
+<p class="step-route"><strong>Action order:</strong> <a href="#resources-prereq">Pre-checks</a> → <a href="#resources-quickstart">Terminal · quick setup</a> → <a href="#resources-notes">Where records live</a> → <a href="#resources-runtime-check">Portal/runtime checks</a>.</p>
+<h3 id="resources-prereq">Pre-check your subscription</h3>
+<p><strong><code>bootstrap setup</code> runs the following four read-only checks in this order and stops with <code>BLOCKED</code> and a <code>reason</code> if any one fails.</strong> No resources are created at that point. Some fixes, such as a quota request, can take a long time, so check first, before the creation command.</p>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Check</th>
+<th>Part of the <code>reason</code> when blocked</th>
+<th>Check and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The signed-in account is a member account</td>
+<td><code>not independently verified</code>, or <code>user principal name is required</code> at the very start</td>
+<td>Skip if it passed in 01. Otherwise <a href="#setup-account-type">check the account type</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>The four resource providers are registered</td>
+<td><code>is not registered; bootstrap never registers providers</code></td>
+<td><a href="#resources-prereq-providers">Register the providers</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>You hold provisioning and role-assignment permissions</td>
+<td><code>Existing permissions do not cover provisioning plus scoped role assignment</code></td>
+<td><a href="#setup-account">Check permissions in 01</a> and the <a href="admin.html#rbac">permissions reference</a>. Contributor alone cannot assign roles.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Quota and capacity for the four models</td>
+<td><code>Insufficient unallocated quota</code>, <code>Free quota cannot be verified</code></td>
+<td><a href="#resources-prereq-quota">Check quota</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="resources-prereq-providers">Register the four resource providers</h4>
+<p><strong>A new subscription may not have these providers registered.</strong> <code>bootstrap</code> never registers providers and stops with <code>BLOCKED</code> as soon as one is missing. Read the state first. Each line shows the name and the state; the Insights name can appear in lowercase as <code>microsoft.insights</code>.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az provider show --namespace Microsoft.CognitiveServices --query &quot;{namespace:namespace,state:registrationState}&quot; -o tsv
+az provider show --namespace Microsoft.Search --query &quot;{namespace:namespace,state:registrationState}&quot; -o tsv
+az provider show --namespace Microsoft.OperationalInsights --query &quot;{namespace:namespace,state:registrationState}&quot; -o tsv
+az provider show --namespace Microsoft.Insights --query &quot;{namespace:namespace,state:registrationState}&quot; -o tsv
+</code></pre>
+<p>If all four lines say <code>Registered</code>, finish this section. Register only the providers that say <code>NotRegistered</code>. Registering needs the <code>/register/action</code> permission on the subscription, which the Contributor and Owner roles include. <code>--wait</code> waits until registration finishes (usually a few minutes).</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az provider register --namespace Microsoft.CognitiveServices --wait
+az provider register --namespace Microsoft.Search --wait
+az provider register --namespace Microsoft.OperationalInsights --wait
+az provider register --namespace Microsoft.Insights --wait
+</code></pre>
+<p><strong>Run only the lines for providers that are not registered.</strong> Do not bulk-register anything beyond these four. If <code>AuthorizationFailed</code> appears, you lack registration permission; obtain an approved execution scope through <a href="admin.html#rbac">permissions and provider registration</a>. After registering, run the first command block again and confirm <code>Registered</code>.</p>
+<h4 id="resources-prereq-quota">Check model quota</h4>
+<p>This lab creates four <strong>Global Standard</strong> deployments in <code>northcentralus</code>. Even when quota is short, it <strong>never substitutes</strong> another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below. Replace <code>YOUR_SUBSCRIPTION_ID</code> with the subscription ID you confirmed in 01.</p>
+<p><strong>① Check the subscription's quota tier.</strong></p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az rest --method get --url &quot;https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID/providers/Microsoft.CognitiveServices/quotaTiers?api-version=2025-10-01-preview&quot; --query &quot;value[0].properties.currentTierName&quot; -o tsv
+</code></pre>
+<p><code>Tier 1</code> or higher usually suffices. The Tier 1 Global Standard limits are 250,000 TPM each for gpt-6-sol and gpt-6-luna and 1,000,000 TPM each for gpt-5.5 and text-embedding-3-large, which exceed this lab's requests (100,000, 100,000, 100,000, and 10,000 TPM) (<a href="https://learn.microsoft.com/azure/foundry/openai/quotas-limits#quota-tiers">limits by tier</a>). <strong><code>Free Tier</code> (Tier 0 in the reference tables) has none of these four models and cannot continue.</strong> This is a preview API, so if the value is empty or the command fails, rely on the result of ②.</p>
+<p><strong>② Check the remaining quota for the four models.</strong> This is the same list the <code>bootstrap</code> readiness check reads.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az cognitiveservices usage list --location northcentralus --query &quot;[?starts_with(name.value, 'OpenAI.GlobalStandard.') &amp;&amp; (contains(name.value, 'gpt-6-sol') || contains(name.value, 'gpt-6-luna') || contains(name.value, 'gpt-5.5') || contains(name.value, 'text-embedding-3-large'))].{quota:name.value,used:currentValue,limit:limit}&quot; -o table
+</code></pre>
+<p>All four rows must appear, and each row's <strong><code>limit − used</code> must be at least the requested capacity</strong>: <code>gpt-6-sol</code> 100, <code>gpt-6-luna</code> 100, <code>gpt-5.5</code> 100 (Optimizer and the search planner share one deployment), and <code>text-embedding-3-large</code> 10. For these four models, <code>100</code> corresponds to 100,000 TPM (see the <a href="#resources-tpm">TPM table</a>). A missing or short row makes <code>bootstrap setup</code> stop with <code>Free quota cannot be verified</code> or <code>Insufficient unallocated quota</code>.</p>
+<p><strong>③ Check the subscription type.</strong> The first part of the output below (<code>FreeTrial</code>, <code>PayAsYouGo</code>, <code>MSDN</code>, and so on) is the subscription type.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">az rest --method get --url &quot;https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01&quot; --query &quot;subscriptionPolicies.quotaId&quot; -o tsv
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Subscription type</th>
+<th>This lab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Paid subscriptions such as pay-as-you-go or Enterprise Agreement</td>
+<td>Quota is common but not guaranteed. Confirm with ① and ②.</td>
+</tr>
+<tr>
+<td>Free trial (<code>FreeTrial</code>) subscriptions and <code>Free Tier</code></td>
+<td><strong>Cannot be used.</strong> There is no quota for the four models.</td>
+</tr>
+<tr>
+<td>Other types such as Microsoft Azure Pass, student, or Visual Studio (<code>MSDN</code>)</td>
+<td>Limits differ by type. The result of ① and ② is the only criterion.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>If quota is missing or short:</strong></p>
+<ol>
+<li><strong>If it is a free-trial subscription, upgrade it to a paid one.</strong> <a href="https://learn.microsoft.com/azure/cost-management-billing/manage/upgrade-azure-subscription">Upgrade the free account to pay-as-you-go</a>, then run ① and ② again. Quota may not increase immediately after the upgrade.</li>
+<li><strong>Request quota.</strong> In <a href="https://ai.azure.com">Microsoft Foundry</a> use <strong>Manage → Quota → Request quota</strong>, or the <a href="https://aka.ms/oai/stuquotarequest">quota increase request form</a>, and request your subscription ID, deployment type <code>Global Standard</code>, region North Central US (<code>northcentralus</code>), and the capacity for the four models above. Requests are processed in the order received and can be denied, so they take time; submit one well before your lab date. If approved, the subscription's tier stays the same and the approved quota is added (<a href="https://learn.microsoft.com/azure/foundry/openai/how-to/quota#request-more-quota">how to request</a>).</li>
+<li><strong>Do not run <code>bootstrap setup</code> until quota is approved.</strong> Do not change the region or models, or edit <code>config.json</code>, to get around the block.</li>
+<li><strong>To use another subscription that has quota,</strong> switch with <code>az account set</code>, check ① and ② again, and run <code>bootstrap setup</code> with a new environment name (for example <code>lab-en-02</code>). If <code>.lab/lab-en</code> already exists, its plan is tied to the first subscription and cannot continue under the same name. Recheck the permissions and spending authorization from 01 for the new subscription as well.</li>
+</ol>
 <h3 id="resources-quickstart">Prepare the environment with one provisioning command</h3>
-<p>After signing in during 01, run this command. <strong>It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.</strong> No separate environment variables, language flag, or hand-edited approval JSON is required.</p>
+<p>Run this command after the <a href="#resources-prereq">pre-checks</a>. <strong>It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.</strong> No separate environment variables, language flag, or hand-edited approval JSON is required.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap setup --environment lab-en
 </code></pre>
@@ -523,7 +645,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <li>You prepare an environment that calls existing models; you do not build a model from scratch.</li>
 </ul>
 </li>
-<li><strong>Permission/model/quota checks:</strong> It confirms readiness before creating anything.</li>
+<li><strong>Identity, provider, permission, model, and quota checks:</strong> It confirms readiness read-only before creating anything. If a check fails, it shows <code>BLOCKED</code> with a <code>reason</code> and creates no resources. Fix the cause and run the same command again; use a new environment name (<code>lab-en-02</code>) only if you changed the signed-in account, subscription, or tenant.</li>
 <li><strong>Actual authorization inputs:</strong> After readiness passes, enter the five values below.</li>
 <li><strong>Provision:</strong> It creates resources only if you approve at the final confirmation.</li>
 </ol>
@@ -565,7 +687,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p><strong>Successful result</strong></p>
 <ul>
 <li>The output reports <strong><code>status: APPLIED</code></strong> and creates <strong><code>.lab/lab-en/.env</code></strong>.</li>
-<li>The same folder preserves <code>config.json</code>, <code>approval.json</code>, and <code>manifest.json</code>. Do not edit these to bypass checks.</li>
+<li>The same folder preserves <code>config.json</code>, <code>approval.json</code>, and <code>manifest.json</code>. Do not edit these to bypass checks. The one exception is adding a retry allowance in the <a href="troubleshooting.html#provisioning-retry">recovery procedure</a> after a first provisioning failure.</li>
 <li><strong><code>.env</code> holds the project connection address (Project endpoint) and model deployment names</strong>, unlike <code>.venv</code>, the Python package folder. Subsequent commands read it with <code>--config</code>; do not execute or <code>source</code> it. If provisioning failed, do not substitute a copy of <code>.env.example</code>.</li>
 <li>For errors, follow <a href="troubleshooting.html#provisioning">provisioning troubleshooting</a>.</li>
 </ul>
@@ -573,6 +695,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <ul>
 <li>It continues preparation <strong>only for a plan with no creation attempt</strong>. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use <a href="#resources-status">status lookup</a> when resuming.</li>
 <li>If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.</li>
+<li><strong>If provisioning failed, for example with <code>DeploymentFailed</code>,</strong> running <code>setup</code> again submits no new deployment, and <code>bootstrap apply --retry</code> is refused with <code>RETRY_BUDGET_EXHAUSTED</code> unless the approval allows a retry (<code>max_provisioning_retries</code>). The steps to retry once with the same plan, or to start again in a new environment, are in <a href="troubleshooting.html#provisioning-retry">first provisioning failure recovery</a>.</li>
 </ul>
 <details class="guide-details optional-path">
 <summary>Only if you use an older-version environment or set environment variables manually</summary>
@@ -1508,7 +1631,8 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 </code></pre>
 </details>
 </details>
-<p class="completion-check"><strong>Completion criteria:</strong> Runtime preflight and all five TPM checks report <code>PASS</code>; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.</p>
+<p class="note warning"><strong>Wait 5–10 minutes after <code>APPLIED</code> appears before starting 03.</strong> The role assignments that bootstrap created can take up to about 10 minutes to take effect (<a href="https://learn.microsoft.com/azure/role-based-access-control/troubleshooting#azure-role-assignments">how long role changes take</a>). The portal checks and the runtime preflight above usually use up most of that time, but the read-only preflight cannot tell whether the roles have taken effect, so wait if the time is short even when it reports <code>PASS</code>. If you run 03's call commands too early, they fail with 401 or 403, and because 03's commands record a receipt before each call, <strong>the same command that failed once is then refused.</strong> For that case, follow <a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a>.</p>
+<p class="completion-check"><strong>Completion criteria:</strong> Runtime preflight and all five TPM checks report <code>PASS</code>; your project and role-specific deployments are present, and at least 5 minutes have passed since <code>APPLIED</code> appeared. This is read-only configuration evidence. The next step verifies actual model responses.</p>
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
 
 <h2 id="agent">03. Connect policies and create the Agent</h2>
@@ -1522,13 +1646,14 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="step-route"><strong>Action order:</strong> <a href="#agent-smoke">Terminal · model check</a> → <a href="#agent-search-prepare">Upload policies</a> → <a href="#agent-search-probe">Verify retrieval</a> → <a href="#agent-create">Create v1</a> → <a href="#agent-playground">Microsoft Foundry · test response</a>.</p>
 <h3 id="agent-knowledge">Verify the model and policy retrieval</h3>
 <p class="note warning"><strong>These three commands perform actual uploads/model calls and can incur charges.</strong> Check each result yourself before continuing. When resuming, check the saved receipts for completed work rather than repeating unnecessary calls.</p>
+<p class="note warning"><strong>Start only after 5–10 minutes have passed since <code>APPLIED</code> in 02.</strong> These commands save a receipt before each call and never retry automatically. If you call before the roles take effect and a command fails once, <strong>the same command can be refused.</strong> When that happens, do not delete the record; follow the command-by-command steps in <a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a> (for example, <code>smoke</code> uses a new <code>--run-id</code>).</p>
 <h4 id="agent-smoke">1. Verify that the model responds</h4>
 <p><code>smoke</code> is a short functional check.</p>
 <p>First pass the <a href="#resources-preflight">runtime checks in 02</a>, including deployment TPM. One successful short response does not establish sufficient throughput for the full evaluation.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 </code></pre>
-<p>Confirm <strong><code>status: completed</code></strong> in the output.</p>
+<p>Confirm <strong><code>status: completed</code></strong> in the output. If it fails, the same <code>--run-id</code> is not run again. Fix the cause (usually 401 or 403) and run it again with a <strong>new <code>--run-id</code></strong> such as <code>model-smoke-2</code>, keeping the first record instead of deleting it (<a href="troubleshooting.html#knowledge-first-failure">recovery steps</a>).</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: SDK authentication and model calls</summary>
 <h4 id="sdk-code-portal">Code ↔ portal · connect the SDK with the verified CLI identity</h4>
@@ -2006,7 +2131,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env iq probe --confirm
 </code></pre>
-<p>Confirm <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only. If an error occurs, preserve the records and follow <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>.</p>
+<p>Confirm <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only. If an error occurs, preserve the records and follow <a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a> and <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>. If <code>iq prepare</code> or <code>iq probe</code> refuses the same command, follow the command-specific recovery.</p>
 <p>Read the query/reference request and actual response checks around <code>POST .../retrieve</code>. <strong>Direct retrieval verifies your signed-in user path</strong>, not the Agent's managed-identity path.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:probe_knowledge</code></summary>
@@ -2075,7 +2200,7 @@ az account show --query &quot;{user:user.name,tenant:tenantId,subscription:id,st
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>
-<p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using the instructions in <code>prompts/en/baseline.txt</code> and the verified policy tool. Check <code>agent_name</code>, <code>version</code>, and <code>receipt</code> in the output. A <strong>receipt is a file recording the operation's result</strong>, so the Agent name and version stay readable there. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3.</p>
+<p>This creates <strong><code>lab-en-iq</code> version <code>1</code></strong> using the instructions in <code>prompts/en/baseline.txt</code> and the verified policy tool. Check <code>agent_name</code>, <code>version</code>, and <code>receipt</code> in the output. A <strong>receipt is a file recording the operation's result</strong>, so the Agent name and version stay readable there. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3. If a creation that ended in an error makes the same command refuse with <code>The creation outcome is unknown</code>, first check in <a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a> whether v1 exists remotely.</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: Agent configuration and fixed versions</summary>
 <h4 id="agent-code-portal">Code ↔ portal · inspect the full Agent configuration</h4>
@@ -3738,7 +3863,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next step →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-15">2026-10-15</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

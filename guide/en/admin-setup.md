@@ -47,7 +47,7 @@ If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rul
 | Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared Global Standard 100 deployment |
 | Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10 |
 
-Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
+Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Check the subscription's quota tier and the remaining quota for the four models ahead of time with the [quota pre-check in 02](handbook.md#resources-prereq-quota); free-trial and Free Tier subscriptions have no quota for these four models. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
 
 **The embedding model must match the index contract.** The policy index uses 3072-dimensional `text-embedding-3-large` vectors, and `embedding_supported_model` in `preflight` checks the deployed model. An environment created with the former default `text-embedding-3-small` reports `BLOCKED`. Do not edit its plan or deployment; plan a new environment name instead.
 
@@ -149,6 +149,7 @@ Open `.lab/lab-en/approval.example.json` and **Save As approval.json in the same
 | `max_hosting_hours` | Approved positive integer hours. If 8, the approval interval must also be no longer than 8 hours. |
 | `max_wait_seconds` | Positive integer wait limit, for example 3600. Ending the wait does not cancel a remote job. |
 | `max_calls`, `max_candidates` | Approved call/candidate limits; 08 requests 2 candidates. Account for internal Agent, Judge, and search calls. These fields do not automatically cap every portal call or charge. |
+| `max_provisioning_retries` | Optional; omitted means 0. The quick `bootstrap setup` does not write this field. To submit the same plan once more after the first ARM deployment ended `Failed`, add `1` and run `bootstrap apply ... --retry` ([recovery steps](troubleshooting.md#provisioning-retry)). It cannot be used for a submission whose outcome is unknown, and it never means unlimited retries. |
 | `allow_global_inference` | `true` only when Global Standard processing is authorized; it is not NCUS-only processing. |
 | `allow_resource_creation`, `allow_rbac_assignments` | Each is `true` only when this plan's resources and resource-scoped role assignments are authorized. |
 | `acknowledge_continuous_hosting`, `acknowledge_unknown_cost` | Each is `true` only after acknowledging continuing hosting charges and an unconfirmed final cost. |
@@ -168,6 +169,7 @@ Use **Access control (IAM) → Check access** to inspect active assignments and 
 
 | Task or connection | Required permissions and scope |
 |---|---|
+| Sign-in account type | The identity check in `bootstrap` accepts only a **work or school (member) account** whose CLI sign-in name equals the Microsoft Entra ID user name. Switch a personal Microsoft account or guest account to a member account as described in [how to check](handbook.md#setup-account-type). |
 | Your environment creation | Bootstrap checks effective subscription-scoped group/deployment/resource writes and `Microsoft.Authorization/roleAssignments/write`. Contributor alone cannot assign roles. Subscription quota-read access is also required. |
 | Your Agent/evaluation operations | Foundry User or the required data-plane permissions on your project. The built-in Contributor or Owner role alone does not grant these data actions. |
 | Your policy preparation | Search schema/upload permissions, such as Search Service Contributor and Search Index Data Contributor, on your Search service. |
@@ -177,7 +179,7 @@ Use **Access control (IAM) → Check access** to inspect active assignments and 
 
 **Authorized bootstrap assigns runtime roles at the new resources' scopes.** It does not add subscription-wide roles. After creation, distinguish your user identity from service managed identities and use 03's actual tool call to verify propagation and data-plane access.
 
-A provider registration enables a service type in your subscription. Follow the [official provider-registration instructions](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal):
+A provider registration enables a service type in your subscription. A new subscription may not have the four providers below registered, and `bootstrap` stops with `BLOCKED` as soon as one is missing and never registers them automatically. The commands that read and register them from the CLI instead of the portal are in [provider registration in 02](handbook.md#resources-prereq-providers). Follow the [official provider-registration instructions](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal):
 
 1. Open the Azure portal → **Subscriptions → your subscription → Resource providers**.
 2. Search for `Microsoft.CognitiveServices`, `Microsoft.Search`, `Microsoft.OperationalInsights`, and `Microsoft.Insights`; confirm **Registered** for each.

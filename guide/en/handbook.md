@@ -36,7 +36,8 @@
 
 **Before you start**
 
-- **Subscription, permissions, spending:** You need your own Microsoft Azure subscription, **both provisioning and role-assignment permissions** for resources, and spending authorization.
+- **Account type:** Sign in with a **work or school (Microsoft Entra member) account**. Personal Microsoft accounts (Gmail, Outlook, and similar) and guest invitations from another organization are blocked in 02, so [verify with two commands](#setup-account-type) after you sign in.
+- **Subscription, permissions, spending:** You need your own Microsoft Azure subscription, **both provisioning and role-assignment permissions** for resources, and spending authorization. **A free-trial subscription, or one whose model quota tier is Free Tier, has no quota for this lab's four models** and cannot continue. Use a paid subscription such as pay-as-you-go and confirm it ahead of time in the [pre-checks in 02](#resources-prereq).
 - **Lab terminal:** **GitHub Codespaces (recommended)** needs only a GitHub account and a browser. On your own computer, install Python 3.11–3.14, Git, and Azure CLI.
 - **Time:** Allow roughly half a day, plus permission/quota approvals and service execution time. Service waits are usually short (provisioning in 02 about 10 minutes, a 12-case evaluation a few minutes, an Optimizer job often 10–20 minutes) but can be longer when the service is busy.
 - **Ground rule:** **Every participant completes every step with their own account, from setup to cleanup.** Never copy another person's configuration, sign-in session, or ownership records, or repeat completed creation/submission. When returning, follow the [resume instructions](#setup-resume) and verify completed work using your own `config.json`, manifest, and receipts.
@@ -102,7 +103,7 @@
 
 ### Confirm your Microsoft Azure account and subscription {#setup-account}
 
-1. Sign in to the [Azure portal](https://portal.azure.com) with **your own lab account**. If you have no account/subscription, follow the [Microsoft Azure account instructions](https://azure.microsoft.com/pricing/purchase-options/azure-account). For an organizational subscription, first obtain access and spending authorization for your own lab scope. A free or trial subscription does not guarantee the required model quota.
+1. Sign in to the [Azure portal](https://portal.azure.com) with **your own lab account**. The account must be a **work or school (Microsoft Entra member) account**; personal Microsoft accounts and guest invitations cannot be used ([why, and how to check](#setup-account-type)). If you have no account/subscription, follow the [Microsoft Azure account instructions](https://azure.microsoft.com/pricing/purchase-options/azure-account). For an organizational subscription, first obtain access and spending authorization for your own lab scope. **A new free account created with a personal Microsoft account is usually neither a member account nor eligible for model quota**, so it cannot run this lab. Prepare an account from your organization and a paid subscription such as pay-as-you-go, and confirm quota in the [pre-checks in 02](#resources-prereq).
 2. Search for **Subscriptions** in the top search box and open the intended subscription. Confirm portal status **Active** and read its **Subscription ID** and **Directory/Tenant ID**. The CLI describes the same usable subscription as **Enabled**. If it is missing, check directory and subscription filters under your account.
 3. Open the permissions menu **Access control (IAM) → Check access** and inspect your role and scope. Older UI versions may label this **View my access**. You create resources and resource-scoped role assignments in this lab, so **both provisioning and role-assignment permissions are required**. Contributor alone cannot assign roles. See [permissions by task and provider registration](admin-setup.md#rbac).
 4. Set a budget, end time, and deletion or retention scope for your dedicated group. If access or authorization is missing, obtain an approved execution scope through your organization's procedures before continuing. Do not delegate the remaining exercises to another person, grant new subscription-wide Owner, or disable security controls as a shortcut.
@@ -308,6 +309,25 @@ az account show --query "{user:user.name,tenant:tenantId,subscription:id,state:s
 
 Confirm **`state` is `Enabled`** and compare `user`, `tenant`, and `subscription` with the portal. Browser and CLI sign-ins are separate. For another authorized directory, use `az login --use-device-code --tenant "YOUR_TENANT_ID"`. If your organization blocks device-code sign-in, follow [sign-in troubleshooting](troubleshooting.md#codespaces), not a policy bypass.
 
+#### Check that the signed-in account is a member account {#setup-account-type}
+
+`bootstrap setup` in 02 continues only if the CLI sign-in name **equals** the user name (UPN) that Microsoft Entra ID reports. If the two differ, it stops with `not independently verified`, and no input can be changed to bypass it. First compare the output of these two commands.
+
+```sh
+az account show --query user.name -o tsv
+az ad signed-in-user show --query userPrincipalName -o tsv
+```
+
+- **The two lines match (ignoring case) and contain no `#`.** This is a work or school member account. Continue.
+- **The two lines differ, or either line contains `#EXT#`.** It is a guest (external) account, and `name_gmail.com#EXT#@directory.onmicrosoft.com` is that format. Subscriptions created with a personal Microsoft account (Gmail, Outlook, Hotmail, and similar) and guest invitations from another organization belong to this group, and you cannot finish 02 with them. Choose one of these:
+    - If you have a work or school (member) account, run `az logout` and [sign in again](#setup-login) with it.
+    - If you own the subscription and the directory, create a member user in the same directory (`name@directory.onmicrosoft.com`) in the [Microsoft Entra admin center](https://entra.microsoft.com) (or **Microsoft Entra ID** in the Azure portal) under **Users → New user → Create new user** ([how to create users](https://learn.microsoft.com/entra/fundamentals/how-to-create-delete-users)). Give that user the **provisioning and role-assignment permissions** this lab needs, then sign in with it. For an organizational subscription, ask the person who manages the directory for a member account and the required permissions.
+- **The second command fails with an error.** The same check fails in 02, so fix the cause or sign in with another member account.
+
+`bootstrap setup` creates a plan only when the sign-in name has the form `name@domain` made of letters, digits, and `. _ + -`. If it contains any other character, such as the `#` in `#EXT#` or an apostrophe, it stops at the very start with `Bootstrap blocked: … user principal name is required.` instead of `BLOCKED`, and no environment folder is created. Such a name cannot be used, so sign in with another member account as described above.
+
+After you change accounts, compare the two commands again and match the subscription with `az account set` and `az account show`. **If you already ran `bootstrap setup --environment lab-en` and `.lab/lab-en` exists**, that environment is tied to the earlier account, subscription, and tenant. Start again with a **new environment name** such as `lab-en-02` and change the `lab-en` path in later commands as well. No Microsoft Azure resources were created for that environment, so there is nothing to clean up.
+
 #### Language and record location are applied automatically {#setup-language}
 
 **There is no separate settings command to run.** Step 02's `--environment lab-en` automatically saves English and that environment's record location. The Korean guide uses `lab-ko`. Subsequent commands read the same settings through their `--config` argument, including in a new terminal; no environment-variable setup is needed.
@@ -360,11 +380,12 @@ Find where you stopped with read-only lookups; no notes file is needed. Check pr
 | Executed command/setting | What to check now | Portal actions and verification |
 |---|---|---|
 | `az login`, `az account set`, `az account show` | Check the signed-in account, tenant, subscription, and `state: Enabled`. | Compare Directory under your Azure portal account and the IDs/state under **Subscriptions → intended subscription → Overview** yourself. |
+| `az account show --query user.name`, `az ad signed-in-user show` | Check that the CLI sign-in name and the Microsoft Entra ID user name match, which means a member account. The identity check in 02 compares the same two values. | In the Azure portal, open **Microsoft Entra ID → Users → your account** and compare **User principal name** and **User type**. A name containing `#EXT#` or the type Guest cannot be used. |
 | `--environment lab-en` → subsequent `--config` | Step 02 saves language/record settings; later commands read them. No shell-variable setup is needed. | This is separate from portal display language. Use the English corpus and that environment's records. |
 
 </details>
 
-**Completion criteria:** Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the virtual environment's Python commands and English dataset check succeed. For blockers, see [environment troubleshooting](troubleshooting.md#environment).
+**Completion criteria:** Python 3.11–3.14, Git, and Azure CLI versions are verified; the user, tenant, and subscription match; the CLI sign-in name equals the directory user name (a member account); the virtual environment's Python commands and English dataset check succeed. For blockers, see [environment troubleshooting](troubleshooting.md#environment).
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#resources" data-next-step>Next: 02. Create the Microsoft Foundry environment →</a></p>
@@ -379,12 +400,84 @@ Find where you stopped with read-only lookups; no notes file is needed. Check pr
 <p><strong>How · where:</strong> One command in your lab terminal guides planning, readiness, authorization records, and provisioning. Then verify actual portal deployments and runtime checks.</p>
 </div>
 
-**Action order:** [Terminal · quick setup](#resources-quickstart) → [Where records live](#resources-notes) → [Portal/runtime checks](#resources-runtime-check).
+**Action order:** [Pre-checks](#resources-prereq) → [Terminal · quick setup](#resources-quickstart) → [Where records live](#resources-notes) → [Portal/runtime checks](#resources-runtime-check).
 {: .step-route}
+
+### Pre-check your subscription {#resources-prereq}
+
+**`bootstrap setup` runs the following four read-only checks in this order and stops with `BLOCKED` and a `reason` if any one fails.** No resources are created at that point. Some fixes, such as a quota request, can take a long time, so check first, before the creation command.
+
+| Order | Check | Part of the `reason` when blocked | Check and fix |
+|---|---|---|---|
+| 1 | The signed-in account is a member account | `not independently verified`, or `user principal name is required` at the very start | Skip if it passed in 01. Otherwise [check the account type](#setup-account-type) |
+| 2 | The four resource providers are registered | `is not registered; bootstrap never registers providers` | [Register the providers](#resources-prereq-providers) |
+| 3 | You hold provisioning and role-assignment permissions | `Existing permissions do not cover provisioning plus scoped role assignment` | [Check permissions in 01](#setup-account) and the [permissions reference](admin-setup.md#rbac). Contributor alone cannot assign roles. |
+| 4 | Quota and capacity for the four models | `Insufficient unallocated quota`, `Free quota cannot be verified` | [Check quota](#resources-prereq-quota) |
+
+#### Register the four resource providers {#resources-prereq-providers}
+
+**A new subscription may not have these providers registered.** `bootstrap` never registers providers and stops with `BLOCKED` as soon as one is missing. Read the state first. Each line shows the name and the state; the Insights name can appear in lowercase as `microsoft.insights`.
+
+```sh
+az provider show --namespace Microsoft.CognitiveServices --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.Search --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.OperationalInsights --query "{namespace:namespace,state:registrationState}" -o tsv
+az provider show --namespace Microsoft.Insights --query "{namespace:namespace,state:registrationState}" -o tsv
+```
+
+If all four lines say `Registered`, finish this section. Register only the providers that say `NotRegistered`. Registering needs the `/register/action` permission on the subscription, which the Contributor and Owner roles include. `--wait` waits until registration finishes (usually a few minutes).
+
+```sh
+az provider register --namespace Microsoft.CognitiveServices --wait
+az provider register --namespace Microsoft.Search --wait
+az provider register --namespace Microsoft.OperationalInsights --wait
+az provider register --namespace Microsoft.Insights --wait
+```
+
+**Run only the lines for providers that are not registered.** Do not bulk-register anything beyond these four. If `AuthorizationFailed` appears, you lack registration permission; obtain an approved execution scope through [permissions and provider registration](admin-setup.md#rbac). After registering, run the first command block again and confirm `Registered`.
+
+#### Check model quota {#resources-prereq-quota}
+
+This lab creates four **Global Standard** deployments in `northcentralus`. Even when quota is short, it **never substitutes** another region or model, and this guide offers no path that does. If the subscription has no quota, you cannot continue unless you fix it below. Replace `YOUR_SUBSCRIPTION_ID` with the subscription ID you confirmed in 01.
+
+**① Check the subscription's quota tier.**
+
+```sh
+az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID/providers/Microsoft.CognitiveServices/quotaTiers?api-version=2025-10-01-preview" --query "value[0].properties.currentTierName" -o tsv
+```
+
+`Tier 1` or higher usually suffices. The Tier 1 Global Standard limits are 250,000 TPM each for gpt-6-sol and gpt-6-luna and 1,000,000 TPM each for gpt-5.5 and text-embedding-3-large, which exceed this lab's requests (100,000, 100,000, 100,000, and 10,000 TPM) ([limits by tier](https://learn.microsoft.com/azure/foundry/openai/quotas-limits#quota-tiers)). **`Free Tier` (Tier 0 in the reference tables) has none of these four models and cannot continue.** This is a preview API, so if the value is empty or the command fails, rely on the result of ②.
+
+**② Check the remaining quota for the four models.** This is the same list the `bootstrap` readiness check reads.
+
+```sh
+az cognitiveservices usage list --location northcentralus --query "[?starts_with(name.value, 'OpenAI.GlobalStandard.') && (contains(name.value, 'gpt-6-sol') || contains(name.value, 'gpt-6-luna') || contains(name.value, 'gpt-5.5') || contains(name.value, 'text-embedding-3-large'))].{quota:name.value,used:currentValue,limit:limit}" -o table
+```
+
+All four rows must appear, and each row's **`limit − used` must be at least the requested capacity**: `gpt-6-sol` 100, `gpt-6-luna` 100, `gpt-5.5` 100 (Optimizer and the search planner share one deployment), and `text-embedding-3-large` 10. For these four models, `100` corresponds to 100,000 TPM (see the [TPM table](#resources-tpm)). A missing or short row makes `bootstrap setup` stop with `Free quota cannot be verified` or `Insufficient unallocated quota`.
+
+**③ Check the subscription type.** The first part of the output below (`FreeTrial`, `PayAsYouGo`, `MSDN`, and so on) is the subscription type.
+
+```sh
+az rest --method get --url "https://management.azure.com/subscriptions/YOUR_SUBSCRIPTION_ID?api-version=2020-01-01" --query "subscriptionPolicies.quotaId" -o tsv
+```
+
+| Subscription type | This lab |
+|---|---|
+| Paid subscriptions such as pay-as-you-go or Enterprise Agreement | Quota is common but not guaranteed. Confirm with ① and ②. |
+| Free trial (`FreeTrial`) subscriptions and `Free Tier` | **Cannot be used.** There is no quota for the four models. |
+| Other types such as Microsoft Azure Pass, student, or Visual Studio (`MSDN`) | Limits differ by type. The result of ① and ② is the only criterion. |
+
+**If quota is missing or short:**
+
+1. **If it is a free-trial subscription, upgrade it to a paid one.** [Upgrade the free account to pay-as-you-go](https://learn.microsoft.com/azure/cost-management-billing/manage/upgrade-azure-subscription), then run ① and ② again. Quota may not increase immediately after the upgrade.
+2. **Request quota.** In [Microsoft Foundry](https://ai.azure.com) use **Manage → Quota → Request quota**, or the [quota increase request form](https://aka.ms/oai/stuquotarequest), and request your subscription ID, deployment type `Global Standard`, region North Central US (`northcentralus`), and the capacity for the four models above. Requests are processed in the order received and can be denied, so they take time; submit one well before your lab date. If approved, the subscription's tier stays the same and the approved quota is added ([how to request](https://learn.microsoft.com/azure/foundry/openai/how-to/quota#request-more-quota)).
+3. **Do not run `bootstrap setup` until quota is approved.** Do not change the region or models, or edit `config.json`, to get around the block.
+4. **To use another subscription that has quota,** switch with `az account set`, check ① and ② again, and run `bootstrap setup` with a new environment name (for example `lab-en-02`). If `.lab/lab-en` already exists, its plan is tied to the first subscription and cannot continue under the same name. Recheck the permissions and spending authorization from 01 for the new subscription as well.
 
 ### Prepare the environment with one provisioning command {#resources-quickstart}
 
-After signing in during 01, run this command. **It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.** No separate environment variables, language flag, or hand-edited approval JSON is required.
+Run this command after the [pre-checks](#resources-prereq). **It reads your selected CLI subscription, tenant, and user, then sets language, record location, resource names, and configuration files automatically.** No separate environment variables, language flag, or hand-edited approval JSON is required.
 
 ```sh
 python -m lab bootstrap setup --environment lab-en
@@ -397,7 +490,7 @@ The program guides you through these stages:
 1. **Plan:** It uses `northcentralus` and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.
     - **The four roles:** **Agent (answers), Judge (scoring), Optimizer/search planner (instruction improvement and retrieval planning), and embeddings (numerical representations for search)**
     - You prepare an environment that calls existing models; you do not build a model from scratch.
-2. **Permission/model/quota checks:** It confirms readiness before creating anything.
+2. **Identity, provider, permission, model, and quota checks:** It confirms readiness read-only before creating anything. If a check fails, it shows `BLOCKED` with a `reason` and creates no resources. Fix the cause and run the same command again; use a new environment name (`lab-en-02`) only if you changed the signed-in account, subscription, or tenant.
 3. **Actual authorization inputs:** After readiness passes, enter the five values below.
 4. **Provision:** It creates resources only if you approve at the final confirmation.
 
@@ -421,7 +514,7 @@ No Microsoft Azure resources are created before confirmation, and Enter cancels.
 **Successful result**
 
 - The output reports **`status: APPLIED`** and creates **`.lab/lab-en/.env`**.
-- The same folder preserves `config.json`, `approval.json`, and `manifest.json`. Do not edit these to bypass checks.
+- The same folder preserves `config.json`, `approval.json`, and `manifest.json`. Do not edit these to bypass checks. The one exception is adding a retry allowance in the [recovery procedure](troubleshooting.md#provisioning-retry) after a first provisioning failure.
 - **`.env` holds the project connection address (Project endpoint) and model deployment names**, unlike `.venv`, the Python package folder. Subsequent commands read it with `--config`; do not execute or `source` it. If provisioning failed, do not substitute a copy of `.env.example`.
 - For errors, follow [provisioning troubleshooting](troubleshooting.md#provisioning).
 
@@ -429,6 +522,7 @@ No Microsoft Azure resources are created before confirmation, and Enter cancels.
 
 - It continues preparation **only for a plan with no creation attempt**. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use [status lookup](#resources-status) when resuming.
 - If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.
+- **If provisioning failed, for example with `DeploymentFailed`,** running `setup` again submits no new deployment, and `bootstrap apply --retry` is refused with `RETRY_BUDGET_EXHAUSTED` unless the approval allows a retry (`max_provisioning_retries`). The steps to retry once with the same plan, or to start again in a new environment, are in [first provisioning failure recovery](troubleshooting.md#provisioning-retry).
 
 <details class="guide-details optional-path" markdown="1">
 <summary>Only if you use an older-version environment or set environment variables manually</summary>
@@ -651,7 +745,10 @@ The following runtime `run_preflight()` reads the resources/deployments named in
 
 </details>
 
-**Completion criteria:** Runtime preflight and all five TPM checks report `PASS`; your project and role-specific deployments are present. This is read-only configuration evidence. The next step verifies actual model responses.
+**Wait 5–10 minutes after `APPLIED` appears before starting 03.** The role assignments that bootstrap created can take up to about 10 minutes to take effect ([how long role changes take](https://learn.microsoft.com/azure/role-based-access-control/troubleshooting#azure-role-assignments)). The portal checks and the runtime preflight above usually use up most of that time, but the read-only preflight cannot tell whether the roles have taken effect, so wait if the time is short even when it reports `PASS`. If you run 03's call commands too early, they fail with 401 or 403, and because 03's commands record a receipt before each call, **the same command that failed once is then refused.** For that case, follow [recovery after a first call failure](troubleshooting.md#knowledge-first-failure).
+{: .note .warning}
+
+**Completion criteria:** Runtime preflight and all five TPM checks report `PASS`; your project and role-specific deployments are present, and at least 5 minutes have passed since `APPLIED` appeared. This is read-only configuration evidence. The next step verifies actual model responses.
 {: .completion-check}
 
 <p class="step-next no-print"><a href="#agent" data-next-step>Next: 03. Connect policies and create the Agent →</a></p>
@@ -674,6 +771,9 @@ The following runtime `run_preflight()` reads the resources/deployments named in
 **These three commands perform actual uploads/model calls and can incur charges.** Check each result yourself before continuing. When resuming, check the saved receipts for completed work rather than repeating unnecessary calls.
 {: .note .warning}
 
+**Start only after 5–10 minutes have passed since `APPLIED` in 02.** These commands save a receipt before each call and never retry automatically. If you call before the roles take effect and a command fails once, **the same command can be refused.** When that happens, do not delete the record; follow the command-by-command steps in [recovery after a first call failure](troubleshooting.md#knowledge-first-failure) (for example, `smoke` uses a new `--run-id`).
+{: .note .warning}
+
 #### 1. Verify that the model responds {#agent-smoke}
 
 `smoke` is a short functional check.
@@ -684,7 +784,7 @@ First pass the [runtime checks in 02](#resources-preflight), including deploymen
 python -m lab --config .lab/lab-en/.env smoke --run-id model-smoke --confirm
 ```
 
-Confirm **`status: completed`** in the output.
+Confirm **`status: completed`** in the output. If it fails, the same `--run-id` is not run again. Fix the cause (usually 401 or 403) and run it again with a **new `--run-id`** such as `model-smoke-2`, keeping the first record instead of deleting it ([recovery steps](troubleshooting.md#knowledge-first-failure)).
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: SDK authentication and model calls</summary>
@@ -756,7 +856,7 @@ Embedding is not hidden local scoring. This function invokes the Azure OpenAI em
 python -m lab --config .lab/lab-en/.env iq probe --confirm
 ```
 
-Confirm **`status: retrieval_verified`** with nonempty references. `created_not_retrieval_tested` means creation only. If an error occurs, preserve the records and follow [retrieval troubleshooting](troubleshooting.md#knowledge).
+Confirm **`status: retrieval_verified`** with nonempty references. `created_not_retrieval_tested` means creation only. If an error occurs, preserve the records and follow [recovery after a first call failure](troubleshooting.md#knowledge-first-failure) and [retrieval troubleshooting](troubleshooting.md#knowledge). If `iq prepare` or `iq probe` refuses the same command, follow the command-specific recovery.
 
 Read the query/reference request and actual response checks around `POST .../retrieve`. **Direct retrieval verifies your signed-in user path**, not the Agent's managed-identity path.
 
@@ -775,7 +875,7 @@ In the portal, open **Build → Knowledge → Knowledge bases** and inspect Conn
 python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 ```
 
-This creates **`lab-en-iq` version `1`** using the instructions in `prompts/en/baseline.txt` and the verified policy tool. Check `agent_name`, `version`, and `receipt` in the output. A **receipt is a file recording the operation's result**, so the Agent name and version stay readable there. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3.
+This creates **`lab-en-iq` version `1`** using the instructions in `prompts/en/baseline.txt` and the verified policy tool. Check `agent_name`, `version`, and `receipt` in the output. A **receipt is a file recording the operation's result**, so the Agent name and version stay readable there. The command reuses an identical v1 in the same owned workspace; it does not adopt another Agent or create v3. If a creation that ended in an error makes the same command refuse with `The creation outcome is unknown`, first check in [recovery after a first call failure](troubleshooting.md#knowledge-first-failure) whether v1 exists remotely.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: Agent configuration and fixed versions</summary>

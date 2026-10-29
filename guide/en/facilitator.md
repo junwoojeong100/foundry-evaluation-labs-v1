@@ -28,8 +28,8 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 
 | Step | Required action | Completion evidence |
 |---|---|---|
-| [01 Environment](handbook.md#setup) | Check account, subscription, permissions, Python 3.11–3.14, Git, and Azure CLI. Step 02 sets language/record location automatically. | Matching identity, all three version checks, and successful local commands in the virtual environment |
-| [02 Provisioning](handbook.md#resources) | Complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS |
+| [01 Environment](handbook.md#setup) | Check the work or school (member) account, subscription, permissions, Python 3.11–3.14, Git, and Azure CLI. Step 02 sets language/record location automatically. | Matching identity (the CLI sign-in name equals the directory user name), all three version checks, and successful local commands in the virtual environment |
+| [02 Provisioning](handbook.md#resources) | [Pre-check](handbook.md#resources-prereq) provider registration and model quota, then complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS, then wait 5–10 minutes before starting 03 |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
 | [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Confirm the unsubmitted wizard settings and query-only input |
@@ -65,7 +65,9 @@ Optimizer ranking is internal selection evidence, not the direct managed reevalu
 
 | Symptom | Response |
 |---|---|
-| Wrong identity, 401/403 | Confirm the approved account/project; do not widen shared permissions |
+| Wrong identity, 401/403 | Confirm the approved account/project; do not widen shared permissions. For a guest or personal account, follow the [member account check](handbook.md#setup-account-type) |
+| First provisioning failed and `setup`/`apply` will not submit again | Follow the retry allowance or new-environment steps in [first provisioning failure recovery](troubleshooting.md#provisioning-retry) |
+| The same command is refused after a first failed call in 03 | Keep the records and follow [recovery for each command](troubleshooting.md#knowledge-first-failure); wait 5–10 minutes after 02 |
 | Catalog or deployment succeeds but Agent fails | Record the actual API/runtime error; verify the intended role |
 | Portal Add run item-schema error | Use the official SDK helper with the existing baseline data source, not a different scorer |
 | No custom evaluators available | Switch **Custom only OFF** or select **View built-in evaluators** |

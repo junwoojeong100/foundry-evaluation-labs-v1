@@ -118,7 +118,7 @@
 <a class="back-to-main no-print" href="index.html">← 실습 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-15">2026-10-15</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-10-29">2026-10-29</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
       <article id="guide-start" class="guide-content" lang="ko" aria-label="환경 설정 참고 · 권한·승인·정리">
@@ -195,7 +195,7 @@
 </tr>
 </tbody>
 </table>
-<p>숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. Microsoft Foundry의 <strong>Models + endpoints/Build → Models</strong>에서 배포 이름·모델·버전·상태를 대조합니다. <code>.env</code>에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.</p>
+<p>숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. 구독의 쿼터 Tier와 네 모델의 남은 할당량은 <a href="index.html#resources-prereq-quota">02의 할당량 점검</a>으로 미리 확인하며, 무료 체험·Free Tier 구독은 네 모델의 할당량이 없습니다. Microsoft Foundry의 <strong>Models + endpoints/Build → Models</strong>에서 배포 이름·모델·버전·상태를 대조합니다. <code>.env</code>에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.</p>
 <p><strong>embedding은 인덱스 계약과 같은 모델이어야 합니다.</strong> 정책 인덱스는 <code>text-embedding-3-large</code>의 3072차원 벡터로 만들며, <code>preflight</code>의 <code>embedding_supported_model</code>이 배포된 모델을 확인합니다. 이전 기본값인 <code>text-embedding-3-small</code>로 만든 환경은 <code>BLOCKED</code>로 표시됩니다. 계획이나 배포를 직접 고치지 말고 새 환경 이름으로 계획합니다.</p>
 <p><strong>관측 리소스의 추가 항목을 구분합니다.</strong> Application Insights는 <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">기본 Failure Anomalies 경고와 Smart Detection Action group</a>을 자동으로 추가할 수 있습니다. bootstrap은 경고가 자신의 Application Insights만 대상으로 하는지, 연결된 Action group이 기본 역할 수신자만 사용하는지 읽기 전용으로 확인합니다. 이름만 같은 항목을 인수하지 않으며, 다른 그룹의 공유 Action group도 변경·삭제하지 않습니다. 생성 중 연결이 아직 확인되지 않으면 같은 <code>bootstrap status</code>로 다시 확인하고 manifest를 편집하거나 경고를 삭제하여 우회하지 않습니다.</p>
 <h3 id="throughput">TPM을 설정한 뒤 호출을 시작합니다</h3>
@@ -353,6 +353,10 @@
 <td>승인된 호출·후보 한도입니다. 08의 요청 후보 수는 2입니다. 내부 Agent·Judge·검색 호출을 고려합니다. 이 필드가 포털의 모든 호출·비용을 자동 제한하지는 않습니다.</td>
 </tr>
 <tr>
+<td><code>max_provisioning_retries</code></td>
+<td>선택 필드이며 생략하면 0입니다. 빠른 <code>bootstrap setup</code>은 이 필드를 넣지 않습니다. 첫 ARM 배포가 <code>Failed</code>로 끝난 뒤 같은 계획으로 한 번 다시 제출하려면 <code>1</code>을 추가하고 <code>bootstrap apply ... --retry</code>를 실행합니다(<a href="troubleshooting.html#provisioning-retry">복구 절차</a>). 결과가 불명인 제출에는 쓸 수 없으며 무제한 재시도를 뜻하지 않습니다.</td>
+</tr>
+<tr>
 <td><code>allow_global_inference</code></td>
 <td>Global Standard의 처리 경계를 승인한 경우 <code>true</code>입니다. NCUS 내부 처리만 보장하지 않습니다.</td>
 </tr>
@@ -392,6 +396,10 @@
 </thead>
 <tbody>
 <tr>
+<td>로그인 계정 유형</td>
+<td><code>bootstrap</code>의 신원 검사는 CLI 로그인 이름과 Microsoft Entra ID의 사용자 이름이 같은 <strong>회사·학교(멤버) 계정</strong>만 통과시킵니다. 개인 Microsoft 계정과 게스트 계정은 <a href="index.html#setup-account-type">확인 방법</a>에 따라 멤버 계정으로 바꿉니다.</td>
+</tr>
+<tr>
 <td>본인의 새 환경 생성</td>
 <td>bootstrap은 구독 범위의 그룹·배포·자원 생성과 <code>Microsoft.Authorization/roleAssignments/write</code> 유효 권한을 확인합니다. Contributor만으로는 역할 할당이 안 됩니다. 구독 quota 조회 권한도 필요합니다.</td>
 </tr>
@@ -418,7 +426,7 @@
 </tbody>
 </table>
 <p><strong>새 자원의 실행 권한은 승인된 bootstrap이 해당 자원 범위에 할당합니다.</strong> 구독 전체 역할을 새로 부여하지 않습니다. 생성 후에는 본인과 서비스의 관리 ID가 서로 다른 신원임을 구분하고 03의 실제 도구 호출로 전파·데이터 평면 접근을 확인합니다.</p>
-<p>공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">공식 공급자 등록 안내</a>에 따라 다음을 확인합니다.</p>
+<p>공급자는 Microsoft Azure 서비스 종류를 구독에서 사용할 수 있게 하는 등록 항목입니다. 새 구독에는 아래 네 공급자가 등록되어 있지 않을 수 있으며, <code>bootstrap</code>은 미등록이면 곧바로 <code>BLOCKED</code>로 멈추고 자동 등록하지 않습니다. 포털 대신 CLI로 상태를 읽고 등록하는 명령은 <a href="index.html#resources-prereq-providers">02의 공급자 등록</a>에 있습니다. <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#azure-portal">공식 공급자 등록 안내</a>에 따라 다음을 확인합니다.</p>
 <ol>
 <li>Azure 포털 → <strong>Subscriptions → 사용할 구독 → Resource providers</strong>를 엽니다.</li>
 <li><code>Microsoft.CognitiveServices</code>, <code>Microsoft.Search</code>, <code>Microsoft.OperationalInsights</code>, <code>Microsoft.Insights</code>를 각각 검색하여 <strong>Registered</strong>인지 확인합니다.</li>
@@ -565,7 +573,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-15">2026-10-15</time></p>
+        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
         <div class="footer-links"><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>

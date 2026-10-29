@@ -10,9 +10,9 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 
 ## 시작하기
 
-1. **[01부터 시작합니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup).** 계정·구독·생성 및 역할 할당 권한·비용 승인을 확인합니다. Microsoft Azure·Microsoft Foundry 경험은 필요하지 않습니다.
+1. **[01부터 시작합니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup).** **회사·학교(Microsoft Entra 멤버) 계정**, 모델 할당량이 있는 유료 구독, 생성 및 역할 할당 권한, 비용 승인을 확인합니다. 개인 Microsoft 계정·게스트 계정·무료 체험 구독은 02에서 막힙니다. Microsoft Azure·Microsoft Foundry 경험은 필요하지 않습니다.
 2. **[GitHub Codespaces를 엽니다 · 권장](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-codespaces).** Python·Git·Azure CLI·의존성이 준비됩니다. 내 PC를 쓰려면 [로컬 설치 안내](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#setup-local)에 따라 Python **3.11–3.14**·Git·Azure CLI를 준비합니다. GitHub Codespaces 요금과 Microsoft Azure 요금은 별개입니다.
-3. **[로그인 후 02의 환경 생성 안내를 따릅니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-quickstart).** `python -m lab bootstrap setup --environment lab-ko`가 계획·승인 파일과 환경을 준비합니다. 현재 계정·구독·고정 모델과 실제 승인값을 확인하며, 생성 확인 전에는 자원을 만들지 않습니다.
+3. **[로그인하고 사전 점검한 뒤 02의 환경 생성 안내를 따릅니다](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html#resources-prereq).** 로그인한 뒤 등록되지 않은 리소스 공급자를 등록하고 모델 할당량을 확인합니다. 이어서 `python -m lab bootstrap setup --environment lab-ko`가 계획·승인 파일과 환경을 준비합니다. 현재 계정·구독·고정 모델과 실제 승인값을 확인하며, 생성 확인 전에는 자원을 만들지 않습니다.
 
 언어와 기록 위치는 환경 이름으로 정해집니다. `lab-ko`·`lab-ko-02`는 한국어, `lab-en`은 영어입니다. JSON이나 환경 변수를 직접 작성할 필요 없이 이후 명령은 기존 `--config`를 사용합니다.
 
