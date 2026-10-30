@@ -1,0 +1,439 @@
+WEBVTT
+
+1
+00:00:00.500 --> 00:00:05.003
+This video records the real Microsoft
+Foundry portal for the English lab run.
+
+2
+00:00:05.303 --> 00:00:08.146
+Personal details and connection addresses
+are hidden.
+
+3
+00:00:08.446 --> 00:00:13.698
+On the project Home page, take the Project
+endpoint for your program, not the Azure
+
+4
+00:00:13.698 --> 00:00:15.406
+OpenAI endpoint beside it.
+
+5
+00:00:15.706 --> 00:00:20.173
+API-key sign-in is disabled, so the lab
+uses your own identity.
+
+6
+00:00:21.423 --> 00:00:26.257
+Open Models, then Deployments, to see the
+four deployments this lab created.
+
+7
+00:00:26.557 --> 00:00:32.647
+Sol answers the questions, Luna judges the
+answers, GPT-5.5 plans the optimization,
+
+8
+00:00:32.647 --> 00:00:35.802
+and a text embedding model supports
+search.
+
+9
+00:00:36.102 --> 00:00:38.904
+Open the Agent deployment and choose
+Details.
+
+10
+00:00:39.204 --> 00:00:43.629
+Confirm the model version, that
+provisioning succeeded, and the limit of
+
+11
+00:00:43.629 --> 00:00:45.288
+100,000 tokens per minute.
+
+12
+00:00:45.588 --> 00:00:49.057
+These are this lab's starting limits, not
+a universal rule.
+
+13
+00:00:49.357 --> 00:00:51.883
+Nothing is changed or saved in this
+recording.
+
+14
+00:00:53.133 --> 00:00:57.773
+Under Knowledge, the lab has one knowledge
+base that holds eight synthetic policies.
+
+15
+00:00:58.073 --> 00:01:01.013
+One row in this list is not one policy
+document.
+
+16
+00:01:01.313 --> 00:01:03.953
+Open it to check the planner model and the
+source.
+
+17
+00:01:04.253 --> 00:01:06.734
+Active only means the source is
+registered.
+
+18
+00:01:07.034 --> 00:01:11.311
+You prove retrieval later, through real
+answers that call the policy tool.
+
+19
+00:01:11.611 --> 00:01:14.676
+The free-retrieval banner does not make
+the whole lab free.
+
+20
+00:01:15.926 --> 00:01:18.486
+Open the lab Agent and select version 1.
+
+21
+00:01:18.786 --> 00:01:23.776
+Its instructions are deliberately plain:
+one short sentence, and no calculating
+
+22
+00:01:23.776 --> 00:01:24.912
+dates or credits.
+
+23
+00:01:25.212 --> 00:01:29.065
+That leaves visible room for improvement,
+which is the point of this lab.
+
+24
+00:01:29.365 --> 00:01:33.998
+The knowledge base is connected below. Do
+not save or publish while you inspect.
+
+25
+00:01:35.248 --> 00:01:37.562
+Go to Evaluations and choose Create.
+
+26
+00:01:37.862 --> 00:01:41.534
+Select the Agent and pin version 1, not
+the latest version.
+
+27
+00:01:41.834 --> 00:01:44.119
+Keep Individual turns and One time.
+
+28
+00:01:50.511 --> 00:01:55.481
+For Data, choose Existing dataset and pick
+the registered dev12 for this language.
+
+29
+00:01:55.781 --> 00:01:59.218
+The preview shows five rows, but the
+dataset has twelve.
+
+30
+00:01:59.518 --> 00:02:03.817
+Do not generate or upload a different
+dataset; every run must use the same
+
+31
+00:02:03.817 --> 00:02:04.572
+twelve rows.
+
+32
+00:02:04.872 --> 00:02:09.967
+In Configure agents, the user message must
+be the item query template, so only the
+
+33
+00:02:09.967 --> 00:02:11.707
+question reaches the Agent.
+
+34
+00:02:12.007 --> 00:02:14.313
+Reference answers stay out of the prompt.
+
+35
+00:02:15.563 --> 00:02:18.954
+The Criteria step needs two evaluators and
+one Judge.
+
+36
+00:02:19.254 --> 00:02:23.751
+The Judge model defaults to the planner
+deployment, so change it to your lab judge
+
+37
+00:02:23.751 --> 00:02:24.409
+deployment.
+
+38
+00:02:24.709 --> 00:02:29.606
+Clear the recommended evaluators, then add
+Relevance and set its threshold to 4.
+
+39
+00:02:29.906 --> 00:02:32.108
+Relevance is scored from 1 to 5.
+
+40
+00:02:32.408 --> 00:02:36.886
+Add Task adherence and set its pass value
+to 1, because it is binary.
+
+41
+00:02:37.186 --> 00:02:40.548
+Review selected shows exactly these two
+evaluators.
+
+42
+00:02:41.048 --> 00:02:46.586
+On Review, check the Agent version, scope,
+dataset and evaluators, then name the
+
+43
+00:02:46.586 --> 00:02:47.417
+evaluation.
+
+44
+00:02:47.717 --> 00:02:51.888
+Submit only once. This video does not
+submit a new evaluation.
+
+45
+00:02:53.248 --> 00:02:56.080
+This is the completed v1 baseline run.
+
+46
+00:02:56.380 --> 00:03:00.687
+Check that the status is Completed, then
+read the Relevance and Task adherence
+
+47
+00:03:00.687 --> 00:03:01.184
+summary.
+
+48
+00:03:01.484 --> 00:03:07.147
+In this English run, Relevance passes 10
+of 12 and Task adherence passes 11 of 12.
+
+49
+00:03:07.447 --> 00:03:10.724
+Do not stop at the average. Open a case
+and read it.
+
+50
+00:03:11.024 --> 00:03:16.095
+Here the plain v1 declines to apply the
+policy to the customer's numbers, so
+
+51
+00:03:16.095 --> 00:03:17.162
+Relevance is 3.
+
+52
+00:03:17.462 --> 00:03:22.109
+User view shows the question and the JSON
+response, which you compare with the
+
+53
+00:03:22.109 --> 00:03:22.586
+policy.
+
+54
+00:03:23.836 --> 00:03:26.792
+Now improve the instructions with Agent
+Optimizer.
+
+55
+00:03:27.092 --> 00:03:30.278
+Open the Agent, choose Optimize, then
+Agent.
+
+56
+00:03:30.578 --> 00:03:35.306
+Select version 1 as the baseline and
+choose Instruction only. Turn Model off.
+
+57
+00:03:35.606 --> 00:03:39.760
+Use the planner deployment as the
+optimization model, allow at most two
+
+58
+00:03:39.760 --> 00:03:43.563
+candidates, and use the judge deployment
+as the evaluation model.
+
+59
+00:03:44.063 --> 00:03:48.731
+A run proposes new instruction candidates
+and scores each one on your dataset and
+
+60
+00:03:48.731 --> 00:03:49.307
+criteria.
+
+61
+00:03:49.607 --> 00:03:53.923
+It tunes instructions only; the model,
+tools and data stay fixed.
+
+62
+00:03:54.223 --> 00:03:58.003
+Next, choose the same registered dataset,
+dev12.
+
+63
+00:03:58.303 --> 00:04:02.635
+For criteria, turn off Custom only to see
+the built-in evaluators.
+
+64
+00:04:02.935 --> 00:04:05.080
+Add Relevance with threshold 4.
+
+65
+00:04:05.580 --> 00:04:08.072
+Add Task adherence with threshold 1.
+
+66
+00:04:08.372 --> 00:04:13.342
+The Review step shows an estimated cost.
+It is an estimate, not a spending limit.
+
+67
+00:04:13.642 --> 00:04:17.917
+We close the dialog here, because this job
+was already submitted once.
+
+68
+00:04:26.455 --> 00:04:29.694
+The completed job lists the baseline and
+its candidates.
+
+69
+00:04:29.994 --> 00:04:35.807
+Here the best candidate scores 0.865
+against a baseline of 0.844.
+
+70
+00:04:36.107 --> 00:04:39.855
+That is an internal score, not the managed
+evaluation result.
+
+71
+00:04:40.155 --> 00:04:43.922
+Open View changes to read the candidate
+instructions themselves.
+
+72
+00:04:44.222 --> 00:04:49.492
+The raw candidate copies facts from the
+dev12 questions, such as document IDs,
+
+73
+00:04:49.492 --> 00:04:51.722
+percentages and example answers.
+
+74
+00:04:52.022 --> 00:04:55.283
+That is memorizing the test, not a general
+improvement.
+
+75
+00:04:55.583 --> 00:04:59.754
+So a person reviews the candidate and
+removes those facts before using it.
+
+76
+00:05:01.004 --> 00:05:05.303
+Version 2 is created from the reviewed
+instructions file, not from the raw
+
+77
+00:05:05.303 --> 00:05:05.942
+candidate.
+
+78
+00:05:06.242 --> 00:05:11.190
+The review keeps the useful parts: the
+output format, using the knowledge base,
+
+79
+00:05:11.190 --> 00:05:14.509
+routing, and defending against injected
+instructions.
+
+80
+00:05:14.809 --> 00:05:19.231
+It removes the dev12 specifics and
+replaces fixed prohibitions with general
+
+81
+00:05:19.231 --> 00:05:19.821
+guidance.
+
+82
+00:05:20.121 --> 00:05:24.406
+The model, tools, knowledge connection and
+evaluators stay the same.
+
+83
+00:05:24.706 --> 00:05:27.153
+Promote candidate is not used in this lab.
+
+84
+00:05:28.403 --> 00:05:34.428
+The evaluation now holds two runs on the
+same data, evaluators and Judge: v1 and
+
+85
+00:05:34.428 --> 00:05:34.729
+v2.
+
+86
+00:05:35.029 --> 00:05:39.056
+The overall score rises from 88% to 96%.
+
+87
+00:05:39.356 --> 00:05:44.386
+Select both runs and choose Compare runs,
+then set the baseline to the v1 run.
+
+88
+00:05:44.686 --> 00:05:48.641
+Relevance improves from 3.75 to 4.58.
+
+89
+00:05:48.941 --> 00:05:53.303
+Task adherence is inconclusive: with
+twelve rows, that difference is not
+
+90
+00:05:53.303 --> 00:05:54.757
+statistically reliable.
+
+91
+00:05:55.057 --> 00:05:59.132
+Treat this as evidence on twelve
+questions, not as production approval.
+
+92
+00:05:59.432 --> 00:06:03.532
+Both resource groups are still running and
+were not deleted. Deleting them is a
+
+93
+00:06:03.532 --> 00:06:05.764
+separate step that needs explicit
+approval.

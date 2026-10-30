@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Microsoft Foundry 학습 루프 실습의 내레이션 영상입니다. CLI/SDK 요약영상과 실제 포털 화면 녹화를 자막·챕터 목록과 함께 재생합니다.">
+  <title>내레이션 실습 영상 · Microsoft Foundry 실습 가이드</title>
+  <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"themeInvalid": "저장된 화면 설정이 올바르지 않아 밝은 모드로 열었습니다.", "themeReadError": "화면 설정을 읽을 수 없어 밝은 모드로 열었습니다. 변경은 현재 창에만 적용될 수 있습니다.", "themeWriteError": "화면 설정을 저장할 수 없어 현재 창에만 적용됩니다.", "themeLight": "밝게", "themeDark": "어둡게", "themeLightLabel": "밝은 화면으로 전환", "themeDarkLabel": "어두운 화면으로 전환"}</script>
+  <script src="../../web/theme.js"></script>
+  <link rel="stylesheet" href="../../web/styles.css">
+  <style>
+    .video-main { max-width: 74rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; word-break: keep-all; overflow-wrap: anywhere; }
+    .video-main:focus { outline: none; }
+    .video-main .return-link { margin: 0 0 1rem; font-size: 0.9rem; }
+    .video-main h1 { margin: 0 0 0.6rem; color: var(--ink); font-size: clamp(1.7rem, 3.2vw, 2.3rem); line-height: 1.25; letter-spacing: -0.02em; }
+    .video-main .lead { max-width: 52rem; margin: 0; color: var(--muted); }
+    .video-card { margin-top: 1.75rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .video-card .card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1rem; }
+    .video-card h2 { margin: 0; color: var(--ink); font-size: 1.3rem; line-height: 1.35; }
+    .video-card .meta { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    .video-card .summary { max-width: 56rem; margin: 0.5rem 0 0; }
+    .player { display: grid; gap: 1rem; margin-top: 1rem; }
+    .player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 0.5rem; background: #000; }
+    .chapters h3 { margin: 0 0 0.5rem; color: var(--ink); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .chapter-list { position: relative; margin: 0; padding: 0; list-style: none; overflow-y: auto; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--paper); }
+    .chapter-list li + li { border-top: 1px solid var(--line); }
+    .chapter-list a { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0.5rem; padding: 0.55rem 0.75rem; border-left: 3px solid transparent; color: var(--body-ink); font-size: 0.9rem; line-height: 1.4; text-decoration: none; }
+    .chapter-list a:hover { background: var(--canvas); color: var(--ink); }
+    .chapter-list a[aria-current="true"] { border-left-color: var(--teal); background: var(--teal-soft); color: var(--ink); font-weight: 650; }
+    .chapter-list .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .video-card .files { margin: 0.9rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    .video-card .track-error { margin: 0.9rem 0 0; padding: 0.7rem 1rem; border: 1px solid #eadbc5; border-left: 3px solid #956120; border-radius: 0 0.5rem 0.5rem 0; background: #fcf8ee; color: #684d2c; font-size: 0.88rem; }
+    :root[data-theme="dark"] .video-card .track-error { border-color: #82672f; background: #3c301e; color: #f4d298; }
+    .video-main .video-note { margin: 2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    @media (max-width: 61.99rem) { .chapter-list { max-height: 19rem; } }
+    @media (min-width: 62rem) {
+      .player { grid-template-columns: minmax(0, 1fr) 19rem; }
+      .chapters { position: relative; min-height: 12rem; }
+      .chapters-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+      .chapters-inner h3 { flex: 0 0 auto; }
+      .chapter-list { flex: 1 1 auto; min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">본문으로 바로 가기</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../ko/index.html" aria-label="Microsoft Foundry 실습 가이드 처음으로">
+        <img class="brand-symbol" src="../../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>평가·개선 실습 가이드</span></span>
+      </a>
+      <span class="header-context">내레이션 영상</span>
+      <nav class="language-switcher" aria-label="가이드 언어">
+        <a href="index.html" lang="en" hreflang="en">English</a>
+        <a href="ko.html" lang="ko" hreflang="ko" aria-current="page">한국어</a>
+      </nav>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 화면으로 전환" hidden>어둡게</button>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+
+  <main id="main-content" class="video-main" tabindex="-1">
+    <p class="return-link"><a href="../ko/index.html">← 실습 가이드로 돌아가기</a></p>
+    <h1>내레이션 실습 영상</h1>
+    <p class="lead">가장 최근 전체 실습 한 번을 재생하는 내레이션 영상 두 편입니다. 자막은 기본으로 켜져 있고(CC 버튼으로 끌 수 있습니다) 챕터 목록으로 원하는 단계로 바로 이동합니다.</p>
+    <section id="replay" class="video-card" aria-labelledby="replay-title" data-player>
+      <div class="card-head">
+        <h2 id="replay-title">CLI/SDK 실습 요약영상</h2>
+        <p class="meta">7:57 · 챕터 14개</p>
+      </div>
+      <p class="summary">한 번의 전체 실습에서 남은 실제 명령과 관리형 서비스 기록을 긴 대기 시간을 줄여 재생합니다. 포털 화면 녹화가 아닙니다.</p>
+      <div class="player">
+        <video controls preload="metadata" playsinline width="1920" height="1080" aria-labelledby="replay-title">
+          <source src="Foundry-Lab-Replay-KO.mp4#t=0.05" type="video/mp4">
+          <track kind="subtitles" src="Foundry-Lab-Replay-KO.vtt" srclang="ko" label="한국어" default>
+          <p>이 브라우저에서는 영상을 재생할 수 없습니다. <a href="Foundry-Lab-Replay-KO.mp4">MP4 열기</a></p>
+        </video>
+        <nav class="chapters" aria-label="챕터">
+          <div class="chapters-inner">
+            <h3>챕터</h3>
+            <ol class="chapter-list">
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=0" data-start="0"><span class="t">0:00</span><span>LAB 처음부터 끝까지, Foundry 학습 루프</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=32.4" data-start="32.4"><span class="t">0:32</span><span>01 계정·구독·언어를 먼저 고정합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=63.32" data-start="63.32"><span class="t">1:03</span><span>02 계획과 모델별 TPM을 확인합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=96.32" data-start="96.32"><span class="t">1:36</span><span>02 새 리소스 그룹에 환경을 생성합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=127.76" data-start="127.76"><span class="t">2:07</span><span>03 모델 응답과 정책 검색을 확인합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=159.92" data-start="159.92"><span class="t">2:39</span><span>03 고정 v1 Agent와 실제 도구 호출</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=193.16" data-start="193.16"><span class="t">3:13</span><span>04 변경 없는 dev12를 등록합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=224.4" data-start="224.4"><span class="t">3:44</span><span>05 두 평가기의 척도와 Judge를 고정합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=256.84" data-start="256.84"><span class="t">4:16</span><span>06 기준선 평가를 한 번 제출합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=292.4" data-start="292.4"><span class="t">4:52</span><span>07 점수보다 실제 답변과 이유를 읽습니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=332.04" data-start="332.04"><span class="t">5:32</span><span>08 Instruction only로 최적화합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=372.36" data-start="372.36"><span class="t">6:12</span><span>09 후보가 있을 때만 같은 조건으로 비교합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=411.6" data-start="411.6"><span class="t">6:51</span><span>10 삭제하지 않고 보존·인계합니다</span></a></li>
+            <li><a href="Foundry-Lab-Replay-KO.mp4#t=444.08" data-start="444.08"><span class="t">7:24</span><span>END 같은 환경에서 실습을 다시 열 수 있습니다</span></a></li>
+            </ol>
+          </div>
+        </nav>
+      </div>
+      <p class="track-error" hidden>자막을 불러오지 못했습니다. 이 페이지를 디스크에서 직접(file://) 열었다면 브라우저가 자막 파일을 차단합니다. http(s)로 열거나, 내장 자막과 챕터를 표시하는 VLC·QuickTime 같은 플레이어에서 MP4를 재생하세요.</p>
+      <p class="files">파일: <a href="Foundry-Lab-Replay-KO.mp4">MP4</a> · <a href="Foundry-Lab-Replay-KO.srt">SRT</a> · <a href="Foundry-Lab-Replay-KO.vtt">WebVTT</a></p>
+    </section>
+    <section id="walkthrough" class="video-card" aria-labelledby="walkthrough-title" data-player>
+      <div class="card-head">
+        <h2 id="walkthrough-title">실제 포털 화면 녹화</h2>
+        <p class="meta">6:48 · 챕터 11개</p>
+      </div>
+      <p class="summary">같은 실행의 실제 Microsoft Foundry 포털 화면을 녹화한 것으로, 개인정보와 연결 주소는 가렸습니다. Submit을 누르기 전까지만 보여 주므로 평가나 최적화 작업을 다시 만들지 않습니다.</p>
+      <div class="player">
+        <video controls preload="metadata" playsinline width="1920" height="1080" aria-labelledby="walkthrough-title">
+          <source src="Foundry-Portal-Walkthrough-KO.mp4#t=0.05" type="video/mp4">
+          <track kind="subtitles" src="Foundry-Portal-Walkthrough-KO.vtt" srclang="ko" label="한국어" default>
+          <p>이 브라우저에서는 영상을 재생할 수 없습니다. <a href="Foundry-Portal-Walkthrough-KO.mp4">MP4 열기</a></p>
+        </video>
+        <nav class="chapters" aria-label="챕터">
+          <div class="chapters-inner">
+            <h3>챕터</h3>
+            <ol class="chapter-list">
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=0" data-start="0"><span class="t">0:00</span><span>01 프로젝트 Home과 연결 주소</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=24.807" data-start="24.807"><span class="t">0:24</span><span>02 모델 역할과 배포</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=58.259" data-start="58.259"><span class="t">0:58</span><span>03 Foundry IQ 정책 연결</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=85.993" data-start="85.993"><span class="t">1:25</span><span>04 고정 Agent v1과 지침</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=109.625" data-start="109.625"><span class="t">1:49</span><span>05 평가 만들기 · Agent와 데이터</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=153.265" data-start="153.265"><span class="t">2:33</span><span>06 평가 기준과 Judge</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=199.054" data-start="199.054"><span class="t">3:19</span><span>07 점수와 이유 읽기</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=237.166" data-start="237.166"><span class="t">3:57</span><span>08 Agent Optimizer로 지침 개선</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=298.727" data-start="298.727"><span class="t">4:58</span><span>09 Optimizer 결과와 View changes</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=337.938" data-start="337.938"><span class="t">5:37</span><span>10 v2 = 검토한 지침만 변경</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-KO.mp4#t=366.146" data-start="366.146"><span class="t">6:06</span><span>11 Compare runs로 v1·v2 비교</span></a></li>
+            </ol>
+          </div>
+        </nav>
+      </div>
+      <p class="track-error" hidden>자막을 불러오지 못했습니다. 이 페이지를 디스크에서 직접(file://) 열었다면 브라우저가 자막 파일을 차단합니다. http(s)로 열거나, 내장 자막과 챕터를 표시하는 VLC·QuickTime 같은 플레이어에서 MP4를 재생하세요.</p>
+      <p class="files">파일: <a href="Foundry-Portal-Walkthrough-KO.mp4">MP4</a> · <a href="Foundry-Portal-Walkthrough-KO.srt">SRT</a> · <a href="Foundry-Portal-Walkthrough-KO.vtt">WebVTT</a></p>
+    </section>
+    <p class="video-note">합성 Contoso 데이터로 진행한 실제 실습 한 번의 기록입니다. 점수는 열두 개 질문에 대한 근거일 뿐 운영 승인이 아닙니다.</p>
+  </main>
+
+  <script>
+(() => {
+  "use strict";
+  const videos = Array.from(document.querySelectorAll("[data-player] video"));
+  document.querySelectorAll("[data-player]").forEach((card) => {
+    const video = card.querySelector("video");
+    const list = card.querySelector(".chapter-list");
+    const links = Array.from(card.querySelectorAll("[data-start]"));
+    if (!video || !list || !links.length) return;
+    const starts = links.map((link) => Number(link.dataset.start));
+    let current = -1;
+
+    video.addEventListener("play", () => {
+      videos.forEach((other) => {
+        if (other !== video) other.pause();
+      });
+    });
+
+    const track = video.querySelector("track");
+    const notice = card.querySelector(".track-error");
+    if (track && notice) {
+      const showNotice = () => {
+        notice.hidden = false;
+      };
+      track.addEventListener("error", showNotice);
+      if (track.readyState === HTMLTrackElement.ERROR) showNotice();
+    }
+
+    function keepVisible(link) {
+      const item = link.parentElement;
+      if (item.offsetTop < list.scrollTop) {
+        list.scrollTop = item.offsetTop;
+      } else if (item.offsetTop + item.offsetHeight > list.scrollTop + list.clientHeight) {
+        list.scrollTop = item.offsetTop + item.offsetHeight - list.clientHeight;
+      }
+    }
+
+    function mark() {
+      let index = 0;
+      starts.forEach((start, position) => {
+        if (video.currentTime + 0.25 >= start) index = position;
+      });
+      if (index === current) return;
+      current = index;
+      links.forEach((link, position) => {
+        if (position === index) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+      keepVisible(links[index]);
+    }
+
+    links.forEach((link, position) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        video.currentTime = starts[position];
+        const started = video.play();
+        if (started && typeof started.catch === "function") started.catch(() => {});
+        mark();
+      });
+    });
+    ["timeupdate", "seeked", "loadedmetadata"].forEach((name) => video.addEventListener(name, mark));
+    mark();
+  });
+})();
+</script>
+</body>
+</html>

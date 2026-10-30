@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Narrated videos of the Microsoft Foundry learning-loop lab: a CLI/SDK replay and a walkthrough of the real portal, with subtitles and a chapter list.">
+  <title>Narrated lab videos · Microsoft Foundry Lab Guide</title>
+  <link rel="icon" type="image/svg+xml" href="../../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script src="../../web/theme.js"></script>
+  <link rel="stylesheet" href="../../web/styles.css">
+  <style>
+    .video-main { max-width: 74rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; word-break: keep-all; overflow-wrap: anywhere; }
+    .video-main:focus { outline: none; }
+    .video-main .return-link { margin: 0 0 1rem; font-size: 0.9rem; }
+    .video-main h1 { margin: 0 0 0.6rem; color: var(--ink); font-size: clamp(1.7rem, 3.2vw, 2.3rem); line-height: 1.25; letter-spacing: -0.02em; }
+    .video-main .lead { max-width: 52rem; margin: 0; color: var(--muted); }
+    .video-card { margin-top: 1.75rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .video-card .card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1rem; }
+    .video-card h2 { margin: 0; color: var(--ink); font-size: 1.3rem; line-height: 1.35; }
+    .video-card .meta { margin: 0; color: var(--muted); font-size: 0.85rem; }
+    .video-card .summary { max-width: 56rem; margin: 0.5rem 0 0; }
+    .player { display: grid; gap: 1rem; margin-top: 1rem; }
+    .player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 0.5rem; background: #000; }
+    .chapters h3 { margin: 0 0 0.5rem; color: var(--ink); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .chapter-list { position: relative; margin: 0; padding: 0; list-style: none; overflow-y: auto; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--paper); }
+    .chapter-list li + li { border-top: 1px solid var(--line); }
+    .chapter-list a { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0.5rem; padding: 0.55rem 0.75rem; border-left: 3px solid transparent; color: var(--body-ink); font-size: 0.9rem; line-height: 1.4; text-decoration: none; }
+    .chapter-list a:hover { background: var(--canvas); color: var(--ink); }
+    .chapter-list a[aria-current="true"] { border-left-color: var(--teal); background: var(--teal-soft); color: var(--ink); font-weight: 650; }
+    .chapter-list .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .video-card .files { margin: 0.9rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    .video-card .track-error { margin: 0.9rem 0 0; padding: 0.7rem 1rem; border: 1px solid #eadbc5; border-left: 3px solid #956120; border-radius: 0 0.5rem 0.5rem 0; background: #fcf8ee; color: #684d2c; font-size: 0.88rem; }
+    :root[data-theme="dark"] .video-card .track-error { border-color: #82672f; background: #3c301e; color: #f4d298; }
+    .video-main .video-note { margin: 2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+    @media (max-width: 61.99rem) { .chapter-list { max-height: 19rem; } }
+    @media (min-width: 62rem) {
+      .player { grid-template-columns: minmax(0, 1fr) 19rem; }
+      .chapters { position: relative; min-height: 12rem; }
+      .chapters-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+      .chapters-inner h3 { flex: 0 0 auto; }
+      .chapter-list { flex: 1 1 auto; min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html" aria-label="Microsoft Foundry lab guide home">
+        <img class="brand-symbol" src="../../web/assets/foundry.svg" width="42" height="42" alt="" aria-hidden="true">
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>Evaluation and improvement labs</span></span>
+      </a>
+      <span class="header-context">Narrated videos</span>
+      <nav class="language-switcher" aria-label="Guide language">
+        <a href="index.html" lang="en" hreflang="en" aria-current="page">English</a>
+        <a href="ko.html" lang="ko" hreflang="ko">한국어</a>
+      </nav>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+
+  <main id="main-content" class="video-main" tabindex="-1">
+    <p class="return-link"><a href="../index.html">← Back to the hands-on guide</a></p>
+    <h1>Narrated lab videos</h1>
+    <p class="lead">Two narrated videos replay the most recent full lab run. Subtitles are on by default (turn them off with the CC button), and the chapter list jumps to any step.</p>
+    <section id="replay" class="video-card" aria-labelledby="replay-title" data-player>
+      <div class="card-head">
+        <h2 id="replay-title">CLI/SDK lab replay</h2>
+        <p class="meta">7:54 · 14 chapters</p>
+      </div>
+      <p class="summary">Replays the actual command and managed-service records of one full run, with long waits removed. It is not a portal screen recording.</p>
+      <div class="player">
+        <video controls preload="metadata" playsinline width="1920" height="1080" aria-labelledby="replay-title">
+          <source src="Foundry-Lab-Replay-EN.mp4#t=0.05" type="video/mp4">
+          <track kind="subtitles" src="Foundry-Lab-Replay-EN.vtt" srclang="en" label="English" default>
+          <p>Your browser cannot play this video. <a href="Foundry-Lab-Replay-EN.mp4">Open the MP4</a></p>
+        </video>
+        <nav class="chapters" aria-label="Chapters">
+          <div class="chapters-inner">
+            <h3>Chapters</h3>
+            <ol class="chapter-list">
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=0" data-start="0"><span class="t">0:00</span><span>LAB The complete Foundry learning loop</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=30.48" data-start="30.48"><span class="t">0:30</span><span>01 Pin the account, subscription and language</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=59.68" data-start="59.68"><span class="t">0:59</span><span>02 Check the plan and per-model TPM</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=94.8" data-start="94.8"><span class="t">1:34</span><span>02 Provision the new resource group</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=128.56" data-start="128.56"><span class="t">2:08</span><span>03 Verify model response and policy retrieval</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=160.12" data-start="160.12"><span class="t">2:40</span><span>03 Pin v1 and verify its real tool call</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=193.48" data-start="193.48"><span class="t">3:13</span><span>04 Register the unchanged dev12 dataset</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=222.96" data-start="222.96"><span class="t">3:42</span><span>05 Fix both evaluator scales and the Judge</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=255.24" data-start="255.24"><span class="t">4:15</span><span>06 Submit the baseline evaluation once</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=288.92" data-start="288.92"><span class="t">4:48</span><span>07 Read the answer and reason, not just the score</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=321.92" data-start="321.92"><span class="t">5:21</span><span>08 Optimize instructions only</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=362.24" data-start="362.24"><span class="t">6:02</span><span>09 Compare only a real reviewed candidate</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=402.8" data-start="402.8"><span class="t">6:42</span><span>10 Retain and hand over the resources</span></a></li>
+            <li><a href="Foundry-Lab-Replay-EN.mp4#t=436.88" data-start="436.88"><span class="t">7:16</span><span>END Reopen the retained lab environment</span></a></li>
+            </ol>
+          </div>
+        </nav>
+      </div>
+      <p class="track-error" hidden>Subtitles could not be loaded. If you opened this page straight from disk (file://), the browser blocks subtitle files: open it over http(s), or play the MP4 in a player such as VLC or QuickTime, which show the embedded subtitles and chapters.</p>
+      <p class="files">Files: <a href="Foundry-Lab-Replay-EN.mp4">MP4</a> · <a href="Foundry-Lab-Replay-EN.srt">SRT</a> · <a href="Foundry-Lab-Replay-EN.vtt">WebVTT</a></p>
+    </section>
+    <section id="walkthrough" class="video-card" aria-labelledby="walkthrough-title" data-player>
+      <div class="card-head">
+        <h2 id="walkthrough-title">Portal walkthrough</h2>
+        <p class="meta">6:06 · 11 chapters</p>
+      </div>
+      <p class="summary">Records the real Microsoft Foundry portal for the same run, with personal information and connection addresses hidden. It stops before Submit, so no evaluation or optimization job is created again.</p>
+      <div class="player">
+        <video controls preload="metadata" playsinline width="1920" height="1080" aria-labelledby="walkthrough-title">
+          <source src="Foundry-Portal-Walkthrough-EN.mp4#t=0.05" type="video/mp4">
+          <track kind="subtitles" src="Foundry-Portal-Walkthrough-EN.vtt" srclang="en" label="English" default>
+          <p>Your browser cannot play this video. <a href="Foundry-Portal-Walkthrough-EN.mp4">Open the MP4</a></p>
+        </video>
+        <nav class="chapters" aria-label="Chapters">
+          <div class="chapters-inner">
+            <h3>Chapters</h3>
+            <ol class="chapter-list">
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=0" data-start="0"><span class="t">0:00</span><span>01 Project Home and connection addresses</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=21.073" data-start="21.073"><span class="t">0:21</span><span>02 Model roles and deployments</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=52.783" data-start="52.783"><span class="t">0:52</span><span>03 Foundry IQ policy connection</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=75.576" data-start="75.576"><span class="t">1:15</span><span>04 The fixed Agent v1 and its instructions</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=94.898" data-start="94.898"><span class="t">1:34</span><span>05 Create the evaluation: Agent and data</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=135.213" data-start="135.213"><span class="t">2:15</span><span>06 Evaluation criteria and the Judge</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=172.898" data-start="172.898"><span class="t">2:52</span><span>07 Read the scores and the reasons</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=203.486" data-start="203.486"><span class="t">3:23</span><span>08 Improve the instructions with Agent Optimizer</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=266.105" data-start="266.105"><span class="t">4:26</span><span>09 Optimizer results and View changes</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=300.654" data-start="300.654"><span class="t">5:00</span><span>10 v2 = the reviewed instructions only</span></a></li>
+            <li><a href="Foundry-Portal-Walkthrough-EN.mp4#t=328.053" data-start="328.053"><span class="t">5:28</span><span>11 Compare v1 and v2 with Compare runs</span></a></li>
+            </ol>
+          </div>
+        </nav>
+      </div>
+      <p class="track-error" hidden>Subtitles could not be loaded. If you opened this page straight from disk (file://), the browser blocks subtitle files: open it over http(s), or play the MP4 in a player such as VLC or QuickTime, which show the embedded subtitles and chapters.</p>
+      <p class="files">Files: <a href="Foundry-Portal-Walkthrough-EN.mp4">MP4</a> · <a href="Foundry-Portal-Walkthrough-EN.srt">SRT</a> · <a href="Foundry-Portal-Walkthrough-EN.vtt">WebVTT</a></p>
+    </section>
+    <p class="video-note">Synthetic Contoso data from one real lab run. Scores are evidence on twelve questions, not production approval.</p>
+  </main>
+
+  <script>
+(() => {
+  "use strict";
+  const videos = Array.from(document.querySelectorAll("[data-player] video"));
+  document.querySelectorAll("[data-player]").forEach((card) => {
+    const video = card.querySelector("video");
+    const list = card.querySelector(".chapter-list");
+    const links = Array.from(card.querySelectorAll("[data-start]"));
+    if (!video || !list || !links.length) return;
+    const starts = links.map((link) => Number(link.dataset.start));
+    let current = -1;
+
+    video.addEventListener("play", () => {
+      videos.forEach((other) => {
+        if (other !== video) other.pause();
+      });
+    });
+
+    const track = video.querySelector("track");
+    const notice = card.querySelector(".track-error");
+    if (track && notice) {
+      const showNotice = () => {
+        notice.hidden = false;
+      };
+      track.addEventListener("error", showNotice);
+      if (track.readyState === HTMLTrackElement.ERROR) showNotice();
+    }
+
+    function keepVisible(link) {
+      const item = link.parentElement;
+      if (item.offsetTop < list.scrollTop) {
+        list.scrollTop = item.offsetTop;
+      } else if (item.offsetTop + item.offsetHeight > list.scrollTop + list.clientHeight) {
+        list.scrollTop = item.offsetTop + item.offsetHeight - list.clientHeight;
+      }
+    }
+
+    function mark() {
+      let index = 0;
+      starts.forEach((start, position) => {
+        if (video.currentTime + 0.25 >= start) index = position;
+      });
+      if (index === current) return;
+      current = index;
+      links.forEach((link, position) => {
+        if (position === index) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      });
+      keepVisible(links[index]);
+    }
+
+    links.forEach((link, position) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        video.currentTime = starts[position];
+        const started = video.play();
+        if (started && typeof started.catch === "function") started.catch(() => {});
+        mark();
+      });
+    });
+    ["timeupdate", "seeked", "loadedmetadata"].forEach((name) => video.addEventListener(name, mark));
+    mark();
+  });
+})();
+</script>
+</body>
+</html>

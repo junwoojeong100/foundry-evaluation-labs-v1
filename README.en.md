@@ -20,6 +20,6 @@ See [troubleshooting](guide/en/troubleshooting.md) for recovery procedures. Sepa
 
 Authenticated portal walkthroughs are also available: [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Portal-Walkthrough-EN.mp4) · [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Portal-Walkthrough-KO.mp4). They show the actual Microsoft Foundry portal for the same run with private fields and connection addresses redacted, and stop before Submit, so no duplicate evaluation or optimization job is created.
 
-The MP4 links play directly in your browser (hosted on GitHub Pages; nothing to download). The same files are in [`docs/media/`](docs/media/) for offline use.
+The MP4 links play directly in your browser (hosted on GitHub Pages; nothing to download), but Edge and Chrome do not display the subtitles and chapter markers embedded in an MP4. To see them in the browser, use the video page: [English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/) · [한국어](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/ko.html). The same files are in [`docs/media/`](docs/media/) for offline use.
 
 Released under the [MIT License](LICENSE); Microsoft artwork and portal screenshots are not relicensed (see [NOTICE](web/assets/NOTICE.txt)).

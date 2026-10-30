@@ -1,0 +1,72 @@
+{
+  "Foundry-Lab-Replay-EN": {
+    "duration": 474.0,
+    "chapters": [
+      {"start": 0.0, "title": "LAB The complete Foundry learning loop"},
+      {"start": 30.48, "title": "01 Pin the account, subscription and language"},
+      {"start": 59.68, "title": "02 Check the plan and per-model TPM"},
+      {"start": 94.8, "title": "02 Provision the new resource group"},
+      {"start": 128.56, "title": "03 Verify model response and policy retrieval"},
+      {"start": 160.12, "title": "03 Pin v1 and verify its real tool call"},
+      {"start": 193.48, "title": "04 Register the unchanged dev12 dataset"},
+      {"start": 222.96, "title": "05 Fix both evaluator scales and the Judge"},
+      {"start": 255.24, "title": "06 Submit the baseline evaluation once"},
+      {"start": 288.92, "title": "07 Read the answer and reason, not just the score"},
+      {"start": 321.92, "title": "08 Optimize instructions only"},
+      {"start": 362.24, "title": "09 Compare only a real reviewed candidate"},
+      {"start": 402.8, "title": "10 Retain and hand over the resources"},
+      {"start": 436.88, "title": "END Reopen the retained lab environment"}
+    ]
+  },
+  "Foundry-Lab-Replay-KO": {
+    "duration": 477.76,
+    "chapters": [
+      {"start": 0.0, "title": "LAB 처음부터 끝까지, Foundry 학습 루프"},
+      {"start": 32.4, "title": "01 계정·구독·언어를 먼저 고정합니다"},
+      {"start": 63.32, "title": "02 계획과 모델별 TPM을 확인합니다"},
+      {"start": 96.32, "title": "02 새 리소스 그룹에 환경을 생성합니다"},
+      {"start": 127.76, "title": "03 모델 응답과 정책 검색을 확인합니다"},
+      {"start": 159.92, "title": "03 고정 v1 Agent와 실제 도구 호출"},
+      {"start": 193.16, "title": "04 변경 없는 dev12를 등록합니다"},
+      {"start": 224.4, "title": "05 두 평가기의 척도와 Judge를 고정합니다"},
+      {"start": 256.84, "title": "06 기준선 평가를 한 번 제출합니다"},
+      {"start": 292.4, "title": "07 점수보다 실제 답변과 이유를 읽습니다"},
+      {"start": 332.04, "title": "08 Instruction only로 최적화합니다"},
+      {"start": 372.36, "title": "09 후보가 있을 때만 같은 조건으로 비교합니다"},
+      {"start": 411.6, "title": "10 삭제하지 않고 보존·인계합니다"},
+      {"start": 444.08, "title": "END 같은 환경에서 실습을 다시 열 수 있습니다"}
+    ]
+  },
+  "Foundry-Portal-Walkthrough-EN": {
+    "duration": 366.664,
+    "chapters": [
+      {"start": 0.0, "title": "01 Project Home and connection addresses"},
+      {"start": 21.073, "title": "02 Model roles and deployments"},
+      {"start": 52.783, "title": "03 Foundry IQ policy connection"},
+      {"start": 75.576, "title": "04 The fixed Agent v1 and its instructions"},
+      {"start": 94.898, "title": "05 Create the evaluation: Agent and data"},
+      {"start": 135.213, "title": "06 Evaluation criteria and the Judge"},
+      {"start": 172.898, "title": "07 Read the scores and the reasons"},
+      {"start": 203.486, "title": "08 Improve the instructions with Agent Optimizer"},
+      {"start": 266.105, "title": "09 Optimizer results and View changes"},
+      {"start": 300.654, "title": "10 v2 = the reviewed instructions only"},
+      {"start": 328.053, "title": "11 Compare v1 and v2 with Compare runs"}
+    ]
+  },
+  "Foundry-Portal-Walkthrough-KO": {
+    "duration": 408.124,
+    "chapters": [
+      {"start": 0.0, "title": "01 프로젝트 Home과 연결 주소"},
+      {"start": 24.807, "title": "02 모델 역할과 배포"},
+      {"start": 58.259, "title": "03 Foundry IQ 정책 연결"},
+      {"start": 85.993, "title": "04 고정 Agent v1과 지침"},
+      {"start": 109.625, "title": "05 평가 만들기 · Agent와 데이터"},
+      {"start": 153.265, "title": "06 평가 기준과 Judge"},
+      {"start": 199.054, "title": "07 점수와 이유 읽기"},
+      {"start": 237.166, "title": "08 Agent Optimizer로 지침 개선"},
+      {"start": 298.727, "title": "09 Optimizer 결과와 View changes"},
+      {"start": 337.938, "title": "10 v2 = 검토한 지침만 변경"},
+      {"start": 366.146, "title": "11 Compare runs로 v1·v2 비교"}
+    ]
+  }
+}
