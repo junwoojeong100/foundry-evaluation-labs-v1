@@ -54,10 +54,12 @@ The SDK helper adds a real run to the existing Microsoft Foundry definition. It 
 | Lab checklist | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [체크리스트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
 | Data contract | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/data-guide.html) | [데이터](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/data-guide.html) |
 | Troubleshooting | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/troubleshooting.html) | [문제 해결](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/troubleshooting.html) |
-| CLI/SDK lab replay | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) |
-| Actual portal walkthrough | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
+| CLI/SDK lab replay | [English MP4](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Lab-Replay-KO.mp4) |
+| Actual portal walkthrough | [English MP4](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
 
 Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay the execution records of the most recent full lab run. The portal walkthroughs record the authenticated Microsoft Foundry portal for the same run, with personal fields and connection addresses redacted. They open the existing resources and completed results and show the evaluation and Optimizer dialogs without pressing Submit, so no duplicate evaluation or optimization job is created. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
+
+The MP4 links play directly in your browser (hosted on GitHub Pages; nothing to download). Edge and Chrome play the narrated video but do not display the embedded subtitles and chapter markers; use a player such as VLC or QuickTime for them, or the external subtitle files above. The same files are in [`docs/media/`](docs/media/) for offline use.
 
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
