@@ -1184,7 +1184,7 @@ This is the actual SDK implementation of `native-evals --name ...`. Notice `list
 1. Open the completed baseline run from 06 and read its pass/fail/error counts.
 2. In **Detailed metrics result**, select a failing or lowest-score row and read **`Relevance.reason`** and **`TaskAdherence.reason`**. A `reason` explains why that score was assigned.
 3. Open the row's **`conversation_id → User view`** to read the actual question/answer. Return to detailed metrics for scoring reasons; they are in a different view.
-4. Find the cited policy ID in the [source policies](../../data/en/knowledge/documents.json). Review a good case the same way. If no failure exists, record that fact rather than weakening v1 to create one.
+4. Find the cited policy ID in the [source policies](../../data/en/knowledge/documents.json). Review a good case the same way. If no failure exists, record that fact rather than changing the instructions, questions or reference answers to create one.
 
 <figure class="portal-shot" id="portal-evaluation">
 <img src="../../web/assets/portal/en/18-evaluation-results.png" alt="Microsoft Foundry evaluation summary and per-question detailed metrics." width="1440" height="1000" loading="lazy">
@@ -1305,7 +1305,7 @@ Open the same job you just submitted in **Optimization runs** and act according 
 | Completed / Succeeded | Check the actual candidate count and **Token usage** where available, then review original/candidate scores and **View changes**. |
 | Failed or results unavailable | Preserve the state/job ID/error and follow [troubleshooting](troubleshooting.md#optimizer). Do not invent a candidate to continue. |
 
-**Interpretation:** The internal **0–1 ranking** is not the separate managed evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection.
+**Interpretation:** The internal **0–1 ranking** is not the separate managed evaluation mean or pass percentage. Review instructions only; keep model, tools, reasoning and output schema unchanged. An empty function-tool export does not authorize removal of the MCP policy connection. A **No improvement** label or a stall notice can appear even while the candidate score is above the baseline. Do not adopt or discard a candidate from that label or the ranking alone; review the instructions, then decide with the step 09 re-evaluation.
 
 **Cost and waiting:** One job includes multiple Agent, Judge, and retrieval calls. Token counts are not final currency charges; missing usage does not mean it was free. Stopping your wait does not cancel the job.
 
@@ -1316,14 +1316,14 @@ Open the same job you just submitted in **Optimization runs** and act according 
 
 <figure class="portal-shot" id="portal-optimizer-diff">
 <img src="../../web/assets/portal/en/10-optimizer-changes.png" alt="View changes dialog comparing baseline and candidate instructions." width="1038" height="622" loading="lazy">
-<figcaption><strong>Read the instruction changes.</strong> Use View changes to identify which response behaviors change. Reject invented policy, unsupported certainty, and non-instruction configuration changes; assess content and effect rather than length. <a href="../../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Read the instruction changes.</strong> Use View changes to identify which response behaviors change. Reject invented policy, unsupported certainty, and non-instruction configuration changes, and look for dev12 dates, percentages or document IDs copied into the instructions; assess content and effect rather than length. <a href="../../web/assets/portal/en/10-optimizer-changes.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 ### Save the reviewed candidate's complete instructions {#optimizer-candidate}
 
 Perform the following only after reviewing a candidate worth retaining.
 
-1. Select the candidate and inspect **View changes**. Reject instructions that invent policy or unsupported certainty.
+1. Select the candidate and inspect **View changes**. Reject instructions that invent policy or unsupported certainty. If the candidate copies dev12 values — example questions or answers, specific dates, percentages or document IDs — delete them or restate them as general rules; such a candidate can look better only on the same dev12.
 2. Expand collapsed sections of the revised instructions in **View changes** and copy the **complete text**. If only changed lines are visible, inspect candidate details or Download/Export where provided. If the full instructions are unavailable, follow [candidate-file troubleshooting](troubleshooting.md#optimizer); do not create a file from partial diff fragments.
 3. Save the complete instructions as **`.lab/lab-en/candidate.txt`**:
     - **Location:** Save it in the editor of **the same environment as your lab terminal**. In Codespaces, create the file in its VS Code Explorer and paste the instructions there; a file saved only to your computer's Downloads folder will not be found by the next command.

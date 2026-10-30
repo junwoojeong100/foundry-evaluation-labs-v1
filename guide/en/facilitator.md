@@ -20,7 +20,7 @@ Use **Action order** links to find the actual command or portal screen first. Re
 
 New lab Agents use `lab-en-iq` or `lab-ko-iq`. If the environment prefix differs, use the actual name printed by the command. Verify [model roles and identity](admin-setup.md#prepare) and reserve time for cleanup in 10.
 
-Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. Create one reviewed v2 and reevaluate under the same criteria.
+Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. v1 is a deliberately plain starting instruction with visible room for improvement; do not change the model, tools, data or evaluators to make results look better. Create one reviewed v2 and reevaluate under the same criteria.
 
 Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.
 
@@ -45,7 +45,7 @@ Use **Individual turns / One time**. Select **Upload new dataset** on first regi
 
 Connect **question → actual answer → evaluator score and reason → policy/reference answer**. `conversation_id → User view` shows the conversation; the evaluator reasons belong in **Detailed metrics result**, such as `Relevance.reason` and `TaskAdherence.reason`.
 
-Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.
+Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.
 
 Keep the selected lab's twelve synthetic questions, actual responses and managed evaluator reasons in separate private run records. Preserve unsuccessful outcomes; remove tokens, cookies, signed URLs and private account metadata if results need to be shared.
 

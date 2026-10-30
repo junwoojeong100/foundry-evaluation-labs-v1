@@ -2849,7 +2849,7 @@ az provider register --namespace Microsoft.Insights --wait
 <li>06에서 완료된 기준선 run을 열고 요약의 통과·미통과·오류 건수를 확인합니다.</li>
 <li><strong>Detailed metrics result</strong>에서 실패 또는 최저점 행을 선택하고 <strong><code>Relevance.reason</code></strong>, <strong><code>TaskAdherence.reason</code></strong>을 읽습니다. <code>reason</code>은 왜 그 점수를 줬는지 설명하는 항목입니다.</li>
 <li>그 행의 <strong><code>conversation_id → User view</code></strong>로 실제 질문·응답을 엽니다. 채점 이유는 앞의 상세 지표 화면에 있으므로 두 화면을 오가며 대조합니다.</li>
-<li>응답의 정책 ID를 <a href="../../data/knowledge/documents.json">정책 원문</a>에서 찾습니다. 잘한 사례도 같은 순서로 읽습니다. 실패가 없다면 그 사실을 기록하며 실패를 만들려고 v1을 약화하지 않습니다.</li>
+<li>응답의 정책 ID를 <a href="../../data/knowledge/documents.json">정책 원문</a>에서 찾습니다. 잘한 사례도 같은 순서로 읽습니다. 실패가 없다면 그 사실을 기록하며, 실패를 만들려고 지침·질문·참고 답변을 바꾸지 않습니다.</li>
 </ol>
 <figure class="portal-shot" id="portal-evaluation">
 <img src="../../web/assets/portal/11-evaluation-results.png" alt="Microsoft Foundry 평가 결과의 요약 점수와 질문별 상세 지표를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
@@ -3097,7 +3097,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 </tbody>
 </table>
-<p><strong>결과 해석:</strong> 내부 <strong>0–1 순위</strong>는 별도 관리형 평가 평균·통과율이 아닙니다. 지침만 검토하며 모델·도구·추론·출력 스키마는 유지합니다. 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다.</p>
+<p><strong>결과 해석:</strong> 내부 <strong>0–1 순위</strong>는 별도 관리형 평가 평균·통과율이 아닙니다. 지침만 검토하며 모델·도구·추론·출력 스키마는 유지합니다. 함수 도구 export가 비었다고 MCP 정책 연결을 제거하지 않습니다. 요약에 <strong>No improvement</strong>나 연속 개선 없음(stall) 안내가 보이는 중에도 후보 점수가 기준선보다 높게 표시될 수 있습니다. 이런 표시나 순위만으로 채택하지 않고 후보 지침을 검토한 뒤 09의 재평가로 판단합니다.</p>
 <p><strong>비용·대기:</strong> 작업 하나에도 여러 Agent·Judge·검색 호출이 포함됩니다. 토큰 사용량은 최종 청구액이 아니며, 값이 없다고 무료였던 것은 아닙니다. 기다림을 중단해도 작업은 자동 취소되지 않습니다.</p>
 <figure class="portal-shot" id="portal-optimizer-results">
 <img src="../../web/assets/portal/09-optimizer-results.png" alt="Agent Optimizer 결과에서 기준선과 후보별 점수·순위를 비교하는 화면입니다." width="1440" height="1000" loading="lazy">
@@ -3106,13 +3106,13 @@ az provider register --namespace Microsoft.Insights --wait
 
 <figure class="portal-shot" id="portal-optimizer-diff">
 <img src="../../web/assets/portal/10-optimizer-changes.png" alt="View changes에서 기준선과 후보 지침의 차이를 확인하는 대화상자입니다." width="1038" height="622" loading="lazy">
-<figcaption><strong>지침의 차이를 읽습니다.</strong> View changes에서 어떤 응답 행동이 바뀌는지 확인합니다. 허위 정책·근거 없는 확신·지침 외 설정 변경을 거부하며, 길이보다 내용과 효과를 검토합니다. <a href="../../web/assets/portal/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>지침의 차이를 읽습니다.</strong> View changes에서 어떤 응답 행동이 바뀌는지 확인합니다. 허위 정책·근거 없는 확신·지침 외 설정 변경을 거부하며, dev12의 날짜·비율·문서 ID 같은 값을 그대로 옮겨 적은 부분도 찾아냅니다. 길이보다 내용과 효과를 검토합니다. <a href="../../web/assets/portal/10-optimizer-changes.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <h3 id="optimizer-candidate">검토한 후보의 전체 지침을 파일로 저장합니다</h3>
 <p>검토한 후보가 있을 때만 다음을 수행합니다.</p>
 <ol>
-<li>결과의 후보를 선택하고 <strong>View changes(변경 내용)</strong>에서 수정된 행동을 확인합니다. 정책에 없는 조건이나 근거 없는 확신을 추가한 후보는 사용하지 않습니다.</li>
+<li>결과의 후보를 선택하고 <strong>View changes(변경 내용)</strong>에서 수정된 행동을 확인합니다. 정책에 없는 조건이나 근거 없는 확신을 추가한 후보는 사용하지 않습니다. dev12의 질문·정답 예시나 구체적인 날짜·비율·문서 ID를 지침에 그대로 옮긴 부분은 지우거나 일반 규칙으로 바꿉니다. 그런 후보는 같은 dev12에서만 점수가 높아 보일 수 있습니다.</li>
 <li><strong>View changes</strong>의 변경 후 지침에서 접힌 구간을 펼쳐 <strong>지침 전체</strong>를 복사합니다. 일부 변경 줄만 보인다면 제공되는 후보 상세·Download/Export에서 전체 내용을 확인합니다. 전체 지침을 확인할 수 없으면 <a href="troubleshooting.html#optimizer">후보 파일 문제 해결</a>을 따르며 일부 diff만으로 파일을 만들지 않습니다.</li>
 <li>복사한 지침 전체를 <strong><code>.lab/lab-ko/candidate.txt</code></strong>에 저장합니다.<ul>
 <li><strong>위치:</strong> 실습 터미널과 같은 환경의 편집기에서 저장합니다. Codespaces라면 그 VS Code의 Explorer에서 파일을 만들고 붙여넣습니다. 내 PC의 다운로드 폴더에만 저장하면 다음 명령이 찾을 수 없습니다.</li>

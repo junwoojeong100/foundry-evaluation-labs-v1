@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "portal_origin": "https://ai.azure.com",
-  "captured_date": "2026-10-03",
+  "captured_date": "2026-10-30",
   "date_timezone": "Asia/Seoul",
-  "tool": "playwright-headless.browser_run_code_unsafe",
+  "tool": "playwright.browser_run_code_unsafe; playwright-headless.browser_run_code_unsafe",
   "data_language": "ko",
   "ui_language": "en-US",
   "edits": "Crop and opaque privacy masks only; no status, score or content replacement.",
@@ -65,8 +65,8 @@
       "file": "27-agent-configuration.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "dfde43e4eb3468a3456b9eee3d3ff9bbbbd4f51b12cf257b7ff798feadd0ac7a",
-      "capture_session_date": "2026-10-03",
+      "sha256": "09b72c68e3672061603bb41ac603dc1ed40181a34d0ecd3bcae1c8468f6fcbbd",
+      "capture_session_date": "2026-10-30",
       "route": "/build/agents/{korean-iq-agent}/build",
       "redactions": [
         "profile"
@@ -105,20 +105,20 @@
       "file": "02-model-deployments.png",
       "width": 1270,
       "height": 750,
-      "sha256": "2a43a326f5848636baa56e7a214e7197015d421ee5c9b33d7f98243ae559c94a",
-      "capture_session_date": "2026-09-30",
+      "sha256": "8907bdfa1e3239d9971468c602c7a4dce611dee039e35e92d2985d367e154a62",
+      "capture_session_date": "2026-10-30",
       "route": "/build/models/deployments",
       "redactions": [
-        "creator-column",
-        "request-panel-excluded-by-crop"
+        "creator-column-excluded-by-crop",
+        "profile-excluded-by-crop"
       ]
     },
     {
       "file": "07-optimizer-target.png",
       "width": 1210,
       "height": 968,
-      "sha256": "95b4664fd4934d40d48814a390893965007cc5716ee114c9456b07d8959ccceb",
-      "capture_session_date": "2026-09-30",
+      "sha256": "d0baef28d644a07f5ab2b3ae8556c3ff94f788ae090cea5251903a73a8c0b52d",
+      "capture_session_date": "2026-10-30",
       "route": "/build/agents/{iq-agent}/optimization",
       "redactions": [
         "dialog-only-account-header-excluded"
@@ -128,8 +128,8 @@
       "file": "08-optimizer-dataset.png",
       "width": 1210,
       "height": 968,
-      "sha256": "fe5c848a2a08dee0172bed76e232c41bd5ab909d1e3d62a9f1f7bfa8efca09a5",
-      "capture_session_date": "2026-09-30",
+      "sha256": "bfe7cc43a80b3cd89075445b7d80d4fd6d373fba083414a95ef819c5b1a41fec",
+      "capture_session_date": "2026-10-30",
       "route": "/build/agents/{iq-agent}/optimization",
       "redactions": [
         "dialog-only-account-header-excluded",
@@ -140,8 +140,8 @@
       "file": "09-optimizer-results.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "e4b5ef7f250e3d1cdb36959664173bc8ab07471937f8881bfde74e3968d2fd2f",
-      "capture_session_date": "2026-09-30",
+      "sha256": "3610a4708fde4f2d9893477d4b63650c07552d6047d6ccb7f8826c86d12634e1",
+      "capture_session_date": "2026-10-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
       "redactions": [
         "profile"
@@ -151,8 +151,8 @@
       "file": "10-optimizer-changes.png",
       "width": 1038,
       "height": 622,
-      "sha256": "dd1a83aa499d4212ad6fa5362a7187740fb63c9c8e8a2e0b1315c1346424484b",
-      "capture_session_date": "2026-09-30",
+      "sha256": "2e667b2a46e2390ce059039ded034d9758216f2e11755e14b71089c4c1656173",
+      "capture_session_date": "2026-10-30",
       "route": "/build/agents/{iq-agent}/optimization/{existing-run}",
       "redactions": [
         "dialog-only-account-header-excluded"
@@ -162,9 +162,9 @@
       "file": "11-evaluation-results.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "000e7b63d446f9770c55f64e5eef6f0ea16b753e50b65f274f68c83e0e0ce0b3",
-      "capture_session_date": "2026-09-30",
-      "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
+      "sha256": "80d78da7c42e71c8c970c29d7837861519928b791172572b4cc7b5f300f27d1b",
+      "capture_session_date": "2026-10-30",
+      "route": "/build/evaluations/{learning-loop-eval}/run/{baseline-run}",
       "redactions": [
         "profile"
       ]
@@ -173,8 +173,8 @@
       "file": "15-evaluation-dataset.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "df985d8c44d11c6850be46c53a8b343b0f10ae5aa066ca7b22e64a6d60889d81",
-      "capture_session_date": "2026-10-01",
+      "sha256": "870e11be193d8c43d05214f5111bad70cdc3cd01bf8f2d458817fe3b82b5d42d",
+      "capture_session_date": "2026-10-30",
       "route": "/build/evaluations/submit",
       "redactions": [
         "profile",
@@ -185,8 +185,8 @@
       "file": "16-evaluation-criteria.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "1d2b080b3042264eea7b06cd13736867e4693495f87c4466e32e384e8da24901",
-      "capture_session_date": "2026-10-01",
+      "sha256": "19ebc12de2473a6190a673a7d5a9869e4630ebe3986dd4af9ff36b2368c3680e",
+      "capture_session_date": "2026-10-30",
       "route": "/build/evaluations/submit",
       "redactions": [
         "profile"
@@ -196,8 +196,8 @@
       "file": "17-evaluation-review.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "214ac5b7b051d48539e90c3a723c1fd1fbdb4570b5f21b21a6f09f85fb7e5250",
-      "capture_session_date": "2026-10-01",
+      "sha256": "36ccbd912b1d5f05c3c222604c07754206a1676215bb1383f36874fcc2701e0e",
+      "capture_session_date": "2026-10-30",
       "route": "/build/evaluations/submit",
       "redactions": [
         "profile"
@@ -207,9 +207,9 @@
       "file": "19-evaluation-case.png",
       "width": 1440,
       "height": 440,
-      "sha256": "5f4307c84fc89d94c5fb7e8fa5e7d2d6f13cca68e53a8fcfe8d4f1ad9c168bbc",
-      "capture_session_date": "2026-10-01",
-      "route": "/build/evaluations/{native-optimizer-eval}/run/{candidate-run}",
+      "sha256": "f1445a3d3f33bb5463fa9922cf22279e8e828da01416300e2e2b518c4a658927",
+      "capture_session_date": "2026-10-30",
+      "route": "/build/evaluations/{learning-loop-eval}/run/{baseline-run}",
       "redactions": [
         "fullscreen-dialog-excludes-account-header",
         "empty-area-cropped"
@@ -219,9 +219,9 @@
       "file": "20-evaluation-comparison.png",
       "width": 1440,
       "height": 520,
-      "sha256": "7af164c7e23a2c01180227932e71872064240904991a5b03b75c8e92cd6335ed",
-      "capture_session_date": "2026-10-01",
-      "route": "/build/evaluations/{native-optimizer-eval}/compare",
+      "sha256": "070d710a07fa12022794b9fef34a1361d4165dbf8be27cebd1c68ef1d921d762",
+      "capture_session_date": "2026-10-30",
+      "route": "/build/evaluations/{learning-loop-eval}/compare",
       "redactions": [
         "profile",
         "empty-area-cropped"

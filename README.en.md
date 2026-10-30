@@ -18,6 +18,6 @@ Compare a reviewed candidate with its fixed v1 under the same conditions. If no 
 
 See [troubleshooting](guide/en/troubleshooting.md) for recovery procedures. Separate narrated CLI/SDK replay videos: [English](docs/media/Foundry-Lab-Replay-EN.mp4) · [한국어](docs/media/Foundry-Lab-Replay-KO.mp4). These are execution-record summaries, not portal screen recordings.
 
-Authenticated portal walkthroughs are also available: [English](docs/media/Foundry-Portal-Walkthrough-EN.mp4) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.mp4). They show the actual Microsoft Azure/Microsoft Foundry UI with private fields redacted, without creating duplicate evaluation or optimization jobs. The embedding deployment's Details screen in chapter 03 ("Model roles and actual TPM") was recorded before the 2026-10-15 change from `text-embedding-3-small` to `text-embedding-3-large` and still shows the earlier model.
+Authenticated portal walkthroughs are also available: [English](docs/media/Foundry-Portal-Walkthrough-EN.mp4) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.mp4). They show the actual Microsoft Foundry portal for the same run with private fields and connection addresses redacted, and stop before Submit, so no duplicate evaluation or optimization job is created.
 
 Released under the [MIT License](LICENSE); Microsoft artwork and portal screenshots are not relicensed (see [NOTICE](web/assets/NOTICE.txt)).

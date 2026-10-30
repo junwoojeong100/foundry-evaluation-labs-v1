@@ -80,7 +80,7 @@ Use the [real response check in 03](handbook.md#agent) to verify Agent and `know
 
 [01's Codespaces path](handbook.md#setup-codespaces) prepares **Python 3.12 within the supported 3.11–3.14 range, Git, Azure CLI**, and the virtual environment. Only the local-computer path needs [OS-specific installation](handbook.md#setup-local-install) and [new-terminal version checks](handbook.md#setup-verify). Sign in, then run [quick provisioning](handbook.md#resources-quickstart); language and record location are set automatically too. Do not treat fake IDs in `.env.example` as a live environment.
 
-Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Never weaken the baseline to manufacture improvement. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
+Use `prompts/en/baseline.txt` for English and `prompts/baseline.txt` for Korean. Both are deliberately plain starting instructions with visible room for improvement, so do not edit them during the lab. After [policy upload](handbook.md#agent-search-prepare) and [retrieval verification](handbook.md#agent-search-probe) succeed, create a policy-connected v1:
 
 ```sh
 python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm

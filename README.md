@@ -28,7 +28,7 @@ When returning, use the [resume instructions](https://junwoojeong100.github.io/f
 | Microsoft Foundry evaluation Judge | **gpt-6-luna / 2026-09-22** |
 | Agent Optimizer generator | **gpt-5.5 / 2026-04-24** |
 
-New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. Never weaken v1 to manufacture improvement.
+New lab Agents use `lab-en-iq` or `lab-ko-iq`, unless a different environment prefix is selected. V1/v2 are complete immutable Agent versions; **only their instructions differ**. Keep models, tools, reasoning, strict JSON output, data and evaluators fixed. V1 is a deliberately plain starting instruction with visible room for improvement; never change anything else to enlarge the gain.
 
 `ensure_fixed_release` permits released versions **1 and 2**, reuses equivalent configurations, and rejects silent v3 creation or overwrites. Use the reviewed instructions from your own Optimizer job. Record any manual corrections separately from the original service output. If no different candidate is worth retaining, keep v1 and follow the retention/cleanup branch without inventing a v2 comparison.
 
@@ -57,9 +57,7 @@ The SDK helper adds a real run to the existing Microsoft Foundry definition. It 
 | CLI/SDK lab replay | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) |
 | Actual portal walkthrough | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) |
 
-Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay execution records. The portal walkthroughs record the authenticated Microsoft Azure/Microsoft Foundry UI, with personal fields redacted, using existing resources and completed runs without resubmitting evaluations or optimization. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
-
-**Change note (2026-10-15):** the default embedding model and the retained lab environments changed from `text-embedding-3-small` to `text-embedding-3-large` (Global Standard). The portal walkthroughs were recorded earlier, so the embedding deployment's Details screen in chapter 03 ("Model roles and actual TPM") still shows `text-embedding-3-small`; nothing else in the recordings changed.
+Both video types include narration, subtitles and chapter markers and remain separate from the reusable guides. The CLI/SDK videos replay the execution records of the most recent full lab run. The portal walkthroughs record the authenticated Microsoft Foundry portal for the same run, with personal fields and connection addresses redacted. They open the existing resources and completed results and show the evaluation and Optimizer dialogs without pressing Submit, so no duplicate evaluation or optimization job is created. External subtitles: CLI/SDK [English](docs/media/Foundry-Lab-Replay-EN.srt) · [한국어](docs/media/Foundry-Lab-Replay-KO.srt); portal [English](docs/media/Foundry-Portal-Walkthrough-EN.srt) · [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt).
 
 English is the default. Language switching preserves the corresponding section, reading progress and theme. Guides work without login or JavaScript. For offline use, download the whole repository/package and keep its folders together.
 
@@ -103,7 +101,7 @@ Continuous integration (`.github/workflows/ci.yml`) runs these checks on Ubuntu 
 
 The guide header date is `BUILD_DATE` in `scripts/build_guide.py`; change it and its test together whenever instructions change or are re-verified. `.gitattributes` forces LF line endings because exports, prompts, and guides are checked byte for byte, including on Windows clones. `lab/azcli.py` starts Azure CLI the same way on Windows, macOS, and Linux.
 
-Names and versions: this repository is lab edition **v1**. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in generated resource names refer to that toolkit version. The repository carries about 45 MB of demonstration videos, so the guide's local clone uses `git clone --depth 1`.
+Names and versions: this repository is lab edition **v1**. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in generated resource names refer to that toolkit version. The repository carries about 43 MB of demonstration videos, so the guide's local clone uses `git clone --depth 1`.
 
 Keep execution-specific scores, run IDs, validation logs and raw results in ignored private run folders, not in reusable guide sources. Correct a guide only when its instructions are wrong. Keep necessary ownership/configuration records for retained resources; remove superseded reports and temporary output without deleting cloud resources.
 

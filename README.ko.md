@@ -28,7 +28,7 @@ Contoso 정책·질문은 합성 자료입니다. 공개 벤치마크 순위나 
 | Microsoft Foundry 평가 Judge | **gpt-6-luna / 2026-09-22** |
 | Agent Optimizer 생성 | **gpt-5.5 / 2026-04-24** |
 
-새 환경의 기본 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸면 실제 출력 이름을 사용합니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정을 유지하고 개선을 크게 보이게 하려고 v1을 약화하지 않습니다.
+새 환경의 기본 Agent는 `lab-ko-iq` 또는 `lab-en-iq`입니다. 환경 prefix를 바꾸면 실제 출력 이름을 사용합니다. v1/v2는 변경 불가능한 Agent 전체 버전이며 **지침만 다릅니다**. 모델·도구·추론·엄격한 JSON 스키마·데이터·평가기 설정을 유지합니다. v1은 개선 여지가 보이도록 간단하게 쓴 출발점 지침이며, 개선 폭을 키우려고 다른 설정을 바꾸지 않습니다.
 
 `ensure_fixed_release`는 정식 **1·2만 허용**하고 같은 구성을 재사용하며, v3를 조용히 만들거나 기존 버전을 덮어쓰지 않습니다. 자신의 실제 Optimizer 작업에서 검토한 지침을 사용하고 직접 수정한 부분은 원본 서비스 출력과 구분해 기록합니다. 유지할 다른 후보가 없으면 v1을 유지하고 정리·보존으로 이동하며 없는 v2 비교를 만들지 않습니다.
 
@@ -57,9 +57,7 @@ SDK helper는 기존 Microsoft Foundry 정의에 실제 run을 추가합니다. 
 | CLI/SDK 실습 요약영상 | [한국어 MP4](docs/media/Foundry-Lab-Replay-KO.mp4) | [English MP4](docs/media/Foundry-Lab-Replay-EN.mp4) |
 | 실제 포털 화면 녹화 | [한국어 MP4](docs/media/Foundry-Portal-Walkthrough-KO.mp4) | [English MP4](docs/media/Foundry-Portal-Walkthrough-EN.mp4) |
 
-두 영상 모두 내레이션·자막·챕터를 포함하며 재사용 실습 가이드와 분리해 제공합니다. CLI/SDK 영상은 실행 기록을 재생하는 요약입니다. 포털 영상은 인증된 Microsoft Azure/Microsoft Foundry의 실제 화면을 녹화하고 개인정보를 가린 것으로, 기존 자원과 완료된 결과를 조회하며 평가·Optimizer를 다시 제출하지 않습니다. 외부 자막: CLI/SDK [한국어](docs/media/Foundry-Lab-Replay-KO.srt) · [English](docs/media/Foundry-Lab-Replay-EN.srt), 포털 [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt) · [English](docs/media/Foundry-Portal-Walkthrough-EN.srt).
-
-**변경 안내 (2026-10-15):** embedding 기본 모델과 보존 중인 실습 환경을 `text-embedding-3-small`에서 `text-embedding-3-large`(Global Standard)로 변경했습니다. 포털 영상은 변경 전에 녹화되어 03 챕터(모델 역할과 실제 TPM)의 embedding 배포 Details 화면에 `text-embedding-3-small`이 표시되며, 영상의 나머지 화면은 달라지지 않았습니다.
+두 영상 모두 내레이션·자막·챕터를 포함하며 재사용 실습 가이드와 분리해 제공합니다. CLI/SDK 영상은 가장 최근 전체 실습의 실행 기록을 재생하는 요약입니다. 포털 영상은 같은 실행의 인증된 Microsoft Foundry 포털 화면을 녹화하고 개인정보와 연결 주소를 가린 것으로, 기존 자원과 완료된 결과를 열어 보고 평가·Optimizer 대화상자는 Submit을 누르기 전까지만 보여 주므로 중복 평가나 최적화 작업을 만들지 않습니다. 외부 자막: CLI/SDK [한국어](docs/media/Foundry-Lab-Replay-KO.srt) · [English](docs/media/Foundry-Lab-Replay-EN.srt), 포털 [한국어](docs/media/Foundry-Portal-Walkthrough-KO.srt) · [English](docs/media/Foundry-Portal-Walkthrough-EN.srt).
 
 기본 언어는 영어입니다. 언어를 전환해도 대응 절·읽음 기록·테마를 유지합니다. 로그인·JavaScript 없이 열람할 수 있으며 오프라인에서는 저장소 전체의 폴더 구조를 유지합니다.
 
@@ -103,7 +101,7 @@ CI(`.github/workflows/ci.yml`)는 이 검사를 Python 3.11–3.14의 Ubuntu와 
 
 가이드 머리글의 날짜는 `scripts/build_guide.py`의 `BUILD_DATE`입니다. 안내가 바뀌거나 다시 검증할 때 이 값과 해당 테스트를 함께 바꿉니다. `.gitattributes`는 내보내기 파일·프롬프트·가이드를 바이트 단위로 검사하므로 Windows clone을 포함한 모든 체크아웃에서 LF 줄바꿈을 강제합니다. `lab/azcli.py`는 Windows·macOS·Linux에서 같은 방식으로 Azure CLI를 시작합니다.
 
-이름과 버전: 이 저장소는 실습 에디션 **v1**입니다. Python 패키지는 `foundry-learning-loop-lab` **1.1.0**이며, ZIP 이름과 생성되는 리소스 이름의 `v11`은 이 도구 버전을 뜻합니다. 저장소에 약 45MB의 시연 영상이 있어 가이드의 로컬 clone은 `git clone --depth 1`을 사용합니다.
+이름과 버전: 이 저장소는 실습 에디션 **v1**입니다. Python 패키지는 `foundry-learning-loop-lab` **1.1.0**이며, ZIP 이름과 생성되는 리소스 이름의 `v11`은 이 도구 버전을 뜻합니다. 저장소에 약 43MB의 시연 영상이 있어 가이드의 로컬 clone은 `git clone --depth 1`을 사용합니다.
 
 실행별 점수·run ID·검증 로그·원본 결과는 Git에서 제외된 비공개 실행 폴더에 보관하고 재사용 가이드에 넣지 않습니다. 가이드는 안내가 잘못된 경우에만 수정합니다. 보존하는 리소스의 소유권·설정 기록은 유지하고 오래된 보고서·임시 파일만 정리하며 클라우드 리소스를 함께 삭제하지 않습니다.
 

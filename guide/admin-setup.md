@@ -80,7 +80,7 @@ TPM은 청구된 평균 토큰과 다르게 추정되며 **RPM과 버스트 제�
 
 [01의 Codespaces 경로](handbook.md#setup-codespaces)는 **Python 3.11–3.14 지원 범위의 3.12·Git·Azure CLI**와 가상환경을 준비합니다. 내 PC를 선택한 경우에만 [운영체제별 설치](handbook.md#setup-local-install)와 [새 터미널 버전 확인](handbook.md#setup-verify)을 수행합니다. 로그인 후 [빠른 생성](handbook.md#resources-quickstart)을 실행하면 언어·기록 위치도 자동으로 정해집니다. `.env.example`의 가짜 식별자를 실환경으로 사용하지 않습니다.
 
-한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 지침을 약화하여 개선 폭을 만들지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
+한국어 기준선은 `prompts/baseline.txt`, 영어는 `prompts/en/baseline.txt`입니다. 두 파일은 개선 여지가 보이도록 간단하게 쓴 출발점 지침이므로 실습 중에 직접 고치지 않습니다. [정책 업로드](handbook.md#agent-search-prepare)와 [검색 확인](handbook.md#agent-search-probe)이 완료된 뒤 다음 명령으로 정책 도구를 연결한 v1을 만듭니다.
 
 ```sh
 python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm

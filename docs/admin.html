@@ -218,7 +218,7 @@
 
 <h2 id="bootstrap">Prepare an executable Agent</h2>
 <p><a href="index.html#setup-codespaces">01's Codespaces path</a> prepares <strong>Python 3.12 within the supported 3.11–3.14 range, Git, Azure CLI</strong>, and the virtual environment. Only the local-computer path needs <a href="index.html#setup-local-install">OS-specific installation</a> and <a href="index.html#setup-verify">new-terminal version checks</a>. Sign in, then run <a href="index.html#resources-quickstart">quick provisioning</a>; language and record location are set automatically too. Do not treat fake IDs in <code>.env.example</code> as a live environment.</p>
-<p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Never weaken the baseline to manufacture improvement. After <a href="index.html#agent-search-prepare">policy upload</a> and <a href="index.html#agent-search-probe">retrieval verification</a> succeed, create a policy-connected v1:</p>
+<p>Use <code>prompts/en/baseline.txt</code> for English and <code>prompts/baseline.txt</code> for Korean. Both are deliberately plain starting instructions with visible room for improvement, so do not edit them during the lab. After <a href="index.html#agent-search-prepare">policy upload</a> and <a href="index.html#agent-search-probe">retrieval verification</a> succeed, create a policy-connected v1:</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </code></pre>

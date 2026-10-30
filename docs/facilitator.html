@@ -122,7 +122,7 @@
 <p>Steps 04–06 use one evaluation wizard, not three evaluations. In 07, connect one case's scores, reasons, and policy before analyzing the whole result.</p>
 <p>Use <strong>Action order</strong> links to find the actual command or portal screen first. Read code/portal tables and source panels under <strong>Optional · how it works</strong> only when needed; do not execute them separately. In particular, <a href="index.html#baseline-identifiers">06's ID lookup</a> does not submit, and <a href="index.html#optimizer-configure">08 Optimizer</a> runs in the portal.</p>
 <p>New lab Agents use <code>lab-en-iq</code> or <code>lab-ko-iq</code>. If the environment prefix differs, use the actual name printed by the command. Verify <a href="admin.html#prepare">model roles and identity</a> and reserve time for cleanup in 10.</p>
-<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. Do not weaken v1 to create improvement. Create one reviewed v2 and reevaluate under the same criteria.</p>
+<p>Both v1 and v2 are full immutable Agent versions. Their model, tools, reasoning, and strict output schema match; only instructions differ. v1 is a deliberately plain starting instruction with visible room for improvement; do not change the model, tools, data or evaluators to make results look better. Create one reviewed v2 and reevaluate under the same criteria.</p>
 <p>Keep English and Korean data/Agents separate and compare each language's actual executions independently. Translating another language's result does not constitute a new run.</p>
 <h2 id="checkpoints">Verify completion across all ten steps</h2>
 <table>
@@ -189,7 +189,7 @@
 <p>Use <strong>Individual turns / One time</strong>. Select <strong>Upload new dataset</strong> on first registration and <strong>Existing dataset</strong> for reuse/resumption. The upload preview can show only five rows; the experiment still contains 12. Version selection can clear the target checkbox: reselect it and confirm one target.</p>
 <h2 id="evaluation-sharing">Check quality using actual cases</h2>
 <p>Connect <strong>question → actual answer → evaluator score and reason → policy/reference answer</strong>. <code>conversation_id → User view</code> shows the conversation; the evaluator reasons belong in <strong>Detailed metrics result</strong>, such as <code>Relevance.reason</code> and <code>TaskAdherence.reason</code>.</p>
-<p>Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never weaken v1, omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.</p>
+<p>Analyze at least one weak case and one strong case. If no failure is observed, use the lowest-scoring case and say no failure was found. Never omit a difficult row, change a reference answer, or substitute local scores. Use your own actual results when discussing with other participants too.</p>
 <p>Keep the selected lab's twelve synthetic questions, actual responses and managed evaluator reasons in separate private run records. Preserve unsuccessful outcomes; remove tokens, cookies, signed URLs and private account metadata if results need to be shared.</p>
 <h2 id="interpret-results">Interpret improvements correctly</h2>
 <p><a id="review"></a></p>
