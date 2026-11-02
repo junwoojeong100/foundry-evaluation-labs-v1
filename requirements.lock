@@ -6,14 +6,14 @@ anyio==4.15.1
     # via
     #   httpx2
     #   openai
-azure-ai-projects==2.8.0
+azure-ai-projects==2.9.0
     # via foundry-learning-loop-lab (pyproject.toml)
 azure-core==1.41.0
     # via
     #   azure-ai-projects
     #   azure-identity
     #   azure-storage-blob
-azure-identity==1.26.0
+azure-identity==1.27.0
     # via
     #   foundry-learning-loop-lab (pyproject.toml)
     #   azure-ai-projects
@@ -48,7 +48,7 @@ isodate==0.7.2
     #   azure-storage-blob
 jiter==0.17.0
     # via openai
-markdown==3.11
+markdown==3.11.2
     # via foundry-learning-loop-lab (pyproject.toml)
 msal==1.39.0
     # via
@@ -56,7 +56,7 @@ msal==1.39.0
     #   msal-extensions
 msal-extensions==1.3.1
     # via azure-identity
-openai==3.24.0
+openai==3.41.0
     # via
     #   foundry-learning-loop-lab (pyproject.toml)
     #   azure-ai-projects
