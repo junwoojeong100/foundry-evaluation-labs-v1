@@ -1046,7 +1046,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 | Relevance | 질문에 관련된 답변인지, **1–5점** | **Threshold 4**: 4·5점은 통과, 1–3점은 미통과입니다. |
 | TaskAdherence | 과제 지시를 따르는지, 결과는 **이진 0 또는 1(Pass/Fail)** | **Threshold 1**: 결과가 1일 때만 통과입니다. 4가 아닙니다. |
 
-**TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.** 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. **1**을 입력하고 4는 입력하지 않으며, 다른 칸이 보이면 기본값으로 둡니다. [09](#decision)의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. **Task completion**도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.
+**TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.** 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. **1**을 입력하고 4는 입력하지 않습니다. **Probability_threshold**(0–1)도 보이면 이 실습을 검증한 값인 **0.5**를 입력하고, 07의 Optimizer를 포함해 TaskAdherence를 설정하는 모든 곳에서 같은 값을 씁니다. 다른 칸은 기본값으로 둡니다. [09](#decision)의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. **Task completion**도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.
 {: .note}
 
 응답(`response`)의 서비스 자동 매핑은 그대로 유지합니다. 응답 칸이 **Unassigned**이거나 자신의 Judge가 목록에 없다면 [매핑 점검](admin-setup.md#evaluation-mapping)과 [평가 문제 해결](troubleshooting.md#evaluation)을 따라 Agent·데이터 열·배포를 직접 대조합니다. 해결 전에는 임의 값을 넣거나 제출하지 않습니다.
@@ -1062,7 +1062,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 | 코드의 원격 평가 필드 | 포털에서 정하는 값 |
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
-| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1 → Apply** |
+| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1과 Probability_threshold 0.5 → Apply** (09의 helper는 threshold만 검사합니다.) |
 | `initialization_parameters.deployment_name` | **Judge model**에 자신의 `JUDGE_DEPLOYMENT` 배포를 선택합니다. |
 | `data_mapping.query = {{item.query}}` | **Configure agents → User input**에서 query만 전달합니다. |
 | Relevance의 `{{sample.output_text}}`, TaskAdherence의 `{{sample.output_items}}` | 서비스 생성 응답 매핑입니다. 두 번째 값에는 지침·도구 호출 등 대화 항목이 포함됩니다. JSONL에 같은 이름의 열을 만들지 않습니다. |
@@ -1283,14 +1283,14 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 | Optimization model | 자신의 `OPTIMIZER_DEPLOYMENT` / gpt-5.5 |
 | Evaluation model | 자신의 `JUDGE_DEPLOYMENT` / gpt-6-luna |
 | Dataset | 같은 언어의 등록 dev12·같은 버전 |
-| Criteria | Relevance Threshold 4, TaskAdherence Threshold 1(결과는 0 또는 1) |
+| Criteria | Relevance Threshold 4, TaskAdherence Threshold 1과 Probability_threshold 0.5(결과는 0 또는 1) |
 
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
 <figcaption><strong>최적화 범위와 모델 역할을 구분합니다.</strong> 기준선 버전 1과 Instruction only를 선택하고 후보 수를 승인 한도 안으로 설정합니다. Optimization model과 Evaluation model에는 각 역할에 준비한 배포를 지정합니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. 각 기본 평가기의 임계값을 설정하고 Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.
+Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. 각 기본 평가기를 열어 값을 설정하고(Relevance **Threshold 4**, TaskAdherence **Threshold 1**과 **Probability_threshold 0.5**) Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.
 
 <figure class="portal-shot" id="portal-optimizer-data">
 <img src="../web/assets/portal/08-optimizer-dataset.png" alt="Agent Optimizer에서 등록된 데이터셋을 선택하는 목록입니다." width="1210" height="968" loading="lazy">

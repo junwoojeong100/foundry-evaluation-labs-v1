@@ -618,7 +618,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </tr>
 <tr>
 <td>TaskAdherence's settings show the same 1–5 Threshold box as Relevance</td>
-<td>This is expected: the catalog defines one threshold range for both, but TaskAdherence returns only 0 or 1. Enter <strong>1</strong> as in <a href="index.html#criteria-configure">05</a>, never Relevance's 4, and select <strong>Task adherence</strong>, not <strong>Task completion</strong>. If a baseline was already submitted with another threshold, <a href="index.html#decision">09</a>'s helper refuses it with <code>TaskAdherence has a different evaluator, threshold, or response mapping</code>. Keep that evaluation and submit a new one with the correct settings within your authorization.</td>
+<td>This is expected: the catalog defines one threshold range for both, but TaskAdherence returns only 0 or 1. Enter <strong>1</strong> in Threshold as in <a href="index.html#criteria-configure">05</a>, never Relevance's 4, and <strong>0.5</strong> in Probability_threshold if it is shown. Select <strong>Task adherence</strong>, not <strong>Task completion</strong>. If a baseline was already submitted with another threshold, <a href="index.html#decision">09</a>'s helper refuses it with <code>TaskAdherence has a different evaluator, threshold, or response mapping</code>. Keep that evaluation and submit a new one with the correct settings within your authorization.</td>
 </tr>
 <tr>
 <td>Output items or scores are missing</td>

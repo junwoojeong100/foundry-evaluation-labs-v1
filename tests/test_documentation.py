@@ -1045,6 +1045,7 @@ class DocumentationTests(unittest.TestCase):
                 self.assertNotIn("Task Adherence 4", source)
                 criteria = source.split("{#criteria-configure}", 1)[1].split("</details>", 1)[0]
                 self.assertRegex(criteria, r"\| TaskAdherence \|[^\n]*Threshold 1")
+                self.assertRegex(criteria, r"Probability_threshold[^\n]*0\.5")
                 self.assertIn("Task completion", criteria)
 
     def test_verified_model_roles_and_fixed_release_boundaries_are_visible(self):

@@ -108,7 +108,7 @@ Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifier
 |---|---|
 | Data | Same selected-language dev12 bytes, registration/version, questions and references |
 | Relevance | Managed `builtin.relevance`, scale 1–5, threshold **4** |
-| TaskAdherence | Managed `builtin.task_adherence`, binary 0/1, threshold **1** |
+| TaskAdherence | Managed `builtin.task_adherence`, binary 0/1, threshold **1**, probability_threshold **0.5** |
 | Judge | Same explicit Luna deployment in both evaluator definitions |
 | Agent | Same Sol model/version, tools, reasoning and strict output schema |
 | Change | Instructions only; releases remain v1/v2 |
@@ -128,7 +128,7 @@ Select the [two evaluators and Judge in 05](handbook.md#prepare) and preserve au
 | Agent user input | Only `{{item.query}}`; leave the instruction override unset |
 | Relevance response | `response={{sample.output_text}}` |
 | TaskAdherence response | `response={{sample.output_items}}` |
-| Judge/thresholds | Actual `JUDGE_DEPLOYMENT`; Relevance threshold 4, TaskAdherence threshold 1 (binary 0/1) |
+| Judge/thresholds | Actual `JUDGE_DEPLOYMENT`; Relevance threshold 4, TaskAdherence threshold 1 and probability_threshold 0.5 (binary 0/1) |
 
 If a required field is **Unassigned**, confirm the target is **Agent**, not Dataset, and inspect the query column and actual generated response mapping. Before submission, inspect the wizard; afterward, inspect the saved remote definition. Never map the reference answer as the response or copy old UI bindings. Use the [official portal guide](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app) and [response-mapping explanation](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators#using-agent-evaluators). Do not submit until resolved. The helper in 09 checks the remote contract too.
 

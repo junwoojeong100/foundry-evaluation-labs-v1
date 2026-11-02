@@ -1046,7 +1046,7 @@ An **evaluator defines what to score**; the **Judge is the AI model doing the sc
 | Relevance | Addresses the question, **1–5** score | **Threshold 4**: 4–5 pass; 1–3 fail |
 | TaskAdherence | Follows the task; the result is **binary 0 or 1 (Pass/Fail)** | **Threshold 1**: only a result of 1 passes. Not 4 |
 
-**TaskAdherence's settings show the same Threshold box as Relevance (1–5).** The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter **1**, not 4, and leave any other field at its default. [09](#decision)'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. **Task completion** is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.
+**TaskAdherence's settings show the same Threshold box as Relevance (1–5).** The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter **1**, not 4. If **Probability_threshold** (0–1) is also shown, enter **0.5**, the value this lab was validated with, and use the same value wherever you configure TaskAdherence, including the Optimizer in 07. Leave other fields at their defaults. [09](#decision)'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. **Task completion** is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.
 {: .note}
 
 Preserve the service-generated `response` mappings. If a response field is **Unassigned**, or your Judge is missing, compare the Agent, data columns, and deployment using the [mapping checks](admin-setup.md#evaluation-mapping) and [evaluation troubleshooting](troubleshooting.md#evaluation). Do not guess a value or submit before resolving the mismatch.
@@ -1062,7 +1062,7 @@ Preserve the service-generated `response` mappings. If a response field is **Una
 | Remote evaluation field in code | Portal setting |
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
-| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1 → Apply** |
+| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1 and Probability_threshold 0.5 → Apply** (09's helper checks only the threshold) |
 | `initialization_parameters.deployment_name` | Select your `JUDGE_DEPLOYMENT` as the **Judge model**. |
 | `data_mapping.query = {{item.query}}` | Send only query under **Configure agents → User input**. |
 | Relevance `{{sample.output_text}}`, TaskAdherence `{{sample.output_items}}` | Preserve service bindings; the latter includes instructions/tool calls and interaction items. Do not create matching JSONL columns. |
@@ -1283,14 +1283,14 @@ Write a short learning note from the table below. Saving it as **`.lab/lab-en/no
 | Optimization model | Your `OPTIMIZER_DEPLOYMENT` / gpt-5.5 |
 | Evaluation model | Your `JUDGE_DEPLOYMENT` / gpt-6-luna |
 | Dataset | Same registered English dev12 version 1 |
-| Criteria | Relevance Threshold 4; TaskAdherence Threshold 1 (result 0 or 1) |
+| Criteria | Relevance Threshold 4; TaskAdherence Threshold 1 and Probability_threshold 0.5 (result 0 or 1) |
 
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-If Criteria shows **No custom evaluators available**, switch **Custom only OFF** or select **View built-in evaluators**. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.
+If Criteria shows **No custom evaluators available**, switch **Custom only OFF** or select **View built-in evaluators**. Open each built-in row, set its correct values (Relevance **Threshold 4**; TaskAdherence **Threshold 1** and **Probability_threshold 0.5**) and Apply. Do not create a custom scorer to bypass a filter.
 
 <figure class="portal-shot" id="portal-optimizer-data">
 <img src="../../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">

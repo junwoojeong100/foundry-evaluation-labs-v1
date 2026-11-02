@@ -39,7 +39,7 @@ Use unchanged **`data/en/optimizer/dev.jsonl`** for English and **`data/optimize
 | Managed evaluator | Scale and pass rule |
 |---|---|
 | Relevance | 1–5, threshold **4** |
-| TaskAdherence | Binary 0/1 Pass/Fail, threshold **1** (the portal shows the same 1–5 Threshold box as Relevance; enter 1) |
+| TaskAdherence | Binary 0/1 Pass/Fail, threshold **1**, probability_threshold **0.5** (the portal shows the same 1–5 Threshold box as Relevance; enter 1) |
 
 The SDK helper adds a real run to the existing Microsoft Foundry definition. It checks the remote Judge, thresholds and response mappings, prevents duplicate submissions, and verifies each output's actual pinned version and instructions. It is **not a local Judge**.
 

@@ -237,7 +237,7 @@ Unable to create data source configuration from item schema
 | 데이터 미리 보기가 5행입니다. | 원본 12행·등록 버전·실제 결과 전체 건수를 대조합니다. 미리 보기만으로 판단하지 않습니다. |
 | 점수나 이유가 보이지 않습니다. | 실제 답변은 `conversation_id → User view`, 이유는 Detailed metrics result의 `Relevance.reason`·`TaskAdherence.reason`에서 읽습니다. |
 | 필수 response 칸이 Unassigned입니다. | [매핑 점검](admin-setup.md#evaluation-mapping)에서 Agent 대상·query 열·서비스 생성 응답 매핑을 대조합니다. JSONL에 정답을 response 열로 추가하지 않으며 해결 전에는 제출하지 않습니다. |
-| TaskAdherence의 설정에 Relevance와 같은 1–5 Threshold 입력이 보입니다. | 정상입니다. 카탈로그가 두 평가기에 같은 임계값 범위를 정의하지만 TaskAdherence의 결과는 0 또는 1뿐입니다. [05](handbook.md#criteria-configure)대로 **1**을 입력하고 Relevance의 4를 쓰지 않으며, **Task completion**이 아니라 **Task adherence**를 선택합니다. 다른 threshold로 기준선을 이미 제출했다면 [09](handbook.md#decision)의 helper가 `TaskAdherence has a different evaluator, threshold, or response mapping` 오류로 거부합니다. 그 평가는 보존하고 승인 범위에서 올바른 설정으로 새 평가를 제출합니다. |
+| TaskAdherence의 설정에 Relevance와 같은 1–5 Threshold 입력이 보입니다. | 정상입니다. 카탈로그가 두 평가기에 같은 임계값 범위를 정의하지만 TaskAdherence의 결과는 0 또는 1뿐입니다. [05](handbook.md#criteria-configure)대로 Threshold에 **1**을 입력하고 Relevance의 4를 쓰지 않으며, Probability_threshold가 보이면 **0.5**를 입력합니다. **Task completion**이 아니라 **Task adherence**를 선택합니다. 다른 threshold로 기준선을 이미 제출했다면 [09](handbook.md#decision)의 helper가 `TaskAdherence has a different evaluator, threshold, or response mapping` 오류로 거부합니다. 그 평가는 보존하고 승인 범위에서 올바른 설정으로 새 평가를 제출합니다. |
 | 결과 행·점수가 빠졌습니다. | 실패·누락을 보관하고 분모 12를 줄이지 않습니다. 점수를 0이나 통과로 만들어 넣지 않습니다. |
 
 ## Agent Optimizer·결과 해석 {#optimizer}

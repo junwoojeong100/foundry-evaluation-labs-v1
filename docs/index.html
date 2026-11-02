@@ -2577,7 +2577,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 </tbody>
 </table>
-<p class="note"><strong>TaskAdherence's settings show the same Threshold box as Relevance (1–5).</strong> The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter <strong>1</strong>, not 4, and leave any other field at its default. <a href="#decision">09</a>'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. <strong>Task completion</strong> is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.</p>
+<p class="note"><strong>TaskAdherence's settings show the same Threshold box as Relevance (1–5).</strong> The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter <strong>1</strong>, not 4. If <strong>Probability_threshold</strong> (0–1) is also shown, enter <strong>0.5</strong>, the value this lab was validated with, and use the same value wherever you configure TaskAdherence, including the Optimizer in 07. Leave other fields at their defaults. <a href="#decision">09</a>'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. <strong>Task completion</strong> is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.</p>
 <p>Preserve the service-generated <code>response</code> mappings. If a response field is <strong>Unassigned</strong>, or your Judge is missing, compare the Agent, data columns, and deployment using the <a href="admin.html#evaluation-mapping">mapping checks</a> and <a href="troubleshooting.html#evaluation">evaluation troubleshooting</a>. Do not guess a value or submit before resolving the mismatch.</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: evaluators, Judge, and response mappings</summary>
@@ -2597,7 +2597,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>evaluator_name: builtin.task_adherence</code>, <code>threshold: 1</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span><strong>Criteria → TaskAdherence → Threshold 1 → Apply</strong></td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span><strong>Criteria → TaskAdherence → Threshold 1 and Probability_threshold 0.5 → Apply</strong> (09's helper checks only the threshold)</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>initialization_parameters.deployment_name</code></td>
@@ -3059,7 +3059,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td>Criteria</td>
-<td>Relevance Threshold 4; TaskAdherence Threshold 1 (result 0 or 1)</td>
+<td>Relevance Threshold 4; TaskAdherence Threshold 1 and Probability_threshold 0.5 (result 0 or 1)</td>
 </tr>
 </tbody>
 </table>
@@ -3068,7 +3068,7 @@ az provider register --namespace Microsoft.Insights --wait
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.</p>
+<p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct values (Relevance <strong>Threshold 4</strong>; TaskAdherence <strong>Threshold 1</strong> and <strong>Probability_threshold 0.5</strong>) and Apply. Do not create a custom scorer to bypass a filter.</p>
 <figure class="portal-shot" id="portal-optimizer-data">
 <img src="../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">
 <figcaption><strong>Reuse the same English data.</strong> Select the dev12 registration/version used for the baseline and include all 12 cases. Editing or regenerating the file changes the comparison conditions. <a href="../web/assets/portal/en/08-optimizer-dataset.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
