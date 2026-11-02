@@ -32,7 +32,7 @@ v1·v2는 변경 불가능한 Agent 전체 구성 버전입니다. 모델·도�
 | [02 환경 생성](handbook.md#resources) | 공급자 4종 등록과 모델 할당량을 [사전 점검](handbook.md#resources-prereq)한 뒤 `bootstrap setup`의 준비 검사·실제 승인 입력·생성 확인을 수행합니다. | APPLIED, 생성된 `.env`, 포털 배포와 런타임 preflight PASS를 확인하고 5~10분 뒤 03을 시작합니다. |
 | [03 Agent 준비](handbook.md#agent) | 모델·정책 검색을 확인하고 `native-agent` v1을 생성합니다. | 실제 Agent의 JSON 응답과 도구 호출을 확인합니다. |
 | [04 데이터셋](handbook.md#start) | 변경 없는 세 열 JSONL을 등록하거나 재사용합니다. | 12행 전체·등록 버전·SHA-256을 확인합니다. |
-| [05 평가기](handbook.md#prepare) | Relevance 4·TaskAdherence 1과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 확인합니다. |
+| [05 평가기](handbook.md#prepare) | Relevance threshold 4·TaskAdherence threshold 1(같은 1–5 입력, 이진 결과)과 자신의 Judge를 선택합니다. | 제출 전 생성 화면의 설정과 query 전용 입력을 확인합니다. |
 | [06 기준선](handbook.md#baseline) | 고정 v1에 Microsoft Foundry 평가를 실행합니다. | 완료된 실제 run ID와 전체 12건을 확인합니다. |
 | [07 분석](handbook.md#analyze) | 실제 답변·점수·이유·정책을 읽습니다. | 실패를 포함한 구체적인 개선 가설을 기록합니다. |
 | [08 최적화](handbook.md#optimize) | Instruction only로 실행하고 지침 diff를 검토합니다. | job/candidate ID·후보 파일·출처를 확인하거나 다른 후보가 없어 v1을 유지할 이유를 정리합니다. |

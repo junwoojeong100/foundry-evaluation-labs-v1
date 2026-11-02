@@ -2553,7 +2553,7 @@ az provider register --namespace Microsoft.Insights --wait
 <ol>
 <li><strong>Configure agents</strong>에서 지침을 덮어쓰는 custom prompt override는 비워 둡니다. 사용자 입력은 <strong><code>{{item.query}}</code>만</strong> 사용합니다. 이는 각 행의 질문을 넣는 템플릿이므로 <strong>중괄호까지 그대로 두고</strong>, 자신의 질문이나 참고 답변으로 바꾸지 않습니다.</li>
 <li>필드 매핑 화면이 나타나면 입력 <code>query</code>를 데이터의 <code>query</code> 열과 연결합니다. 매핑은 <strong>입력 칸과 데이터 열의 짝을 정하는 설정</strong>입니다. <code>context</code>·<code>ground_truth</code>를 Agent 입력에 붙이지 않습니다.</li>
-<li><strong>Criteria → Add evaluators</strong>에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 <strong>Task Adherence</strong>로 표시될 수도 있습니다.</li>
+<li><strong>Criteria → Add evaluators</strong>에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 카탈로그에 <strong>Task adherence</strong>(또는 <strong>Task Adherence</strong>)로 표시됩니다. <strong>Task completion</strong>이나 <strong>Task navigation efficiency</strong>는 다른 평가기이므로 선택하지 않습니다.</li>
 <li>각 평가기의 설정을 열어 아래 기준을 적용하고 <strong>Apply</strong>를 누릅니다. <strong>Judge model</strong>에는 자신의 <code>.lab/lab-ko/.env</code>에서 <strong><code>JUDGE_DEPLOYMENT</code>에 해당하는 배포 이름</strong>을 선택합니다.</li>
 </ol>
 <table>
@@ -2572,11 +2572,12 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td>TaskAdherence</td>
-<td>과제 지시를 따르는지, <strong>이진 0/1 Pass/Fail</strong></td>
-<td><strong>통과 1</strong>, 미통과 0입니다. 임계값 4가 아닙니다.</td>
+<td>과제 지시를 따르는지, 결과는 <strong>이진 0 또는 1(Pass/Fail)</strong></td>
+<td><strong>Threshold 1</strong>: 결과가 1일 때만 통과입니다. 4가 아닙니다.</td>
 </tr>
 </tbody>
 </table>
+<p class="note"><strong>TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.</strong> 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. <strong>1</strong>을 입력하고 4는 입력하지 않으며, 다른 칸이 보이면 기본값으로 둡니다. <a href="#decision">09</a>의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. <strong>Task completion</strong>도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.</p>
 <p>응답(<code>response</code>)의 서비스 자동 매핑은 그대로 유지합니다. 응답 칸이 <strong>Unassigned</strong>이거나 자신의 Judge가 목록에 없다면 <a href="admin.html#evaluation-mapping">매핑 점검</a>과 <a href="troubleshooting.html#evaluation">평가 문제 해결</a>을 따라 Agent·데이터 열·배포를 직접 대조합니다. 해결 전에는 임의 값을 넣거나 제출하지 않습니다.</p>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: 평가기·Judge·응답 매핑</summary>
@@ -2596,7 +2597,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드의 원격 평가 필드</span><code>evaluator_name: builtin.task_adherence</code>, <code>threshold: 1</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">포털에서 정하는 값</span><strong>Criteria → TaskAdherence → 이진 통과 1 → Apply</strong></td>
+<td><span class="mobile-cell-label" aria-hidden="true">포털에서 정하는 값</span><strong>Criteria → TaskAdherence → Threshold 1 → Apply</strong></td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">코드의 원격 평가 필드</span><code>initialization_parameters.deployment_name</code></td>
@@ -2691,7 +2692,7 @@ az provider register --namespace Microsoft.Insights --wait
 <p>Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimizer 지원 목록</a>을 확인하고 각 역할에 준비한 배포를 선택합니다.</p>
 <figure class="portal-shot" id="portal-evaluation-criteria">
 <img src="../../web/assets/portal/16-evaluation-criteria.png" alt="평가 Criteria에서 Relevance·TaskAdherence와 Judge 배포를 설정하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance 임계값은 4, TaskAdherence 통과 기준은 1로 설정합니다. Judge는 자신의 <code>JUDGE_DEPLOYMENT</code>에 해당하는 배포를 선택합니다. <a href="../../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance와 TaskAdherence의 Threshold를 각각 4와 1로 설정합니다. Judge는 자신의 <code>JUDGE_DEPLOYMENT</code>에 해당하는 배포를 선택합니다. <a href="../../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 <p class="completion-check"><strong>완료 기준:</strong> 아직 제출하지 않은 같은 생성 화면에서 두 평가기 척도·임계값·매핑·실제 Judge를 확인하고 기록했습니다. 원격 평가 정의는 06에서 제출한 뒤 생성됩니다. 이후 재평가는 그 저장된 정의를 사용합니다.</p>
@@ -2710,7 +2711,7 @@ az provider register --namespace Microsoft.Insights --wait
 <p><strong>Evaluation은 저장된 평가 설정</strong>, <strong>run은 그 설정으로 수행한 한 번의 실행</strong>입니다. v1의 첫 실행을 <strong>기준선(baseline)</strong>으로 삼습니다.</p>
 <h3 id="baseline-submit">Microsoft Foundry에서 검토하고 한 번 제출합니다</h3>
 <ol>
-<li><strong>Review</strong>에서 <strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 확인합니다.</li>
+<li><strong>Review</strong>에서 <strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 확인합니다. 평가기의 threshold가 확실하지 않으면 옆의 <strong>Edit</strong>를 선택해 Relevance <strong>4</strong>, TaskAdherence <strong>1</strong>인지 확인합니다.</li>
 <li>평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>, run 이름을 지정할 수 있으면 <strong><code>baseline-v1</code></strong>로 입력합니다. 다른 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.</li>
 <li>아직 실행하지 않은 승인된 작업만 <strong>Submit</strong>으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 <strong>Completed와 결과 12건</strong>을 확인해야 실행 완료입니다.</li>
 </ol>
@@ -3058,7 +3059,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td>Criteria</td>
-<td>Relevance 4, TaskAdherence 이진 통과 1</td>
+<td>Relevance Threshold 4, TaskAdherence Threshold 1(결과는 0 또는 1)</td>
 </tr>
 </tbody>
 </table>

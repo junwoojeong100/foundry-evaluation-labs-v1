@@ -1038,13 +1038,16 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 
 1. **Configure agents**에서 지침을 덮어쓰는 custom prompt override는 비워 둡니다. 사용자 입력은 **`{{item.query}}`만** 사용합니다. 이는 각 행의 질문을 넣는 템플릿이므로 **중괄호까지 그대로 두고**, 자신의 질문이나 참고 답변으로 바꾸지 않습니다.
 2. 필드 매핑 화면이 나타나면 입력 `query`를 데이터의 `query` 열과 연결합니다. 매핑은 **입력 칸과 데이터 열의 짝을 정하는 설정**입니다. `context`·`ground_truth`를 Agent 입력에 붙이지 않습니다.
-3. **Criteria → Add evaluators**에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 **Task Adherence**로 표시될 수도 있습니다.
+3. **Criteria → Add evaluators**에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 카탈로그에 **Task adherence**(또는 **Task Adherence**)로 표시됩니다. **Task completion**이나 **Task navigation efficiency**는 다른 평가기이므로 선택하지 않습니다.
 4. 각 평가기의 설정을 열어 아래 기준을 적용하고 **Apply**를 누릅니다. **Judge model**에는 자신의 `.lab/lab-ko/.env`에서 **`JUDGE_DEPLOYMENT`에 해당하는 배포 이름**을 선택합니다.
 
 | 평가기 | 의미 | 설정 |
 |---|---|---|
 | Relevance | 질문에 관련된 답변인지, **1–5점** | **Threshold 4**: 4·5점은 통과, 1–3점은 미통과입니다. |
-| TaskAdherence | 과제 지시를 따르는지, **이진 0/1 Pass/Fail** | **통과 1**, 미통과 0입니다. 임계값 4가 아닙니다. |
+| TaskAdherence | 과제 지시를 따르는지, 결과는 **이진 0 또는 1(Pass/Fail)** | **Threshold 1**: 결과가 1일 때만 통과입니다. 4가 아닙니다. |
+
+**TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.** 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. **1**을 입력하고 4는 입력하지 않으며, 다른 칸이 보이면 기본값으로 둡니다. [09](#decision)의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. **Task completion**도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.
+{: .note}
 
 응답(`response`)의 서비스 자동 매핑은 그대로 유지합니다. 응답 칸이 **Unassigned**이거나 자신의 Judge가 목록에 없다면 [매핑 점검](admin-setup.md#evaluation-mapping)과 [평가 문제 해결](troubleshooting.md#evaluation)을 따라 Agent·데이터 열·배포를 직접 대조합니다. 해결 전에는 임의 값을 넣거나 제출하지 않습니다.
 
@@ -1059,7 +1062,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 | 코드의 원격 평가 필드 | 포털에서 정하는 값 |
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
-| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → 이진 통과 1 → Apply** |
+| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1 → Apply** |
 | `initialization_parameters.deployment_name` | **Judge model**에 자신의 `JUDGE_DEPLOYMENT` 배포를 선택합니다. |
 | `data_mapping.query = {{item.query}}` | **Configure agents → User input**에서 query만 전달합니다. |
 | Relevance의 `{{sample.output_text}}`, TaskAdherence의 `{{sample.output_items}}` | 서비스 생성 응답 매핑입니다. 두 번째 값에는 지침·도구 호출 등 대화 항목이 포함됩니다. JSONL에 같은 이름의 열을 만들지 않습니다. |
@@ -1080,7 +1083,7 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 <figure class="portal-shot" id="portal-evaluation-criteria">
 <img src="../web/assets/portal/16-evaluation-criteria.png" alt="평가 Criteria에서 Relevance·TaskAdherence와 Judge 배포를 설정하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance 임계값은 4, TaskAdherence 통과 기준은 1로 설정합니다. Judge는 자신의 <code>JUDGE_DEPLOYMENT</code>에 해당하는 배포를 선택합니다. <a href="../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance와 TaskAdherence의 Threshold를 각각 4와 1로 설정합니다. Judge는 자신의 <code>JUDGE_DEPLOYMENT</code>에 해당하는 배포를 선택합니다. <a href="../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **완료 기준:** 아직 제출하지 않은 같은 생성 화면에서 두 평가기 척도·임계값·매핑·실제 Judge를 확인하고 기록했습니다. 원격 평가 정의는 06에서 제출한 뒤 생성됩니다. 이후 재평가는 그 저장된 정의를 사용합니다.
@@ -1105,7 +1108,7 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 ### Microsoft Foundry에서 검토하고 한 번 제출합니다 {#baseline-submit}
 
-1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다.
+1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. 평가기의 threshold가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**인지 확인합니다.
 2. 평가 이름은 **`lab-ko-learning-loop`**, run 이름을 지정할 수 있으면 **`baseline-v1`**로 입력합니다. 다른 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.
 3. 아직 실행하지 않은 승인된 작업만 **Submit**으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 **Completed와 결과 12건**을 확인해야 실행 완료입니다.
 
@@ -1280,7 +1283,7 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 | Optimization model | 자신의 `OPTIMIZER_DEPLOYMENT` / gpt-5.5 |
 | Evaluation model | 자신의 `JUDGE_DEPLOYMENT` / gpt-6-luna |
 | Dataset | 같은 언어의 등록 dev12·같은 버전 |
-| Criteria | Relevance 4, TaskAdherence 이진 통과 1 |
+| Criteria | Relevance Threshold 4, TaskAdherence Threshold 1(결과는 0 또는 1) |
 
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
