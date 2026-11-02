@@ -107,7 +107,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.credential.__enter__.return_value = self.credential
         self.project = MagicMock()
         self.project.__enter__.return_value = self.project
-        self.project.beta.evaluators.list.return_value = self.versions
+        self.project.evaluators.list.return_value = self.versions
         self.client = MagicMock()
         self.client.__enter__.return_value = self.client
         self.project.get_openai_client.return_value = self.client
@@ -562,7 +562,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         ]
         for catalog in invalid_catalogs:
             with self.subTest(catalog=catalog):
-                self.project.beta.evaluators.list.return_value = catalog
+                self.project.evaluators.list.return_value = catalog
                 with self.assertRaises(LabError):
                     self.submit()
                 self.assert_no_paid_requests()
@@ -577,7 +577,7 @@ class ManagedEvaluationTests(unittest.TestCase):
             with self.subTest(catalog=catalog):
                 run_id = f"unreported-version-{index}"
                 self.seed_run(run_id)
-                self.project.beta.evaluators.list.return_value = catalog
+                self.project.evaluators.list.return_value = catalog
                 managed_eval.submit_evaluation(self.config, run_id)
                 managed_eval.collect_evaluation(self.config, run_id)
                 directory = self.root / "runs" / run_id
@@ -597,7 +597,7 @@ class ManagedEvaluationTests(unittest.TestCase):
                         self.assertEqual(criterion["evaluator_version"], entry["reported_version"])
 
     def test_runtime_reported_version_does_not_become_an_invented_requested_pin(self):
-        self.project.beta.evaluators.list.return_value = []
+        self.project.evaluators.list.return_value = []
         self.submit()
         self.items = [item.model_dump(mode="json", exclude_unset=True) for item in self.items]
         for item in self.items:
@@ -614,7 +614,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         )
 
     def test_catalog_permission_errors_propagate_instead_of_fabricating_versions(self):
-        self.project.beta.evaluators.list.side_effect = HttpResponseError("fixture catalog permission denied")
+        self.project.evaluators.list.side_effect = HttpResponseError("fixture catalog permission denied")
         with self.assertRaisesRegex(HttpResponseError, "permission denied"):
             self.submit()
         self.assert_no_paid_requests()
@@ -676,7 +676,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.factory.assert_not_called()
 
     def test_real_azure_catalog_models_with_nested_definitions_are_supported(self):
-        self.project.beta.evaluators.list.return_value = [
+        self.project.evaluators.list.return_value = [
             EvaluatorVersion({
                 **item,
                 "created_at": "2026-09-29T00:00:00Z",
@@ -695,7 +695,7 @@ class ManagedEvaluationTests(unittest.TestCase):
         self.assertNotIn("definition", contract["evaluators"]["builtin.groundedness"])
 
     def test_catalog_iteration_is_bounded(self):
-        self.project.beta.evaluators.list.return_value = repeat({"name": "unrelated"})
+        self.project.evaluators.list.return_value = repeat({"name": "unrelated"})
         with self.assertRaisesRegex(LabError, "500"):
             self.submit()
         self.assert_no_paid_requests()
