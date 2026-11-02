@@ -1057,10 +1057,10 @@ class DocumentationTests(unittest.TestCase):
                 self.assertIn("same" if language == "en" else "같은", source)
                 self.assertIn("production" if language == "en" else "운영", source)
 
-    def test_source_attribution_keeps_the_archived_repository_reference(self):
+    def test_source_attribution_keeps_the_archived_source_commit_without_a_dead_link(self):
         source = (ROOT / "web/assets/NOTICE.txt").read_text()
-        reference = "https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2"
-        self.assertEqual(source.count(reference), 1)
+        self.assertEqual(source.count("93bc07e31373c4cfc278a2dc3757785946404cf2"), 1)
+        self.assertNotIn("github.com/junwoojeong100/foundry-evaluation-labs-v0.9", source)  # the repository was deleted
 
     def test_all_rendered_links_and_fragments_resolve_without_private_paths(self):
         parsed = {}
