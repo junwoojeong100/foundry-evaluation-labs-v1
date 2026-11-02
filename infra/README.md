@@ -156,6 +156,12 @@ automatic.
 - Use the original `config.json`, ownership manifest, and deployment ID.
 - A timeout does not mean a request was never accepted. Inspect remote state
   before retrying.
+- If `setup` or `apply` stops with `BLOCKED` and an Azure CLI failure
+  (`UnclassifiedError`, `CliTimeout`) while the owned deployment is `Running` or
+  `Succeeded`, nothing needs to be resubmitted: check `bootstrap status`, wait,
+  run the same `bootstrap apply` once without `--retry`, and check `status`
+  again, as described in
+  [setup stopped but Microsoft Azure kept creating resources](../guide/en/troubleshooting.md#provisioning-interrupted).
 - `--retry` is only for a verified terminal owned failure and a separately
   authorized retry allowance. It cannot resubmit an unknown outcome. The approval
   written by the quick `bootstrap setup` has no allowance; add

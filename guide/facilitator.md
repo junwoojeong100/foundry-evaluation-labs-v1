@@ -66,6 +66,7 @@ Optimizer 내부 순위는 후보 선택 근거이지 별도 관리형 재평가
 | 증상 | 대응 |
 |---|---|
 | 다른 신원, 401/403 | 승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다. 게스트·개인 계정이면 [멤버 계정 확인](handbook.md#setup-account-type)을 따릅니다. |
+| `setup`·`apply`가 `BLOCKED`·`Azure CLI failed (UnclassifiedError)`로 멈췄지만 자원은 생성 중이었음 | 삭제나 재생성 없이 [setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우](troubleshooting.md#provisioning-interrupted)를 따릅니다. `status` 확인 → 대기 → `apply` 한 번 → `status` 재확인입니다. |
 | 첫 생성이 실패하고 `setup`·`apply`가 다시 제출되지 않음 | [첫 생성 실패 복구](troubleshooting.md#provisioning-retry)의 재시도 승인 또는 새 환경 절차를 따릅니다. |
 | 03의 첫 호출이 실패한 뒤 같은 명령이 거부됨 | 기록을 지우지 않고 [명령별 복구](troubleshooting.md#knowledge-first-failure)를 따릅니다. 02 직후 5~10분을 기다립니다. |
 | 카탈로그·배포 성공 후 Agent 실패 | 실제 API·런타임 오류를 남기고 해당 역할의 지원을 확인합니다. |

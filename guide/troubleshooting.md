@@ -11,6 +11,7 @@
 | HTML에서 설명만 보이고 실행 명령을 찾을 수 없습니다. | 단계 상단의 **실행 순서**를 사용합니다. 선택 설명을 펼칠 필요는 없습니다. [로그인 명령](handbook.md#setup-login) · [런타임 검사](handbook.md#resources-runtime-check). |
 | 용어·설치·로그인·파일 경로가 어렵습니다. | [기본 용어](handbook.md#basics) · [Codespaces](#codespaces) · [환경·로그인](#environment) |
 | 승인·권한·계정 유형·공급자·모델 할당량 때문에 생성할 수 없습니다. | [생성 준비](#provisioning) |
+| `setup`·`apply`가 `BLOCKED`와 `Azure CLI failed (UnclassifiedError)`로 멈췄지만 자원은 생성 중이었습니다. | [setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우](#provisioning-interrupted) |
 | 첫 생성이 실패했고 `setup`·`apply`가 다시 제출되지 않습니다. | [첫 생성 실패 복구](#provisioning-retry) |
 | 정책 검색이나 Agent 응답이 실패합니다. | [정책·Agent](#knowledge) |
 | 03의 `smoke`·`iq`·`native-agent`가 한 번 실패한 뒤 같은 명령이 거부됩니다. | [첫 호출 실패 후 복구](#knowledge-first-failure) |
@@ -55,7 +56,7 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그인 전에
 | 포털 Browse에서 `dev.jsonl`이 보이지 않습니다. | Browse는 내 PC 파일을 고릅니다. [Codespaces Explorer에서 Download](handbook.md#dataset-download)한 원본 파일을 선택합니다. |
 | `candidate.txt`를 만들었는데 찾을 수 없습니다. | 내 PC가 아니라 **실습 터미널과 같은 Codespace**의 `.lab` 아래에 저장했는지 [후보 저장 절차](handbook.md#optimizer-candidate)로 확인합니다. |
 | 사설망 자원에 연결할 수 없습니다. | Codespaces가 해당 VNet/VPN에 연결됐다고 가정하지 않습니다. 승인된 네트워크의 실행 환경을 사용하며 public access나 방화벽을 임의로 바꾸지 않습니다. |
-| 명령이 실행되는 동안 Codespace가 중지되거나 연결이 끊어졌습니다. | [내 Codespaces](https://github.com/codespaces)에서 다시 시작하고 **Terminal → New Terminal**을 연 뒤 [재개 절차](handbook.md#setup-resume)를 따릅니다. 먼저 상태를 조회합니다. 생성은 [`bootstrap status`](handbook.md#resources-status), 평가는 [`native-evals`](handbook.md#baseline-identifiers), 재평가는 [09의 재개 규칙](handbook.md#decision-run)을 사용합니다. `apply`를 반복하거나 이름을 바꿔 다시 제출하지 않습니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로 [`.lab/` 백업](handbook.md#cleanup-codespaces)을 보관합니다. |
+| 명령이 실행되는 동안 Codespace가 중지되거나 연결이 끊어졌습니다. | [내 Codespaces](https://github.com/codespaces)에서 다시 시작하고 **Terminal → New Terminal**을 연 뒤 [재개 절차](handbook.md#setup-resume)를 따릅니다. 먼저 상태를 조회합니다. 생성은 [`bootstrap status`](handbook.md#resources-status), 평가는 [`native-evals`](handbook.md#baseline-identifiers), 재평가는 [09의 재개 규칙](handbook.md#decision-run)을 사용합니다. 이름을 바꿔 다시 제출하지 않고, `status`로 배포가 있는 것을 확인하기 전에는 `apply`를 반복하지 않습니다. 배포가 있으면 [이 복구 절차의 `apply` 한 번](#provisioning-interrupted)으로 마무리합니다. 중지된 Codespace를 사용하지 않고 두면 기본 30일 뒤 자동 삭제되므로 [`.lab/` 백업](handbook.md#cleanup-codespaces)을 보관합니다. |
 | 재개 또는 삭제할 Codespace를 모르겠습니다. | 원래 저장소·Codespace와 그 안의 `.lab/<환경 이름>/` 폴더를 대조합니다. [백업·중지·삭제 순서](handbook.md#cleanup-codespaces)를 따르며 새 Codespace를 만들고 Microsoft Azure 자원까지 중복 생성하지 않습니다. |
 
 ## 생성·승인·할당량 {#provisioning}
@@ -75,10 +76,55 @@ Python·Git·Azure CLI 설치와 PATH 문제는 Microsoft Azure 로그인 전에
 | 모델·SKU·버전·quota·capacity 오류입니다(`Insufficient unallocated quota`, `Free quota cannot be verified`, `Insufficient regional model capacity`). | 계획의 역할별 요청과 preflight 이유를 확인합니다. 할당량이 없거나 모자라면 [할당량 사전 점검](handbook.md#resources-prereq-quota)의 Tier·남은 할당량 확인, 무료 체험 구독 업그레이드, 할당량 요청 순서로 해결합니다. 이 실습은 `northcentralus`만 지원하므로 지역은 바꿀 수 없고, 고정된 모델을 바꾸려면 별도 계획·승인이 필요하며 비교 조건도 달라집니다. 막힌 채로 우회하지 않습니다. | 네 모델의 `limit − used`가 요청 용량 이상이고 같은 `bootstrap setup`의 준비 검사가 READY가 됩니다. |
 | 런타임 `*_tpm` 항목이 BLOCKED입니다. | [모델별 TPM 설정](admin-setup.md#throughput)에서 실제 배포 한도를 확인합니다. | 다섯 TPM 항목과 전체 preflight가 PASS입니다. |
 | 생성 후 `unknown resource`가 나옵니다. | 자신의 Application Insights에 연결된 기본 Smart Detection인지, 다른 업무 자원이나 변경된 수신자인지 확인합니다. 생성 중이면 연결 전파를 기다립니다. | 같은 `bootstrap status`로 확인합니다. 경고 삭제나 manifest 편집으로 우회하지 않습니다. |
-| apply가 시간 초과 또는 결과 불명입니다. | 원래 config·manifest·deployment ID를 보관하고 [02의 `bootstrap status` 명령](handbook.md#resources-status)과 그룹의 Deployments를 읽습니다. `apply`는 다시 실행하지 않습니다. | 진행 중이면 기다리며 결과 불명 상태에서 다시 제출하지 않습니다. |
+| `setup`·`apply`가 `BLOCKED`와 `Azure CLI failed (UnclassifiedError)`(또는 `CliTimeout`·`InvalidCliResponse`)로 끝나거나 `apply`가 시간 초과됩니다. | 배포는 보통 Microsoft Azure에서 계속 진행됩니다. 원래 config·manifest·deployment ID를 보관합니다. 리소스 그룹을 삭제하거나 새 환경을 만들거나 `--retry`를 쓰지 않습니다. [setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우](#provisioning-interrupted)를 따라 `status` 확인 → 대기 → 같은 `apply` 한 번 → `status` 재확인을 수행합니다. | 배포가 `Succeeded`이고 `apply`가 `APPLIED`로 끝나며 `status`가 `phase: succeeded`입니다. 두 번째 배포는 제출되지 않습니다. |
 | 같은 로컬 환경이 이미 있습니다. | 같은 실습은 원본 config로 재개합니다. 별도 실습만 새 환경 이름과 승인을 사용합니다. | 기존 계획·설정·자원을 임의로 인수하거나 덮어쓰지 않습니다. |
 
 `--retry`는 확인된 소유 배포의 종료된 실패와 별도 재시도 승인 한도에만 사용합니다. `repair-dependencies`, `repair-trace-routing`도 일치하는 실패 근거와 해당 범위의 승인이 필요한 복구 명령입니다. `APPLIED`는 인프라 상태이며 품질·운영 승인·로그 수집 성공을 뜻하지 않습니다.
+
+### setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우 {#provisioning-interrupted}
+
+**증상:** 02에서 자원을 만드는 동안 `bootstrap setup`(또는 `bootstrap apply`)이 다음과 같은 실패로 멈춥니다.
+
+- `status: BLOCKED`, `error_code: UnclassifiedError`. `CliTimeout`·`InvalidCliResponse`도 같은 종류의 문제입니다.
+- `reason: Azure CLI failed (UnclassifiedError). Inspect the private failure record; no automatic retry, model/region fallback, or cleanup.`
+- `mutations_performed: null`, `live_status: NOT_VERIFIED`. Microsoft Azure가 어디까지 진행했는지 프로그램이 알 수 없어 `null`로 표시하며, 아무것도 만들어지지 않았다는 뜻이 아닙니다.
+
+**의미:** 터미널의 Azure CLI 호출 하나가 실패했습니다. 예를 들어 프로그램이 진행 상황을 확인하던 중에 생길 수 있습니다. 배포는 이미 Microsoft Azure에 제출되어 계속 진행되므로 **생성 실패가 아닙니다.** `bootstrap status`에는 보통 `phase: interrupted`, `arm_deployment`의 `Running` 또는 `Succeeded`가 표시되고 `.lab/lab-ko/.env`는 아직 없습니다. 전체 생성에는 약 10~15분이 걸리며 Azure AI Search가 가장 오래 걸립니다.
+
+**하지 않을 일:** 리소스 그룹을 삭제하거나, 새 환경 이름으로 다시 시작하거나, `--retry`를 붙이지 않습니다. 삭제는 거의 끝난 작업을 버리는 일이고, 새 환경이나 `--retry`는 자원·비용을 중복시키며 같은 모델 할당량을 한 번 더 사용합니다. `CliTimeout`이면 출력 문구가 기록된 배포를 먼저 확인하라고 안내하며, 아래 1단계가 그 확인입니다.
+
+**1. 진행 상황을 확인합니다.** 읽기만 하며 아무것도 제출하지 않습니다.
+
+```sh
+python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json
+```
+
+출력의 `resources.arm_deployment.provisioning_state`를 읽습니다.
+
+| `arm_deployment` | 조치 |
+|---|---|
+| `Running`·`Accepted`·`Creating`·`Updating` | 아직 생성 중입니다. 약 5분 기다린 뒤 같은 명령을 다시 실행하거나, 생성이 끝날 때까지 기다려 주는 2단계로 바로 이동합니다. |
+| `Succeeded` | 생성은 끝났고 로컬 마무리만 남았습니다. 2단계로 이동합니다. |
+| `Failed`·`Canceled` | 2단계를 실행하지 않습니다. [첫 생성 실패 복구](#provisioning-retry)를 따릅니다. |
+| `present: false` | 2단계를 한 번 실행합니다. 제출한 적이 없다면 승인한 생성을 이어서 진행합니다. 제출은 했는데 배포가 보이지 않으면 `UNKNOWN_SUBMISSION`으로 멈추며 아무것도 바꾸지 않습니다. 이때는 [첫 생성 실패 복구](#provisioning-retry)를 따릅니다. |
+
+`status` 자체가 같은 메시지로 실패해도 같은 일시적 문제입니다. 읽기만 하므로 1분 뒤 다시 실행합니다.
+
+**2. 일정 시간이 지난 뒤 같은 `apply`를 한 번 실행합니다.** 아래 명령을 `--retry` 없이 그대로 사용합니다. 생성 시도가 기록된 뒤의 `bootstrap setup`은 상태만 조회하므로 마무리할 수 없습니다. 이미 있는 배포는 다시 제출하지 않습니다. 아직 진행 중이면 `apply`가 승인된 대기 시간(빠른 경로는 1시간) 안에서 그 배포를 기다리고, 자원을 검증한 뒤 `.lab/lab-ko/.env`를 만들고 `status: APPLIED`로 끝납니다. 다른 창에서 동시에 실행하지 않습니다. 승인서의 시작·만료 시각이 지금도 유효해야 하며 만료됐다면 [승인서 작성표](admin-setup.md#approval)로 다시 승인합니다.
+
+```sh
+python -m lab bootstrap apply --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json
+```
+
+**3. `status`로 다시 확인합니다.** 1단계 명령을 다시 실행해 결과를 확인합니다.
+
+```sh
+python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json
+```
+
+`phase: succeeded`이고 모든 자원의 `recorded_state: succeeded`이며 `.lab/lab-ko/.env`가 있을 때만 진행합니다. 역할·연결은 자체 상태를 보고하지 않아 `provisioning_state: UNKNOWN`으로 보이고, `live_status: PENDING_EXECUTION`·`readiness_status: NOT_CHECKED_BY_STATUS`는 이 읽기 전용 명령에서 정상으로 나오는 값이므로 모두 문제가 아닙니다. 이후 02의 [포털·런타임 확인](handbook.md#resources-runtime-check)으로 이동합니다.
+
+**2단계가 다시 실패하면** 몇 분 기다린 뒤 2·3단계를 한 번 더 반복합니다. 같은 실패가 남으면 `.lab/lab-ko/evidence/failure-*.local.json` 중 가장 최근 파일을 엽니다. `stage`는 멈춘 위치를, `stderr`는 Azure CLI의 메시지를 보여 줍니다. 비공개 파일이므로 공개된 곳에 붙여 넣지 않습니다. 로그인 만료를 언급하면 [같은 계정으로 다시 로그인](handbook.md#setup-login)하고 2단계를 반복합니다. `apply`가 `UNKNOWN_SUBMISSION`·`RETRY_REQUIRED`·`UNRESOLVED_DEPLOYMENT_STATE`로 끝나면 [첫 생성 실패 복구](#provisioning-retry)를 따릅니다.
 
 ### 첫 생성 실패 복구 {#provisioning-retry}
 

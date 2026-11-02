@@ -524,6 +524,7 @@ python -m lab bootstrap setup --environment lab-ko
 
 - 아직 생성 시도가 없는 계획만 이어 준비합니다. 생성 시도 기록이 있으면 새 배포를 제출하지 않고 상태만 조회합니다. 생성 중·실패 상태를 성공으로 간주하지 않으며, 재개할 때는 [status 조회](#resources-status)로 확인합니다.
 - 기존의 유효한 승인 파일이 있으면 입력을 반복하지 않고 기록된 한도를 확인합니다. 기존 계획·승인값을 새 기본값으로 바꾸거나 만료 시각을 자동 연장하지 않습니다.
+- **`CREATE` 입력 후 `setup`이 `BLOCKED`와 `Azure CLI failed (UnclassifiedError)`로 멈췄다면** 배포는 보통 Microsoft Azure에서 계속 진행되므로 아무것도 삭제하지 않고 새 환경도 만들지 않습니다. `status`를 확인하고 잠시 기다린 뒤 같은 `bootstrap apply`를 `--retry` 없이 한 번 실행하고 `status`로 다시 확인합니다. 절차는 [setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우](troubleshooting.md#provisioning-interrupted)에 있습니다.
 - **생성이 `DeploymentFailed` 등으로 실패했다면** `setup`을 반복해도 새 배포는 제출되지 않고, `bootstrap apply --retry`도 재시도 승인(`max_provisioning_retries`)이 없으면 `RETRY_BUDGET_EXHAUSTED`로 거부됩니다. 같은 계획으로 한 번 다시 시도하거나 새 환경에서 다시 시작하는 절차는 [첫 생성 실패 복구](troubleshooting.md#provisioning-retry)에 있습니다.
 
 <details class="guide-details optional-path" markdown="1">
@@ -642,7 +643,7 @@ python -m lab bootstrap preflight --config .lab/lab-ko/config.json --approval .l
 python -m lab bootstrap apply --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json
 ```
 
-이 명령은 리소스·모델·연결·리소스 범위 역할을 실제로 생성합니다. 시간이 걸릴 수 있으므로 다른 창에서 같은 `apply`를 실행하지 않습니다. 정상 종료하면 **APPLIED**가 표시됩니다. 대기 초과·응답 불명일 때도 `apply`를 다시 제출하지 말고 아래 조회부터 수행합니다.
+이 명령은 리소스·모델·연결·리소스 범위 역할을 실제로 생성합니다. 시간이 걸릴 수 있으므로 다른 창에서 같은 `apply`를 실행하지 않습니다. 정상 종료하면 **APPLIED**가 표시됩니다. `BLOCKED`(예: `Azure CLI failed (UnclassifiedError)`)로 멈추거나 대기 초과가 되어도 그룹을 삭제하거나 새 환경을 만들지 않습니다. 배포는 보통 계속 진행됩니다. 아래 조회부터 수행하고, 배포가 있으면 [복구 절차의 `apply` 한 번과 `status` 재확인](troubleshooting.md#provisioning-interrupted)으로 마무리합니다.
 
 #### 생성 상태를 조회합니다 · 재개할 때도 같은 명령입니다 {#resources-status}
 
@@ -650,7 +651,7 @@ python -m lab bootstrap apply --config .lab/lab-ko/config.json --approval .lab/l
 python -m lab bootstrap status --config .lab/lab-ko/config.json --approval .lab/lab-ko/approval.json
 ```
 
-`phase: succeeded`, 대상 리소스의 존재, `.lab/lab-ko/.env` 생성을 확인합니다. 진행 중이거나 실패했다면 [생성 재개 절차](troubleshooting.md#provisioning)를 따릅니다. **이 조회는 새 배포를 제출하지 않습니다.**
+`phase: succeeded`, 대상 리소스의 존재, `.lab/lab-ko/.env` 생성을 확인합니다. `phase: interrupted`인데 `arm_deployment`가 `Running` 또는 `Succeeded`이면 Microsoft Azure가 아니라 터미널만 일찍 멈춘 것이므로 [setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우](troubleshooting.md#provisioning-interrupted)를 따릅니다. 그 밖의 실패는 [생성 재개 절차](troubleshooting.md#provisioning)를 따릅니다. **이 조회는 새 배포를 제출하지 않습니다.**
 
 **여기서 생성된 `.env`가 이후 명령의 연결 설정입니다.** 사용자·테넌트·구독과 실제 프로젝트·모델 배포 값이 들어 있습니다. 설정 파일이므로 `source`나 PowerShell 스크립트로 실행하지 않고, 명령의 `--config`로 지정합니다. 아직 없다면 `.env.example`을 복사해 생성 완료로 간주하지 않습니다.
 

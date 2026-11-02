@@ -60,6 +60,7 @@
 <li><a href="#environment">Environment, sign-in and local files</a></li>
 <li><a href="#codespaces">GitHub Codespaces</a></li>
 <li><a href="#provisioning">Provisioning, authorization and quota</a><ul>
+<li><a href="#provisioning-interrupted">Setup stopped but Microsoft Azure kept creating resources</a></li>
 <li><a href="#provisioning-retry">First provisioning failure recovery</a></li>
 </ul>
 </li>
@@ -118,7 +119,7 @@
 <a class="back-to-main no-print" href="index.html">← Back to the hands-on guide</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-29">2026-10-29</time></span>
+        <span class="document-date">As of <time datetime="2026-11-03">2026-11-03</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Lab troubleshooting">
@@ -145,6 +146,10 @@
 <tr>
 <td>Authorization, permissions, account type, providers or model quota block provisioning</td>
 <td><a href="#provisioning">Provisioning</a></td>
+</tr>
+<tr>
+<td><code>setup</code>/<code>apply</code> stopped with <code>BLOCKED</code> and <code>Azure CLI failed (UnclassifiedError)</code> while resources were being created</td>
+<td><a href="#provisioning-interrupted">Setup stopped but Microsoft Azure kept creating resources</a></td>
 </tr>
 <tr>
 <td>The first provisioning failed and <code>setup</code>/<code>apply</code> will not submit again</td>
@@ -302,7 +307,7 @@
 </tr>
 <tr>
 <td>The codespace stopped or disconnected while a command was running</td>
-<td>Restart it from <a href="https://github.com/codespaces">your Codespaces</a>, open <strong>Terminal → New Terminal</strong>, and follow <a href="index.html#setup-resume">resumption</a>. Inspect state before acting: <a href="index.html#resources-status"><code>bootstrap status</code></a> for provisioning, <a href="index.html#baseline-identifiers"><code>native-evals</code></a> for evaluations, and the <a href="index.html#decision-run">09 resume rules</a> for a reevaluation. Do not repeat <code>apply</code> or submit under a new name. A stopped codespace left unused is deleted after 30 days by default; keep a <a href="index.html#cleanup-codespaces">backup of <code>.lab/</code></a>.</td>
+<td>Restart it from <a href="https://github.com/codespaces">your Codespaces</a>, open <strong>Terminal → New Terminal</strong>, and follow <a href="index.html#setup-resume">resumption</a>. Inspect state before acting: <a href="index.html#resources-status"><code>bootstrap status</code></a> for provisioning, <a href="index.html#baseline-identifiers"><code>native-evals</code></a> for evaluations, and the <a href="index.html#decision-run">09 resume rules</a> for a reevaluation. Do not submit under a new name, and do not repeat <code>apply</code> until <code>status</code> shows the deployment exists; then finish it with the <a href="#provisioning-interrupted">single <code>apply</code> in this recovery</a>. A stopped codespace left unused is deleted after 30 days by default; keep a <a href="index.html#cleanup-codespaces">backup of <code>.lab/</code></a>.</td>
 </tr>
 <tr>
 <td>Unsure which codespace to resume or delete</td>
@@ -386,9 +391,9 @@
 <td>Inspect the same <code>bootstrap status</code>; do not delete alerts or edit the manifest to bypass it.</td>
 </tr>
 <tr>
-<td>Apply times out or its outcome is unknown</td>
-<td>Preserve the original config, manifest and deployment ID; read <a href="index.html#resources-status">02's <code>bootstrap status</code> command</a> and the group's Deployments. Do not repeat <code>apply</code>.</td>
-<td>Wait for active work; do not resubmit an unknown outcome.</td>
+<td><code>setup</code>/<code>apply</code> ends with <code>BLOCKED</code> and <code>Azure CLI failed (UnclassifiedError)</code> (or <code>CliTimeout</code>, <code>InvalidCliResponse</code>), or <code>apply</code> times out</td>
+<td>The deployment usually keeps running in Microsoft Azure. Preserve the original config, manifest and deployment ID. Do not delete the group, start a new environment, or use <code>--retry</code>. Follow <a href="#provisioning-interrupted">setup stopped but Microsoft Azure kept creating resources</a>: check <code>status</code>, wait, run the same <code>apply</code> once, then check <code>status</code> again.</td>
+<td>The deployment is <code>Succeeded</code>, <code>apply</code> ends with <code>APPLIED</code>, and <code>status</code> shows <code>phase: succeeded</code>. No second deployment is submitted.</td>
 </tr>
 <tr>
 <td>The local environment already exists</td>
@@ -398,6 +403,57 @@
 </tbody>
 </table>
 <p>Use <code>--retry</code> only for a verified terminal owned failure and a separate retry allowance. <code>repair-dependencies</code> and <code>repair-trace-routing</code> also require matching failure evidence and scoped authorization. <code>APPLIED</code> describes infrastructure, not answer quality, production approval or confirmed trace ingestion.</p>
+<h3 id="provisioning-interrupted">Setup stopped but Microsoft Azure kept creating resources</h3>
+<p><strong>Symptom:</strong> While the resources are being created in 02, <code>bootstrap setup</code> (or <code>bootstrap apply</code>) stops with a failure like this:</p>
+<ul>
+<li><code>status: BLOCKED</code> and <code>error_code: UnclassifiedError</code>. <code>CliTimeout</code> and <code>InvalidCliResponse</code> are the same kind of problem.</li>
+<li><code>reason: Azure CLI failed (UnclassifiedError). Inspect the private failure record; no automatic retry, model/region fallback, or cleanup.</code></li>
+<li><code>mutations_performed: null</code> and <code>live_status: NOT_VERIFIED</code>. The program cannot tell how far Microsoft Azure got, so it reports <code>null</code>; this does not mean that nothing was created.</li>
+</ul>
+<p><strong>What it means:</strong> One Azure CLI call from your terminal failed, for example while the program was checking progress. The deployment had already been submitted to Microsoft Azure and keeps running there, so this is <strong>not</strong> a failed provisioning. <code>bootstrap status</code> usually shows <code>phase: interrupted</code>, an <code>arm_deployment</code> of <code>Running</code> or <code>Succeeded</code>, and no <code>.lab/lab-en/.env</code> yet. Creating everything takes about 10–15 minutes, and Azure AI Search is the slowest part.</p>
+<p><strong>Do not</strong> delete the resource group, start again with a new environment name, or add <code>--retry</code>. Deleting throws away work that is nearly done, while a new environment or <code>--retry</code> can create duplicates, add cost, and use the same model quota a second time. For <code>CliTimeout</code> the output itself says to inspect the recorded deployment; step 1 is that inspection.</p>
+<p><strong>1. Check the progress.</strong> This command only reads; it submits nothing.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+</code></pre>
+<p>Read <code>resources.arm_deployment.provisioning_state</code> in the output:</p>
+<table>
+<thead>
+<tr>
+<th><code>arm_deployment</code></th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Running</code>, <code>Accepted</code>, <code>Creating</code>, or <code>Updating</code></td>
+<td>It is still being created. Wait about 5 minutes and run the same command again, or go straight to step 2, which waits for it.</td>
+</tr>
+<tr>
+<td><code>Succeeded</code></td>
+<td>Creation is finished and only the local finish is missing. Go to step 2.</td>
+</tr>
+<tr>
+<td><code>Failed</code> or <code>Canceled</code></td>
+<td>Do not run step 2. Follow <a href="#provisioning-retry">first provisioning failure recovery</a>.</td>
+</tr>
+<tr>
+<td><code>present: false</code></td>
+<td>Run step 2 once. If nothing had been submitted, it continues the creation you approved. If a submission was made but no deployment is visible, it stops with <code>UNKNOWN_SUBMISSION</code> and changes nothing; then follow <a href="#provisioning-retry">first provisioning failure recovery</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>If <code>status</code> itself fails with the same message, it is the same short-lived problem. It only reads, so wait a minute and run it again.</p>
+<p><strong>2. After some time, run the same <code>apply</code> once.</strong> Use this exact command, without <code>--retry</code>. Once a creation attempt exists, <code>bootstrap setup</code> only reports status, so it cannot finish the job. An existing deployment is never submitted again: if it is still running, <code>apply</code> waits for it (up to the approved wait, one hour on the quick path), then verifies the resources, writes <code>.lab/lab-en/.env</code>, and ends with <code>status: APPLIED</code>. Do not run it in another window at the same time. The approval's start and expiry times must still be valid; if they have expired, reauthorize with the <a href="admin.html#approval">approval worksheet</a>.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+</code></pre>
+<p><strong>3. Check again with <code>status</code>.</strong> This is the step 1 command again; it confirms the result.</p>
+<p class="command-label">Run in your terminal · Shared terminal</p>
+<pre class="terminal-command"><code class="language-sh">python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+</code></pre>
+<p>Continue only when it shows <code>phase: succeeded</code>, every resource has <code>recorded_state: succeeded</code>, and <code>.lab/lab-en/.env</code> exists. Roles and connections show <code>provisioning_state: UNKNOWN</code> because they report no state of their own, and <code>live_status: PENDING_EXECUTION</code> and <code>readiness_status: NOT_CHECKED_BY_STATUS</code> are normal for this read-only command; none of these is a problem. Then continue with the <a href="index.html#resources-runtime-check">portal and runtime checks</a> in 02.</p>
+<p><strong>If step 2 fails again,</strong> wait a few minutes and repeat steps 2 and 3 once more. If the same failure remains, open the newest <code>.lab/lab-en/evidence/failure-*.local.json</code>: <code>stage</code> shows where it stopped and <code>stderr</code> holds the Azure CLI message. The file is private, so do not post it publicly. If it mentions an expired sign-in, <a href="index.html#setup-login">sign in again with the same account</a> and repeat step 2. If <code>apply</code> ends with <code>UNKNOWN_SUBMISSION</code>, <code>RETRY_REQUIRED</code>, or <code>UNRESOLVED_DEPLOYMENT_STATE</code>, follow <a href="#provisioning-retry">first provisioning failure recovery</a>.</p>
 <h3 id="provisioning-retry">First provisioning failure recovery</h3>
 <p><strong>Symptom:</strong> <code>bootstrap setup</code> ended with an error such as <code>DeploymentFailed</code>. In <code>bootstrap status</code>, <code>resources.arm_deployment.provisioning_state</code> is <code>Failed</code>, or the group's <strong>Deployments</strong> in the portal lists a <code>Failed</code> deployment.</p>
 <p><strong>Why can't I just run it again?</strong> Provisioning is designed to be submitted only once. Running <code>setup</code> again only inspects status, and <code>bootstrap apply</code> is refused with <code>RETRY_REQUIRED</code>. The approval written by the quick path has no retry allowance (<code>max_provisioning_retries</code>), so even <code>--retry</code> is refused with <code>RETRY_BUDGET_EXHAUSTED</code>. This is a safeguard, not a broken environment, and you do not submit the same deployment again under another name.</p>
@@ -676,7 +732,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next chapter →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-11-03">2026-11-03</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>
