@@ -8,14 +8,14 @@ version = "1.1.0"
 description = "Evidence-first Microsoft Foundry learning-loop workshop"
 requires-python = ">=3.11,<3.15"
 dependencies = [
-  "azure-ai-projects==2.8.0",
-  "azure-identity==1.26.0",
-  "openai==3.24.0",
+  "azure-ai-projects==2.9.0",
+  "azure-identity==1.27.0",
+  "openai==3.41.0",
   "python-dotenv==1.2.4",
 ]
 
 [project.optional-dependencies]
-guide = ["Markdown==3.11"]
+guide = ["Markdown==3.11.2"]
 
 [project.scripts]
 foundry-lab = "lab.cli:main"
