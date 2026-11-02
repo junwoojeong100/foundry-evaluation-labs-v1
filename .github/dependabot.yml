@@ -2,6 +2,16 @@
 #   uv pip compile pyproject.toml --extra guide --output-file requirements.lock
 # A pip update PR changes pyproject.toml only, so tests/test_dependencies.py fails until the lock is regenerated.
 # Merge dependency updates only after CI passes and the live lab still works.
+#
+# To handle a pip update PR:
+#   1. Regenerate the lock on the PR branch and push it. Behind a package mirror, point uv at it with
+#      --default-index; a mirror can lag PyPI by days, so a brand-new pin may not resolve until it catches up.
+#   2. CI must be green. tests/test_dependencies.py also resolves every project.* and client.* call in lab/
+#      against the pinned SDKs, so an SDK that moves or removes a call fails there, not in a live run.
+#   3. Check the live lab with a command that writes nothing (the .env under .lab/ points at recorded evidence):
+#        python -m lab --config .lab/<environment>/.env native-evals --name <portal evaluation name>
+#      Even an unknown name proves the read path: the listing runs first, then it reports no such evaluation.
+#   4. Squash-merge, so main never holds a pyproject.toml that disagrees with its lock.
 version: 2
 updates:
   - package-ecosystem: github-actions
