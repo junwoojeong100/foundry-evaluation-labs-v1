@@ -82,9 +82,12 @@ Source and layout references
 ============================
 
 Archived workshop source:
-https://github.com/junwoojeong100/foundry-evaluation-labs-v0.9/tree/93bc07e31373c4cfc278a2dc3757785946404cf2
+Commit 93bc07e31373c4cfc278a2dc3757785946404cf2 of the former
+foundry-evaluation-labs-v0.9 repository. That repository is no longer online,
+so it is not linked.
 
-Layout/teaching-structure reference:
+Layout/teaching-structure reference (a separate guide that is still published,
+not an earlier edition of this lab):
 https://junwoojeong100.github.io/microsoft-foundry-labs-v1.5/index.ko.html
 
 The latter informed the goal, concept, preparation, execution, completion
