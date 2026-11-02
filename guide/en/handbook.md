@@ -1038,13 +1038,16 @@ An **evaluator defines what to score**; the **Judge is the AI model doing the sc
 
 1. In **Configure agents**, leave the custom prompt override unset. Use **`{{item.query}}` only** as user input. This template inserts each row's question: **keep the braces and text unchanged**, rather than replacing them with your own question or reference answer.
 2. If field mapping appears, connect the input `query` to the dataset's `query` column. Mapping pairs **an input field with a data column**. Do not append `context` or `ground_truth` to the Agent input.
-3. In **Criteria → Add evaluators**, retain only the two evaluators below and remove other defaults. TaskAdherence can also appear as **Task Adherence**.
+3. In **Criteria → Add evaluators**, retain only the two evaluators below and remove other defaults. TaskAdherence appears in the catalog as **Task adherence** (or **Task Adherence**). Do not select **Task completion** or **Task navigation efficiency**; they are different evaluators.
 4. Open each evaluator's settings, set its pass rule below, and select **Apply**. Under **Judge model**, select the **deployment name identified by `JUDGE_DEPLOYMENT`** in your own `.lab/lab-en/.env`.
 
 | Evaluator | Meaning | Setting |
 |---|---|---|
-| Relevance | Addresses the question, **1–5** | **Threshold 4**: 4–5 pass; 1–3 fail |
-| TaskAdherence | Follows the task, **binary 0/1 Pass/Fail** | **Pass 1**, fail 0; not threshold 4 |
+| Relevance | Addresses the question, **1–5** score | **Threshold 4**: 4–5 pass; 1–3 fail |
+| TaskAdherence | Follows the task; the result is **binary 0 or 1 (Pass/Fail)** | **Threshold 1**: only a result of 1 passes. Not 4 |
+
+**TaskAdherence's settings show the same Threshold box as Relevance (1–5).** The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter **1**, not 4. If **Probability_threshold** (0–1) is also shown, enter **0.5**, the value this lab was validated with, and use the same value wherever you configure TaskAdherence, including the Optimizer in 07. Leave other fields at their defaults. [09](#decision)'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. **Task completion** is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.
+{: .note}
 
 Preserve the service-generated `response` mappings. If a response field is **Unassigned**, or your Judge is missing, compare the Agent, data columns, and deployment using the [mapping checks](admin-setup.md#evaluation-mapping) and [evaluation troubleshooting](troubleshooting.md#evaluation). Do not guess a value or submit before resolving the mismatch.
 
@@ -1059,7 +1062,7 @@ Preserve the service-generated `response` mappings. If a response field is **Una
 | Remote evaluation field in code | Portal setting |
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
-| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → binary pass 1 → Apply** |
+| `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1 and Probability_threshold 0.5 → Apply** (09's helper checks only the threshold) |
 | `initialization_parameters.deployment_name` | Select your `JUDGE_DEPLOYMENT` as the **Judge model**. |
 | `data_mapping.query = {{item.query}}` | Send only query under **Configure agents → User input**. |
 | Relevance `{{sample.output_text}}`, TaskAdherence `{{sample.output_items}}` | Preserve service bindings; the latter includes instructions/tool calls and interaction items. Do not create matching JSONL columns. |
@@ -1080,7 +1083,7 @@ Agent, Judge, and Optimizer support can differ by role. Check the [Optimizer sup
 
 <figure class="portal-shot" id="portal-evaluation-criteria">
 <img src="../../web/assets/portal/en/16-evaluation-criteria.png" alt="Evaluation Criteria settings for Relevance, TaskAdherence, and the Judge deployment." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence pass 1. Select the Judge deployment named by your <code>JUDGE_DEPLOYMENT</code> setting. <a href="../../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence threshold 1. Select the Judge deployment named by your <code>JUDGE_DEPLOYMENT</code> setting. <a href="../../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 **Completion criteria:** Confirm and record both evaluator scales, thresholds, mappings, and the actual Judge in the same unsubmitted wizard. Step 06 creates the remote evaluation definition when you submit. Reevaluation then uses that saved definition.
@@ -1105,7 +1108,7 @@ An **evaluation is the saved configuration**; a **run is one execution of it**. 
 
 ### Review and submit once in Microsoft Foundry {#baseline-submit}
 
-1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**.
+1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. If you are unsure of an evaluator's threshold, select **Edit** beside it and check Relevance **4** and TaskAdherence **1**.
 2. Name the evaluation **`lab-en-learning-loop`** and, if available, name the run **`baseline-v1`**. If you choose a different name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.
 3. For an authorized job not already submitted, select **Submit** once. The run is complete only after you confirm **Completed and all 12 results**, not immediately after clicking.
 
@@ -1280,14 +1283,14 @@ Write a short learning note from the table below. Saving it as **`.lab/lab-en/no
 | Optimization model | Your `OPTIMIZER_DEPLOYMENT` / gpt-5.5 |
 | Evaluation model | Your `JUDGE_DEPLOYMENT` / gpt-6-luna |
 | Dataset | Same registered English dev12 version 1 |
-| Criteria | Relevance 4; TaskAdherence binary pass 1 |
+| Criteria | Relevance Threshold 4; TaskAdherence Threshold 1 and Probability_threshold 0.5 (result 0 or 1) |
 
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
 <figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-If Criteria shows **No custom evaluators available**, switch **Custom only OFF** or select **View built-in evaluators**. Open each built-in row, set its correct threshold and Apply. Do not create a custom scorer to bypass a filter.
+If Criteria shows **No custom evaluators available**, switch **Custom only OFF** or select **View built-in evaluators**. Open each built-in row, set its correct values (Relevance **Threshold 4**; TaskAdherence **Threshold 1** and **Probability_threshold 0.5**) and Apply. Do not create a custom scorer to bypass a filter.
 
 <figure class="portal-shot" id="portal-optimizer-data">
 <img src="../../web/assets/portal/en/08-optimizer-dataset.png" alt="Agent Optimizer list for selecting a registered evaluation dataset." width="1210" height="968" loading="lazy">

@@ -32,7 +32,7 @@ Keep English and Korean data/Agents separate and compare each language's actual 
 | [02 Provisioning](handbook.md#resources) | [Pre-check](handbook.md#resources-prereq) provider registration and model quota, then complete `bootstrap setup` readiness checks, actual authorization inputs, and creation confirmation | APPLIED, generated `.env`, portal deployments, and runtime preflight PASS, then wait 5–10 minutes before starting 03 |
 | [03 Agent setup](handbook.md#agent) | Verify model/retrieval and create `native-agent` v1 | Actual JSON response and Agent tool call |
 | [04 Dataset](handbook.md#start) | Register or reuse unchanged three-column JSONL | All 12 rows, registration/version, and SHA-256 |
-| [05 Criteria](handbook.md#prepare) | Relevance 4, TaskAdherence 1, and the actual Judge | Confirm the unsubmitted wizard settings and query-only input |
+| [05 Criteria](handbook.md#prepare) | Relevance threshold 4, TaskAdherence threshold 1 and probability_threshold 0.5 (same 1–5 box, binary result), and the actual Judge | Confirm the unsubmitted wizard settings and query-only input |
 | [06 Baseline](handbook.md#baseline) | Microsoft Foundry evaluation against pinned v1 | Completed actual run ID and all 12 items |
 | [07 Analysis](handbook.md#analyze) | Read actual answers, scores, reasons, and policies | Concrete improvement hypothesis, including failures |
 | [08 Optimization](handbook.md#optimize) | Instruction-only optimization and candidate-diff review | Job/candidate IDs, reviewed file and provenance, or the reason to retain v1 without a different candidate |

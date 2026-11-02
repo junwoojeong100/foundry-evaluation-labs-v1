@@ -108,7 +108,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 |---|---|
 | 데이터 | 선택한 언어의 같은 dev12 바이트·등록·버전·질문·참고 답변입니다. |
 | Relevance | 관리형 `builtin.relevance`, 1–5점, 임계값 **4** |
-| TaskAdherence | 관리형 `builtin.task_adherence`, 이진 0/1, 통과 **1** |
+| TaskAdherence | 관리형 `builtin.task_adherence`, 이진 0/1, threshold **1**, probability_threshold **0.5** |
 | Judge | 두 평가기 정의에 같은 명시적 Luna 배포 |
 | Agent | 같은 Sol 모델·버전, 도구, 추론, 엄격한 출력 스키마 |
 | 변경 대상 | 지침만 변경, 정식 버전은 v1/v2 |
@@ -128,7 +128,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 | Agent 사용자 입력 | `{{item.query}}`만 사용하고 지침 override는 비웁니다. |
 | Relevance 응답 | `response={{sample.output_text}}` |
 | TaskAdherence 응답 | `response={{sample.output_items}}` |
-| Judge·임계값 | 실제 `JUDGE_DEPLOYMENT`, Relevance 4·TaskAdherence 이진 통과 1 |
+| Judge·임계값 | 실제 `JUDGE_DEPLOYMENT`, Relevance threshold 4·TaskAdherence threshold 1과 probability_threshold 0.5(이진 0/1) |
 
 필수 항목이 **Unassigned**이면 대상이 Dataset이 아닌 **Agent**인지, query 열과 실제 Agent 응답의 연결이 맞는지 대조합니다. 제출 전에는 생성 화면을 확인하고, 제출 후에는 저장된 원격 정의를 확인합니다. 참고 답변을 response에 넣거나 이전 UI의 매핑을 복사하지 않습니다. [공식 포털 평가 안내](https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app)와 [응답 매핑 설명](https://learn.microsoft.com/azure/foundry/concepts/evaluation-evaluators/agent-evaluators#using-agent-evaluators)을 참고합니다. 해결 전에는 제출하지 않습니다. 09의 helper도 원격 계약을 검사합니다.
 
