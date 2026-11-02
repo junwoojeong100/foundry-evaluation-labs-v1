@@ -288,7 +288,7 @@ def _evaluator_versions(project) -> dict:
     observed = set()
     # Catalog selectors are retained when exposed; they are not a fingerprint
     # of the private rubric or an attestation of the managed service runtime.
-    for index, item in enumerate(project.beta.evaluators.list(type="builtin", limit=100)):
+    for index, item in enumerate(project.evaluators.list(type="builtin", limit=100)):
         if index >= 500:
             raise LabError("Evaluator 목록이 500개를 초과했습니다. 자동 버전 선택을 중단합니다.")
         if not isinstance(item, Mapping):
