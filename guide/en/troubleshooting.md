@@ -11,6 +11,7 @@ Executable commands appear in **Run in your terminal** blocks. Use each step's *
 | HTML shows an explanation but the execution command is hard to find | Use the step's **Action order**; there is no need to open optional explanations. [Sign-in commands](handbook.md#setup-login) · [Runtime check](handbook.md#resources-runtime-check). |
 | Terms, installation, sign-in or file paths are unclear | [Basic terms](handbook.md#basics) · [Codespaces](#codespaces) · [Environment and sign-in](#environment) |
 | Authorization, permissions, account type, providers or model quota block provisioning | [Provisioning](#provisioning) |
+| `setup`/`apply` stopped with `BLOCKED` and `Azure CLI failed (UnclassifiedError)` while resources were being created | [Setup stopped but Microsoft Azure kept creating resources](#provisioning-interrupted) |
 | The first provisioning failed and `setup`/`apply` will not submit again | [First provisioning failure recovery](#provisioning-retry) |
 | Policy retrieval or Agent responses fail | [Policies and Agent](#knowledge) |
 | After one failed `smoke`, `iq`, or `native-agent` call in 03, the same command is refused | [Recovery after a first call failure](#knowledge-first-failure) |
@@ -55,7 +56,7 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 | Portal Browse cannot find `dev.jsonl` | Browse selects your computer's files. Choose the unchanged file [downloaded from Codespaces Explorer](handbook.md#dataset-download). |
 | `candidate.txt` exists but the command cannot find it | Use the [candidate-saving steps](handbook.md#optimizer-candidate) to verify it is under `.lab` in **the same codespace as the lab terminal**, not only on your computer. |
 | Private-network resources are unreachable | Do not assume Codespaces is connected to the required VNet/VPN. Use an approved network environment without disabling public-access restrictions or firewalls. |
-| The codespace stopped or disconnected while a command was running | Restart it from [your Codespaces](https://github.com/codespaces), open **Terminal → New Terminal**, and follow [resumption](handbook.md#setup-resume). Inspect state before acting: [`bootstrap status`](handbook.md#resources-status) for provisioning, [`native-evals`](handbook.md#baseline-identifiers) for evaluations, and the [09 resume rules](handbook.md#decision-run) for a reevaluation. Do not repeat `apply` or submit under a new name. A stopped codespace left unused is deleted after 30 days by default; keep a [backup of `.lab/`](handbook.md#cleanup-codespaces). |
+| The codespace stopped or disconnected while a command was running | Restart it from [your Codespaces](https://github.com/codespaces), open **Terminal → New Terminal**, and follow [resumption](handbook.md#setup-resume). Inspect state before acting: [`bootstrap status`](handbook.md#resources-status) for provisioning, [`native-evals`](handbook.md#baseline-identifiers) for evaluations, and the [09 resume rules](handbook.md#decision-run) for a reevaluation. Do not submit under a new name, and do not repeat `apply` until `status` shows the deployment exists; then finish it with the [single `apply` in this recovery](#provisioning-interrupted). A stopped codespace left unused is deleted after 30 days by default; keep a [backup of `.lab/`](handbook.md#cleanup-codespaces). |
 | Unsure which codespace to resume or delete | Match the original repository/codespace and its `.lab/<environment>/` folder. Follow [backup, stop, and deletion](handbook.md#cleanup-codespaces); do not create another codespace and duplicate Microsoft Azure provisioning. |
 
 ## Provisioning, authorization and quota {#provisioning}
@@ -75,10 +76,55 @@ Resolve Python, Git, and Azure CLI installation and PATH issues before signing i
 | Model, SKU, version, quota or capacity error (`Insufficient unallocated quota`, `Free quota cannot be verified`, `Insufficient regional model capacity`) | Inspect the planned role requirements and preflight reason. If quota is missing or short, resolve it in this order using the [quota pre-check](handbook.md#resources-prereq-quota): check the tier and remaining quota, upgrade a free-trial subscription, and request quota. This lab supports only `northcentralus`, so the region cannot change, and replacing a pinned model needs a separate plan and authorization and changes the comparison conditions. Do not bypass the block. | Each of the four models has `limit − used` at or above its requested capacity, and the readiness check of the same `bootstrap setup` becomes READY. |
 | Runtime `*_tpm` is BLOCKED | Check the real allocation using the [TPM setup instructions](admin-setup.md#throughput). | All five TPM checks and overall preflight report PASS. |
 | `unknown resource` after creation | Check whether this is verified default Smart Detection linked to your Application Insights, another workload, or changed receivers. Allow link propagation during creation. | Inspect the same `bootstrap status`; do not delete alerts or edit the manifest to bypass it. |
-| Apply times out or its outcome is unknown | Preserve the original config, manifest and deployment ID; read [02's `bootstrap status` command](handbook.md#resources-status) and the group's Deployments. Do not repeat `apply`. | Wait for active work; do not resubmit an unknown outcome. |
+| `setup`/`apply` ends with `BLOCKED` and `Azure CLI failed (UnclassifiedError)` (or `CliTimeout`, `InvalidCliResponse`), or `apply` times out | The deployment usually keeps running in Microsoft Azure. Preserve the original config, manifest and deployment ID. Do not delete the group, start a new environment, or use `--retry`. Follow [setup stopped but Microsoft Azure kept creating resources](#provisioning-interrupted): check `status`, wait, run the same `apply` once, then check `status` again. | The deployment is `Succeeded`, `apply` ends with `APPLIED`, and `status` shows `phase: succeeded`. No second deployment is submitted. |
 | The local environment already exists | Resume the same lab with its original configuration. A different lab needs a new environment name and authorization. | Do not adopt or overwrite existing plans, settings or resources. |
 
 Use `--retry` only for a verified terminal owned failure and a separate retry allowance. `repair-dependencies` and `repair-trace-routing` also require matching failure evidence and scoped authorization. `APPLIED` describes infrastructure, not answer quality, production approval or confirmed trace ingestion.
+
+### Setup stopped but Microsoft Azure kept creating resources {#provisioning-interrupted}
+
+**Symptom:** While the resources are being created in 02, `bootstrap setup` (or `bootstrap apply`) stops with a failure like this:
+
+- `status: BLOCKED` and `error_code: UnclassifiedError`. `CliTimeout` and `InvalidCliResponse` are the same kind of problem.
+- `reason: Azure CLI failed (UnclassifiedError). Inspect the private failure record; no automatic retry, model/region fallback, or cleanup.`
+- `mutations_performed: null` and `live_status: NOT_VERIFIED`. The program cannot tell how far Microsoft Azure got, so it reports `null`; this does not mean that nothing was created.
+
+**What it means:** One Azure CLI call from your terminal failed, for example while the program was checking progress. The deployment had already been submitted to Microsoft Azure and keeps running there, so this is **not** a failed provisioning. `bootstrap status` usually shows `phase: interrupted`, an `arm_deployment` of `Running` or `Succeeded`, and no `.lab/lab-en/.env` yet. Creating everything takes about 10–15 minutes, and Azure AI Search is the slowest part.
+
+**Do not** delete the resource group, start again with a new environment name, or add `--retry`. Deleting throws away work that is nearly done, while a new environment or `--retry` can create duplicates, add cost, and use the same model quota a second time. For `CliTimeout` the output itself says to inspect the recorded deployment; step 1 is that inspection.
+
+**1. Check the progress.** This command only reads; it submits nothing.
+
+```sh
+python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+```
+
+Read `resources.arm_deployment.provisioning_state` in the output:
+
+| `arm_deployment` | What to do |
+|---|---|
+| `Running`, `Accepted`, `Creating`, or `Updating` | It is still being created. Wait about 5 minutes and run the same command again, or go straight to step 2, which waits for it. |
+| `Succeeded` | Creation is finished and only the local finish is missing. Go to step 2. |
+| `Failed` or `Canceled` | Do not run step 2. Follow [first provisioning failure recovery](#provisioning-retry). |
+| `present: false` | Run step 2 once. If nothing had been submitted, it continues the creation you approved. If a submission was made but no deployment is visible, it stops with `UNKNOWN_SUBMISSION` and changes nothing; then follow [first provisioning failure recovery](#provisioning-retry). |
+
+If `status` itself fails with the same message, it is the same short-lived problem. It only reads, so wait a minute and run it again.
+
+**2. After some time, run the same `apply` once.** Use this exact command, without `--retry`. Once a creation attempt exists, `bootstrap setup` only reports status, so it cannot finish the job. An existing deployment is never submitted again: if it is still running, `apply` waits for it (up to the approved wait, one hour on the quick path), then verifies the resources, writes `.lab/lab-en/.env`, and ends with `status: APPLIED`. Do not run it in another window at the same time. The approval's start and expiry times must still be valid; if they have expired, reauthorize with the [approval worksheet](admin-setup.md#approval).
+
+```sh
+python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+```
+
+**3. Check again with `status`.** This is the step 1 command again; it confirms the result.
+
+```sh
+python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
+```
+
+Continue only when it shows `phase: succeeded`, every resource has `recorded_state: succeeded`, and `.lab/lab-en/.env` exists. Roles and connections show `provisioning_state: UNKNOWN` because they report no state of their own, and `live_status: PENDING_EXECUTION` and `readiness_status: NOT_CHECKED_BY_STATUS` are normal for this read-only command; none of these is a problem. Then continue with the [portal and runtime checks](handbook.md#resources-runtime-check) in 02.
+
+**If step 2 fails again,** wait a few minutes and repeat steps 2 and 3 once more. If the same failure remains, open the newest `.lab/lab-en/evidence/failure-*.local.json`: `stage` shows where it stopped and `stderr` holds the Azure CLI message. The file is private, so do not post it publicly. If it mentions an expired sign-in, [sign in again with the same account](handbook.md#setup-login) and repeat step 2. If `apply` ends with `UNKNOWN_SUBMISSION`, `RETRY_REQUIRED`, or `UNRESOLVED_DEPLOYMENT_STATE`, follow [first provisioning failure recovery](#provisioning-retry).
 
 ### First provisioning failure recovery {#provisioning-retry}
 

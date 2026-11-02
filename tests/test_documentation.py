@@ -586,6 +586,20 @@ class DocumentationTests(unittest.TestCase):
                     self.assertIn(term, troubleshooting)
                 self.assertIn("`max_provisioning_retries`", admin)
                 self.assertIn("troubleshooting.md#provisioning-retry", self.source(language))
+                self.assertIn("troubleshooting.md#provisioning-interrupted", self.source(language))
+                self.assertIn("{#provisioning-interrupted}", troubleshooting)
+                interrupted = troubleshooting.split("{#provisioning-interrupted}", 1)[1].split("{#provisioning-retry}", 1)[0]
+                for term in ("UnclassifiedError", "CliTimeout", "phase: succeeded", "recorded_state", "UNKNOWN_SUBMISSION"):
+                    self.assertIn(term, interrupted)
+                # The one safe resume: read-only status, one apply without --retry, then status again.
+                self.assertEqual(
+                    [
+                        line.split()[4] + (" --retry" if " --retry" in line else "")
+                        for block in re.findall(r"```sh\n(.*?)```", interrupted, re.DOTALL)
+                        for line in block.splitlines() if line.startswith("python -m lab ")
+                    ],
+                    ["status", "apply", "status"],
+                )
                 lines = [
                     line for block in re.findall(r"```sh\n(.*?)```", troubleshooting, re.DOTALL)
                     for line in block.splitlines() if line.startswith("python -m lab ")

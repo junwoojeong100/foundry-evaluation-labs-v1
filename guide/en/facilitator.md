@@ -66,6 +66,7 @@ Optimizer ranking is internal selection evidence, not the direct managed reevalu
 | Symptom | Response |
 |---|---|
 | Wrong identity, 401/403 | Confirm the approved account/project; do not widen shared permissions. For a guest or personal account, follow the [member account check](handbook.md#setup-account-type) |
+| `setup`/`apply` stopped with `BLOCKED` and `Azure CLI failed (UnclassifiedError)` while resources were being created | Do not delete or recreate anything. Follow [setup stopped but Microsoft Azure kept creating resources](troubleshooting.md#provisioning-interrupted): check `status`, wait, run `apply` once, check `status` again |
 | First provisioning failed and `setup`/`apply` will not submit again | Follow the retry allowance or new-environment steps in [first provisioning failure recovery](troubleshooting.md#provisioning-retry) |
 | The same command is refused after a first failed call in 03 | Keep the records and follow [recovery for each command](troubleshooting.md#knowledge-first-failure); wait 5–10 minutes after 02 |
 | Catalog or deployment succeeds but Agent fails | Record the actual API/runtime error; verify the intended role |

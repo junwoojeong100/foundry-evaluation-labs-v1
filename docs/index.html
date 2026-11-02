@@ -110,7 +110,7 @@
 
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>Hands-on lab guide</span>
-        <span class="document-date">As of <time datetime="2026-10-29">2026-10-29</time></span>
+        <span class="document-date">As of <time datetime="2026-11-03">2026-11-03</time></span>
       </div>
       <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
       <article id="guide-start" class="guide-content" lang="en" aria-label="Evaluate and improve a customer-support Agent · v1">
@@ -696,6 +696,7 @@ az provider register --namespace Microsoft.Insights --wait
 <ul>
 <li>It continues preparation <strong>only for a plan with no creation attempt</strong>. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use <a href="#resources-status">status lookup</a> when resuming.</li>
 <li>If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.</li>
+<li><strong>If <code>setup</code> stopped with <code>BLOCKED</code> and <code>Azure CLI failed (UnclassifiedError)</code> after you typed <code>CREATE</code>,</strong> the deployment usually keeps running in Microsoft Azure, so do not delete anything or start a new environment. Check <code>status</code>, wait a while, run the same <code>bootstrap apply</code> once without <code>--retry</code>, then check <code>status</code> again. The steps are in <a href="troubleshooting.html#provisioning-interrupted">setup stopped but Microsoft Azure kept creating resources</a>.</li>
 <li><strong>If provisioning failed, for example with <code>DeploymentFailed</code>,</strong> running <code>setup</code> again submits no new deployment, and <code>bootstrap apply --retry</code> is refused with <code>RETRY_BUDGET_EXHAUSTED</code> unless the approval allows a retry (<code>max_provisioning_retries</code>). The steps to retry once with the same plan, or to start again in a new environment, are in <a href="troubleshooting.html#provisioning-retry">first provisioning failure recovery</a>.</li>
 </ul>
 <details class="guide-details optional-path">
@@ -954,12 +955,12 @@ az provider register --namespace Microsoft.Insights --wait
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
-<p>This command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second <code>apply</code> in another terminal. A successful completion reports <strong>APPLIED</strong>. After a timeout or an unknown response, do not resubmit <code>apply</code>; inspect status below first.</p>
+<p>This command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second <code>apply</code> in another terminal. A successful completion reports <strong>APPLIED</strong>. If it stops with <code>BLOCKED</code> (for example <code>Azure CLI failed (UnclassifiedError)</code>) or times out, do not delete the group or start a new environment; the deployment usually keeps running. Inspect status below first, and if the deployment exists, finish it with the <a href="troubleshooting.html#provisioning-interrupted">single <code>apply</code> and <code>status</code> check in this recovery</a>.</p>
 <h4 id="resources-status">Inspect provisioning status · use this when resuming too</h4>
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 </code></pre>
-<p>Confirm <code>phase: succeeded</code>, the expected resources, and a generated <code>.lab/lab-en/.env</code>. If still running or failed, follow <a href="troubleshooting.html#provisioning">provisioning recovery</a>. <strong>This lookup does not submit a new deployment.</strong></p>
+<p>Confirm <code>phase: succeeded</code>, the expected resources, and a generated <code>.lab/lab-en/.env</code>. If <code>phase: interrupted</code> appears while <code>arm_deployment</code> is <code>Running</code> or <code>Succeeded</code>, only your terminal stopped early, not Microsoft Azure; follow <a href="troubleshooting.html#provisioning-interrupted">setup stopped but Microsoft Azure kept creating resources</a>. For any other failure, follow <a href="troubleshooting.html#provisioning">provisioning recovery</a>. <strong>This lookup does not submit a new deployment.</strong></p>
 <p><strong>The <code>.env</code> created here supplies connection settings for subsequent commands.</strong> It records user, tenant, subscription, and actual project/model-deployment values. It is configuration, not a script: specify it with <code>--config</code>, never execute or <code>source</code> it. If it is absent, do not copy <code>.env.example</code> and call provisioning complete.</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: provisioning and status</summary>
@@ -3864,7 +3865,7 @@ az resource list --subscription &quot;YOUR_SUBSCRIPTION_ID&quot; --resource-grou
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next step →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
+        <p>Microsoft Foundry Lab Guide <span aria-hidden="true">·</span> <time datetime="2026-11-03">2026-11-03</time></p>
         <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
       </footer>
     </main>

@@ -107,7 +107,7 @@
 <a class="back-to-main no-print" href="index.html">← 실습 가이드로 돌아가기</a>
       <div class="reading-toolbar no-print">
         <span class="document-label"><span aria-hidden="true"></span>실습 안내서</span>
-        <span class="document-date">문서 기준 <time datetime="2026-10-29">2026-10-29</time></span>
+        <span class="document-date">문서 기준 <time datetime="2026-11-03">2026-11-03</time></span>
       </div>
       <noscript><p class="noscript-note">본문·목차·언어 전환은 JavaScript 없이도 이용할 수 있습니다. 테마 전환·읽음 기록·명령 복사 버튼은 JavaScript를 켜면 사용할 수 있습니다.</p></noscript>
       <article id="guide-start" class="guide-content" lang="ko" aria-label="실습 체크리스트 · 실제 측정 결과 개선하기">
@@ -211,6 +211,10 @@
 <td>승인된 계정·프로젝트를 확인하고 공유 권한은 확대하지 않습니다. 게스트·개인 계정이면 <a href="index.html#setup-account-type">멤버 계정 확인</a>을 따릅니다.</td>
 </tr>
 <tr>
+<td><code>setup</code>·<code>apply</code>가 <code>BLOCKED</code>·<code>Azure CLI failed (UnclassifiedError)</code>로 멈췄지만 자원은 생성 중이었음</td>
+<td>삭제나 재생성 없이 <a href="troubleshooting.html#provisioning-interrupted">setup이 멈췄지만 Microsoft Azure는 계속 생성한 경우</a>를 따릅니다. <code>status</code> 확인 → 대기 → <code>apply</code> 한 번 → <code>status</code> 재확인입니다.</td>
+</tr>
+<tr>
 <td>첫 생성이 실패하고 <code>setup</code>·<code>apply</code>가 다시 제출되지 않음</td>
 <td><a href="troubleshooting.html#provisioning-retry">첫 생성 실패 복구</a>의 재시도 승인 또는 새 환경 절차를 따릅니다.</td>
 </tr>
@@ -305,7 +309,7 @@
         <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 장 →</span><strong></strong></a>
       </nav>
       <footer class="document-footer">
-        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-10-29">2026-10-29</time></p>
+        <p>Microsoft Foundry 실습 가이드 <span aria-hidden="true">·</span> <time datetime="2026-11-03">2026-11-03</time></p>
         <div class="footer-links"><a href="#guide-start">처음으로 ↑</a></div>
       </footer>
     </main>

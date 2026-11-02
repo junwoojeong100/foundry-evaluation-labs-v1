@@ -524,6 +524,7 @@ No Microsoft Azure resources are created before confirmation, and Enter cancels.
 
 - It continues preparation **only for a plan with no creation attempt**. If an attempt is recorded, it inspects status without submitting another deployment. Running/failed states are not success; use [status lookup](#resources-status) when resuming.
 - If a valid approval file already exists, review its recorded limits instead of entering them again. Existing plans/approvals are not reset to new defaults and their expiry is never extended automatically.
+- **If `setup` stopped with `BLOCKED` and `Azure CLI failed (UnclassifiedError)` after you typed `CREATE`,** the deployment usually keeps running in Microsoft Azure, so do not delete anything or start a new environment. Check `status`, wait a while, run the same `bootstrap apply` once without `--retry`, then check `status` again. The steps are in [setup stopped but Microsoft Azure kept creating resources](troubleshooting.md#provisioning-interrupted).
 - **If provisioning failed, for example with `DeploymentFailed`,** running `setup` again submits no new deployment, and `bootstrap apply --retry` is refused with `RETRY_BUDGET_EXHAUSTED` unless the approval allows a retry (`max_provisioning_retries`). The steps to retry once with the same plan, or to start again in a new environment, are in [first provisioning failure recovery](troubleshooting.md#provisioning-retry).
 
 <details class="guide-details optional-path" markdown="1">
@@ -642,7 +643,7 @@ python -m lab bootstrap preflight --config .lab/lab-en/config.json --approval .l
 python -m lab bootstrap apply --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 ```
 
-This command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second `apply` in another terminal. A successful completion reports **APPLIED**. After a timeout or an unknown response, do not resubmit `apply`; inspect status below first.
+This command creates resources, deployments, connections, and resource-scoped roles. It can take time; do not launch a second `apply` in another terminal. A successful completion reports **APPLIED**. If it stops with `BLOCKED` (for example `Azure CLI failed (UnclassifiedError)`) or times out, do not delete the group or start a new environment; the deployment usually keeps running. Inspect status below first, and if the deployment exists, finish it with the [single `apply` and `status` check in this recovery](troubleshooting.md#provisioning-interrupted).
 
 #### Inspect provisioning status · use this when resuming too {#resources-status}
 
@@ -650,7 +651,7 @@ This command creates resources, deployments, connections, and resource-scoped ro
 python -m lab bootstrap status --config .lab/lab-en/config.json --approval .lab/lab-en/approval.json
 ```
 
-Confirm `phase: succeeded`, the expected resources, and a generated `.lab/lab-en/.env`. If still running or failed, follow [provisioning recovery](troubleshooting.md#provisioning). **This lookup does not submit a new deployment.**
+Confirm `phase: succeeded`, the expected resources, and a generated `.lab/lab-en/.env`. If `phase: interrupted` appears while `arm_deployment` is `Running` or `Succeeded`, only your terminal stopped early, not Microsoft Azure; follow [setup stopped but Microsoft Azure kept creating resources](troubleshooting.md#provisioning-interrupted). For any other failure, follow [provisioning recovery](troubleshooting.md#provisioning). **This lookup does not submit a new deployment.**
 
 **The `.env` created here supplies connection settings for subsequent commands.** It records user, tenant, subscription, and actual project/model-deployment values. It is configuration, not a script: specify it with `--config`, never execute or `source` it. If it is absent, do not copy `.env.example` and call provisioning complete.
 
