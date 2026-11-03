@@ -1058,9 +1058,12 @@ class DocumentationTests(unittest.TestCase):
                 lookup = source.split("{#baseline-identifiers}", 1)[1].split("<details", 1)[0]
                 self.assertIn("/build/evaluations/eval_", lookup)
                 self.assertIn("/run/evalrun_", lookup)
+                self.assertIn("Raw JSON", lookup)
+                self.assertIn("data_source.target.version", lookup)
                 self.assertIn(message, lookup)
                 review = source.split("{#baseline-submit}", 1)[1].split("<figure", 1)[0]
-                self.assertIn(f"lab-{language}-iq: v1", review)
+                self.assertIn(f"lab-{language}-iq: 1", review)
+                self.assertNotIn(f"lab-{language}-iq: v1", source)
                 self.assertNotIn("baseline-v1", review)
                 self.assertIn(message, troubleshooting)
                 self.assertIn("eval-3n27of15", troubleshooting)

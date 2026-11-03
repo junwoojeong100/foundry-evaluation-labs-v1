@@ -1108,7 +1108,7 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 ### Microsoft Foundry에서 검토하고 한 번 제출합니다 {#baseline-submit}
 
-1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. **Targets** 카드는 **`lab-ko-iq: v1`**이어야 합니다. `lab-ko-iq`만 보이면 버전이 고정되지 않은 것이므로 **Back**(또는 **Edit**)으로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. 평가기의 threshold나 Judge가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**, Judge가 `lab-planner-…`가 아닌 `lab-judge-…`인지 확인합니다.
+1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. **Targets** 카드에는 Agent 이름 뒤에 버전이 보여야 합니다. **`lab-ko-iq: 1`**(포털 버전에 따라 `v1`로 보일 수 있습니다). `lab-ko-iq`만 보이면 버전이 고정되지 않은 것이므로 **Back**(또는 **Edit**)으로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. 평가기의 threshold나 Judge가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**, Judge가 `lab-planner-…`가 아닌 `lab-judge-…`인지 확인합니다.
 2. 평가 이름은 **`lab-ko-learning-loop`**로 입력합니다. Review에는 run 이름 입력 칸이 없으며 run은 포털이 Agent 이름(예: `lab-ko-iq`)으로 자동 지정합니다. 이후 단계는 run 이름이 아니라 ID를 사용합니다. 다른 평가 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.
 3. 아직 실행하지 않은 승인된 작업만 **Submit**으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 **Completed와 결과 12건**을 확인해야 실행 완료입니다.
 
@@ -1137,7 +1137,7 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 ```
 
-**포털에서 바로 보려면** **Evaluations → 자신의 평가 → baseline run**을 엽니다. 페이지 주소에 `/build/evaluations/eval_…/run/evalrun_…`가 들어 있습니다. `eval_…` 부분이 `evaluation_id`, `evalrun_…` 부분이 baseline `run_id`입니다.
+**포털에서 바로 보려면** **Evaluations → 자신의 평가 → baseline run**을 엽니다. **Run details**에서 **See all properties → Raw JSON**을 선택합니다. 여기서 `eval_id`가 `evaluation_id`, `id`가 baseline `run_id`이며, `data_source.target.version`은 `"1"`이어야 합니다(`null`이면 안 됩니다). 페이지 주소에도 `/build/evaluations/eval_…/run/evalrun_…`가 들어 있습니다. 뒤에 붙는 `?tid=…`는 제외하고 `eval_…`와 `evalrun_…` 부분만 복사합니다.
 
 같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 **두 ID는 따로 구분**해 둡니다. 09에서 사용하며 언제든 같은 값을 다시 읽을 수 있고, 읽기만으로는 새 평가를 제출하지 않습니다.
 
