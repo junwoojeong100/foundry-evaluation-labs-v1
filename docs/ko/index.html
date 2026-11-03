@@ -2554,7 +2554,7 @@ az provider register --namespace Microsoft.Insights --wait
 <li><strong>Configure agents</strong>에서 지침을 덮어쓰는 custom prompt override는 비워 둡니다. 사용자 입력은 <strong><code>{{item.query}}</code>만</strong> 사용합니다. 이는 각 행의 질문을 넣는 템플릿이므로 <strong>중괄호까지 그대로 두고</strong>, 자신의 질문이나 참고 답변으로 바꾸지 않습니다.</li>
 <li>필드 매핑 화면이 나타나면 입력 <code>query</code>를 데이터의 <code>query</code> 열과 연결합니다. 매핑은 <strong>입력 칸과 데이터 열의 짝을 정하는 설정</strong>입니다. <code>context</code>·<code>ground_truth</code>를 Agent 입력에 붙이지 않습니다.</li>
 <li><strong>Criteria → Add evaluators</strong>에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 카탈로그에 <strong>Task adherence</strong>(또는 <strong>Task Adherence</strong>)로 표시됩니다. <strong>Task completion</strong>이나 <strong>Task navigation efficiency</strong>는 다른 평가기이므로 선택하지 않습니다.</li>
-<li>각 평가기의 설정을 열어 아래 기준을 적용하고 <strong>Apply</strong>를 누릅니다. <strong>Judge model</strong>에는 자신의 <code>.lab/lab-ko/.env</code>에서 <strong><code>JUDGE_DEPLOYMENT</code>에 해당하는 배포 이름</strong>을 선택합니다.</li>
+<li>각 평가기의 설정을 열어 아래 기준을 적용하고 <strong>Apply</strong>를 누릅니다. <strong>Judge model</strong>에는 자신의 <code>.lab/lab-ko/.env</code>에서 <strong><code>JUDGE_DEPLOYMENT</code>에 해당하는 배포 이름</strong>을 선택합니다. <code>lab-judge-…</code>(gpt-6-luna)이며, Optimizer용 <code>lab-planner-…</code>(gpt-5.5)가 아닙니다.</li>
 </ol>
 <table>
 <thead>
@@ -2711,8 +2711,8 @@ az provider register --namespace Microsoft.Insights --wait
 <p><strong>Evaluation은 저장된 평가 설정</strong>, <strong>run은 그 설정으로 수행한 한 번의 실행</strong>입니다. v1의 첫 실행을 <strong>기준선(baseline)</strong>으로 삼습니다.</p>
 <h3 id="baseline-submit">Microsoft Foundry에서 검토하고 한 번 제출합니다</h3>
 <ol>
-<li><strong>Review</strong>에서 <strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 확인합니다. 평가기의 threshold가 확실하지 않으면 옆의 <strong>Edit</strong>를 선택해 Relevance <strong>4</strong>, TaskAdherence <strong>1</strong>인지 확인합니다.</li>
-<li>평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>, run 이름을 지정할 수 있으면 <strong><code>baseline-v1</code></strong>로 입력합니다. 다른 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.</li>
+<li><strong>Review</strong>에서 <strong>v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge</strong>를 확인합니다. <strong>Targets</strong> 카드는 <strong><code>lab-ko-iq: v1</code></strong>이어야 합니다. <code>lab-ko-iq</code>만 보이면 버전이 고정되지 않은 것이므로 <strong>Back</strong>(또는 <strong>Edit</strong>)으로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. 평가기의 threshold나 Judge가 확실하지 않으면 옆의 <strong>Edit</strong>를 선택해 Relevance <strong>4</strong>, TaskAdherence <strong>1</strong>, Judge가 <code>lab-planner-…</code>가 아닌 <code>lab-judge-…</code>인지 확인합니다.</li>
+<li>평가 이름은 <strong><code>lab-ko-learning-loop</code></strong>로 입력합니다. Review에는 run 이름 입력 칸이 없으며 run은 포털이 Agent 이름(예: <code>lab-ko-iq</code>)으로 자동 지정합니다. 이후 단계는 run 이름이 아니라 ID를 사용합니다. 다른 평가 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.</li>
 <li>아직 실행하지 않은 승인된 작업만 <strong>Submit</strong>으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 <strong>Completed와 결과 12건</strong>을 확인해야 실행 완료입니다.</li>
 </ol>
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -2746,11 +2746,12 @@ az provider register --namespace Microsoft.Insights --wait
 </table>
 <p>30분 또는 승인한 대기 한도 중 짧은 시간이 지나도 끝나지 않으면 현재 상태·run ID·오류를 확인한 뒤 <a href="troubleshooting.html#evaluation-resume">평가 재개 절차</a>를 따릅니다. 이는 상태를 점검할 시점이지 서비스의 완료 보장 시간이 아닙니다. 기다림을 중단해도 원격 작업은 자동 취소되지 않습니다.</p>
 <h3 id="baseline-identifiers">터미널에서 실제 evaluation ID와 run ID를 조회합니다</h3>
-<p>다음 <strong>읽기 전용 명령</strong>으로 이름이 같은 평가의 실제 ID·run 목록을 확인합니다. 이름이 다르면 <code>--name</code>을 자신이 입력한 정확한 이름으로 바꿉니다.</p>
+<p>다음 <strong>읽기 전용 명령</strong>으로 평가의 실제 ID·run 목록을 확인합니다. <code>--name</code>은 포털 <strong>Evaluations</strong>에 표시된 평가 이름과 <strong>정확히</strong> 같아야 합니다. 다른 이름을 입력했거나 포털이 자동 이름(예: <code>eval-3n27of15</code>)을 붙였다면 그 이름을 씁니다.</p>
 <p class="command-label">터미널에서 실행 · 공통 터미널</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 </code></pre>
-<p>같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 <strong>두 ID는 따로 구분</strong>해 둡니다. 09에서 사용하며, 이 명령을 다시 실행하면 언제든 같은 값을 읽을 수 있습니다. 이 명령은 새 평가를 제출하지 않습니다.</p>
+<p><strong>포털에서 바로 보려면</strong> <strong>Evaluations → 자신의 평가 → baseline run</strong>을 엽니다. 페이지 주소에 <code>/build/evaluations/eval_…/run/evalrun_…</code>가 들어 있습니다. <code>eval_…</code> 부분이 <code>evaluation_id</code>, <code>evalrun_…</code> 부분이 baseline <code>run_id</code>입니다.</p>
+<p>같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 <strong>두 ID는 따로 구분</strong>해 둡니다. 09에서 사용하며 언제든 같은 값을 다시 읽을 수 있고, 읽기만으로는 새 평가를 제출하지 않습니다.</p>
 <table>
 <thead>
 <tr>
@@ -2772,6 +2773,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 </tbody>
 </table>
+<p><code>agent_version</code>이 <code>null</code>이거나 비어 있으면 그 run은 Version 1을 고정하지 않은 것이며, 09에서 <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code>로 거부됩니다. 사용하지 않고 <a href="troubleshooting.html#evaluation-resume">문제 해결의 해당 행</a>을 따릅니다. 이름이 <code>agent_optimization_eval_…</code>인 평가와 Optimizer job ID는 기준선이 아니라 Optimizer의 것입니다.</p>
 <details class="guide-details implementation-notes">
 <summary>선택 · 내부 동작: 평가 제출과 ID 조회의 차이</summary>
 <h4 id="baseline-code-portal">코드 ↔ 포털 · 제출과 조회를 구분합니다</h4>
@@ -3194,11 +3196,11 @@ az provider register --namespace Microsoft.Insights --wait
 <tbody>
 <tr>
 <td><code>YOUR_EVALUATION_ID</code></td>
-<td>06의 <code>native-evals</code> 출력에서 선택한 <code>evaluation_id</code>입니다.</td>
+<td>06의 <code>native-evals</code> 출력에서 선택한 <code>evaluation_id</code>, 또는 baseline run 페이지 주소의 <code>eval_…</code> 부분입니다.</td>
 </tr>
 <tr>
 <td><code>YOUR_BASELINE_RUN_ID</code></td>
-<td>같은 평가에서 완료된 버전 1의 <code>run_id</code>입니다. Optimizer job ID가 아닙니다.</td>
+<td>같은 평가에서 완료된 버전 1(<code>agent_version: "1"</code>)의 <code>run_id</code>입니다. Optimizer job ID가 아닙니다.</td>
 </tr>
 </tbody>
 </table>
@@ -3272,7 +3274,7 @@ az provider register --namespace Microsoft.Insights --wait
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>scripts/add_foundry_eval_run.py:candidate_source</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L111-L138">전체 구현 파일 · 111–138</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L111-L138">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L111-L144">전체 구현 파일 · 111–144</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L111-L144">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:candidate_source"><code class="language-python">def candidate_source(baseline: dict, *, evaluation_id: str, version: str) -&gt; dict:
     if baseline.get(&quot;eval_id&quot;) != evaluation_id or baseline.get(&quot;status&quot;) != &quot;completed&quot;:
         raise ValueError(&quot;Use a completed baseline run from this exact Foundry evaluation.&quot;)
@@ -3284,7 +3286,13 @@ az provider register --namespace Microsoft.Insights --wait
         raise ValueError(&quot;The baseline must identify a Foundry agent.&quot;)
     original = str(target.get(&quot;version&quot;, &quot;&quot;))
     pinned_version = r&quot;(?:[1-9]\d*|draft-[1-9]\d*)&quot;
-    if not re.fullmatch(pinned_version, original) or not re.fullmatch(pinned_version, version):
+    if not re.fullmatch(pinned_version, original):
+        raise ValueError(
+            &quot;Pin explicit numeric or draft agent versions, not latest. This baseline run did not pin its agent &quot;
+            f&quot;version (target.version is {target.get(&#x27;version&#x27;)!r}). Submit a new baseline evaluation with &quot;
+            &quot;Version 1 selected explicitly (guide steps 05-06) and use that evaluation&#x27;s IDs.&quot;
+        )
+    if not re.fullmatch(pinned_version, version):
         raise ValueError(&quot;Pin explicit numeric or draft agent versions, not latest.&quot;)
     if original == version:
         raise ValueError(&quot;The candidate version must differ from the baseline.&quot;)
@@ -3306,7 +3314,7 @@ az provider register --namespace Microsoft.Insights --wait
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>scripts/add_foundry_eval_run.py:submit_or_resume</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L141-L193">전체 구현 파일 · 141–193</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L141-L193">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L147-L199">전체 구현 파일 · 147–199</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L147-L199">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:submit_or_resume"><code class="language-python">def submit_or_resume(project, client, *, evaluation_id: str, baseline_run_id: str,
                      version: str, name: str, output: Path) -&gt; dict:
     intent = {
@@ -3365,7 +3373,7 @@ az provider register --namespace Microsoft.Insights --wait
 <details class="implementation-code">
 <summary>실제 구현 코드 · 읽기 전용 · <code>scripts/add_foundry_eval_run.py:main</code></summary>
 <p class="implementation-note">읽기용 원문이며 별도로 실행하는 명령이 아닙니다. 지정한 함수·객체 전체를 원래 메시지까지 그대로 표시합니다. 의존 함수와 import는 연결한 전체 파일에서 확인합니다. 실습 명령만 한 번 실행합니다.</p>
-<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L215-L295">전체 구현 파일 · 215–295</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L215-L295">GitHub에서 보기</a></p>
+<p class="implementation-links"><a href="../../scripts/add_foundry_eval_run.py#L221-L301">전체 구현 파일 · 221–301</a> · <a href="https://github.com/junwoojeong100/foundry-evaluation-labs-v1/blob/main/scripts/add_foundry_eval_run.py#L221-L301">GitHub에서 보기</a></p>
 <pre class="implementation-source" data-source-reference="scripts/add_foundry_eval_run.py:main"><code class="language-python">def main(argv: list[str] | None = None) -&gt; int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(

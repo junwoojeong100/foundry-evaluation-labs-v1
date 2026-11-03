@@ -586,7 +586,15 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 <tbody>
 <tr>
 <td>Evaluation ID or run ID is unknown</td>
-<td>Use <a href="index.html#baseline-identifiers">06's complete <code>native-evals</code> command</a>. Evaluation uses <code>eval_...</code>; the baseline is a completed version-one <code>evalrun_...</code>.</td>
+<td>Use <a href="index.html#baseline-identifiers">06's complete <code>native-evals</code> command</a>, or read them from the baseline run's page address in the portal (<code>…/build/evaluations/eval_…/run/evalrun_…</code>). Evaluation uses <code>eval_...</code>; the baseline is a completed version-one <code>evalrun_...</code>.</td>
+</tr>
+<tr>
+<td><code>native-evals</code> stops with <code>No evaluation with that exact name exists in this project</code></td>
+<td><code>--name</code> differs from the portal's evaluation name. An evaluation you did not rename has an automatic name such as <code>eval-3n27of15</code>. Copy the exact name from <strong>Evaluations</strong>, or read the IDs from the baseline run's page address as in <a href="index.html#baseline-identifiers">06</a>.</td>
+</tr>
+<tr>
+<td>09's helper stops with <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code></td>
+<td>The baseline run did not pin its Agent version: <code>agent_version</code> is <code>null</code> in <code>native-evals</code>, usually because no Version checkbox was ticked. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in <a href="index.html#prepare">05–06</a>: tick Version 1 so Review reads <code>lab-en-iq: v1</code>, and choose the <code>lab-judge-…</code> Judge. Then use the new evaluation's IDs.</td>
 </tr>
 <tr>
 <td>Several evaluations have the same name</td>

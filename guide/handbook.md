@@ -1039,7 +1039,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 1. **Configure agents**에서 지침을 덮어쓰는 custom prompt override는 비워 둡니다. 사용자 입력은 **`{{item.query}}`만** 사용합니다. 이는 각 행의 질문을 넣는 템플릿이므로 **중괄호까지 그대로 두고**, 자신의 질문이나 참고 답변으로 바꾸지 않습니다.
 2. 필드 매핑 화면이 나타나면 입력 `query`를 데이터의 `query` 열과 연결합니다. 매핑은 **입력 칸과 데이터 열의 짝을 정하는 설정**입니다. `context`·`ground_truth`를 Agent 입력에 붙이지 않습니다.
 3. **Criteria → Add evaluators**에서 아래 두 평가기만 남기고 다른 기본 선택은 해제합니다. TaskAdherence는 카탈로그에 **Task adherence**(또는 **Task Adherence**)로 표시됩니다. **Task completion**이나 **Task navigation efficiency**는 다른 평가기이므로 선택하지 않습니다.
-4. 각 평가기의 설정을 열어 아래 기준을 적용하고 **Apply**를 누릅니다. **Judge model**에는 자신의 `.lab/lab-ko/.env`에서 **`JUDGE_DEPLOYMENT`에 해당하는 배포 이름**을 선택합니다.
+4. 각 평가기의 설정을 열어 아래 기준을 적용하고 **Apply**를 누릅니다. **Judge model**에는 자신의 `.lab/lab-ko/.env`에서 **`JUDGE_DEPLOYMENT`에 해당하는 배포 이름**을 선택합니다. `lab-judge-…`(gpt-6-luna)이며, Optimizer용 `lab-planner-…`(gpt-5.5)가 아닙니다.
 
 | 평가기 | 의미 | 설정 |
 |---|---|---|
@@ -1108,8 +1108,8 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 ### Microsoft Foundry에서 검토하고 한 번 제출합니다 {#baseline-submit}
 
-1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. 평가기의 threshold가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**인지 확인합니다.
-2. 평가 이름은 **`lab-ko-learning-loop`**, run 이름을 지정할 수 있으면 **`baseline-v1`**로 입력합니다. 다른 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.
+1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. **Targets** 카드는 **`lab-ko-iq: v1`**이어야 합니다. `lab-ko-iq`만 보이면 버전이 고정되지 않은 것이므로 **Back**(또는 **Edit**)으로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. 평가기의 threshold나 Judge가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**, Judge가 `lab-planner-…`가 아닌 `lab-judge-…`인지 확인합니다.
+2. 평가 이름은 **`lab-ko-learning-loop`**로 입력합니다. Review에는 run 이름 입력 칸이 없으며 run은 포털이 Agent 이름(예: `lab-ko-iq`)으로 자동 지정합니다. 이후 단계는 run 이름이 아니라 ID를 사용합니다. 다른 평가 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.
 3. 아직 실행하지 않은 승인된 작업만 **Submit**으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 **Completed와 결과 12건**을 확인해야 실행 완료입니다.
 
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -1131,18 +1131,22 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 ### 터미널에서 실제 evaluation ID와 run ID를 조회합니다 {#baseline-identifiers}
 
-다음 **읽기 전용 명령**으로 이름이 같은 평가의 실제 ID·run 목록을 확인합니다. 이름이 다르면 `--name`을 자신이 입력한 정확한 이름으로 바꿉니다.
+다음 **읽기 전용 명령**으로 평가의 실제 ID·run 목록을 확인합니다. `--name`은 포털 **Evaluations**에 표시된 평가 이름과 **정확히** 같아야 합니다. 다른 이름을 입력했거나 포털이 자동 이름(예: `eval-3n27of15`)을 붙였다면 그 이름을 씁니다.
 
 ```sh
 python -m lab --config .lab/lab-ko/.env native-evals --name lab-ko-learning-loop
 ```
 
-같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 **두 ID는 따로 구분**해 둡니다. 09에서 사용하며, 이 명령을 다시 실행하면 언제든 같은 값을 읽을 수 있습니다. 이 명령은 새 평가를 제출하지 않습니다.
+**포털에서 바로 보려면** **Evaluations → 자신의 평가 → baseline run**을 엽니다. 페이지 주소에 `/build/evaluations/eval_…/run/evalrun_…`가 들어 있습니다. `eval_…` 부분이 `evaluation_id`, `evalrun_…` 부분이 baseline `run_id`입니다.
+
+같은 이름의 평가가 여러 개면 포털의 생성 시각·Agent·run을 대조하여 자신의 실행을 선택합니다. 다음 **두 ID는 따로 구분**해 둡니다. 09에서 사용하며 언제든 같은 값을 다시 읽을 수 있고, 읽기만으로는 새 평가를 제출하지 않습니다.
 
 | 값 | 선택 기준 | 09에서 사용할 자리 |
 |---|---|---|
 | `evaluation_id` · `eval_...` | 자신이 생성한 평가입니다. | `YOUR_EVALUATION_ID` |
 | `run_id` · `evalrun_...` | 그 평가 안의 **`agent_version: "1"`, `status: completed`**인 run입니다. | `YOUR_BASELINE_RUN_ID` |
+
+`agent_version`이 `null`이거나 비어 있으면 그 run은 Version 1을 고정하지 않은 것이며, 09에서 `ERROR: Pin explicit numeric or draft agent versions, not latest.`로 거부됩니다. 사용하지 않고 [문제 해결의 해당 행](troubleshooting.md#evaluation-resume)을 따릅니다. 이름이 `agent_optimization_eval_…`인 평가와 Optimizer job ID는 기준선이 아니라 Optimizer의 것입니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 평가 제출과 ID 조회의 차이</summary>
@@ -1397,8 +1401,8 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 | 자리표시자 | 실제 값을 찾는 곳 |
 |---|---|
-| `YOUR_EVALUATION_ID` | 06의 `native-evals` 출력에서 선택한 `evaluation_id`입니다. |
-| `YOUR_BASELINE_RUN_ID` | 같은 평가에서 완료된 버전 1의 `run_id`입니다. Optimizer job ID가 아닙니다. |
+| `YOUR_EVALUATION_ID` | 06의 `native-evals` 출력에서 선택한 `evaluation_id`, 또는 baseline run 페이지 주소의 `eval_…` 부분입니다. |
+| `YOUR_BASELINE_RUN_ID` | 같은 평가에서 완료된 버전 1(`agent_version: "1"`)의 `run_id`입니다. Optimizer job ID가 아닙니다. |
 
 `--config`는 `.env`에서 프로젝트 endpoint와 구독을 읽고, 로그인한 사용자·테넌트·구독이 `.env`와 일치하는지 확인하며, receipt를 해당 환경의 `artifacts/foundry-evaluations/` 아래에 저장합니다. 두 값을 교체하고 다음 한 줄 명령을 실행합니다. 새 run 제출에는 비용이 발생합니다.
 

@@ -106,6 +106,10 @@ class NativeFoundryEvaluationTests(unittest.TestCase):
         del record["data_source"]["target"]["version"]
         with self.assertRaisesRegex(ValueError, "Pin explicit"):
             candidate_source(record, evaluation_id="eval-unit-only", version="2")
+        record = baseline()
+        record["data_source"]["target"]["version"] = None
+        with self.assertRaisesRegex(ValueError, r"did not pin.*Version 1 selected explicitly"):
+            candidate_source(record, evaluation_id="eval-unit-only", version="2")
 
     def test_reference_labels_cannot_be_sent_as_agent_input(self):
         for value in ("{{item.ground_truth}}", "{{item.context}}", "{{item.query}} {{item.ground_truth}}"):
