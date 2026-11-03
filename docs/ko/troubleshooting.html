@@ -594,7 +594,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </tr>
 <tr>
 <td>09의 helper가 <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code>로 멈춥니다.</td>
-<td>baseline run이 Agent 버전을 고정하지 않았습니다. <code>native-evals</code>에서 <code>agent_version</code>이 <code>null</code>이며, 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 <a href="index.html#prepare">05–06</a>처럼 새 기준선을 제출합니다. Version 1을 체크해 Review가 <code>lab-ko-iq: v1</code>로 보이게 하고 Judge는 <code>lab-judge-…</code>를 선택합니다. 이후 새 평가의 ID를 사용합니다.</td>
+<td>baseline run이 Agent 버전을 고정하지 않았습니다. <code>native-evals</code>에서 <code>agent_version</code>이 <code>null</code>이고(run의 Raw JSON에서는 <code>data_source.target.version</code>이 <code>null</code>), 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 <a href="index.html#prepare">05–06</a>처럼 새 기준선을 제출합니다. Version 1을 체크해 Review에 Agent 이름 뒤 버전(<code>lab-ko-iq: 1</code>)이 보이게 하고 Judge는 <code>lab-judge-…</code>를 선택합니다. 이후 새 평가의 ID를 사용합니다.</td>
 </tr>
 <tr>
 <td>같은 이름의 평가가 여러 개입니다.</td>

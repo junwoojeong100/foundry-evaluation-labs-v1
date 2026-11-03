@@ -1108,7 +1108,7 @@ An **evaluation is the saved configuration**; a **run is one execution of it**. 
 
 ### Review and submit once in Microsoft Foundry {#baseline-submit}
 
-1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. The **Targets** card must read **`lab-en-iq: v1`**. If it shows only `lab-en-iq`, the version is not pinned, so select **Back** (or **Edit**) and tick Version 1; 09 refuses a baseline without a pinned version. If you are unsure of an evaluator's threshold or Judge, select **Edit** beside it and check Relevance **4**, TaskAdherence **1**, and the `lab-judge-…` Judge, not `lab-planner-…`.
+1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. The **Targets** card must show the version after the Agent name: **`lab-en-iq: 1`** (some portal builds write it as `v1`). If it shows only `lab-en-iq`, the version is not pinned, so select **Back** (or **Edit**) and tick Version 1; 09 refuses a baseline without a pinned version. If you are unsure of an evaluator's threshold or Judge, select **Edit** beside it and check Relevance **4**, TaskAdherence **1**, and the `lab-judge-…` Judge, not `lab-planner-…`.
 2. Name the evaluation **`lab-en-learning-loop`**. Review has no run-name field: the portal names the run after the Agent (for example `lab-en-iq`), and later steps use IDs, not run names. If you choose a different evaluation name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.
 3. For an authorized job not already submitted, select **Submit** once. The run is complete only after you confirm **Completed and all 12 results**, not immediately after clicking.
 
@@ -1137,7 +1137,7 @@ Use this **read-only command** to retrieve actual evaluation and run IDs. `--nam
 python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 ```
 
-**Prefer the portal?** Open **Evaluations → your evaluation → the baseline run**. The page address contains `/build/evaluations/eval_…/run/evalrun_…`: the `eval_…` part is the `evaluation_id` and the `evalrun_…` part is the baseline `run_id`.
+**Prefer the portal?** Open **Evaluations → your evaluation → the baseline run**. Under **Run details**, select **See all properties → Raw JSON**. There, `eval_id` is the `evaluation_id`, `id` is the baseline `run_id`, and `data_source.target.version` must be `"1"` (not `null`). The page address also contains `/build/evaluations/eval_…/run/evalrun_…`; copy the `eval_…` and `evalrun_…` parts only, not the `?tid=…` that follows.
 
 If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Keep these **two IDs separate**; 09 needs them, and you can read them again at any time. Reading them submits nothing.
 

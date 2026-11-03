@@ -594,7 +594,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </tr>
 <tr>
 <td>09's helper stops with <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code></td>
-<td>The baseline run did not pin its Agent version: <code>agent_version</code> is <code>null</code> in <code>native-evals</code>, usually because no Version checkbox was ticked. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in <a href="index.html#prepare">05–06</a>: tick Version 1 so Review reads <code>lab-en-iq: v1</code>, and choose the <code>lab-judge-…</code> Judge. Then use the new evaluation's IDs.</td>
+<td>The baseline run did not pin its Agent version: <code>agent_version</code> is <code>null</code> in <code>native-evals</code> (and <code>data_source.target.version</code> is <code>null</code> in the run's Raw JSON), usually because no Version checkbox was ticked. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in <a href="index.html#prepare">05–06</a>: tick Version 1 so Review shows the version after the Agent name (<code>lab-en-iq: 1</code>), and choose the <code>lab-judge-…</code> Judge. Then use the new evaluation's IDs.</td>
 </tr>
 <tr>
 <td>Several evaluations have the same name</td>
