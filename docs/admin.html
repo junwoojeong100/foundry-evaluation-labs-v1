@@ -169,6 +169,7 @@
 <tr>
 <th>Role</th>
 <th>Configuration key</th>
+<th>Deployment name in the portal</th>
 <th>Default model/version</th>
 </tr>
 </thead>
@@ -176,25 +177,30 @@
 <tr>
 <td>Agent</td>
 <td><code>MODEL_DEPLOYMENT</code></td>
+<td><code>lab-agent-…</code></td>
 <td><strong><code>gpt-6-sol</code> / <code>2026-09-22</code></strong>, Global Standard 100</td>
 </tr>
 <tr>
 <td>Managed evaluation Judge</td>
 <td><code>JUDGE_DEPLOYMENT</code></td>
+<td><code>lab-judge-…</code></td>
 <td><strong><code>gpt-6-luna</code> / <code>2026-09-22</code></strong>, Global Standard 100</td>
 </tr>
 <tr>
 <td>Optimizer/search planner</td>
 <td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
+<td><code>lab-planner-…</code></td>
 <td><strong><code>gpt-5.5</code> / <code>2026-04-24</code></strong>, one shared Global Standard 100 deployment</td>
 </tr>
 <tr>
 <td>Policy embeddings</td>
 <td><code>EMBEDDING_DEPLOYMENT</code></td>
+<td><code>lab-embedding-…</code></td>
 <td><strong><code>text-embedding-3-large</code> / <code>1</code></strong>, Global Standard 10</td>
 </tr>
 </tbody>
 </table>
+<p>The start of each deployment name is always the same, and only the last 8 characters (the <code>0a1b2c3d</code> in <code>lab-judge-0a1b2c3d</code>) differ per environment. With the default setup, the four deployments of one environment share those 8 characters, and they also match the end of the project name (<code>proj-fev11-0a1b2c3d</code>). In the portal, tell the roles apart by the start of the name and match the exact name against <code>.env</code>.</p>
 <p>Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Check the subscription's quota tier and the remaining quota for the four models ahead of time with the <a href="index.html#resources-prereq-quota">quota pre-check in 02</a>; free-trial and Free Tier subscriptions have no quota for these four models. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry <strong>Models + endpoints/Build → Models</strong>. <code>.env</code> contains actual deployment names rather than product names.</p>
 <p><strong>The embedding model must match the index contract.</strong> The policy index uses 3072-dimensional <code>text-embedding-3-large</code> vectors, and <code>embedding_supported_model</code> in <code>preflight</code> checks the deployed model. An environment created with the former default <code>text-embedding-3-small</code> reports <code>BLOCKED</code>. Do not edit its plan or deployment; plan a new environment name instead.</p>
 <p><strong>Distinguish additional monitoring resources.</strong> Application Insights can automatically add a <a href="https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#alert-rule-creation">default Failure Anomalies alert and Smart Detection action group</a>. Bootstrap checks read-only that the alert targets only the owned Application Insights component and that the linked action group uses only the default role receivers. It does not adopt resources by name or modify/delete a shared action group in another resource group. If those links are not yet observable during provisioning, inspect the same <code>bootstrap status</code> again; do not edit the manifest or delete the alert to bypass the check.</p>
@@ -230,7 +236,7 @@
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/lab-en/candidate.txt --confirm
 </code></pre>
 <p>Do not use portal Promote in this lab; create v2 with 09's CLI. Promoting first can conflict with the CLI's local/remote ownership checks. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.</p>
-<p>Retrieve IDs with <a href="index.html#baseline-identifiers">06's complete lookup command</a>, including the <code>.env</code> path and exact evaluation name. The reevaluation helper copies the baseline data source and checks the <strong>remote</strong> contract. Do not replace the remote definition with a stale local <code>JUDGE_DEPLOYMENT</code>.</p>
+<p>Retrieve IDs with <a href="index.html#baseline-identifiers">06's complete lookup command</a>, including the <code>.env</code> path and exact evaluation name. The reevaluation helper copies the baseline data source and checks the <strong>remote</strong> contract: the thresholds, the response mappings, and that both evaluators use the same Judge deployment. It does not check that the Judge is <code>lab-judge-…</code>, so confirm that yourself in 05–06. Do not replace the remote definition with a stale local <code>JUDGE_DEPLOYMENT</code>.</p>
 <h2 id="scope">Freeze the comparison conditions</h2>
 <table>
 <thead>

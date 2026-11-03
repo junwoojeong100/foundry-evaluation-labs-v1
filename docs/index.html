@@ -643,6 +643,7 @@ az provider register --namespace Microsoft.Insights --wait
 <ol>
 <li><strong>Plan:</strong> It uses <code>northcentralus</code> and this lab's four pinned model deployments, without automatically substituting models or regions. Search and logging are included because later steps need them.<ul>
 <li><strong>The four roles:</strong> <strong>Agent (answers), Judge (scoring), Optimizer/search planner (instruction improvement and retrieval planning), and embeddings (numerical representations for search)</strong></li>
+<li><strong>Deployment names:</strong> <code>lab-agent-…</code>, <code>lab-judge-…</code>, <code>lab-planner-…</code>, and <code>lab-embedding-…</code>. The start of each name is always the same; only the last 8 characters differ per environment. The role-to-name table is in the <a href="#resources-runtime-check">02 runtime check</a>.</li>
 <li>You prepare an environment that calls existing models; you do not build a model from scratch.</li>
 </ul>
 </li>
@@ -685,6 +686,7 @@ az provider register --namespace Microsoft.Insights --wait
 {: .note}
 <strong>Final review before creation:</strong> Read the displayed account, subscription, region, resources, models, and limits. This quick path records <strong>at most two candidates, a one-hour job wait, and 30-day log retention</strong>. Use the individual configuration path below if different limits are required. Type <strong><code>CREATE lab-en</code></strong> only if you actually authorize Global Standard worldwide processing, resource creation, resource-scoped roles, continuing charges, and an unconfirmed final cost.</p>
 <p class="note warning">No Microsoft Azure resources are created before confirmation, and Enter cancels. <strong>After confirmation, provisioning and charges can begin.</strong> Budget, call counts, and hosting hours are not automatic spending cutoffs, nor authorization for deletion, training, or automatic retries.</p>
+<p><strong>The "limits from 02" that steps 03–09 refer to</strong> are the approved currency, budget amount, maximum hosting duration, and model-call allowance above, plus the at-most-two candidates and one-hour job wait this quick path records. Make every submission and call in 03–09 within these limits. Nothing blocks you automatically, so keep track of them yourself.</p>
 <p><strong>Successful result</strong></p>
 <ul>
 <li>The output reports <strong><code>status: APPLIED</code></strong> and creates <strong><code>.lab/lab-en/.env</code></strong>.</li>
@@ -1393,8 +1395,45 @@ az provider register --namespace Microsoft.Insights --wait
 <li>In the <a href="https://portal.azure.com">Azure portal</a> → <strong>Resource groups</strong>, search for <code>names.resource_group</code> from <code>config.json</code>. Confirm the subscription, region, and complete resource list.</li>
 <li>Open <a href="https://ai.azure.com">Microsoft Foundry</a> with <strong>New Foundry</strong> enabled. If <strong>Select a project to continue</strong> appears, choose <code>names.project</code> and select <strong>Let's go</strong>. Read and <strong>Close</strong> the welcome tour if shown. If already in New Foundry, use the upper-left project selector. Do not use a Classic hub-based project.</li>
 <li>In the project's <strong>Home</strong> (Overview in some layouts), find <strong>Project endpoint</strong>. It must match <code>AZURE_AI_PROJECT_ENDPOINT</code> in <code>.env</code>, in the form <code>https://account.services.ai.azure.com/api/projects/project</code>.</li>
-<li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, locate the deployments matching <code>.env</code> values <code>MODEL_DEPLOYMENT</code>, <code>JUDGE_DEPLOYMENT</code>, <code>OPTIMIZER_DEPLOYMENT</code>, and <code>EMBEDDING_DEPLOYMENT</code>. See <a href="admin.html#prepare">portal orientation</a> if labels differ.</li>
+<li>In <strong>Models + endpoints</strong> or <strong>Build → Models</strong>, find the four deployments. The start of each name is always the same, and only the last 8 characters (the <code>0a1b2c3d</code> in <code>lab-judge-0a1b2c3d</code>) differ per environment. With the default setup, the four deployments of one environment share those 8 characters, and they also match the end of the project name (<code>proj-fev11-0a1b2c3d</code>). So tell the roles apart by the start of the name, and match the exact names against <code>.env</code>. See <a href="admin.html#prepare">portal orientation</a> if labels differ.</li>
 </ol>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th><code>.env</code> setting</th>
+<th>Deployment name in the portal</th>
+<th>Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent (answers)</td>
+<td><code>MODEL_DEPLOYMENT</code></td>
+<td><code>lab-agent-…</code></td>
+<td>gpt-6-sol</td>
+</tr>
+<tr>
+<td>Judge (scoring) · evaluation model</td>
+<td><code>JUDGE_DEPLOYMENT</code></td>
+<td><code>lab-judge-…</code></td>
+<td>gpt-6-luna</td>
+</tr>
+<tr>
+<td>Optimizer · search planner · optimization model</td>
+<td><code>OPTIMIZER_DEPLOYMENT</code> / <code>IQ_PLANNER_DEPLOYMENT</code></td>
+<td><code>lab-planner-…</code></td>
+<td>gpt-5.5</td>
+</tr>
+<tr>
+<td>Embeddings (numerical representations for search)</td>
+<td><code>EMBEDDING_DEPLOYMENT</code></td>
+<td><code>lab-embedding-…</code></td>
+<td>text-embedding-3-large</td>
+</tr>
+</tbody>
+</table>
+<p>The Optimizer and the search planner share the one <code>lab-planner-…</code> deployment. The Judge model in 05 and the Evaluation model in 08 are both <code>lab-judge-…</code>; the Optimization model in 08 is <code>lab-planner-…</code>.</p>
 <figure class="portal-shot" id="portal-created-resources">
 <img src="../web/assets/portal/en/23-resource-group.png" alt="Resource group Overview showing Microsoft Foundry, project, Search, monitoring resources, and deployment status." width="1440" height="1000" loading="lazy">
 <figcaption><strong>Compare the plan with actual resources.</strong> Check the group name and Location, then identify Microsoft Foundry, Microsoft Foundry project, Search, Application Insights, and Log Analytics. Open Deployments to inspect each deployment's status and any failure details. <a href="../web/assets/portal/en/23-resource-group.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
@@ -1642,7 +1681,7 @@ az provider register --namespace Microsoft.Insights --wait
 <div class="lab-concept" data-learning-frame="agent">
 <p><strong>What:</strong> Connect a read-only synthetic-policy tool to the pinned v1 baseline Agent.</p>
 <p><strong>Why:</strong> Recalling a policy is not the same as retrieving it. Retrieval under your user identity does not establish access for the Agent's managed identity.</p>
-<p><strong>How · where:</strong> Prepare model, retrieval, and Agent from the terminal; inspect instructions, tools, and an actual response in Microsoft Foundry. Transmit data and make calls once within the approved scope.</p>
+<p><strong>How · where:</strong> Prepare model, retrieval, and Agent from the terminal; inspect instructions, tools, and an actual response in Microsoft Foundry. Transmit data and make calls once within the limits you entered in 02 (budget and model calls).</p>
 </div>
 
 <p class="step-route"><strong>Action order:</strong> <a href="#agent-smoke">Terminal · model check</a> → <a href="#agent-search-prepare">Upload policies</a> → <a href="#agent-search-probe">Verify retrieval</a> → <a href="#agent-create">Create v1</a> → <a href="#agent-playground">Microsoft Foundry · test response</a>.</p>
@@ -1750,7 +1789,7 @@ az provider register --namespace Microsoft.Insights --wait
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env iq prepare --confirm
 </code></pre>
-<p>Confirm <strong><code>uploaded_documents: 8</code></strong>. The program prepares a search index (searchable documents), a knowledge base, and an MCP connection. <strong>MCP (Model Context Protocol) connects an Agent to tools</strong>; this lab connects only a read-only policy-retrieval tool. You do not need to edit the implementation.</p>
+<p>Confirm <strong><code>uploaded_documents: 8</code></strong>. The printed <strong><code>status</code> should be <code>created_not_retrieval_tested</code></strong>: the index, knowledge base, and connection exist, but retrieval has not been tested yet. That is expected here, and <code>iq probe</code> in the next step turns it into <code>retrieval_verified</code> once it succeeds. The program prepares a search index (searchable documents), a knowledge base, and an MCP connection. <strong>MCP (Model Context Protocol) connects an Agent to tools</strong>; this lab connects only a read-only policy-retrieval tool. You do not need to edit the implementation.</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: policy upload and retrieval</summary>
 <h4 id="knowledge-code-portal">Code ↔ portal · configure policy retrieval</h4>
@@ -2133,7 +2172,7 @@ az provider register --namespace Microsoft.Insights --wait
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python -m lab --config .lab/lab-en/.env iq probe --confirm
 </code></pre>
-<p>Confirm <strong><code>status: retrieval_verified</code></strong> with nonempty references. <code>created_not_retrieval_tested</code> means creation only. If an error occurs, preserve the records and follow <a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a> and <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>. If <code>iq prepare</code> or <code>iq probe</code> refuses the same command, follow the command-specific recovery.</p>
+<p>A successful probe prints <strong><code>status: retrieval_verified</code></strong> with nonempty <code>references</code>. The recorded <code>status</code> stays <code>created_not_retrieval_tested</code> (creation only) until a probe succeeds. If the probe fails, no JSON is printed: the last line is <code>ERROR: …</code> and the <code>status</code> does not change. The same question text is then refused, so keep the records, fix the cause, and rerun with a differently worded <code>--query</code> (<a href="troubleshooting.html#knowledge-first-failure">recovery after a first call failure</a>, <a href="troubleshooting.html#knowledge">retrieval troubleshooting</a>). If <code>iq prepare</code> or <code>iq probe</code> refuses the same command, follow the command-specific recovery.</p>
 <p>Read the query/reference request and actual response checks around <code>POST .../retrieve</code>. <strong>Direct retrieval verifies your signed-in user path</strong>, not the Agent's managed-identity path.</p>
 <details class="implementation-code">
 <summary>Actual implementation · read only · <code>lab/knowledge.py:probe_knowledge</code></summary>
@@ -2393,7 +2432,7 @@ az provider register --namespace Microsoft.Insights --wait
 <figcaption><strong>Check version, instructions, and Knowledge.</strong> Select Version 1, inspect Model and Instructions on the left, and confirm the policy MCP connection under Knowledge. Enter your question in Chat on the right. <a href="../web/assets/portal/en/27-agent-configuration.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-<p>In the portal, open <strong>Build → Agents → lab-en-iq → version 1</strong>. Use the command's actual Agent name. Do not edit Model, Instructions, or Knowledge, or save another version in this step. Send this one question in <strong>Test/Playground</strong>:</p>
+<p>In the portal, open <strong>Build → Agents → lab-en-iq → version 1</strong>. If the Agent name looks different, use the name printed as <code>agent_name</code> by the <code>native-agent</code> command. Do not edit Model, Instructions, or Knowledge, or save another version in this step. Send this one question in <strong>Test/Playground</strong>:</p>
 <blockquote>
 <p>I first purchased a monthly subscription in September 2026. What are the refund application conditions?</p>
 </blockquote>
@@ -2577,8 +2616,8 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 </tbody>
 </table>
-<p class="note"><strong>TaskAdherence's settings show the same Threshold box as Relevance (1–5).</strong> The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter <strong>1</strong>, not 4. If <strong>Probability_threshold</strong> (0–1) is also shown, enter <strong>0.5</strong>, the value this lab was validated with, and use the same value wherever you configure TaskAdherence, including the Optimizer in 07. Leave other fields at their defaults. <a href="#decision">09</a>'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. <strong>Task completion</strong> is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.</p>
-<p>Preserve the service-generated <code>response</code> mappings. If a response field is <strong>Unassigned</strong>, or your Judge is missing, compare the Agent, data columns, and deployment using the <a href="admin.html#evaluation-mapping">mapping checks</a> and <a href="troubleshooting.html#evaluation">evaluation troubleshooting</a>. Do not guess a value or submit before resolving the mismatch.</p>
+<p class="note"><strong>TaskAdherence's settings show the same Threshold box as Relevance (1–5).</strong> The evaluator catalog defines the same threshold range for both, even though TaskAdherence returns only 0 or 1 and its catalog card says "higher scores." Enter <strong>1</strong>, not 4. If <strong>Probability_threshold</strong> (0–1) is also shown, enter <strong>0.5</strong>, the value this lab's recorded runs used, and use the same value wherever you configure TaskAdherence, including the Optimizer in 08. Leave other fields at their defaults. <a href="#decision">09</a>'s reevaluation helper stops when the baseline's TaskAdherence threshold is not 1, so confirm it before you submit in 06. <strong>Task completion</strong> is also a binary Pass/Fail evaluator, but it has no 1–5 threshold setting and this lab does not use it.</p>
+<p>Preserve the service-generated <code>response</code> mappings. If a response field is <strong>Unassigned</strong>, or the <code>lab-judge-…</code> deployment is missing from the Judge model list, compare the Agent, data columns, and deployment using the <a href="admin.html#evaluation-mapping">mapping checks</a> and <a href="troubleshooting.html#evaluation">evaluation troubleshooting</a>. Do not guess a value or submit before resolving the mismatch.</p>
 <details class="guide-details implementation-notes">
 <summary>Optional · how it works: evaluators, Judge, and response mappings</summary>
 <h4 id="criteria-code-portal">Code ↔ portal · connect scoring settings</h4>
@@ -2601,7 +2640,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>initialization_parameters.deployment_name</code></td>
-<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span>Select your <code>JUDGE_DEPLOYMENT</code> as the <strong>Judge model</strong>.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Portal setting</span>Select the <code>lab-judge-…</code> deployment (<code>JUDGE_DEPLOYMENT</code>) as the <strong>Judge model</strong>.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Remote evaluation field in code</span><code>data_mapping.query = {{item.query}}</code></td>
@@ -2668,31 +2707,31 @@ az provider register --namespace Microsoft.Insights --wait
 <tr>
 <th>Role</th>
 <th>Model/version</th>
-<th>Deployment</th>
+<th>Deployment name in the portal</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Agent</td>
 <td><strong>gpt-6-sol / 2026-09-22</strong></td>
-<td>Your <code>MODEL_DEPLOYMENT</code> value</td>
+<td><code>lab-agent-…</code> (<code>MODEL_DEPLOYMENT</code>)</td>
 </tr>
 <tr>
 <td>Evaluation Judge</td>
 <td><strong>gpt-6-luna / 2026-09-22</strong></td>
-<td>Your <code>JUDGE_DEPLOYMENT</code> value</td>
+<td><code>lab-judge-…</code> (<code>JUDGE_DEPLOYMENT</code>)</td>
 </tr>
 <tr>
 <td>Optimizer generator</td>
 <td><strong>gpt-5.5 / 2026-04-24</strong></td>
-<td>Your <code>OPTIMIZER_DEPLOYMENT</code> value</td>
+<td><code>lab-planner-…</code> (<code>OPTIMIZER_DEPLOYMENT</code>)</td>
 </tr>
 </tbody>
 </table>
-<p>Agent, Judge, and Optimizer support can differ by role. Check the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimizer support list</a> and select the deployment prepared for each role.</p>
+<p>The start of each deployment name is always the same; only the last 8 characters differ per environment (see the <a href="#resources-runtime-check">02 table</a>). Agent, Judge, and Optimizer support can differ by role. Check the <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">Optimizer support list</a> and select the deployment prepared for each role.</p>
 <figure class="portal-shot" id="portal-evaluation-criteria">
 <img src="../web/assets/portal/en/16-evaluation-criteria.png" alt="Evaluation Criteria settings for Relevance, TaskAdherence, and the Judge deployment." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence threshold 1. Select the Judge deployment named by your <code>JUDGE_DEPLOYMENT</code> setting. <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Separate the evaluators from the Judge.</strong> Set Relevance threshold 4 and TaskAdherence threshold 1. Select the <code>lab-judge-…</code> deployment (<code>JUDGE_DEPLOYMENT</code>). <a href="../web/assets/portal/en/16-evaluation-criteria.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p class="completion-check"><strong>Completion criteria:</strong> Confirm and record both evaluator scales, thresholds, mappings, and the actual Judge in the same unsubmitted wizard. Step 06 creates the remote evaluation definition when you submit. Reevaluation then uses that saved definition.</p>
@@ -2711,17 +2750,17 @@ az provider register --namespace Microsoft.Insights --wait
 <p>An <strong>evaluation is the saved configuration</strong>; a <strong>run is one execution of it</strong>. The first v1 run is your <strong>baseline</strong>, the starting point for comparison.</p>
 <h3 id="baseline-submit">Review and submit once in Microsoft Foundry</h3>
 <ol>
-<li>In <strong>Review</strong>, confirm <strong>v1 + original dev12 + query-only input + two evaluators + your Luna Judge</strong>. The <strong>Targets</strong> card must show the version after the Agent name: <strong><code>lab-en-iq: 1</code></strong> (some portal builds write it as <code>v1</code>). If it shows only <code>lab-en-iq</code>, the version is not pinned, so select <strong>Back</strong> (or <strong>Edit</strong>) and tick Version 1; 09 refuses a baseline without a pinned version. If you are unsure of an evaluator's threshold or Judge, select <strong>Edit</strong> beside it and check Relevance <strong>4</strong>, TaskAdherence <strong>1</strong>, and the <code>lab-judge-…</code> Judge, not <code>lab-planner-…</code>.</li>
+<li>In <strong>Review</strong>, confirm <strong>v1 + original dev12 + query-only input + two evaluators + the Judge <code>lab-judge-…</code> (gpt-6-luna)</strong>. The <strong>Targets</strong> card must show the version after the Agent name: <strong><code>lab-en-iq: 1</code></strong> (some portal builds write it as <code>v1</code>). If it shows only <code>lab-en-iq</code>, the version is not pinned, so use the <strong>Targets</strong> card's <strong>Edit</strong> to go back and tick Version 1; 09 refuses a baseline without a pinned version. If Review does not show the thresholds or the Judge and you are unsure of them, select <strong>Back</strong> to the <strong>Criteria</strong> step and check Relevance <strong>4</strong>, TaskAdherence <strong>1</strong>, and that the Judge model is <code>lab-judge-…</code>, not <code>lab-planner-…</code>, then return to Review.</li>
 <li>Name the evaluation <strong><code>lab-en-learning-loop</code></strong>. Review has no run-name field: the portal names the run after the Agent (for example <code>lab-en-iq</code>), and later steps use IDs, not run names. If you choose a different evaluation name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.</li>
-<li>For an authorized job not already submitted, select <strong>Submit</strong> once. The run is complete only after you confirm <strong>Completed and all 12 results</strong>, not immediately after clicking.</li>
+<li>If you have not already submitted this evaluation, select <strong>Submit</strong> once, within the limits you entered in 02 (budget and model calls). The run is complete only after you confirm <strong>Completed and all 12 results</strong>, not immediately after clicking.</li>
 </ol>
 <figure class="portal-shot" id="portal-evaluation-review">
 <img src="../web/assets/portal/en/17-evaluation-review.png" alt="Microsoft Foundry evaluation Review page for checking Agent, version, dataset, and evaluator settings." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Review before Submit.</strong> Confirm Agent version 1, the same dev12, query-only input, both evaluators, and the Judge. Submit once within the approved scope, then inspect the run status. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Review before Submit.</strong> Confirm Agent version 1, the same dev12, query-only input, both evaluators, and the Judge. Submit once within the limits you entered in 02, then inspect the run status. <a href="../web/assets/portal/en/17-evaluation-review.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <h3 id="baseline-results">Verify that same run's completion and all 12 items</h3>
-<p>Open <strong>Evaluations → your evaluation name → Evaluation runs → baseline run</strong>.</p>
+<p>Open <strong>Evaluations → your evaluation name → Evaluation runs</strong> and open this evaluation's run. The portal named it after the Agent (for example <code>lab-en-iq</code>), and this run is your baseline.</p>
 <table>
 <thead>
 <tr>
@@ -2744,7 +2783,8 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 </tbody>
 </table>
-<p>If it remains unfinished after 30 minutes or your shorter authorized wait, check its state, run ID, and error, then follow <a href="troubleshooting.html#evaluation-resume">evaluation resumption</a>. This is a status-check point, not a service completion guarantee. Stopping your wait does not cancel the remote job.</p>
+<p>When it shows <strong>Completed</strong>, check that <strong>Agent ID</strong> under Run details has the version after the name, like <code>lab-en-iq:1</code>. If it shows only the name or the version is empty, the baseline's version is not pinned and 09 refuses it. Follow <a href="troubleshooting.html#evaluation-resume">troubleshooting</a>.</p>
+<p>If it remains unfinished after 30 minutes or the job-wait limit recorded in 02 (one hour on the quick path), whichever is shorter, check its state, run ID, and error, then follow <a href="troubleshooting.html#evaluation-resume">evaluation resumption</a>. This is a status-check point, not a service completion guarantee. Stopping your wait does not cancel the remote job.</p>
 <h3 id="baseline-identifiers">Retrieve actual evaluation and run IDs in your terminal</h3>
 <p>Use this <strong>read-only command</strong> to retrieve actual evaluation and run IDs. <code>--name</code> must match the evaluation name shown under <strong>Evaluations</strong> in the portal <strong>exactly</strong>. If you chose a different name, or the portal gave an automatic one (for example <code>eval-3n27of15</code>), use that name.</p>
 <p class="command-label">Run in your terminal · Shared terminal</p>
@@ -3037,7 +3077,7 @@ az provider register --namespace Microsoft.Insights --wait
 <tbody>
 <tr>
 <td>Agent version</td>
-<td>Explicit baseline <strong>1</strong></td>
+<td>Select <strong>1</strong> yourself (the same version as the 06 baseline).</td>
 </tr>
 <tr>
 <td>Choose targets</td>
@@ -3045,15 +3085,15 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td>Max candidates</td>
-<td>Request <strong>2</strong> within your authorization. This is not the number of released Agent versions or a model-call limit.</td>
+<td>Request <strong>2</strong> (the candidate limit recorded in 02). This is not the number of released Agent versions or a model-call limit.</td>
 </tr>
 <tr>
 <td>Optimization model</td>
-<td>Your <code>OPTIMIZER_DEPLOYMENT</code> / gpt-5.5</td>
+<td><code>lab-planner-…</code> (<code>OPTIMIZER_DEPLOYMENT</code>, gpt-5.5)</td>
 </tr>
 <tr>
 <td>Evaluation model</td>
-<td>Your <code>JUDGE_DEPLOYMENT</code> / gpt-6-luna</td>
+<td><code>lab-judge-…</code> (<code>JUDGE_DEPLOYMENT</code>, gpt-6-luna). The same deployment as 05's Judge model.</td>
 </tr>
 <tr>
 <td>Dataset</td>
@@ -3067,7 +3107,7 @@ az provider register --namespace Microsoft.Insights --wait
 </table>
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../web/assets/portal/en/07-optimizer-target.png" alt="Agent Optimizer target settings for baseline version, Instruction only, candidate count, and model roles." width="1210" height="968" loading="lazy">
-<figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the approved limit. Assign the prepared deployments to Optimization model and Evaluation model. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+<figcaption><strong>Separate optimization scope and model roles.</strong> Select baseline version 1 and Instruction only, and keep candidates within the limit recorded in 02 (at most 2). Assign the <code>lab-planner-…</code> deployment to Optimization model and the <code>lab-judge-…</code> deployment to Evaluation model. <a href="../web/assets/portal/en/07-optimizer-target.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
 <p>If Criteria shows <strong>No custom evaluators available</strong>, switch <strong>Custom only OFF</strong> or select <strong>View built-in evaluators</strong>. Open each built-in row, set its correct values (Relevance <strong>Threshold 4</strong>; TaskAdherence <strong>Threshold 1</strong> and <strong>Probability_threshold 0.5</strong>) and Apply. Do not create a custom scorer to bypass a filter.</p>
@@ -3077,7 +3117,7 @@ az provider register --namespace Microsoft.Insights --wait
 </figure>
 
 <h3 id="optimizer-results">Submit once and inspect the same job's results</h3>
-<p>In <strong>Review</strong>, confirm the Agent/version, dataset, evaluators, and estimated cost, then <strong>Submit</strong> once within the approved scope. Neither the estimate nor the candidate setting is a billing cap.</p>
+<p>In <strong>Review</strong>, confirm the Agent/version, dataset, evaluators, and estimated cost, then <strong>Submit</strong> once within the limits you entered in 02 (budget and model calls). Neither the estimate nor the candidate setting is a billing cap.</p>
 <p>Open the same job you just submitted in <strong>Optimization runs</strong> and act according to its state.</p>
 <table>
 <thead>
@@ -3089,7 +3129,7 @@ az provider register --namespace Microsoft.Insights --wait
 <tbody>
 <tr>
 <td>Running</td>
-<td>Inspect the same job and wait; do not resubmit. After 60 minutes or your shorter authorized wait, check the state and job ID, then follow <a href="troubleshooting.html#optimizer">resumption</a>.</td>
+<td>Inspect the same job and wait; do not resubmit. After 60 minutes or the job-wait limit recorded in 02 (one hour on the quick path), whichever is shorter, check the state and job ID, then follow <a href="troubleshooting.html#optimizer">resumption</a>.</td>
 </tr>
 <tr>
 <td>Completed / Succeeded</td>
@@ -3147,7 +3187,7 @@ az provider register --namespace Microsoft.Insights --wait
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Optimization model</strong>, <strong>Evaluation model</strong>, dev12/Criteria</td>
-<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Select your <code>.env</code> deployments and the data/criteria from 04–05. No local program submits optimization here.</td>
+<td><span class="mobile-cell-label" aria-hidden="true">Connection to existing code</span>Select the <code>lab-planner-…</code> deployment (<code>OPTIMIZER_DEPLOYMENT</code>) and the <code>lab-judge-…</code> deployment (<code>JUDGE_DEPLOYMENT</code>), and the data/criteria from 04–05. No local program submits optimization here.</td>
 </tr>
 <tr>
 <td><span class="mobile-cell-label" aria-hidden="true">Portal action</span><strong>Review → Submit</strong>, <strong>Optimization runs</strong></td>
@@ -3208,7 +3248,7 @@ az provider register --namespace Microsoft.Insights --wait
 <p class="command-label">Run in your terminal · Shared terminal</p>
 <pre class="terminal-command"><code class="language-sh">python scripts/add_foundry_eval_run.py --config .lab/lab-en/.env --evaluation &quot;YOUR_EVALUATION_ID&quot; --baseline &quot;YOUR_BASELINE_RUN_ID&quot; --version 2 --name candidate-v2
 </code></pre>
-<p>The default wait is 30 minutes. For a shorter authorized wait, append <code>--wait-seconds</code> and its value in seconds. The helper verifies thresholds, Judge, mappings, and each output item's Agent version and instructions. Continue according to the result:</p>
+<p>The default wait is 30 minutes. If the wait limit recorded in 02 is shorter than 30 minutes, append <code>--wait-seconds</code> and its value in seconds. The helper verifies the thresholds of both evaluators (Relevance 4, TaskAdherence 1), the response mappings, that both evaluators use the same Judge deployment, and each output item's Agent version and instructions. <strong>It does not verify that the Judge is <code>lab-judge-…</code></strong>, so use the baseline whose Judge you checked yourself in 05–06. Continue according to the result:</p>
 <table>
 <thead>
 <tr>
@@ -3459,7 +3499,7 @@ az provider register --namespace Microsoft.Insights --wait
 </details>
 </details>
 <h3 id="decision-compare">3. Compare the same evaluation's v1/v2 in Microsoft Foundry</h3>
-<p>In the same evaluation's <strong>Evaluation runs</strong>, select the v1 and v2 rows and <strong>Compare runs</strong>. Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
+<p>In the same evaluation's <strong>Evaluation runs</strong>, select the v1 and v2 rows and <strong>Compare runs</strong>. Tell the two rows apart by name: the v1 row is the run the portal auto-named after the Agent (<code>lab-en-iq</code>), and the v2 row is <code>candidate-v2</code>, the name you gave with <code>--name</code>. If unsure, open a run and check <strong>Agent ID</strong> under Run details (<code>lab-en-iq:1</code> or <code>lab-en-iq:2</code>). Explicitly choose <strong>v1 as Baseline</strong>; selection order must not reverse the comparison.</p>
 <figure class="portal-shot" id="portal-evaluation-comparison">
 <img src="../web/assets/portal/en/20-evaluation-comparison.png" alt="Compare runs view showing baseline and candidate scores, means, and statistical results." width="1440" height="520" loading="lazy">
 <figcaption><strong>Confirm the comparison direction and results.</strong> Select v1 as Baseline, then compare scores, pass counts, and statistical results. Inconclusive means a difference was not established; it is not evidence of equivalence. <a href="../web/assets/portal/en/20-evaluation-comparison.png" target="_blank" rel="noopener">View full-size image</a></figcaption>

@@ -156,7 +156,7 @@ python -m lab bootstrap apply --config .lab/lab-ko/config.json --approval .lab/l
 | 증상 | 조치와 진행 기준 |
 |---|---|
 | 배포는 있지만 모델 호출이 실패합니다. | 카탈로그·배포와 런타임 지원은 다릅니다. API 오류와 역할별 지원을 확인하고 [03의 실제 응답](handbook.md#agent)을 확인합니다. |
-| `created_not_retrieval_tested`에서 멈춥니다. | 생성만 완료된 상태입니다. [03의 `iq probe` 명령](handbook.md#agent-search-probe)에서 `retrieval_verified`와 실제 출처를 확인합니다. |
+| `created_not_retrieval_tested`에서 멈춥니다. | `iq prepare` 직후에는 정상이며, 생성만 완료되고 `iq probe`가 아직 성공하지 않았다는 뜻입니다. [03의 `iq probe` 명령](handbook.md#agent-search-probe)을 실행해 `retrieval_verified`와 실제 출처를 확인합니다. probe가 `ERROR:`로 끝났다면 `status`는 그대로이므로, 원인을 해결하고 `--query`의 질문 문장을 바꿔 다시 실행합니다. |
 | 직접 검색은 되지만 Agent 도구가 403입니다. | 프로젝트 관리 ID의 Search 읽기·모델 호출 권한과 연결 audience를 확인합니다. 사용자 검색 성공만으로 판단하지 않습니다. |
 | `native-agent` 실행 후 구성 불일치 오류입니다. | receipt와 원격 버전을 먼저 조회합니다. MCP 도구 목록의 동등한 표현은 정규화하지만, 다른 도구·권한·모델·출력 설정은 허용하지 않습니다. receipt를 지우거나 새 버전을 만들어 우회하지 않습니다. |
 | 기존 v2와 지침 또는 모델이 다릅니다. | 고정 비교 보호 동작입니다. v2를 덮어쓰거나 v3를 만들지 않고 원래 소유 환경·지침·모델 snapshot을 대조합니다. |
@@ -231,7 +231,7 @@ Unable to create data source configuration from item schema
 |---|---|
 | evaluation ID·run ID를 모릅니다. | [06의 전체 `native-evals` 명령](handbook.md#baseline-identifiers)으로 조회하거나 포털의 baseline run 페이지 주소(`…/build/evaluations/eval_…/run/evalrun_…`)에서 읽습니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
 | `native-evals`가 `No evaluation with that exact name exists in this project`로 멈춥니다. | `--name`이 포털의 평가 이름과 다릅니다. 이름을 바꾸지 않았다면 `eval-3n27of15` 같은 자동 이름이 붙습니다. **Evaluations**의 정확한 이름을 복사하거나 [06](handbook.md#baseline-identifiers)처럼 baseline run 페이지 주소에서 ID를 읽습니다. |
-| 09의 helper가 `ERROR: Pin explicit numeric or draft agent versions, not latest.`로 멈춥니다. | baseline run이 Agent 버전을 고정하지 않았습니다. `native-evals`에서 `agent_version`이 `null`이고(run의 Raw JSON에서는 `data_source.target.version`이 `null`), 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 [05–06](handbook.md#prepare)처럼 새 기준선을 제출합니다. Version 1을 체크해 Review에 Agent 이름 뒤 버전(`lab-ko-iq: 1`)이 보이게 하고 Judge는 `lab-judge-…`를 선택합니다. 이후 새 평가의 ID를 사용합니다. |
+| 09의 helper가 `ERROR: Pin explicit numeric or draft agent versions, not latest.`로 멈춥니다. | baseline run이 Agent 버전을 고정하지 않았습니다. `native-evals`에서 `agent_version`이 `null`이고(run의 Raw JSON에서는 `data_source.target.version`이 `null`), 평가를 만들 때 Agent 버전이 선택되지 않은 것입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 [05–06](handbook.md#prepare)처럼 새 기준선을 제출합니다. Version 1을 체크해 Review에 Agent 이름 뒤 버전(`lab-ko-iq: 1`)이 보이게 하고 Judge는 `lab-judge-…`를 선택합니다. 이후 새 평가의 ID를 사용합니다. |
 | 같은 이름의 평가가 여러 개입니다. | 생성 시각·Agent·데이터·run을 대조합니다. 이름만으로 임의 선택하지 않습니다. |
 | helper가 Still running으로 끝났습니다. | receipt에 run ID가 있으면 같은 명령으로 수집을 재개합니다. |
 | receipt에 run ID가 없거나 같은 이름의 원격 run이 있습니다. | 원본을 보관하고 제출 수락 여부와 실제 run을 확인합니다. receipt 삭제·이름 변경·자동 재제출을 하지 않습니다. |
@@ -248,7 +248,7 @@ Unable to create data source configuration from item schema
 |---|---|
 | No custom evaluators available입니다. | **Custom only OFF** 또는 **View built-in evaluators**를 사용합니다. 필터 때문에 새 custom evaluator를 만들지 않습니다. |
 | Optimize나 지정 모델이 없습니다. | New Foundry, prompt Agent, 프로젝트 권한, Preview와 [역할별 모델 지원](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인합니다. |
-| 승인한 대기 시간이 지났는데 작업이 실행 중입니다. | Optimization runs에서 같은 job ID의 상태·오류·사용량을 확인하고 이후 조회 계획을 기록합니다. 기다림 종료는 취소가 아닙니다. 새 작업으로 다시 제출하지 않습니다. |
+| 02에서 기록한 작업 대기 한도(빠른 경로는 1시간)가 지났는데 작업이 실행 중입니다. | Optimization runs에서 같은 job ID의 상태·오류·사용량을 확인하고 이후 조회 계획을 기록합니다. 기다림 종료는 취소가 아닙니다. 새 작업으로 다시 제출하지 않습니다. |
 | 작업이 Failed/Canceled이거나 결과가 일부만 있습니다. | 실제 상태·job ID·오류를 보관합니다. 완료한 후보가 있는 것처럼 기록하거나 같은 요청을 이름만 바꾸어 반복하지 않습니다. |
 | View changes에 일부 diff만 있고 전체 지침을 복사할 수 없습니다. | 접힌 변경 후 구간·후보 상세와 제공되는 Download/Export를 확인합니다. 전체 지침을 확보하지 못하면 v2를 만들지 않고 “v1 유지·전체 지침 확인 불가”를 기록한 뒤 10으로 진행합니다. |
 | 후보가 모델·도구 설명도 바꿉니다. | **Instruction only**와 모델 비교 끄기를 확인합니다. 지침 외 설정 변경을 같은 조건의 비교로 표시하지 않습니다. |

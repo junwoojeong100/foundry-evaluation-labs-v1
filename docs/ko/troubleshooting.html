@@ -485,7 +485,7 @@
 </tr>
 <tr>
 <td><code>created_not_retrieval_tested</code>에서 멈춥니다.</td>
-<td>생성만 완료된 상태입니다. <a href="index.html#agent-search-probe">03의 <code>iq probe</code> 명령</a>에서 <code>retrieval_verified</code>와 실제 출처를 확인합니다.</td>
+<td><code>iq prepare</code> 직후에는 정상이며, 생성만 완료되고 <code>iq probe</code>가 아직 성공하지 않았다는 뜻입니다. <a href="index.html#agent-search-probe">03의 <code>iq probe</code> 명령</a>을 실행해 <code>retrieval_verified</code>와 실제 출처를 확인합니다. probe가 <code>ERROR:</code>로 끝났다면 <code>status</code>는 그대로이므로, 원인을 해결하고 <code>--query</code>의 질문 문장을 바꿔 다시 실행합니다.</td>
 </tr>
 <tr>
 <td>직접 검색은 되지만 Agent 도구가 403입니다.</td>
@@ -594,7 +594,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 </tr>
 <tr>
 <td>09의 helper가 <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code>로 멈춥니다.</td>
-<td>baseline run이 Agent 버전을 고정하지 않았습니다. <code>native-evals</code>에서 <code>agent_version</code>이 <code>null</code>이고(run의 Raw JSON에서는 <code>data_source.target.version</code>이 <code>null</code>), 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 <a href="index.html#prepare">05–06</a>처럼 새 기준선을 제출합니다. Version 1을 체크해 Review에 Agent 이름 뒤 버전(<code>lab-ko-iq: 1</code>)이 보이게 하고 Judge는 <code>lab-judge-…</code>를 선택합니다. 이후 새 평가의 ID를 사용합니다.</td>
+<td>baseline run이 Agent 버전을 고정하지 않았습니다. <code>native-evals</code>에서 <code>agent_version</code>이 <code>null</code>이고(run의 Raw JSON에서는 <code>data_source.target.version</code>이 <code>null</code>), 평가를 만들 때 Agent 버전이 선택되지 않은 것입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 <a href="index.html#prepare">05–06</a>처럼 새 기준선을 제출합니다. Version 1을 체크해 Review에 Agent 이름 뒤 버전(<code>lab-ko-iq: 1</code>)이 보이게 하고 Judge는 <code>lab-judge-…</code>를 선택합니다. 이후 새 평가의 ID를 사용합니다.</td>
 </tr>
 <tr>
 <td>같은 이름의 평가가 여러 개입니다.</td>
@@ -652,7 +652,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 <td>New Foundry, prompt Agent, 프로젝트 권한, Preview와 <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">역할별 모델 지원</a>을 확인합니다.</td>
 </tr>
 <tr>
-<td>승인한 대기 시간이 지났는데 작업이 실행 중입니다.</td>
+<td>02에서 기록한 작업 대기 한도(빠른 경로는 1시간)가 지났는데 작업이 실행 중입니다.</td>
 <td>Optimization runs에서 같은 job ID의 상태·오류·사용량을 확인하고 이후 조회 계획을 기록합니다. 기다림 종료는 취소가 아닙니다. 새 작업으로 다시 제출하지 않습니다.</td>
 </tr>
 <tr>
