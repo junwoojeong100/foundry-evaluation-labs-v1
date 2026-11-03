@@ -586,7 +586,15 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 <tbody>
 <tr>
 <td>evaluation ID·run ID를 모릅니다.</td>
-<td><a href="index.html#baseline-identifiers">06의 전체 <code>native-evals</code> 명령</a>으로 조회합니다. evaluation은 <code>eval_...</code>, 기준선은 완료된 버전 1의 <code>evalrun_...</code>입니다.</td>
+<td><a href="index.html#baseline-identifiers">06의 전체 <code>native-evals</code> 명령</a>으로 조회하거나 포털의 baseline run 페이지 주소(<code>…/build/evaluations/eval_…/run/evalrun_…</code>)에서 읽습니다. evaluation은 <code>eval_...</code>, 기준선은 완료된 버전 1의 <code>evalrun_...</code>입니다.</td>
+</tr>
+<tr>
+<td><code>native-evals</code>가 <code>No evaluation with that exact name exists in this project</code>로 멈춥니다.</td>
+<td><code>--name</code>이 포털의 평가 이름과 다릅니다. 이름을 바꾸지 않았다면 <code>eval-3n27of15</code> 같은 자동 이름이 붙습니다. <strong>Evaluations</strong>의 정확한 이름을 복사하거나 <a href="index.html#baseline-identifiers">06</a>처럼 baseline run 페이지 주소에서 ID를 읽습니다.</td>
+</tr>
+<tr>
+<td>09의 helper가 <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code>로 멈춥니다.</td>
+<td>baseline run이 Agent 버전을 고정하지 않았습니다. <code>native-evals</code>에서 <code>agent_version</code>이 <code>null</code>이며, 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 <a href="index.html#prepare">05–06</a>처럼 새 기준선을 제출합니다. Version 1을 체크해 Review가 <code>lab-ko-iq: v1</code>로 보이게 하고 Judge는 <code>lab-judge-…</code>를 선택합니다. 이후 새 평가의 ID를 사용합니다.</td>
 </tr>
 <tr>
 <td>같은 이름의 평가가 여러 개입니다.</td>

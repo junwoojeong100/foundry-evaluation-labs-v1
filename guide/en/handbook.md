@@ -1039,7 +1039,7 @@ An **evaluator defines what to score**; the **Judge is the AI model doing the sc
 1. In **Configure agents**, leave the custom prompt override unset. Use **`{{item.query}}` only** as user input. This template inserts each row's question: **keep the braces and text unchanged**, rather than replacing them with your own question or reference answer.
 2. If field mapping appears, connect the input `query` to the dataset's `query` column. Mapping pairs **an input field with a data column**. Do not append `context` or `ground_truth` to the Agent input.
 3. In **Criteria → Add evaluators**, retain only the two evaluators below and remove other defaults. TaskAdherence appears in the catalog as **Task adherence** (or **Task Adherence**). Do not select **Task completion** or **Task navigation efficiency**; they are different evaluators.
-4. Open each evaluator's settings, set its pass rule below, and select **Apply**. Under **Judge model**, select the **deployment name identified by `JUDGE_DEPLOYMENT`** in your own `.lab/lab-en/.env`.
+4. Open each evaluator's settings, set its pass rule below, and select **Apply**. Under **Judge model**, select the **deployment name identified by `JUDGE_DEPLOYMENT`** in your own `.lab/lab-en/.env`. It is the `lab-judge-…` deployment (gpt-6-luna), not the Optimizer's `lab-planner-…` (gpt-5.5).
 
 | Evaluator | Meaning | Setting |
 |---|---|---|
@@ -1108,8 +1108,8 @@ An **evaluation is the saved configuration**; a **run is one execution of it**. 
 
 ### Review and submit once in Microsoft Foundry {#baseline-submit}
 
-1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. If you are unsure of an evaluator's threshold, select **Edit** beside it and check Relevance **4** and TaskAdherence **1**.
-2. Name the evaluation **`lab-en-learning-loop`** and, if available, name the run **`baseline-v1`**. If you choose a different name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.
+1. In **Review**, confirm **v1 + original dev12 + query-only input + two evaluators + your Luna Judge**. The **Targets** card must read **`lab-en-iq: v1`**. If it shows only `lab-en-iq`, the version is not pinned, so select **Back** (or **Edit**) and tick Version 1; 09 refuses a baseline without a pinned version. If you are unsure of an evaluator's threshold or Judge, select **Edit** beside it and check Relevance **4**, TaskAdherence **1**, and the `lab-judge-…` Judge, not `lab-planner-…`.
+2. Name the evaluation **`lab-en-learning-loop`**. Review has no run-name field: the portal names the run after the Agent (for example `lab-en-iq`), and later steps use IDs, not run names. If you choose a different evaluation name, remember it and use the same name for later lookup. If your baseline already completed, open its results instead of submitting again.
 3. For an authorized job not already submitted, select **Submit** once. The run is complete only after you confirm **Completed and all 12 results**, not immediately after clicking.
 
 <figure class="portal-shot" id="portal-evaluation-review">
@@ -1131,18 +1131,22 @@ If it remains unfinished after 30 minutes or your shorter authorized wait, check
 
 ### Retrieve actual evaluation and run IDs in your terminal {#baseline-identifiers}
 
-Use this **read-only command** to retrieve actual evaluation and run IDs. If you chose a different name, use that exact name with `--name`.
+Use this **read-only command** to retrieve actual evaluation and run IDs. `--name` must match the evaluation name shown under **Evaluations** in the portal **exactly**. If you chose a different name, or the portal gave an automatic one (for example `eval-3n27of15`), use that name.
 
 ```sh
 python -m lab --config .lab/lab-en/.env native-evals --name lab-en-learning-loop
 ```
 
-If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Keep these **two IDs separate**; 09 needs them, and you can rerun this command to read them again. This command submits nothing.
+**Prefer the portal?** Open **Evaluations → your evaluation → the baseline run**. The page address contains `/build/evaluations/eval_…/run/evalrun_…`: the `eval_…` part is the `evaluation_id` and the `evalrun_…` part is the baseline `run_id`.
+
+If several evaluations have the same name, compare their portal creation times, Agents, and runs to select yours. Keep these **two IDs separate**; 09 needs them, and you can read them again at any time. Reading them submits nothing.
 
 | Value | Selection rule | Placeholder in 09 |
 |---|---|---|
 | `evaluation_id` · `eval_...` | The evaluation you created | `YOUR_EVALUATION_ID` |
 | `run_id` · `evalrun_...` | That evaluation's run with **`agent_version: "1"` and `status: completed`** | `YOUR_BASELINE_RUN_ID` |
+
+If `agent_version` is `null` or empty, that run did not pin Version 1, and 09 refuses it with `ERROR: Pin explicit numeric or draft agent versions, not latest.` Do not use it; follow the [troubleshooting row](troubleshooting.md#evaluation-resume). Evaluations named `agent_optimization_eval_…` and Optimizer job IDs belong to the Optimizer, not to your baseline.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>Optional · how it works: evaluation submission versus ID lookup</summary>
@@ -1397,8 +1401,8 @@ The helper below is a supplied Python program. It uses the official Azure AI Pro
 
 | Placeholder | Where to find your value |
 |---|---|
-| `YOUR_EVALUATION_ID` | The selected `evaluation_id` from the `native-evals` output in 06 |
-| `YOUR_BASELINE_RUN_ID` | That evaluation's completed version-1 `run_id`, not an Optimizer job ID |
+| `YOUR_EVALUATION_ID` | The selected `evaluation_id` from the `native-evals` output, or the `eval_…` part of the baseline run page address, in 06 |
+| `YOUR_BASELINE_RUN_ID` | That evaluation's completed version-1 `run_id` (`agent_version: "1"`), not an Optimizer job ID |
 
 `--config` reads the project endpoint and subscription from your `.env`, checks that the signed-in user, tenant, and subscription match it, and saves the receipt under that environment's `artifacts/foundry-evaluations/`. Replace both values and execute this single-line command. Submitting a new run incurs charges.
 

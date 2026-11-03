@@ -229,7 +229,9 @@ The [`scripts/add_foundry_eval_run.py` helper in 09](handbook.md#decision) copie
 
 | Symptom | Action |
 |---|---|
-| Evaluation ID or run ID is unknown | Use [06's complete `native-evals` command](handbook.md#baseline-identifiers). Evaluation uses `eval_...`; the baseline is a completed version-one `evalrun_...`. |
+| Evaluation ID or run ID is unknown | Use [06's complete `native-evals` command](handbook.md#baseline-identifiers), or read them from the baseline run's page address in the portal (`…/build/evaluations/eval_…/run/evalrun_…`). Evaluation uses `eval_...`; the baseline is a completed version-one `evalrun_...`. |
+| `native-evals` stops with `No evaluation with that exact name exists in this project` | `--name` differs from the portal's evaluation name. An evaluation you did not rename has an automatic name such as `eval-3n27of15`. Copy the exact name from **Evaluations**, or read the IDs from the baseline run's page address as in [06](handbook.md#baseline-identifiers). |
+| 09's helper stops with `ERROR: Pin explicit numeric or draft agent versions, not latest.` | The baseline run did not pin its Agent version: `agent_version` is `null` in `native-evals`, usually because no Version checkbox was ticked. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in [05–06](handbook.md#prepare): tick Version 1 so Review reads `lab-en-iq: v1`, and choose the `lab-judge-…` Judge. Then use the new evaluation's IDs. |
 | Several evaluations have the same name | Compare creation time, Agent, dataset and runs; do not select by name alone. |
 | Helper exits with Still running | If the receipt has a run ID, resume collection with the identical command. |
 | Receipt has no run ID, or a remote run with the same name exists | Preserve the original and check submission acceptance and the actual run. Do not delete receipts, rename or automatically resubmit. |

@@ -1048,6 +1048,23 @@ class DocumentationTests(unittest.TestCase):
                 self.assertRegex(criteria, r"Probability_threshold[^\n]*0\.5")
                 self.assertIn("Task completion", criteria)
 
+    def test_baseline_ids_can_be_read_in_the_portal_and_an_unpinned_baseline_is_explained(self):
+        message = "Pin explicit numeric or draft agent versions, not latest."
+        for language in ("en", "ko"):
+            folder = ROOT / "guide" / ("en" if language == "en" else "")
+            source = self.source(language)
+            troubleshooting = (folder / "troubleshooting.md").read_text(encoding="utf-8")
+            with self.subTest(language=language):
+                lookup = source.split("{#baseline-identifiers}", 1)[1].split("<details", 1)[0]
+                self.assertIn("/build/evaluations/eval_", lookup)
+                self.assertIn("/run/evalrun_", lookup)
+                self.assertIn(message, lookup)
+                review = source.split("{#baseline-submit}", 1)[1].split("<figure", 1)[0]
+                self.assertIn(f"lab-{language}-iq: v1", review)
+                self.assertNotIn("baseline-v1", review)
+                self.assertIn(message, troubleshooting)
+                self.assertIn("eval-3n27of15", troubleshooting)
+
     def test_verified_model_roles_and_fixed_release_boundaries_are_visible(self):
         for language in ("en", "ko"):
             source = self.source(language)

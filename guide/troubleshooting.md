@@ -229,7 +229,9 @@ Unable to create data source configuration from item schema
 
 | 증상 | 조치 |
 |---|---|
-| evaluation ID·run ID를 모릅니다. | [06의 전체 `native-evals` 명령](handbook.md#baseline-identifiers)으로 조회합니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
+| evaluation ID·run ID를 모릅니다. | [06의 전체 `native-evals` 명령](handbook.md#baseline-identifiers)으로 조회하거나 포털의 baseline run 페이지 주소(`…/build/evaluations/eval_…/run/evalrun_…`)에서 읽습니다. evaluation은 `eval_...`, 기준선은 완료된 버전 1의 `evalrun_...`입니다. |
+| `native-evals`가 `No evaluation with that exact name exists in this project`로 멈춥니다. | `--name`이 포털의 평가 이름과 다릅니다. 이름을 바꾸지 않았다면 `eval-3n27of15` 같은 자동 이름이 붙습니다. **Evaluations**의 정확한 이름을 복사하거나 [06](handbook.md#baseline-identifiers)처럼 baseline run 페이지 주소에서 ID를 읽습니다. |
+| 09의 helper가 `ERROR: Pin explicit numeric or draft agent versions, not latest.`로 멈춥니다. | baseline run이 Agent 버전을 고정하지 않았습니다. `native-evals`에서 `agent_version`이 `null`이며, 보통 Version 체크 없이 제출한 경우입니다. 저장된 평가는 수정할 수 없고 실패한 명령은 아무것도 제출하지 않았습니다. 그 평가는 보존하고 [05–06](handbook.md#prepare)처럼 새 기준선을 제출합니다. Version 1을 체크해 Review가 `lab-ko-iq: v1`로 보이게 하고 Judge는 `lab-judge-…`를 선택합니다. 이후 새 평가의 ID를 사용합니다. |
 | 같은 이름의 평가가 여러 개입니다. | 생성 시각·Agent·데이터·run을 대조합니다. 이름만으로 임의 선택하지 않습니다. |
 | helper가 Still running으로 끝났습니다. | receipt에 run ID가 있으면 같은 명령으로 수집을 재개합니다. |
 | receipt에 run ID가 없거나 같은 이름의 원격 run이 있습니다. | 원본을 보관하고 제출 수락 여부와 실제 run을 확인합니다. receipt 삭제·이름 변경·자동 재제출을 하지 않습니다. |

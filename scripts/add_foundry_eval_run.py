@@ -119,7 +119,13 @@ def candidate_source(baseline: dict, *, evaluation_id: str, version: str) -> dic
         raise ValueError("The baseline must identify a Foundry agent.")
     original = str(target.get("version", ""))
     pinned_version = r"(?:[1-9]\d*|draft-[1-9]\d*)"
-    if not re.fullmatch(pinned_version, original) or not re.fullmatch(pinned_version, version):
+    if not re.fullmatch(pinned_version, original):
+        raise ValueError(
+            "Pin explicit numeric or draft agent versions, not latest. This baseline run did not pin its agent "
+            f"version (target.version is {target.get('version')!r}). Submit a new baseline evaluation with "
+            "Version 1 selected explicitly (guide steps 05-06) and use that evaluation's IDs."
+        )
+    if not re.fullmatch(pinned_version, version):
         raise ValueError("Pin explicit numeric or draft agent versions, not latest.")
     if original == version:
         raise ValueError("The candidate version must differ from the baseline.")
