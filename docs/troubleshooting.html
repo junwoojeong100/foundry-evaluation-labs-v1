@@ -485,7 +485,7 @@
 </tr>
 <tr>
 <td>Setup remains <code>created_not_retrieval_tested</code></td>
-<td>Only creation is complete. Use <a href="index.html#agent-search-probe">03's <code>iq probe</code> command</a> to confirm <code>retrieval_verified</code> and actual references.</td>
+<td>This is expected right after <code>iq prepare</code>: creation is complete, but <code>iq probe</code> has not succeeded yet. Run <a href="index.html#agent-search-probe">03's <code>iq probe</code> command</a> to confirm <code>retrieval_verified</code> and actual references. If the probe ended with <code>ERROR:</code>, the <code>status</code> is unchanged; fix the cause and rerun with a differently worded <code>--query</code>.</td>
 </tr>
 <tr>
 <td>Direct retrieval succeeds but the Agent tool returns 403</td>
@@ -594,7 +594,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 </tr>
 <tr>
 <td>09's helper stops with <code>ERROR: Pin explicit numeric or draft agent versions, not latest.</code></td>
-<td>The baseline run did not pin its Agent version: <code>agent_version</code> is <code>null</code> in <code>native-evals</code> (and <code>data_source.target.version</code> is <code>null</code> in the run's Raw JSON), usually because no Version checkbox was ticked. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in <a href="index.html#prepare">05–06</a>: tick Version 1 so Review shows the version after the Agent name (<code>lab-en-iq: 1</code>), and choose the <code>lab-judge-…</code> Judge. Then use the new evaluation's IDs.</td>
+<td>The baseline run did not pin its Agent version: <code>agent_version</code> is <code>null</code> in <code>native-evals</code> (and <code>data_source.target.version</code> is <code>null</code> in the run's Raw JSON), because no Agent version was selected when the evaluation was created. A saved evaluation cannot be edited, and the failed command submitted nothing. Keep that evaluation and submit a new baseline as in <a href="index.html#prepare">05–06</a>: tick Version 1 so Review shows the version after the Agent name (<code>lab-en-iq: 1</code>), and choose the <code>lab-judge-…</code> Judge. Then use the new evaluation's IDs.</td>
 </tr>
 <tr>
 <td>Several evaluations have the same name</td>
@@ -652,7 +652,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 1 --confirm
 <td>Check New Foundry, prompt Agent, project permissions, Preview availability and <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models">role-specific model support</a>.</td>
 </tr>
 <tr>
-<td>The authorized wait ends while the job is active</td>
+<td>The job-wait limit recorded in 02 (one hour on the quick path) ends while the job is active</td>
 <td>Inspect the same job ID's state, errors, and usage in Optimization runs; record follow-up checks. Stopping your wait is not cancellation. Do not submit a replacement job.</td>
 </tr>
 <tr>

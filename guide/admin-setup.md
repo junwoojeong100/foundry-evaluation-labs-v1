@@ -40,12 +40,14 @@ CLI·SDK·포털의 계정·테넌트·구독을 각각 확인하고 같은 본�
 
 ## 모델 역할과 실제 배포를 확인합니다 {#prepare}
 
-| 역할 | 설정 키 | 기본 모델·버전 |
-|---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100입니다. |
-| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100입니다. |
-| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, 같은 Global Standard 100 배포를 사용합니다. |
-| 정책 embedding | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10입니다. |
+| 역할 | 설정 키 | 포털의 배포 이름 | 기본 모델·버전 |
+|---|---|---|---|
+| Agent | `MODEL_DEPLOYMENT` | `lab-agent-…` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100입니다. |
+| 관리형 평가 Judge | `JUDGE_DEPLOYMENT` | `lab-judge-…` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100입니다. |
+| Optimizer·검색 planner | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | `lab-planner-…` | **`gpt-5.5` / `2026-04-24`**, 같은 Global Standard 100 배포를 사용합니다. |
+| 정책 embedding | `EMBEDDING_DEPLOYMENT` | `lab-embedding-…` | **`text-embedding-3-large` / `1`**, Global Standard 10입니다. |
+
+배포 이름은 `lab-agent-`처럼 고정된 앞부분과 환경마다 달라지는 끝 8자리(`lab-judge-0a1b2c3d`의 `0a1b2c3d`)로 이루어집니다. 기본 설정에서는 한 환경의 네 배포가 끝 8자리를 공유하며 프로젝트 이름(`proj-fev11-0a1b2c3d`)의 끝 8자리와도 같습니다. 포털에서는 앞부분으로 역할을 구분하고, 정확한 이름은 `.env`와 대조합니다.
 
 숫자는 ARM 요청 용량 단위이며 모든 모델에서 같은 TPM을 뜻하지 않습니다. 이것은 사용 가능한지 확인해야 할 기본 계획이지 모든 구독의 배포 보장이 아닙니다. 구독의 쿼터 Tier와 네 모델의 남은 할당량은 [02의 할당량 점검](handbook.md#resources-prereq-quota)으로 미리 확인하며, 무료 체험·Free Tier 구독은 네 모델의 할당량이 없습니다. Microsoft Foundry의 **Models + endpoints/Build → Models**에서 배포 이름·모델·버전·상태를 대조합니다. `.env`에는 모델 제품명이 아니라 실제 배포 이름이 들어갑니다.
 
@@ -100,7 +102,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 
 이 실습에서는 포털 Promote를 사용하지 않고 09의 CLI로 v2를 생성합니다. 포털에서 먼저 승격하면 CLI의 로컬·원격 소유권 확인과 맞지 않을 수 있습니다. v1·v2는 Agent 전체 구성 버전이며 같은 Agent·모델·도구·출력 설정에서 지침만 달라야 합니다.
 
-평가 ID는 [06의 전체 조회 명령](handbook.md#baseline-identifiers)으로 찾습니다. `.env` 경로와 정확한 평가 이름을 포함한 명령을 사용합니다. 재평가 helper는 기준선 data source를 복사하고 **원격** 계약을 검증합니다. 오래된 로컬 `JUDGE_DEPLOYMENT`로 원격 정의를 바꾸지 않습니다.
+평가 ID는 [06의 전체 조회 명령](handbook.md#baseline-identifiers)으로 찾습니다. `.env` 경로와 정확한 평가 이름을 포함한 명령을 사용합니다. 재평가 helper는 기준선 data source를 복사하고 **원격** 계약(threshold·응답 매핑·두 평가기가 같은 Judge를 쓰는지)을 검증합니다. Judge 배포가 `lab-judge-…`인지는 이 검증에 포함되지 않으므로 05–06에서 직접 확인합니다. 오래된 로컬 `JUDGE_DEPLOYMENT`로 원격 정의를 바꾸지 않습니다.
 
 ## 비교 조건을 고정합니다 {#scope}
 

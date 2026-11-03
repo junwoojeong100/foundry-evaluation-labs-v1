@@ -40,12 +40,14 @@ If an older `.env` lacks language, it is inferred from the `lab-en`/`lab-ko` rul
 
 ## Verify model roles and actual deployments {#prepare}
 
-| Role | Configuration key | Default model/version |
-|---|---|---|
-| Agent | `MODEL_DEPLOYMENT` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100 |
-| Managed evaluation Judge | `JUDGE_DEPLOYMENT` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100 |
-| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | **`gpt-5.5` / `2026-04-24`**, one shared Global Standard 100 deployment |
-| Policy embeddings | `EMBEDDING_DEPLOYMENT` | **`text-embedding-3-large` / `1`**, Global Standard 10 |
+| Role | Configuration key | Deployment name in the portal | Default model/version |
+|---|---|---|---|
+| Agent | `MODEL_DEPLOYMENT` | `lab-agent-…` | **`gpt-6-sol` / `2026-09-22`**, Global Standard 100 |
+| Managed evaluation Judge | `JUDGE_DEPLOYMENT` | `lab-judge-…` | **`gpt-6-luna` / `2026-09-22`**, Global Standard 100 |
+| Optimizer/search planner | `OPTIMIZER_DEPLOYMENT` / `IQ_PLANNER_DEPLOYMENT` | `lab-planner-…` | **`gpt-5.5` / `2026-04-24`**, one shared Global Standard 100 deployment |
+| Policy embeddings | `EMBEDDING_DEPLOYMENT` | `lab-embedding-…` | **`text-embedding-3-large` / `1`**, Global Standard 10 |
+
+The start of each deployment name is always the same, and only the last 8 characters (the `0a1b2c3d` in `lab-judge-0a1b2c3d`) differ per environment. With the default setup, the four deployments of one environment share those 8 characters, and they also match the end of the project name (`proj-fev11-0a1b2c3d`). In the portal, tell the roles apart by the start of the name and match the exact name against `.env`.
 
 Numbers are requested ARM capacity units, not a universal TPM conversion. These defaults require availability checks; they are not a deployment guarantee for every subscription. Check the subscription's quota tier and the remaining quota for the four models ahead of time with the [quota pre-check in 02](handbook.md#resources-prereq-quota); free-trial and Free Tier subscriptions have no quota for these four models. Inspect deployment names, model names, versions, and readiness in Microsoft Foundry **Models + endpoints/Build → Models**. `.env` contains actual deployment names rather than product names.
 
@@ -100,7 +102,7 @@ python -m lab --config .lab/lab-en/.env native-agent --version 2 --prompt .lab/l
 
 Do not use portal Promote in this lab; create v2 with 09's CLI. Promoting first can conflict with the CLI's local/remote ownership checks. V1/v2 are complete Agent versions; the same Agent, model, tools, and output settings must differ only in instructions.
 
-Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifiers), including the `.env` path and exact evaluation name. The reevaluation helper copies the baseline data source and checks the **remote** contract. Do not replace the remote definition with a stale local `JUDGE_DEPLOYMENT`.
+Retrieve IDs with [06's complete lookup command](handbook.md#baseline-identifiers), including the `.env` path and exact evaluation name. The reevaluation helper copies the baseline data source and checks the **remote** contract: the thresholds, the response mappings, and that both evaluators use the same Judge deployment. It does not check that the Judge is `lab-judge-…`, so confirm that yourself in 05–06. Do not replace the remote definition with a stale local `JUDGE_DEPLOYMENT`.
 
 ## Freeze the comparison conditions {#scope}
 

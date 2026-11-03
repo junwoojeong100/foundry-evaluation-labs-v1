@@ -491,6 +491,7 @@ python -m lab bootstrap setup --environment lab-ko
 
 1. **계획:** 지역은 `northcentralus`, 모델은 이 실습의 고정 4개 배포이며 자동으로 다른 모델·지역을 선택하지 않습니다. Search와 로그도 이후 실습에 필요하므로 함께 준비합니다.
     - **네 배포의 역할:** **Agent(답변), Judge(채점), Optimizer/검색 planner(지침 개선·검색 계획), embedding(검색용 숫자 변환)**
+    - **배포 이름:** `lab-agent-…`, `lab-judge-…`, `lab-planner-…`, `lab-embedding-…`처럼 앞부분은 항상 같고 끝 8자리만 환경마다 다릅니다. 역할과 이름의 짝은 [02의 대응표](#resources-runtime-check)에 있습니다.
     - 모델을 직접 만드는 실습이 아니라 준비된 모델을 호출할 환경을 만듭니다.
 2. **신원·공급자·권한·모델·할당량 검사:** 생성 전에 읽기 전용으로 확인합니다. 막히면 `BLOCKED`와 `reason`을 표시하고 자원을 만들지 않습니다. 원인을 해결한 뒤 같은 명령을 다시 실행하며, 로그인 계정·구독·테넌트를 바꾼 경우에만 새 환경 이름(`lab-ko-02`)을 사용합니다.
 3. **실제 승인 내용 입력:** 준비 검사가 통과하면 아래 다섯 가지를 입력합니다.
@@ -512,6 +513,8 @@ python -m lab bootstrap setup --environment lab-ko
 
 확인 전에는 Microsoft Azure 자원을 생성하지 않으며 Enter로 취소할 수 있습니다. **확인 후에는 실제 생성·과금이 시작될 수 있습니다.** 입력한 예산·호출 수·사용 시간은 자동 과금 차단 장치가 아니며, 삭제·학습·자동 재시도 승인도 아닙니다.
 {: .note .warning}
+
+**03–09에서 말하는 "02에서 입력한 한도"**는 위의 승인 통화·예산 금액·최대 사용 시간·모델 호출 한도와, 빠른 경로가 기록하는 후보 최대 2개·작업 대기 최대 1시간입니다. 03–09의 제출과 호출은 이 한도 안에서 하며, 자동으로 막아 주지 않으므로 직접 지킵니다.
 
 **정상 결과**
 
@@ -698,7 +701,16 @@ ARM 템플릿에 전달하는 실제 입력도 확인합니다. `names`·`models
 1. [Azure 포털](https://portal.azure.com) → **Resource groups**에서 `config.json`의 `names.resource_group`을 검색합니다. 구독·지역·리소스 목록을 확인합니다.
 2. [Microsoft Foundry](https://ai.azure.com)를 열고 **New Foundry**를 사용합니다. **Select a project to continue**가 나타나면 `names.project`와 같은 프로젝트를 선택하고 **Let's go**를 누릅니다. 환영 안내가 나타나면 읽고 **Close**로 닫습니다. 이미 New Foundry라면 좌측 상단 프로젝트 선택을 사용합니다. Classic의 hub 기반 프로젝트와 혼동하지 않습니다.
 3. 프로젝트의 **Home**(일부 UI의 Overview)에서 **Project endpoint**를 확인합니다. `.env`의 `AZURE_AI_PROJECT_ENDPOINT`와 같은 `https://계정명.services.ai.azure.com/api/projects/프로젝트명` 형식이어야 합니다.
-4. **Models + endpoints** 또는 **Build → Models**에서 `.env`의 `MODEL_DEPLOYMENT`, `JUDGE_DEPLOYMENT`, `OPTIMIZER_DEPLOYMENT`, `EMBEDDING_DEPLOYMENT`에 대응하는 실제 배포를 확인합니다. 메뉴 명칭이 달라지면 [화면 위치 안내](admin-setup.md#prepare)를 참고합니다.
+4. **Models + endpoints** 또는 **Build → Models**에서 배포 네 개를 확인합니다. 이름의 앞부분은 항상 같고 끝 8자리(`lab-judge-0a1b2c3d`의 `0a1b2c3d`)만 환경마다 다릅니다. 기본 설정에서는 한 환경의 네 배포가 끝 8자리를 공유하며, 프로젝트 이름(`proj-fev11-0a1b2c3d`)의 끝 8자리와도 같습니다. 따라서 앞부분으로 역할을 구분하고, 정확한 이름은 `.env`와 대조합니다. 메뉴 명칭이 달라지면 [화면 위치 안내](admin-setup.md#prepare)를 참고합니다.
+
+| 역할 | `.env` 항목 | 포털의 배포 이름 | 모델 |
+|---|---|---|---|
+| Agent(답변) | `MODEL_DEPLOYMENT` | `lab-agent-…` | gpt-6-sol |
+| Judge(채점) · 평가 모델 | `JUDGE_DEPLOYMENT` | `lab-judge-…` | gpt-6-luna |
+| Optimizer · 검색 planner · 최적화 모델 | `OPTIMIZER_DEPLOYMENT`·`IQ_PLANNER_DEPLOYMENT` | `lab-planner-…` | gpt-5.5 |
+| embedding(검색용 숫자 변환) | `EMBEDDING_DEPLOYMENT` | `lab-embedding-…` | text-embedding-3-large |
+
+Optimizer와 검색 planner는 `lab-planner-…` 배포 하나를 함께 씁니다. 05의 Judge model과 08의 Evaluation model은 모두 `lab-judge-…`이고, 08의 Optimization model은 `lab-planner-…`입니다.
 
 <figure class="portal-shot" id="portal-created-resources">
 <img src="../web/assets/portal/23-resource-group.png" alt="리소스 그룹 Overview에서 Microsoft Foundry·프로젝트·Search·관측 리소스와 배포 상태를 확인하는 화면입니다." width="1440" height="1000" loading="lazy">
@@ -763,7 +775,7 @@ python -m lab --config .lab/lab-ko/.env preflight
 <div class="lab-concept" data-learning-frame="agent">
 <p><strong>이 단계에서 하는 일:</strong> 합성 정책을 검색하는 읽기 전용 도구와 비교 기준인 v1 Agent를 연결합니다.</p>
 <p><strong>중요한 이유:</strong> 모델이 기억으로 답하는 것과 실제 정책을 검색해 답하는 것은 다릅니다. 검색이 사용자 권한으로 성공해도 Agent의 관리 ID 권한은 별도로 확인해야 합니다.</p>
-<p><strong>진행 방법·위치:</strong> 터미널에서 모델·검색·Agent를 준비하고 Microsoft Foundry에서 지침·도구와 실제 응답을 확인합니다. 데이터 전송·호출은 승인된 범위에서 한 번씩 수행합니다.</p>
+<p><strong>진행 방법·위치:</strong> 터미널에서 모델·검색·Agent를 준비하고 Microsoft Foundry에서 지침·도구와 실제 응답을 확인합니다. 데이터 전송·호출은 02에서 입력한 한도(예산·모델 호출 수) 안에서 한 번씩 수행합니다.</p>
 </div>
 
 **실행 순서:** [터미널 · 모델 확인](#agent-smoke) → [정책 업로드](#agent-search-prepare) → [검색 확인](#agent-search-probe) → [v1 생성](#agent-create) → [Microsoft Foundry · 응답 확인](#agent-playground).
@@ -819,7 +831,7 @@ python -m lab --config .lab/lab-ko/.env smoke --run-id model-smoke --confirm
 python -m lab --config .lab/lab-ko/.env iq prepare --confirm
 ```
 
-출력의 **`uploaded_documents: 8`**을 확인합니다. 프로그램이 검색 인덱스(검색용 문서 모음), knowledge base(지식 베이스), MCP 연결을 준비합니다. **MCP(Model Context Protocol)는 Agent와 도구를 연결하는 규약**입니다. 여기서는 정책을 읽는 검색 도구만 연결하며 내부 코드를 수정할 필요는 없습니다.
+출력의 **`uploaded_documents: 8`**을 확인합니다. 출력의 **`status`는 `created_not_retrieval_tested`가 정상**입니다. 인덱스·knowledge base·연결은 만들었고 검색은 아직 시험하지 않았다는 뜻이며, 다음 단계의 `iq probe`가 성공해야 `retrieval_verified`가 됩니다. 프로그램이 검색 인덱스(검색용 문서 모음), knowledge base(지식 베이스), MCP 연결을 준비합니다. **MCP(Model Context Protocol)는 Agent와 도구를 연결하는 규약**입니다. 여기서는 정책을 읽는 검색 도구만 연결하며 내부 코드를 수정할 필요는 없습니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 정책 업로드와 검색 연결</summary>
@@ -859,7 +871,7 @@ embedding 호출도 감춰진 로컬 점수 계산이 아닙니다. 다음 함�
 python -m lab --config .lab/lab-ko/.env iq probe --confirm
 ```
 
-**`status: retrieval_verified`**와 비어 있지 않은 출처를 확인합니다. `created_not_retrieval_tested`는 생성만 성공했다는 뜻입니다. 오류가 발생하면 기록을 지우지 않고 [첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure)와 [검색 오류 해결](troubleshooting.md#knowledge)을 확인합니다. `iq prepare`·`iq probe`가 같은 명령을 거부하면 명령별 복구 절차를 따릅니다.
+성공하면 **`status: retrieval_verified`**와 비어 있지 않은 출처(`references`)가 출력됩니다. 기록된 `status`는 probe가 성공하기 전까지 `created_not_retrieval_tested`(생성만 성공)로 남습니다. 실패하면 JSON 대신 마지막 줄에 `ERROR: …`가 나오고 `status`는 바뀌지 않으며, 같은 질문 문장으로는 다시 실행되지 않습니다. 기록을 지우지 말고 오류의 원인을 해결한 뒤 `--query`의 질문 문장을 바꿔 다시 실행합니다([첫 호출 실패 후 복구](troubleshooting.md#knowledge-first-failure), [검색 오류 해결](troubleshooting.md#knowledge)). `iq prepare`·`iq probe`가 같은 명령을 거부하면 명령별 복구 절차를 따릅니다.
 
 아래 `POST .../retrieve`의 질문·출처 요청과 실제 응답 검사를 읽습니다. **직접 검색 성공은 로그인한 사용자 경로의 근거**이며, 프로젝트 관리 ID의 Agent 도구 호출 근거와 같지 않습니다.
 
@@ -913,7 +925,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 1 --confirm
 <figcaption><strong>버전·지침·Knowledge를 확인합니다.</strong> 위쪽 Version을 1로 선택하고 왼쪽 Model·Instructions와 아래쪽 Knowledge를 확인합니다. 정책 MCP 연결은 Knowledge에 표시되며 오른쪽 Chat에서 질문을 입력합니다. <a href="../web/assets/portal/27-agent-configuration.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-포털에서 **Build → Agents → lab-ko-iq → 버전 1**을 엽니다. 표시 이름은 명령 출력이 기준입니다. 이 단계에서는 Model·Instructions·Knowledge를 편집하거나 새 버전으로 저장하지 않습니다. **Test/Playground**에서 다음 질문을 한 번 보냅니다.
+포털에서 **Build → Agents → lab-ko-iq → 버전 1**을 엽니다. Agent 이름이 다르게 보이면 `native-agent` 출력의 `agent_name`과 같은 이름을 고릅니다. 이 단계에서는 Model·Instructions·Knowledge를 편집하거나 새 버전으로 저장하지 않습니다. **Test/Playground**에서 다음 질문을 한 번 보냅니다.
 
 > 2026년 9월에 처음 월 구독을 결제했습니다. 환불 신청 조건이 궁금합니다.
 
@@ -1046,10 +1058,10 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 | Relevance | 질문에 관련된 답변인지, **1–5점** | **Threshold 4**: 4·5점은 통과, 1–3점은 미통과입니다. |
 | TaskAdherence | 과제 지시를 따르는지, 결과는 **이진 0 또는 1(Pass/Fail)** | **Threshold 1**: 결과가 1일 때만 통과입니다. 4가 아닙니다. |
 
-**TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.** 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. **1**을 입력하고 4는 입력하지 않습니다. **Probability_threshold**(0–1)도 보이면 이 실습을 검증한 값인 **0.5**를 입력하고, 07의 Optimizer를 포함해 TaskAdherence를 설정하는 모든 곳에서 같은 값을 씁니다. 다른 칸은 기본값으로 둡니다. [09](#decision)의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. **Task completion**도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.
+**TaskAdherence의 설정 화면에는 Relevance와 같은 Threshold 입력(1–5)이 나옵니다.** 평가기 카탈로그가 두 평가기에 같은 임계값 범위를 정의하기 때문이며, TaskAdherence의 결과는 카탈로그 카드의 "higher scores" 문구와 달리 0 또는 1뿐입니다. **1**을 입력하고 4는 입력하지 않습니다. **Probability_threshold**(0–1)도 보이면 **0.5**를 입력합니다. 이 실습의 기록된 실행들이 쓴 값입니다. 08의 Optimizer를 포함해 TaskAdherence를 설정하는 모든 곳에서 같은 값을 씁니다. 다른 칸은 기본값으로 둡니다. [09](#decision)의 재평가 helper는 기준선의 TaskAdherence threshold가 1이 아니면 중단하므로 06에서 제출하기 전에 확인합니다. **Task completion**도 이진 Pass/Fail 평가기이지만 1–5 threshold 설정이 없으며 이 실습에서는 쓰지 않습니다.
 {: .note}
 
-응답(`response`)의 서비스 자동 매핑은 그대로 유지합니다. 응답 칸이 **Unassigned**이거나 자신의 Judge가 목록에 없다면 [매핑 점검](admin-setup.md#evaluation-mapping)과 [평가 문제 해결](troubleshooting.md#evaluation)을 따라 Agent·데이터 열·배포를 직접 대조합니다. 해결 전에는 임의 값을 넣거나 제출하지 않습니다.
+응답(`response`)의 서비스 자동 매핑은 그대로 유지합니다. 응답 칸이 **Unassigned**이거나 Judge model 목록에 `lab-judge-…` 배포가 없다면 [매핑 점검](admin-setup.md#evaluation-mapping)과 [평가 문제 해결](troubleshooting.md#evaluation)을 따라 Agent·데이터 열·배포를 직접 대조합니다. 해결 전에는 임의 값을 넣거나 제출하지 않습니다.
 
 <details class="guide-details implementation-notes" markdown="1">
 <summary>선택 · 내부 동작: 평가기·Judge·응답 매핑</summary>
@@ -1063,7 +1075,7 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 |---|---|
 | `evaluator_name: builtin.relevance`, `threshold: 4` | **Criteria → Relevance → Threshold 4 → Apply** |
 | `evaluator_name: builtin.task_adherence`, `threshold: 1` | **Criteria → TaskAdherence → Threshold 1과 Probability_threshold 0.5 → Apply** (09의 helper는 threshold만 검사합니다.) |
-| `initialization_parameters.deployment_name` | **Judge model**에 자신의 `JUDGE_DEPLOYMENT` 배포를 선택합니다. |
+| `initialization_parameters.deployment_name` | **Judge model**에 `lab-judge-…`(`JUDGE_DEPLOYMENT`) 배포를 선택합니다. |
 | `data_mapping.query = {{item.query}}` | **Configure agents → User input**에서 query만 전달합니다. |
 | Relevance의 `{{sample.output_text}}`, TaskAdherence의 `{{sample.output_items}}` | 서비스 생성 응답 매핑입니다. 두 번째 값에는 지침·도구 호출 등 대화 항목이 포함됩니다. JSONL에 같은 이름의 열을 만들지 않습니다. |
 
@@ -1073,17 +1085,17 @@ python -c "import hashlib,pathlib; p=pathlib.Path('data/optimizer/dev.jsonl'); p
 
 </details>
 
-| 역할 | 모델·버전 | 배포 |
+| 역할 | 모델·버전 | 포털의 배포 이름 |
 |---|---|---|
-| Agent | **gpt-6-sol / 2026-09-22** | 자신의 `MODEL_DEPLOYMENT` 값입니다. |
-| 평가 Judge | **gpt-6-luna / 2026-09-22** | 자신의 `JUDGE_DEPLOYMENT` 값입니다. |
-| Optimizer 생성 | **gpt-5.5 / 2026-04-24** | 자신의 `OPTIMIZER_DEPLOYMENT` 값입니다. |
+| Agent | **gpt-6-sol / 2026-09-22** | `lab-agent-…` (`MODEL_DEPLOYMENT`) |
+| 평가 Judge | **gpt-6-luna / 2026-09-22** | `lab-judge-…` (`JUDGE_DEPLOYMENT`) |
+| Optimizer 생성 | **gpt-5.5 / 2026-04-24** | `lab-planner-…` (`OPTIMIZER_DEPLOYMENT`) |
 
-Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer 지원 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인하고 각 역할에 준비한 배포를 선택합니다.
+배포 이름의 앞부분은 항상 같고 끝 8자리만 환경마다 다릅니다([02의 대응표](#resources-runtime-check)). Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer 지원 목록](https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview#models)을 확인하고 각 역할에 준비한 배포를 선택합니다.
 
 <figure class="portal-shot" id="portal-evaluation-criteria">
 <img src="../web/assets/portal/16-evaluation-criteria.png" alt="평가 Criteria에서 Relevance·TaskAdherence와 Judge 배포를 설정하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance와 TaskAdherence의 Threshold를 각각 4와 1로 설정합니다. Judge는 자신의 <code>JUDGE_DEPLOYMENT</code>에 해당하는 배포를 선택합니다. <a href="../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>두 평가기와 Judge를 구분합니다.</strong> Relevance와 TaskAdherence의 Threshold를 각각 4와 1로 설정합니다. Judge는 <code>lab-judge-…</code>(<code>JUDGE_DEPLOYMENT</code>) 배포를 선택합니다. <a href="../web/assets/portal/16-evaluation-criteria.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 **완료 기준:** 아직 제출하지 않은 같은 생성 화면에서 두 평가기 척도·임계값·매핑·실제 Judge를 확인하고 기록했습니다. 원격 평가 정의는 06에서 제출한 뒤 생성됩니다. 이후 재평가는 그 저장된 정의를 사용합니다.
@@ -1108,18 +1120,18 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 
 ### Microsoft Foundry에서 검토하고 한 번 제출합니다 {#baseline-submit}
 
-1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + 자신의 Luna Judge**를 확인합니다. **Targets** 카드에는 Agent 이름 뒤에 버전이 보여야 합니다. **`lab-ko-iq: 1`**(포털 버전에 따라 `v1`로 보일 수 있습니다). `lab-ko-iq`만 보이면 버전이 고정되지 않은 것이므로 **Back**(또는 **Edit**)으로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. 평가기의 threshold나 Judge가 확실하지 않으면 옆의 **Edit**를 선택해 Relevance **4**, TaskAdherence **1**, Judge가 `lab-planner-…`가 아닌 `lab-judge-…`인지 확인합니다.
+1. **Review**에서 **v1 + 원본 dev12 + query 전용 입력 + 두 평가기 + Judge `lab-judge-…`(gpt-6-luna)**를 확인합니다. **Targets** 카드에는 Agent 이름 뒤에 버전이 보여야 합니다. **`lab-ko-iq: 1`**(포털 버전에 따라 `v1`로 보일 수 있습니다). `lab-ko-iq`만 보이면 버전이 고정되지 않은 것이므로 **Targets** 카드의 **Edit**로 돌아가 Version 1을 체크합니다. 버전이 고정되지 않은 기준선은 09에서 거부됩니다. Review에서 threshold나 Judge를 확인할 수 없고 확실하지 않다면 **Back**으로 **Criteria** 단계에 돌아가 Relevance **4**, TaskAdherence **1**, Judge model이 `lab-planner-…`가 아닌 `lab-judge-…`인지 확인한 뒤 Review로 돌아옵니다.
 2. 평가 이름은 **`lab-ko-learning-loop`**로 입력합니다. Review에는 run 이름 입력 칸이 없으며 run은 포털이 Agent 이름(예: `lab-ko-iq`)으로 자동 지정합니다. 이후 단계는 run 이름이 아니라 ID를 사용합니다. 다른 평가 이름을 선택했다면 그 이름을 기억해 두고 이후 조회에도 같은 이름을 사용합니다. 자신의 기준선 run이 이미 완료됐다면 다시 제출하지 않고 그 결과를 엽니다.
-3. 아직 실행하지 않은 승인된 작업만 **Submit**으로 한 번 제출합니다. 단추를 누른 직후가 아니라 아래의 **Completed와 결과 12건**을 확인해야 실행 완료입니다.
+3. 이 평가를 아직 제출하지 않았다면 **Submit**을 한 번만 누릅니다. 02에서 입력한 예산·호출 한도 안에서 진행합니다. 단추를 누른 직후가 아니라 아래의 **Completed와 결과 12건**을 확인해야 실행 완료입니다.
 
 <figure class="portal-shot" id="portal-evaluation-review">
 <img src="../web/assets/portal/17-evaluation-review.png" alt="Microsoft Foundry 평가 Review에서 Agent·버전·데이터셋·평가기 설정을 검토하는 화면입니다." width="1440" height="1000" loading="lazy">
-<figcaption><strong>Submit 전에 설정을 검토합니다.</strong> Agent 버전 1, 같은 dev12, query 전용 입력, 두 평가기와 Judge가 맞는지 확인합니다. 승인된 범위에서 한 번 제출한 뒤 run 상태를 확인합니다. <a href="../web/assets/portal/17-evaluation-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>Submit 전에 설정을 검토합니다.</strong> Agent 버전 1, 같은 dev12, query 전용 입력, 두 평가기와 Judge가 맞는지 확인합니다. 02에서 입력한 한도 안에서 한 번 제출한 뒤 run 상태를 확인합니다. <a href="../web/assets/portal/17-evaluation-review.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 ### 같은 run의 완료 상태와 12건을 확인합니다 {#baseline-results}
 
-**Evaluations → 방금 지정한 평가 이름 → Evaluation runs → 기준선 run**을 엽니다.
+**Evaluations → 방금 지정한 평가 이름 → Evaluation runs**에서 이 평가의 run을 엽니다. 포털이 Agent 이름(예: `lab-ko-iq`)으로 자동 지정한 run이며, 이 run이 기준선(baseline)입니다.
 
 | 화면 상태 | 다음 행동 |
 |---|---|
@@ -1127,7 +1139,9 @@ Agent·Judge·Optimizer는 역할별 지원 모델이 다릅니다. [Optimizer �
 | Completed | 전체 12건과 오류 건수를 확인한 뒤 [아래 ID 조회](#baseline-identifiers)까지 마치고 07로 진행합니다. 모든 답변이 정답이라는 뜻은 아닙니다. |
 | Failed / Partial 또는 결과 누락 | 오류와 run ID를 보존하고 [평가 문제 해결](troubleshooting.md#evaluation)을 확인합니다. 완료로 표시하지 않습니다. |
 
-30분 또는 승인한 대기 한도 중 짧은 시간이 지나도 끝나지 않으면 현재 상태·run ID·오류를 확인한 뒤 [평가 재개 절차](troubleshooting.md#evaluation-resume)를 따릅니다. 이는 상태를 점검할 시점이지 서비스의 완료 보장 시간이 아닙니다. 기다림을 중단해도 원격 작업은 자동 취소되지 않습니다.
+**Completed**가 되면 Run details의 **Agent ID**가 `lab-ko-iq:1`처럼 이름 뒤에 버전이 붙어 있는지 확인합니다. 이름만 있거나 버전이 비어 있으면 버전이 고정되지 않은 기준선이므로 09에서 거부됩니다. [문제 해결](troubleshooting.md#evaluation-resume)을 따릅니다.
+
+30분 또는 02에서 기록한 작업 대기 한도(빠른 경로는 1시간) 중 짧은 시간이 지나도 끝나지 않으면 현재 상태·run ID·오류를 확인한 뒤 [평가 재개 절차](troubleshooting.md#evaluation-resume)를 따릅니다. 이는 상태를 점검할 시점이지 서비스의 완료 보장 시간이 아닙니다. 기다림을 중단해도 원격 작업은 자동 취소되지 않습니다.
 
 ### 터미널에서 실제 evaluation ID와 run ID를 조회합니다 {#baseline-identifiers}
 
@@ -1281,17 +1295,17 @@ Relevance 4/5를 정확도 80%로 해석하지 않습니다. TaskAdherence 1은 
 
 | 설정 | 선택 |
 |---|---|
-| Agent version | 명시적 기준선 **1** |
+| Agent version | **1**을 직접 선택합니다(06의 baseline과 같은 버전). |
 | Choose targets | **Instruction only(지침만 변경)**, Model·Tool description·Compare across models 끄기 |
-| Max candidates | 승인 범위 안에서 **2**로 요청합니다. 정식 Agent 버전 수나 모델 호출 한도가 아닙니다. |
-| Optimization model | 자신의 `OPTIMIZER_DEPLOYMENT` / gpt-5.5 |
-| Evaluation model | 자신의 `JUDGE_DEPLOYMENT` / gpt-6-luna |
+| Max candidates | **2**로 요청합니다(02에서 기록한 후보 한도와 같습니다). 정식 Agent 버전 수나 모델 호출 한도가 아닙니다. |
+| Optimization model | `lab-planner-…` (`OPTIMIZER_DEPLOYMENT`, gpt-5.5) |
+| Evaluation model | `lab-judge-…` (`JUDGE_DEPLOYMENT`, gpt-6-luna). 05의 Judge model과 같은 배포입니다. |
 | Dataset | 같은 언어의 등록 dev12·같은 버전 |
 | Criteria | Relevance Threshold 4, TaskAdherence Threshold 1과 Probability_threshold 0.5(결과는 0 또는 1) |
 
 <figure class="portal-shot" id="portal-optimizer-target">
 <img src="../web/assets/portal/07-optimizer-target.png" alt="Agent Optimizer에서 기준선 버전·Instruction only·후보 수·모델 역할을 선택하는 화면입니다." width="1210" height="968" loading="lazy">
-<figcaption><strong>최적화 범위와 모델 역할을 구분합니다.</strong> 기준선 버전 1과 Instruction only를 선택하고 후보 수를 승인 한도 안으로 설정합니다. Optimization model과 Evaluation model에는 각 역할에 준비한 배포를 지정합니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+<figcaption><strong>최적화 범위와 모델 역할을 구분합니다.</strong> 기준선 버전 1과 Instruction only를 선택하고 후보 수를 02에서 기록한 한도(최대 2개) 안으로 설정합니다. Optimization model에는 <code>lab-planner-…</code>, Evaluation model에는 <code>lab-judge-…</code> 배포를 지정합니다. <a href="../web/assets/portal/07-optimizer-target.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
 Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 **View built-in evaluators**를 선택합니다. 각 기본 평가기를 열어 값을 설정하고(Relevance **Threshold 4**, TaskAdherence **Threshold 1**과 **Probability_threshold 0.5**) Apply합니다. 필터를 우회하려고 다른 평가기를 만들지 않습니다.
@@ -1303,13 +1317,13 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 
 ### 한 번 제출하고 같은 작업의 결과를 확인합니다 {#optimizer-results}
 
-**Review**에서 Agent·버전·데이터셋·평가기와 예상 비용을 확인한 뒤 승인된 비용 범위에서 한 번 **Submit**합니다. 예상 비용과 후보 수 설정은 청구 상한이 아닙니다.
+**Review**에서 Agent·버전·데이터셋·평가기와 예상 비용을 확인한 뒤 02에서 입력한 예산·호출 한도 안에서 한 번 **Submit**합니다. 예상 비용과 후보 수 설정은 청구 상한이 아닙니다.
 
 **Optimization runs**에서 방금 제출한 같은 job을 열고 상태에 따라 진행합니다.
 
 | 작업 상태 | 다음 행동 |
 |---|---|
-| 실행 중 | 같은 job을 확인하며 기다립니다. 새로 제출하지 않습니다. 60분 또는 승인한 대기 한도 중 짧은 시간이 지나면 상태·job ID를 확인하고 [재개 절차](troubleshooting.md#optimizer)를 따릅니다. |
+| 실행 중 | 같은 job을 확인하며 기다립니다. 새로 제출하지 않습니다. 60분 또는 02에서 기록한 작업 대기 한도(빠른 경로는 1시간) 중 짧은 시간이 지나면 상태·job ID를 확인하고 [재개 절차](troubleshooting.md#optimizer)를 따릅니다. |
 | Completed / Succeeded | 실제 후보 수·제공되는 **Token usage**를 확인하고, 원본·후보 점수와 **View changes**를 검토합니다. |
 | 실패 또는 결과 확인 불가 | 상태·job ID·오류를 보존하고 [문제 해결](troubleshooting.md#optimizer)을 확인합니다. 후보를 임의로 만들어 다음 단계로 진행하지 않습니다. |
 
@@ -1355,7 +1369,7 @@ Criteria가 **No custom evaluators available**이면 **Custom only OFF** 또는 
 | 포털에서 조작하는 항목 | 기존 코드와의 연결 |
 |---|---|
 | **Agent version 1**, **Instruction only**, 모델·도구 변경 끄기 | 03에서 만든 고정 Agent 정의가 원본입니다. 다음 단계의 코드가 지침 외 구성이 같은지 다시 확인합니다. |
-| **Optimization model**, **Evaluation model**, dev12·Criteria | 자신의 `.env` 배포와 04–05의 데이터·기준을 선택합니다. 로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다. |
+| **Optimization model**, **Evaluation model**, dev12·Criteria | `lab-planner-…`(`OPTIMIZER_DEPLOYMENT`)와 `lab-judge-…`(`JUDGE_DEPLOYMENT`) 배포, 그리고 04–05의 데이터·기준을 선택합니다. 로컬 프로그램이 최적화 작업을 제출하는 단계가 아닙니다. |
 | **Review → Submit**, **Optimization runs** | 실제 Optimizer 실행·job 상태·후보 순위는 Microsoft Foundry 서비스가 처리합니다. 터미널에서 같은 작업을 다시 제출하지 않습니다. |
 | **View changes**에서 전체 지침 저장 | `.lab/lab-ko/candidate.txt`가 09의 `prompt.read_text(encoding="utf-8")` 입력이 됩니다. 원본·후보·직접 수정한 부분을 구분합니다. |
 | **Promote candidate** | 이번 경로에서는 누르지 않습니다. 09의 기존 명령이 소유권·전체 구성을 확인하며 v2를 만듭니다. |
@@ -1410,7 +1424,7 @@ python -m lab --config .lab/lab-ko/.env native-agent --version 2 --prompt .lab/l
 python scripts/add_foundry_eval_run.py --config .lab/lab-ko/.env --evaluation "YOUR_EVALUATION_ID" --baseline "YOUR_BASELINE_RUN_ID" --version 2 --name candidate-v2
 ```
 
-기본 대기는 30분입니다. 승인한 한도가 더 짧다면 `--wait-seconds`와 초 단위 값을 추가합니다. helper는 임계값·Judge·매핑과 각 결과 행의 Agent 버전·지침을 확인합니다. 결과에 따라 다음과 같이 진행합니다.
+기본 대기는 30분입니다. 02에서 기록한 대기 한도가 30분보다 짧다면 `--wait-seconds`와 초 단위 값을 추가합니다. helper는 두 평가기의 threshold(Relevance 4·TaskAdherence 1)와 응답 매핑, 두 평가기가 같은 Judge 배포를 쓰는지, 각 결과 행의 Agent 버전·지침을 확인합니다. **Judge가 `lab-judge-…`인지는 helper가 확인하지 않으므로** 05–06에서 직접 확인한 baseline을 사용합니다. 결과에 따라 다음과 같이 진행합니다.
 
 | 결과 | 다음 행동 |
 |---|---|
@@ -1449,7 +1463,7 @@ receipt를 삭제하거나 이름을 바꾸어 다시 제출하지 않습니다.
 
 ### 3. Microsoft Foundry에서 같은 평가의 v1/v2를 비교합니다 {#decision-compare}
 
-같은 평가의 **Evaluation runs**에서 v1·v2 두 행을 선택하고 **Compare runs**를 엽니다. **Baseline을 v1으로 명시 선택**하며 행 선택 순서 때문에 비교 방향이 바뀌지 않게 합니다.
+같은 평가의 **Evaluation runs**에서 v1·v2 두 행을 선택하고 **Compare runs**를 엽니다. 두 행은 이름으로 구분합니다. v1 행은 포털이 Agent 이름(`lab-ko-iq`)으로 자동 지정한 run이고, v2 행은 `--name`으로 지정한 `candidate-v2`입니다. 헷갈리면 run을 열어 Run details의 **Agent ID**(`lab-ko-iq:1` 또는 `lab-ko-iq:2`)를 확인합니다. **Baseline을 v1으로 명시 선택**하며 행 선택 순서 때문에 비교 방향이 바뀌지 않게 합니다.
 
 <figure class="portal-shot" id="portal-evaluation-comparison">
 <img src="../web/assets/portal/20-evaluation-comparison.png" alt="Compare runs에서 기준선과 후보의 점수·평균·통계 결과를 비교하는 화면입니다." width="1440" height="520" loading="lazy">
