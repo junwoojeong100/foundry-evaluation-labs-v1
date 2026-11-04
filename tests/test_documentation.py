@@ -1534,5 +1534,97 @@ class DocumentationTests(unittest.TestCase):
             self.assertIn("approved for retention" if language == "en" else "보존 승인", source)
 
 
+class PortalV11GuideTests(unittest.TestCase):
+    def test_versioned_captures_match_their_provenance(self):
+        directory = ROOT / "web/assets/portal/v1.1"
+        text = (directory / "captures.v1.1.json").read_text(encoding="utf-8")
+        manifest = json.loads(text)
+        captures = {entry["file"]: entry for entry in manifest["screenshots"]}
+        self.assertEqual(len(captures), len(manifest["screenshots"]))
+        self.assertEqual(set(captures), {path.name for path in directory.glob("*.png")})
+        for name, entry in captures.items():
+            with self.subTest(capture=name):
+                image = (directory / name).read_bytes()
+                self.assertEqual(struct.unpack(">II", image[16:24]), (entry["width"], entry["height"]))
+                self.assertEqual(hashlib.sha256(image).hexdigest(), entry["sha256"])
+                self.assertNotIn("?", entry["route"])
+        self.assertNotRegex(
+            text, r"[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}|/Users/|sig=|onmicrosoft\.com"
+        )
+
+    def test_versioned_data_preserves_the_original_cases_and_policies(self):
+        for original, versioned in (
+            ("data/knowledge/documents.json", "data/knowledge/documents.v1.1.json"),
+            ("data/optimizer/dev.jsonl", "data/optimizer/dev.v1.1.jsonl"),
+        ):
+            with self.subTest(versioned=versioned):
+                self.assertEqual((ROOT / original).read_bytes(), (ROOT / versioned).read_bytes())
+
+    def test_portal_guide_is_current_and_has_no_runnable_learner_commands(self):
+        from scripts.build_guide import main
+
+        source = (ROOT / "guide/handbook.v1.1.md").read_text(encoding="utf-8")
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(main([
+                "--source", str(ROOT / "guide/handbook.v1.1.md"),
+                "--template", str(ROOT / "web/template.v1.1.html"),
+                "--output", str(SITE / "ko/handbook.v1.1.html"),
+                "--language", "ko", "--build-date", "2026-11-04", "--check",
+            ]), 0)
+        rendered = (SITE / "ko/handbook.v1.1.html").read_text(encoding="utf-8")
+        self.assertNotRegex(source, r"```(?:bash|sh|shell|powershell|python|javascript|console)\b")
+        self.assertNotIn("<!-- source-code:", source)
+        self.assertNotIn('class="terminal-command"', rendered)
+        baseline = (ROOT / "prompts/baseline.v1.1.txt").read_text(encoding="utf-8").strip()
+        self.assertIn("```text\n" + baseline + "\n```", source)
+
+    def test_portal_action_numbers_continue_after_tables_and_code(self):
+        source = (ROOT / "guide/handbook.v1.1.md").read_text(encoding="utf-8")
+        rendered = (SITE / "ko/handbook.v1.1.html").read_text(encoding="utf-8")
+        article = re.search(r"<article\b[^>]*>(.*?)</article>", rendered, re.S).group(1)
+        expected = [int(value) for value in re.findall(r"^(\d+)\. ", source, re.M)]
+        actual = []
+        for attributes, items in re.findall(r"<ol\b([^>]*)>(.*?)</ol>", article, re.S):
+            start = re.search(r'\bstart="(\d+)"', attributes)
+            number = int(start.group(1)) if start else 1
+            for attributes in re.findall(r"<li\b([^>]*)>", items):
+                value = re.search(r'\bvalue="(\d+)"', attributes)
+                number = int(value.group(1)) if value else number
+                actual.append(number)
+                number += 1
+        self.assertEqual(actual, expected)
+
+    def test_portal_steps_and_rebased_links_are_complete(self):
+        page = LearningPathParser()
+        path = SITE / "ko/handbook.v1.1.html"
+        page.feed(path.read_text(encoding="utf-8"))
+        self.assertEqual(len(page.chapters), 10)
+        self.assertEqual(page.toc_links, ["#" + chapter for chapter in page.chapters])
+        self.assertEqual(page.duplicate_ids, set())
+        self.assertEqual(page.completion_checks, page.chapters)
+        for href in page.links:
+            link = urlsplit(href)
+            if link.scheme or link.netloc:
+                continue
+            target = (path.parent / unquote(link.path)).resolve() if link.path else path
+            with self.subTest(href=href):
+                self.assertTrue(target.is_file(), href)
+                if link.fragment and target.suffix == ".html":
+                    linked = LinkParser()
+                    linked.feed(target.read_text(encoding="utf-8"))
+                    self.assertIn(unquote(link.fragment), linked.ids, href)
+        packaged = {item.relative_to(ROOT).as_posix() for item in package_files(ROOT)}
+        self.assertIn("docs/ko/handbook.v1.1.html", packaged)
+        self.assertIn("docs/media/portal.v1.1.html", packaged)
+
+    def test_reviewed_instructions_do_not_embed_case_answers(self):
+        prompt = (ROOT / "prompts/reviewed.v1.1.txt").read_text(encoding="utf-8")
+        self.assertNotRegex(prompt, r"20\d{2}(?:[-년])|ATLAS-[A-Z]+-\d+")
+        for line in (ROOT / "data/optimizer/dev.v1.1.jsonl").read_text(encoding="utf-8").splitlines():
+            case = json.loads(line)
+            self.assertNotIn(case["query"], prompt)
+            self.assertNotIn(case["ground_truth"], prompt)
+
+
 if __name__ == "__main__":
     unittest.main()

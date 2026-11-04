@@ -78,6 +78,21 @@ rights or change the existing artwork terms. Image provenance is retained;
 separate historical lab-validation reports and execution logs are not part
 of the guide.
 
+Portal-only v1.1 additions
+=========================
+
+Files: portal/v1.1/*.v1.1.png and docs/media/*v1.1.*.
+Capture date: 2026-11-04. Sources: Azure Portal and Microsoft Foundry Portal.
+These contain actual UI captures, not generated product mockups. Capture and
+privacy provenance for the images is in portal/v1.1/captures.v1.1.json.
+Video editing and chapter information is in docs/media/chapters.v1.1.json.
+The video combines real creation/execution scenes and same-resource result
+verification. Authentication, idle waits and failed exploration were omitted;
+deployment scenes were reordered to the guide's final supported configuration.
+Privacy redactions and a separate Korean caption footer were added.
+Product scores, answers, controls and statuses were not rewritten. There is
+no audio narration. The existing product UI and artwork rights still apply.
+
 Source and layout references
 ============================
 

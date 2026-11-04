@@ -125,5 +125,68 @@ class MediaPageTests(unittest.TestCase):
             self.assertIn(f"({base}{page})", english)
 
 
+class PortalV11MediaTests(unittest.TestCase):
+    name = "Foundry-Portal-Walkthrough-KO.v1.1"
+
+    def test_versioned_player_links_match_its_video_and_chapters(self):
+        path = MEDIA / "portal.v1.1.html"
+        html = path.read_text(encoding="utf-8")
+        parser = VideoPageParser()
+        parser.feed(html)
+        self.assertEqual(parser.language, "ko")
+        self.assertEqual(len(parser.videos), 1)
+        video = parser.videos[0]
+        self.assertEqual(urlsplit(video["source"]).path, self.name + ".mp4")
+        self.assertEqual(video["track"]["src"], self.name + ".vtt")
+        self.assertEqual(video["track"]["srclang"], "ko")
+        entry = json.loads((MEDIA / "chapters.v1.1.json").read_text())[self.name]
+        starts = [chapter["start"] for chapter in entry["chapters"]]
+        self.assertEqual(video["starts"], starts)
+        self.assertEqual(starts[0], 0)
+        self.assertEqual(starts, sorted(set(starts)))
+        self.assertLess(starts[-1], entry["duration"])
+        for link in re.findall(r'(?:href|src)="([^"]+)"', html):
+            if not link.startswith("#") and "://" not in link:
+                self.assertTrue((MEDIA / unquote(urlsplit(link).path)).is_file(), link)
+
+    def test_versioned_subtitles_preserve_the_same_timeline_and_text(self):
+        srt = (MEDIA / f"{self.name}.srt").read_text(encoding="utf-8")
+        vtt = (MEDIA / f"{self.name}.vtt").read_text(encoding="utf-8")
+        self.assertEqual(vtt, build_media_pages.srt_to_vtt(srt))
+        entry = json.loads((MEDIA / "chapters.v1.1.json").read_text())[self.name]
+        previous_end = 0
+        for match in re.finditer(r"(\d\d):(\d\d):(\d\d)\.(\d{3}) --> (\d\d):(\d\d):(\d\d)\.(\d{3})", vtt):
+            values = list(map(int, match.groups()))
+            start = values[0] * 3600 + values[1] * 60 + values[2] + values[3] / 1000
+            end = values[4] * 3600 + values[5] * 60 + values[6] + values[7] / 1000
+            self.assertGreaterEqual(start, previous_end)
+            self.assertGreater(end, start)
+            self.assertLessEqual(end, entry["duration"])
+            previous_end = end
+        self.assertGreater(previous_end, 0)
+
+    @unittest.skipUnless(shutil.which("ffprobe"), "ffprobe is not installed")
+    def test_versioned_recording_has_real_video_captions_and_matching_chapters(self):
+        probe = json.loads(subprocess.check_output(
+            ["ffprobe", "-v", "error", "-show_streams", "-show_chapters", "-show_format",
+             "-of", "json", str(MEDIA / f"{self.name}.mp4")],
+            encoding="utf-8", timeout=60,
+        ))
+        entry = json.loads((MEDIA / "chapters.v1.1.json").read_text())[self.name]
+        video = next(stream for stream in probe["streams"] if stream["codec_type"] == "video")
+        self.assertEqual(video["codec_name"], "h264")
+        self.assertEqual((video["width"], video["height"]), (entry["width"], entry["height"]))
+        self.assertFalse(any(stream["codec_type"] == "audio" for stream in probe["streams"]))
+        self.assertTrue(any(
+            stream["codec_name"] == "mov_text" and stream["tags"]["language"] == "kor"
+            for stream in probe["streams"]
+        ))
+        self.assertEqual(
+            [(float(chapter["start_time"]), chapter["tags"]["title"]) for chapter in probe["chapters"]],
+            [(chapter["start"], chapter["title"]) for chapter in entry["chapters"]],
+        )
+        self.assertAlmostEqual(float(probe["format"]["duration"]), entry["duration"], delta=.01)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,7 @@
 # Microsoft Foundry Learning Loop Lab v1
 
+> **New · portal-only v1.1 (한국어):** [Guide source](guide/handbook.v1.1.md) · [Web guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [Actual screen recording](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). Start from a new resource group and use Azure Portal + Foundry Portal only, with no learner commands. The existing v1 path below is unchanged.
+
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
 **Follow ten steps from your first Microsoft Azure environment checks to authorized cleanup or retention.** Use Microsoft Foundry managed evaluation and Agent Optimizer to evaluate and improve an Agent against representative business tasks:
@@ -103,9 +105,9 @@ Continuous integration (`.github/workflows/ci.yml`) runs these checks on Ubuntu 
 
 The guide header date is `BUILD_DATE` in `scripts/build_guide.py`; change it and its test together whenever instructions change or are re-verified. `.gitattributes` forces LF line endings because exports, prompts, and guides are checked byte for byte, including on Windows clones. `lab/azcli.py` starts Azure CLI the same way on Windows, macOS, and Linux.
 
-Names and versions: this repository is lab edition **v1**. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in generated resource names refer to that toolkit version. The repository carries about 43 MB of demonstration videos, so the guide's local clone uses `git clone --depth 1`.
+Names and versions: the original lab edition **v1** is preserved alongside the separate portal-only **v1.1** guide. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in v1-generated resource names refer to that toolkit version. User-selected names in the new portal path use `v1.1` or `v1-1`. The repository includes demonstration videos, so the v1 guide's local clone uses `git clone --depth 1`.
 
-Keep execution-specific scores, run IDs, validation logs and raw results in ignored private run folders, not in reusable guide sources. Correct a guide only when its instructions are wrong. Keep necessary ownership/configuration records for retained resources; remove superseded reports and temporary output without deleting cloud resources.
+Keep run IDs, validation logs and raw results in ignored private run folders, not in reusable guide sources. The v1.1 teaching comparison deliberately includes observed scores and redacted recording scenes, with provider errors and statistical limitations disclosed; it is not operational approval or evidence of general performance. Correct a guide only when its instructions are wrong. Keep necessary ownership/configuration records for retained resources; remove superseded reports and temporary output without deleting cloud resources.
 
 GitHub Pages serves **main / repository root** with `.nojekyll`. Root `index.html` and legacy `docs/english.html` forward to English while preserving query strings and fragments.
 

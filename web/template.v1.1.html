@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Azure Portal과 Microsoft Foundry Portal만 사용하는 평가·최적화 실습 v1.1">
+  <title>{{TITLE}}</title>
+  <link rel="icon" type="image/svg+xml" href="{{WEB_PATH}}/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{{MESSAGES}}</script>
+  <script src="{{WEB_PATH}}/theme.js"></script>
+  <link rel="stylesheet" href="{{WEB_PATH}}/styles.css">
+  <script src="{{WEB_PATH}}/app.js" defer></script>
+</head>
+<body data-document-id="handbook.v1.1.html" data-progress-revision="portal-v1.1">
+  <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="목차 열기" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a class="brand" href="#guide-start">
+        <img class="brand-symbol" src="{{WEB_PATH}}/assets/foundry.svg" width="42" height="42" alt="">
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>포털 전용 실습 v1.1</span></span>
+      </a>
+      <span class="header-context">Azure Portal + Foundry Portal</span>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="어두운 테마로 전환" hidden>어둡게</button>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+  <div class="workspace">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="v1.1 목차">
+      <div class="sidebar-inner">
+        <div class="sidebar-heading">
+          <div><p class="eyebrow">PORTAL ONLY · v1.1</p><h2 id="contents-heading">실습 순서</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="목차 닫기" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading">{{TOC}}</nav>
+        <details class="related-documents">
+          <summary>기존 v1 가이드</summary>
+          <nav aria-label="다른 버전"><ul><li><a href="index.html">v1 한국어 가이드</a></li><li><a href="../index.html">v1 English guide</a></li></ul></nav>
+        </details>
+        <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
+          <div class="panel-heading"><h2 id="progress-title">{{PROGRESS_TITLE}}</h2><span class="local-badge">{{LOCAL_BADGE}}</span></div>
+          <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
+          <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
+          <details class="progress-details">
+            <summary>{{PROGRESS_DETAILS}}</summary>
+            <div id="progress-checklist" class="progress-checklist"></div>
+          </details>
+          <div class="progress-bottom"><span>{{PROGRESS_MANUAL}}</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">{{RESET}}</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">{{STORAGE_NOTE}}</p>
+        </section>
+        <details class="keyboard-help" data-keyboard-help hidden>
+          <summary>{{KEYBOARD_HELP}}</summary>
+          <dl>
+            <div><dt><kbd>Esc</kbd></dt><dd>{{KEYBOARD_ESCAPE}}</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>{{KEYBOARD_TAB}}</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>{{KEYBOARD_CHAPTER}}</dd></div>
+          </dl>
+        </details>
+        <p class="sidebar-note">v1.1은 새 리소스 그룹에서 시작합니다. 기존 v1 환경은 변경하지 않습니다.</p>
+      </div>
+    </aside>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="목차 닫기" tabindex="-1" hidden></button>
+    <main id="main-content" class="main-content" tabindex="-1">
+      <div class="reading-toolbar no-print">
+        <span class="document-label"><span aria-hidden="true"></span>포털 전용 · v1.1</span>
+        <span class="document-date">검증 기준일 <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></span>
+      </div>
+      <noscript><p class="noscript-note">{{NOSCRIPT_NOTE}}</p></noscript>
+      <article id="guide-start" class="guide-content" lang="ko" aria-label="{{TITLE}}">{{CONTENT}}</article>
+      <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>{{COMPLETION_NOTE}}</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">{{MARK_READ}}</button>
+      </section>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="단계 이동" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>이전 단계</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>다음 단계</span><strong></strong></a>
+      </nav>
+      <footer class="document-footer">
+        <p>Microsoft Foundry 포털 전용 실습 v1.1 · <time datetime="{{BUILD_DATE}}">{{BUILD_DATE}}</time></p>
+        <div class="footer-links"><a href="#guide-start">맨 위로</a></div>
+      </footer>
+    </main>
+  </div>
+  <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <p class="eyebrow">LEARNING RECORD · v1.1</p>
+    <h2 id="reset-title">{{RESET_TITLE}}</h2>
+    <p id="reset-description">{{RESET_DESCRIPTION}}</p>
+    <form method="dialog" class="dialog-actions">
+      <button class="secondary-button" value="cancel" autofocus>{{CANCEL}}</button>
+      <button class="danger-button" value="reset">{{RESET_CONFIRM}}</button>
+    </form>
+  </dialog>
+  <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

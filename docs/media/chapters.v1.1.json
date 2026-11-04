@@ -1,0 +1,55 @@
+{
+  "Foundry-Portal-Walkthrough-KO.v1.1": {
+    "edition": "v1.1",
+    "capture_date": "2026-11-04",
+    "duration": 285.6,
+    "width": 1440,
+    "height": 1080,
+    "narration": false,
+    "captions": "Korean: burned-in footer, WebVTT and embedded mov_text",
+    "editing": "Actual Azure/Foundry UI recording and same-resource result verification. Idle waits, authentication and failed exploration omitted; deployment scenes reordered to the guide's final supported configuration. Earlier discarded trials are not used in the final comparison. Privacy redactions and a separate Korean caption footer were added; product text, scores, answers and statuses were not replaced. No narration.",
+    "chapters": [
+      {
+        "start": 0.0,
+        "title": "01 준비 · 02 새 리소스 그룹"
+      },
+      {
+        "start": 27.92,
+        "title": "03 새 Foundry 프로젝트"
+      },
+      {
+        "start": 50.24,
+        "title": "04 모델 세 역할 배포"
+      },
+      {
+        "start": 103.88,
+        "title": "05 지침 v1과 File search"
+      },
+      {
+        "start": 126.92,
+        "title": "06 같은 12문항으로 기준선 평가"
+      },
+      {
+        "start": 163.12,
+        "title": "07 기준선의 답변·오류·점수"
+      },
+      {
+        "start": 178.92,
+        "title": "08 Instruction만 최적화"
+      },
+      {
+        "start": 219.92,
+        "title": "09 검토한 지침 v2 저장·재평가"
+      },
+      {
+        "start": 251.6,
+        "title": "09 두 지표와 실제 답변 비교"
+      },
+      {
+        "start": 277.6,
+        "title": "10 결과·리소스 보존"
+      }
+    ],
+    "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34"
+  }
+}

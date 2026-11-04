@@ -15,6 +15,7 @@ GUIDE_FILES = (
     "docs/english.html", "docs/troubleshooting.html", "docs/data-guide.html",
     "docs/ko/index.html", "docs/ko/facilitator.html", "docs/ko/admin.html",
     "docs/ko/troubleshooting.html", "docs/ko/data-guide.html",
+    "docs/ko/handbook.v1.1.html",
 )
 ROOT_FILES = (
     "README.md", "README.en.md", "README.ko.md", "LICENSE", "index.html", "pyproject.toml", "requirements.lock",

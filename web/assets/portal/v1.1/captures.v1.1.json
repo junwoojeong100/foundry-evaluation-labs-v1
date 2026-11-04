@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "edition": "v1.1",
+  "captured_date": "2026-11-04",
+  "date_timezone": "Asia/Seoul",
+  "tool": "playwright.browser_run_code_unsafe; CDP Page.captureScreenshot",
+  "data_language": "ko",
+  "ui_language": "en-US",
+  "edits": "Privacy redactions only; no product text, score, answer or status replacement.",
+  "purpose": "Actual v1.1 portal execution and same-resource verification.",
+  "screenshots": [
+    {
+      "file": "01-resource-group-basics.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "cb2dea5ed4b5d07328ad286b58e3ae55bf399176fc7e9ada7e1f52aa41e15ed0",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/create",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "02-empty-resource-group.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "211009c0f72641240e6202f718ce2df96479e1495432ed2ae9204e6ee5f778b0",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/overview",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "05-foundry-project-create.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "8c2f4b9d2419ed67a2fe0d899da6b4b0fcc98bc0122e368e458059db99d32900",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/create-project",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "06-project-home.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "a20fa1f45c1d348feacb9f0b602192ce100cf388b85cda828e392df0a0fa7219",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/overview",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "07-agent-model-deploy.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "4345a0bac8bef4b25232ff64a43489a3313692ebd5a57121d9597746370f7c2f",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/models/deploy",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "08-models-succeeded.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "a1aa39b922563199326d6ca9d2ed166e2bf33a0c5cb0d4398df87ae2a7ad6c47",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/models/deployments",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "09-create-agent.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7b80c712bcedb84bb25147134d4b9b3821ae2e0ef74057dc76cadd424ccd9c57",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/new",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "10-policy-upload.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "9c24f065cae30ce454900e0f12f1590a69ffe9a37a9e5355aa534d8359df2896",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build/file-search",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "11-agent-retrieval.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "972b2617a9e599a8c9fa9019eaf367df7dca1d5150b63eaadd5655ed98cedec1",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "12-query-only-mapping.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5276125262ce25b622c2f9e66e62cb76107ec7f072d0dc8852377fdc56c7ea75",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "13-task-adherence-settings.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "ae80c2d6ac079361cd8281abd7e3fafb2a8cbba4e32608d3a617b154966ed5d3",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "14-baseline-review.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "86fa5fc9c3279c01eaf87b6423b92575f75ba08c0916a57f19ff5baacd4485d7",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "15-created-resources.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "4e0fd9a3669394430b0342b0780bb0c6e01525b83aebd26ba8ec60430f8e013c",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/overview",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "16-baseline-results.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "34c78cd0e919115e4e783743850b185ab6da8a6800fcd732a5d876ac6974569c",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "17-optimizer-settings.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "bf153eb593f06d883e2f7bfd0c2c24c42a2956fa4c861273121702c463f314b4",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimization",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "18-optimizer-review.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "f8ace6256a422b3d5149e2ff1f40f488ef6c526ebc691f14911fc8e6b7cfd4fc",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimization",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "19-optimizer-results.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "ae50675b935e6aa80f674a656af505606b829881e5bb76425974698b75ef5b92",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimization/{run}",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "20-review-candidate.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "12646decabd01996f436d21a5dc7362c4b78ef8a1e67890493f6aa1b72f7de9f",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimization/{run}",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "21-reviewed-agent.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "da252ff8a5065a079cec61e37243f70697ab8c3c8efb32155a879d603126d4d5",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "22-add-run-query-only.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "17c814b7872f45735663b1208bfbc91c5ab049af1540323fe162642096d7c9e7",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "23-evaluation-runs.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "40e318494a8d5e0fe0147606f144143189bfe73ef080f0895a3ac93a38ee3cdd",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "24-compare-runs.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7a16dd7f7a9c95e8501bc2e9b4d6277e81f3606549725c496682bbae81496214",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/compare/{comparison}",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "25-baseline-preserved.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "1d4795d5a30ca144abb0de66ff0ecb9a366d7e7bc5d0bd954c4f7372a053069f",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "27-retained-resource-group.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "0a3808a9457510cca4d4160e52843dc16abdc560872003d7a49b203e5326af1a",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/overview",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "28-retained-models.v1.1.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "8f91294778aaacc7ceb63531e588e81019a6222d68683dc7d22e0aa5b2e304b6",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/models/deployments",
+      "redactions": [
+        "browser chrome and session URLs excluded",
+        "identifying profile and creator text obscured where displayed",
+        "subscription and connection fields masked where displayed"
+      ]
+    }
+  ]
+}

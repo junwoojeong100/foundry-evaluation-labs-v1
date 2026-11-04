@@ -415,6 +415,37 @@ python -m lab --help
                     build_guide.main(args)
                 self.assertEqual(raised.exception.code, 2)
 
+    def test_single_document_date_override_round_trips_and_check_is_read_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "handbook.v1.1.md"
+            template = Path(directory) / "template.v1.1.html"
+            output = Path(directory) / "handbook.v1.1.html"
+            source.write_text("# Portal v1.1\n\n## Start\n\nPortal only.\n", encoding="utf-8")
+            template.write_text("{{BUILD_DATE}}\n{{TOC}}\n{{CONTENT}}\n", encoding="utf-8")
+            args = [
+                "--source", str(source), "--template", str(template),
+                "--output", str(output), "--build-date", "2026-11-04",
+            ]
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(build_guide.main(args), 0)
+                self.assertEqual(build_guide.main([*args, "--check"]), 0)
+                original = output.read_bytes()
+                self.assertTrue(original.startswith(b"2026-11-04\n"))
+                self.assertEqual(
+                    build_guide.main([*args[:-1], "2026-11-05", "--check"]), 1,
+                )
+                self.assertEqual(output.read_bytes(), original)
+
+    def test_date_override_rejects_invalid_dates_and_full_site_mode(self) -> None:
+        for args in (
+            ["--build-date", "2026-11-04"],
+            ["--source", "fixture.md", "--output", "fixture.html", "--build-date", "2026-02-30"],
+        ):
+            with self.subTest(args=args), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as raised:
+                    build_guide.main(args)
+                self.assertEqual(raised.exception.code, 2)
+
     def test_korean_toc_and_duplicate_headings_have_valid_unique_targets(self) -> None:
         ids = [attrs["id"] for _, attrs in self.page.elements if "id" in attrs]
         self.assertEqual(len(ids), len(set(ids)))

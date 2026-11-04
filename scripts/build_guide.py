@@ -17,6 +17,7 @@ import posixpath
 import re
 import sys
 from dataclasses import dataclass
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable, Mapping, Sequence
@@ -433,6 +434,7 @@ def render_guide(
     document_id: str = "index.html",
     output_base: str = "",
     language: str = "en",
+    build_date: str = BUILD_DATE,
 ) -> str:
     """Return deterministic UTF-8-ready HTML without reading or writing files."""
     filename = posixpath.basename(document_id)
@@ -464,7 +466,7 @@ def render_guide(
         },
         "CONTENT": rendered.content,
         "TOC": rendered.toc,
-        "BUILD_DATE": BUILD_DATE,
+        "BUILD_DATE": build_date,
         "WEB_PATH": html.escape(output_relative("web", output_base), quote=True),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(filename, quote=True),
@@ -573,10 +575,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--template", type=Path, default=PROJECT_ROOT / "web" / "template.html")
     parser.add_argument("--output", type=Path, help="단일 문서 모드의 HTML 경로 (--source와 함께 사용)")
     parser.add_argument("--language", choices=LANGUAGES, default="en", help="단일 문서의 언어. 전체 빌드는 항상 영어·한국어를 모두 생성합니다.")
+    parser.add_argument("--build-date", type=date.fromisoformat, help="단일 문서의 기준일 (YYYY-MM-DD)")
     parser.add_argument("--check", action="store_true", help="파일을 쓰지 않고 모든 대상의 최신 상태 확인")
     args = parser.parse_args(argv)
     if (args.source is None) != (args.output is None):
         parser.error("단일 문서는 --source와 --output을 함께 지정해야 합니다.")
+    if args.build_date is not None and args.source is None:
+        parser.error("--build-date는 단일 문서 모드에서만 사용할 수 있습니다.")
     try:
         if args.source is not None:
             output_dir = args.output.resolve().parent
@@ -588,6 +593,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 document_id=args.output.name,
                 output_base=os.path.relpath(output_dir, PROJECT_ROOT).replace(os.sep, "/"),
                 language=args.language,
+                build_date=args.build_date.isoformat() if args.build_date else BUILD_DATE,
             )
             pages = {args.output: rendered}
         else:

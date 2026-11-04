@@ -44,5 +44,7 @@ jobs:
           python scripts/build_datasets.py --language ko --check
       - name: Generated guides are current
         run: python scripts/build_guide.py --check
+      - name: Portal-only v1.1 guide is current
+        run: python scripts/build_guide.py --source guide/handbook.v1.1.md --template web/template.v1.1.html --output docs/ko/handbook.v1.1.html --language ko --build-date 2026-11-04 --check
       - name: Unit tests
         run: python -m unittest discover -s tests -q
