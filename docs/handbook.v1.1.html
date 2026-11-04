@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A ten-step evaluation and optimization lab using only Azure Portal and Microsoft Foundry Portal, with actual screenshots and no learner commands.">
+  <title>Microsoft Foundry Evaluation and Optimization Lab v1.1</title>
+  <link rel="canonical" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html">
+  <link rel="alternate" hreflang="en" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html">
+  <link rel="alternate" hreflang="ko" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html">
+  <link rel="alternate" hreflang="x-default" href="https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html">
+  <link rel="icon" type="image/svg+xml" href="../web/assets/foundry.svg">
+  <script id="guide-messages" type="application/json">{"menuOpen": "Open contents", "menuClose": "Close contents", "step": "step", "chapter": "chapter", "progressMigrated": "The ten-step reading record is separate from earlier guide revisions. Existing run results are unchanged.", "storageReadError": "Saved progress could not be read. You can still mark sections as read in this window.", "storageSaved": "Reading progress for this document is saved only in this browser.", "storageWriteError": "Progress could not be saved and applies only to this window. These changes will be lost when you close it.", "progressSummary": "Read {completed} of {total}", "markUnread": "Mark as unread", "markUnitRead": "Mark this {unit} as read", "markRead": "Mark as read", "markedRead": "Marked as read.", "markedUnread": "Marked as unread.", "currentWindowOnly": " Browser storage is unavailable; this change applies only to the current window.", "progressReset": "All reading progress for this document has been reset.", "progressResetError": "Progress in this window has been reset, but saved progress could not be cleared.", "confirmReset": "Reset all reading progress for this document in both languages?", "sectionNavigation": "{label} — navigate between {unit}s", "nextSection": "Next {unit}: {label} →", "previousSection": "← Previous {unit}: {label}", "exampleLabel": "Illustrative output, not a command or evidence of a successful run.", "shellShared": "Shared terminal", "shellBash": "Codespaces/macOS/Linux", "shellPowerShell": "Windows PowerShell", "commandLabel": "Run in your terminal · {language}", "commandCodeLabel": "{language} command. Long lines wrap on screen; copying preserves the original command.", "implementationLabel": "Read-only implementation reference, not a command to run.", "copyCommand": "Copy commands", "copyCommandLabel": "Copy terminal command block {index}: {language}", "copyCode": "Copy code", "copyCodeLabel": "Copy {language} code block {index}", "codeLabel": "{language} code. Scroll horizontally to read long lines.", "copied": "Copied ✓", "copyFailed": "Copy failed", "copySuccess": "Code copied to the clipboard.", "copyError": "Automatic copying is unavailable. Select the code and copy it manually.", "tableLabel": "Table {index}", "tableScroll": "{label}. Scroll horizontally to read wide tables.", "diagram": "Diagram", "diagramScroll": "{label}. Scroll horizontally to view the diagram.", "diagramSource": "View original diagram ↗", "diagramSourceLabel": "View the original {label} (new tab)", "themeInvalid": "The saved theme was invalid, so the guide opened in light mode.", "themeReadError": "The saved theme could not be read. The guide opened in light mode; changes may apply only to this window.", "themeWriteError": "The theme could not be saved and applies only to this window.", "themeLight": "Light", "themeDark": "Dark", "themeLightLabel": "Switch to light mode", "themeDarkLabel": "Switch to dark mode"}</script>
+  <script src="../web/theme.js"></script>
+  <link rel="stylesheet" href="../web/styles.css">
+  <script src="../web/app.js" defer></script>
+</head>
+<body data-document-id="handbook.v1.1.html" data-progress-revision="portal-v1.1">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-controls="guide-sidebar" aria-expanded="false" aria-label="Open contents" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a class="brand" href="#guide-start">
+        <img class="brand-symbol" src="../web/assets/foundry.svg" width="42" height="42" alt="">
+        <span class="brand-text"><strong>Microsoft Foundry</strong><span>Portal-only lab v1.1</span></span>
+      </a>
+      <span class="header-context">Azure Portal + Foundry Portal</span>
+      <nav class="language-switcher" aria-label="Guide language"><a href="handbook.v1.1.html" lang="en" hreflang="en" data-language-link aria-current="page">English</a>
+<a href="ko/handbook.v1.1.html" lang="ko" hreflang="ko" data-language-link>한국어</a></nav>
+      <div class="header-actions">
+        <button class="toolbar-button" type="button" data-theme-toggle aria-label="Switch to dark mode" hidden>Dark</button>
+      </div>
+    </div>
+  </header>
+  <p class="theme-feedback no-print" data-theme-feedback role="status" hidden></p>
+  <div class="workspace">
+    <aside id="guide-sidebar" class="guide-sidebar" aria-label="Document navigation">
+      <div class="sidebar-inner">
+        <div class="sidebar-heading">
+          <div><p class="eyebrow">PORTAL ONLY · v1.1</p><h2 id="contents-heading">Lab steps</h2></div>
+          <button class="icon-button menu-close" type="button" data-menu-close aria-label="Close contents" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <nav id="chapter-nav" class="chapter-nav" aria-labelledby="contents-heading"><div class="toc">
+<ul>
+<li><a href="#portal-setup">01. Prepare your account and lab files</a></li>
+<li><a href="#portal-resource-group">02. Create a new resource group in Azure Portal</a></li>
+<li><a href="#portal-project">03. Create the Foundry resource and project</a></li>
+<li><a href="#portal-models">04. Deploy models for three roles</a></li>
+<li><a href="#portal-agent">05. Connect instructions and File search to the Agent</a></li>
+<li><a href="#portal-evaluation">06. Run the baseline evaluation on twelve cases</a></li>
+<li><a href="#portal-analysis">07. Read responses and errors before scores</a></li>
+<li><a href="#portal-optimize">08. Optimize instructions only</a></li>
+<li><a href="#portal-compare">09. Save the reviewed instructions as a new version and compare</a></li>
+<li><a href="#portal-finish">10. Preserve results and clean up resources</a></li>
+</ul>
+</div>
+</nav>
+        <details class="related-documents">
+          <summary>Existing v1 guides</summary>
+          <nav aria-label="Lab documents"><ul><li><a href="ko/index.html" lang="ko">v1 한국어 가이드</a></li><li><a href="index.html" lang="en">v1 English guide</a></li></ul></nav>
+        </details>
+        <section class="progress-panel" data-progress-panel aria-labelledby="progress-title" hidden>
+          <div class="panel-heading"><h2 id="progress-title">My reading progress</h2><span class="local-badge">Local</span></div>
+          <p id="progress-summary" class="progress-summary" aria-live="polite" aria-atomic="true"></p>
+          <progress id="reading-progress" max="1" value="0" aria-labelledby="progress-title" aria-describedby="progress-summary"></progress>
+          <details class="progress-details">
+            <summary>Mark each step as read</summary>
+            <div id="progress-checklist" class="progress-checklist"></div>
+          </details>
+          <div class="progress-bottom"><span>Only the steps you check are recorded.</span><button class="text-button" type="button" data-progress-reset aria-haspopup="dialog" aria-controls="reset-dialog">Reset</button></div>
+          <p id="storage-feedback" class="storage-note" role="status">Reading progress for this document is saved only in this browser.</p>
+        </section>
+        <details class="keyboard-help" data-keyboard-help hidden>
+          <summary>Keyboard shortcuts</summary>
+          <dl>
+            <div><dt><kbd>Esc</kbd></dt><dd>Close the mobile contents or confirmation dialog</dd></div>
+            <div><dt><kbd>Tab</kbd></dt><dd>Move to the next link or button</dd></div>
+            <div><dt><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>Go to the previous or next step</dd></div>
+          </dl>
+        </details>
+        <p class="sidebar-note">Start v1.1 in a new resource group. Leave the existing v1 environment unchanged.</p>
+      </div>
+    </aside>
+    <button class="drawer-backdrop" type="button" data-drawer-backdrop aria-label="Close contents" tabindex="-1" hidden></button>
+    <main id="main-content" class="main-content" tabindex="-1">
+      <div class="reading-toolbar no-print">
+        <span class="document-label"><span aria-hidden="true"></span>Portal only · v1.1</span>
+        <span class="document-date">Reviewed <time datetime="2026-11-05">2026-11-05</time></span>
+      </div>
+      <noscript><p class="noscript-note">Content, navigation, and language links work without JavaScript. Enable JavaScript for theme switching, reading progress, and copy buttons.</p></noscript>
+      <article id="guide-start" class="guide-content" lang="en" aria-label="Microsoft Foundry Evaluation and Optimization Lab v1.1"><p class="eyebrow">PORTAL ONLY · v1.1 · English</p>
+
+<h1 id="microsoft-foundry-evaluation-and-optimization-lab-v11">Microsoft Foundry Evaluation and Optimization Lab v1.1</h1>
+<p class="hero-summary"><strong>New resource group → policy-searching Agent → baseline evaluation → instruction optimization → reevaluation under the same conditions.</strong> Complete the lab by clicking and entering values in Azure Portal and Foundry Portal. No terminal, Cloud Shell, installation, or scripts are required.</p>
+<div class="hero-summary">
+<div><strong>Azure Portal</strong><span>Create a new resource group and verify the actual resources.</span></div>
+<div><strong>Foundry Portal</strong><span>Build the Agent, evaluate it, and run Optimize.</span></div>
+<div><strong>Outcome</strong><span>Compare responses, scores, and errors for two Agent versions under the same conditions.</span></div>
+</div>
+
+<p><a href="ko/handbook.v1.1.html">한국어 가이드</a> · <a href="media/portal.v1.1.html">Watch the actual portal recording · Korean captions</a> · <a href="index.html">Existing v1 guide</a></p>
+<p><strong>This is a separate path.</strong> Do not mix in v1 environments, commands, or model settings. The Contoso Atlas Cloud policies and questions are synthetic training material, not Microsoft or real customer terms. Do not publish to production or perform real refunds, deletions, or permission changes.</p>
+<p><strong>This is a teaching comparison.</strong> The baseline is a <strong>basic FAQ draft</strong> with working policy retrieval and valid JSON. Its short, general summaries intentionally leave room for better case-specific calculations and clarification. After optimizing instructions, compare <strong>Relevance and TaskAdherence separately</strong>. Do not change questions, reference answers, models, or evaluation criteria to raise scores. This demonstration is not evidence of production performance or improvement on unseen questions.</p>
+<p>The pictures are actual portal captures with private fields redacted. Historical scores are not your results or guaranteed targets.</p>
+<p><strong>How to proceed:</strong> Follow 01 through 10 from top to bottom: <strong>perform the numbered actions → check the screen directly below → continue to the next number</strong>. Use <strong>View full-size image</strong> to read small text. Both guide languages use the <strong>same Korean policies, questions, Agent instructions, and recorded responses</strong>. Only the guide language changes; no separate English-language evaluation was run or is claimed. Paste the supplied Korean content unchanged rather than mixing in the original v1 English dataset.</p>
+<h2 id="portal-setup">01. Prepare your account and lab files</h2>
+<p><strong>You need:</strong> an organizational account, an approved Azure subscription, permission to create resources, deploy models, and run Agents/evaluations/Optimize, plus model quota and spending approval. If access or quota is missing, ask your administrator before continuing. Never share passwords, keys, or tokens for this lab.</p>
+<ol>
+<li>Open <a href="https://portal.azure.com/">Azure Portal</a> and <a href="https://ai.azure.com/">Foundry Portal</a> in separate browser tabs.</li>
+<li>Sign in to <strong>both portals with the same organizational account</strong>. If you have several accounts, use the one with access to the Azure subscription you selected.</li>
+<li>Save the following two files to your computer. In the web guide, right-click each link and choose <strong>Save link as</strong>. On GitHub, use <strong>Download raw file</strong> on the file page. Keep the original file extensions.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>File to save</th>
+<th>Where it is used</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../data/knowledge/documents.v1.1.json">documents.v1.1.json</a></td>
+<td>05 · File search upload</td>
+<td>Eight synthetic policies</td>
+</tr>
+<tr>
+<td><a href="../data/optimizer/dev.v1.1.jsonl">dev.v1.1.jsonl</a></td>
+<td>06 · Evaluation dataset upload</td>
+<td>Twelve questions and evaluation references</td>
+</tr>
+</tbody>
+</table>
+<p>Do not edit the files or remove selected questions. These versioned files preserve the original Korean policies and evaluation cases.</p>
+<p><strong>Naming:</strong> Include <code>v1.1</code> in each new name you choose. Where periods are not allowed, use <code>v1-1</code>. The dates below are examples; substitute your date or a short identifier if needed. Automatically assigned run IDs, numeric versions, and internal managed-object names are not names you enter.</p>
+<p class="completion-check"><strong>Done when:</strong> You are signed in to both portals and have both files locally. Closing the browser does not stop Azure charges.</p>
+<h2 id="portal-resource-group">02. Create a new resource group in Azure Portal</h2>
+<p class="step-route"><strong>Where to act:</strong> Azure Portal → top search → <strong>Resource groups</strong>.</p>
+<ol>
+<li>Select <strong>Create</strong>.</li>
+<li>Under <strong>Basics</strong>, enter the following values.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Enter or select</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td>Your approved subscription</td>
+</tr>
+<tr>
+<td>Resource group name</td>
+<td><code>rg-foundry-eval-v1.1-20261104</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><strong>(US) North Central US</strong></td>
+</tr>
+</tbody>
+</table>
+<figure class="portal-shot" id="shot-resource-group-v1-1">
+  <img src="../web/assets/portal/v1.1/01-resource-group-basics.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Basics fields for creating a new resource group">
+  <figcaption><strong>Check the subscription, new group name, and region.</strong> This creates a new group rather than selecting an existing one. <a href="../web/assets/portal/v1.1/01-resource-group-basics.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="3">Under <strong>Tags</strong>, add name <code>lab-version</code> with value <code>v1.1</code>.</li>
+<li>Select <strong>Review + create → Create</strong>.</li>
+<li>Open the new group. Under <strong>Overview</strong>, verify its name and that it has no lab resources yet.</li>
+</ol>
+<figure class="portal-shot" id="shot-empty-group-v1-1">
+  <img src="../web/assets/portal/v1.1/02-empty-resource-group.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="New resource group showing zero resources and No deployments">
+  <figcaption><strong>Check zero resources, No deployments, and the v1.1 tag.</strong> Foundry has not been created yet. Also check that the resource filters include everything. <a href="../web/assets/portal/v1.1/02-empty-resource-group.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p>Do not reuse an existing lab group. If the name already exists, append <code>-02</code> and select that group in every later step.</p>
+<p class="completion-check"><strong>Done when:</strong> Azure Portal shows the <strong>new empty resource group</strong>.</p>
+<h2 id="portal-project">03. Create the Foundry resource and project</h2>
+<p class="step-route"><strong>Where to act:</strong> Foundry Portal → <strong>Create new → Create a project</strong>. Use the classic screen only for this creation step, then switch to New Foundry.</p>
+<ol>
+<li>If <strong>New Foundry</strong> is on, turn it off.</li>
+<li>From the home page, open the project creation screen through <strong>Create new</strong>.</li>
+<li>For <strong>Project</strong>, enter <code>proj-foundry-eval-v1-1</code>.</li>
+<li>Expand <strong>Advanced options</strong> and check the values below. Do not accept an automatically selected different subscription or resource group.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Enter or select</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft Foundry resource</td>
+<td><code>ai-foundry-eval-v1-1-20261104</code></td>
+</tr>
+<tr>
+<td>Subscription</td>
+<td>The subscription selected in 02</td>
+</tr>
+<tr>
+<td>Resource group</td>
+<td><strong>The new group created in 02</strong></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><strong>North Central US</strong></td>
+</tr>
+</tbody>
+</table>
+<figure class="portal-shot" id="shot-project-create-v1-1">
+  <img src="../web/assets/portal/v1.1/05-foundry-project-create.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Foundry project creation with the new resource group selected in Advanced options">
+  <figcaption><strong>Check the resource group under Advanced options.</strong> Use the group, subscription, and region from 02. <a href="../web/assets/portal/v1.1/05-foundry-project-create.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="5">Select <strong>Create</strong> once and wait for the project home page. If the Foundry resource name is taken, append a short identifier.</li>
+<li>Turn on <strong>New Foundry</strong>. If prompted to choose an account, select the same account used in Azure Portal.</li>
+<li>Verify that the top project selector shows <code>proj-foundry-eval-v1-1</code>.</li>
+</ol>
+<figure class="portal-shot" id="shot-project-home-v1-1">
+  <img src="../web/assets/portal/v1.1/06-project-home.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="New Foundry project home with Agents, Models, and Evaluations in the left navigation">
+  <figcaption><strong>Check the top project selector and New Foundry switch.</strong> Agents, Models, and Evaluations are in the left navigation. Do not deploy extra models suggested on the home page. <a href="../web/assets/portal/v1.1/06-project-home.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="8">Switch to the <strong>Azure Portal tab</strong>, open the new group, and select <strong>Refresh</strong>. Verify the <strong>Foundry resource and Foundry project</strong>.</li>
+</ol>
+<figure class="portal-shot" id="shot-created-resources-v1-1">
+  <img src="../web/assets/portal/v1.1/15-created-resources.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Dedicated resource group containing a Foundry resource and a Foundry project">
+  <figcaption><strong>Look for Foundry and Foundry project in the Type column.</strong> These are two different resources despite their similar names. This verifies creation in the same environment; it is not an instruction to create more resources. <a href="../web/assets/portal/v1.1/15-created-resources.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>If creation fails:</strong> Successful input validation is not successful deployment. Check the group's <strong>Overview and Deployments</strong>. If an object already exists, inspect it before creating duplicates. This guide uses the Foundry Portal route above instead of Azure Portal's Foundry creation dialog.</p>
+<p class="completion-check"><strong>Done when:</strong> The new group contains both resources and New Foundry opens the new project home page.</p>
+<h2 id="portal-models">04. Deploy models for three roles</h2>
+<p class="step-route"><strong>Where to act:</strong> <strong>Foundry Portal tab</strong> → New Foundry → <strong>Catalog → Models</strong>.</p>
+<p>Use <strong>different deployment names</strong>, even when two roles use the same model. The Agent answers, the Judge evaluates, and the Optimizer generates improved instructions.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Model / model version</th>
+<th>Deployment name</th>
+<th>Capacity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent</td>
+<td><strong>gpt-5.5 / 2026-04-24</strong></td>
+<td><code>agent-v1-1</code></td>
+<td>150K TPM</td>
+</tr>
+<tr>
+<td>Judge</td>
+<td><strong>gpt-6-luna / 2026-09-22</strong></td>
+<td><code>judge-v1-1</code></td>
+<td>100K TPM</td>
+</tr>
+<tr>
+<td>Optimizer</td>
+<td><strong>gpt-5.5 / 2026-04-24</strong></td>
+<td><code>optimizer-v1-1</code></td>
+<td>150K TPM</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>On the <strong>Models</strong> tab, search for <code>gpt-5.5</code> and open it.</li>
+<li>Select <strong>Deploy → Custom settings</strong>.</li>
+<li>Enter the first row's <strong>Deployment name</strong>. Select <strong>Global Standard</strong> and the model version shown in the table.</li>
+<li>Open <strong>Model version settings → Model version upgrade policy</strong> and select <strong>Opt out of automatic model version upgrades</strong>.</li>
+</ol>
+<figure class="portal-shot" id="shot-model-deploy-v1-1">
+  <img src="../web/assets/portal/v1.1/07-agent-model-deploy.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Agent deployment name, pinned model version, and automatic upgrades disabled">
+  <figcaption><strong>Check the deployment name, pinned version, and upgrade opt-out.</strong> Agent and Optimizer deployment names differ even when their models match. <a href="../web/assets/portal/v1.1/07-agent-model-deploy.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="5">Check Capacity and select <strong>Deploy</strong>.</li>
+<li>Follow the same route to deploy the Judge and Optimizer.</li>
+<li>Open <strong>Models</strong> in the left navigation. Verify each deployment's name, model, version, and <strong>Succeeded</strong> status.</li>
+</ol>
+<figure class="portal-shot" id="shot-models-succeeded-v1-1">
+  <img src="../web/assets/portal/v1.1/08-models-succeeded.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="agent-v1-1, judge-v1-1, and optimizer-v1-1 deployments showing Succeeded">
+  <figcaption><strong>Match the three named deployments, models, versions, and Succeeded states.</strong> This same-environment capture was taken after File search preparation, so it also shows an automatically created text-embedding-ada-002 deployment. It does not tell you to deploy a fourth model manually. <a href="../web/assets/portal/v1.1/08-models-succeeded.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Support requirements:</strong> This path uses <code>gpt-5.5</code> with File search. Do not substitute v1's <code>gpt-6-sol</code>. If deployment, File search, or quota is unavailable, stop and resolve the support or quota issue. Do not switch models or versions during comparison. Global Standard is a global deployment type; do not upload real customer data with regional restrictions.</p>
+<p>Managed features such as File search can create internal datasets or embedding deployments automatically. Distinguish them from your three deployments. Do not delete an unidentified managed object just to tidy its name.</p>
+<p class="completion-check"><strong>Done when:</strong> All three role deployments show Succeeded and automatic model-version upgrades are disabled.</p>
+<h2 id="portal-agent">05. Connect instructions and File search to the Agent</h2>
+<p class="step-route"><strong>Where to act:</strong> <strong>Agents → New agent → Build an agent</strong>.</p>
+<ol>
+<li>Enter <code>atlas-support-v1-1</code> as the <strong>Agent name</strong> and select <strong>Text</strong>. Leave the Microsoft Copilot harness unselected.</li>
+</ol>
+<figure class="portal-shot" id="shot-create-agent-v1-1">
+  <img src="../web/assets/portal/v1.1/09-create-agent.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Agent name, Text mode, and an unselected Microsoft Copilot harness option">
+  <figcaption><strong>Check the name, Text, and unselected harness.</strong> Then use the creation button below. <a href="../web/assets/portal/v1.1/09-create-agent.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="2">Select <strong>Create agent and open playground</strong>.</li>
+<li>Under <strong>Model</strong>, select <strong>gpt-5.5 / agent-v1-1</strong>. Do not leave an automatically selected different model.</li>
+<li>Paste the complete <strong>instruction v1 (baseline)</strong> below into <strong>Instructions</strong>. The <a href="../prompts/baseline.v1.1.txt">same instruction file</a> is also available. This is portal input, not a command. It asks for a Korean, one-sentence JSON FAQ summary within 80 characters, without case-specific calculations or follow-up questions. Paste the Korean block unchanged to reproduce the recorded workload.</li>
+</ol>
+<pre><code class="language-text">Contoso Atlas Cloud의 고객지원 도우미입니다. 한국어로 친절하게 답합니다.
+정책 질문은 연결한 File search에서 근거를 찾아 답합니다.
+answer는 한 문장, 80자 이내로 작성하고 찾은 정책의 일반 규칙만 짧게 요약합니다.
+날짜·기한·금액·비율의 개별 계산이나 여러 조건을 함께 비교하는 판단은 하지 않습니다.
+조건이 모호하거나 부족해도 추가 확인 질문을 하지 않고 안내 가능한 일반 정책을 설명합니다.
+응답은 다음 네 필드만 가진 JSON 객체 하나로 작성합니다. 마크다운은 쓰지 않습니다.
+{&quot;answer&quot;:&quot;답변&quot;,&quot;citations&quot;:[&quot;실제로 사용한 정책 문서 ID&quot;],&quot;route&quot;:&quot;answer&quot;,&quot;needs_human&quot;:false}
+route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 route가 escalate일 때만 true입니다.
+이 도우미는 안내만 합니다. 실제 접수, 승인, 환불, 데이터 삭제, 권한 변경을 수행했다고 주장하지 않습니다.
+권한 없는 타인 데이터 접근이나 인증 우회 요청은 거절하고, 비밀번호·키·토큰 등 비밀정보를 요청하지 않습니다.
+구체적인 평가 문항, 날짜, 정답 예시를 지침에 저장하지 않습니다.
+</code></pre>
+<ol>
+<li value="5">If <strong>Tools</strong> includes a default <strong>Web search</strong> tool, use that tool's menu → <strong>Remove</strong>. Keep the uploaded policies as the fixed source.</li>
+<li>Select <strong>Tools → Add → Add tools → File search → Add tool</strong>.</li>
+<li>In <strong>Attach files</strong>, enter <code>atlas-policy-v1-1</code> as the <strong>Vector index name</strong>.</li>
+<li>Under <strong>browse for files</strong>, select <strong>only</strong> <code>documents.v1.1.json</code>. When upload status is <strong>Success</strong>, select <strong>Attach</strong>.</li>
+<li>Verify that <strong>File search</strong> is connected under Tools and select <strong>Save</strong>.</li>
+<li>Open the <strong>Tools → File search</strong> card. Confirm that <code>atlas-policy-v1-1</code> contains one <strong>Completed</strong> policy file.</li>
+</ol>
+<figure class="portal-shot" id="shot-policy-upload-v1-1">
+  <img src="../web/assets/portal/v1.1/10-policy-upload.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="One policy file connected to the File search index with Completed status">
+  <figcaption><strong>Check one file and Completed.</strong> This is your saved File search connection. Do not upload or Attach the file again. <a href="../web/assets/portal/v1.1/10-policy-upload.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="11">Close the verification dialog with <strong>Cancel</strong>. Record the top <strong>Version</strong> number as your <strong>baseline version</strong>. It depends on prior saves and does not have to be 1.</li>
+<li>Send <strong>“Standard 요금제에서 조직 SSO를 사용할 수 있나요?”</strong> in the chat. It means “Can the Standard plan use organizational SSO?”</li>
+<li>Expand the response's tool indicator and verify a <strong>File search call</strong>, model <code>agent-v1-1</code>, and a JSON response. SSO is available only in Pro, with source ID <code>ATLAS-FEAT-001</code>.</li>
+</ol>
+<figure class="portal-shot" id="shot-agent-retrieval-v1-1">
+  <img src="../web/assets/portal/v1.1/11-agent-retrieval.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Baseline v6 using File search and returning valid JSON citing ATLAS-FEAT-001">
+  <figcaption><strong>Check the model, File search, and JSON evidence together.</strong> The Korean response says Standard lacks organizational SSO and Pro provides it, citing ATLAS-FEAT-001. Version 6 is this recording's baseline, not a number you must reproduce. <a href="../web/assets/portal/v1.1/11-agent-retrieval.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Avoid confusion:</strong> <strong>Knowledge → Add</strong> is the Foundry IQ connection route. This v1.1 path uses <strong>File search under Tools</strong>; do not create a separate Search resource or Foundry IQ configuration. If File search is disabled, first check the Agent's actual selected model.</p>
+<p>The starting Agent does not fail every question. Keep basic retrieval and JSON working while improving <strong>application of general rules to individual cases and requests for missing information</strong>. Later, change only instructions, not policies, tools, or models. Lab edition <strong>v1.1</strong> and the portal's numeric <strong>Agent Version</strong> are different concepts.</p>
+<p class="completion-check"><strong>Done when:</strong> A baseline version is saved with one policy file, and the basic question produces a File search call and valid JSON.</p>
+<h2 id="portal-evaluation">06. Run the baseline evaluation on twelve cases</h2>
+<p class="step-route"><strong>Where to act:</strong> Agent → <strong>Evaluation → Automatic Evaluation → Create</strong>. Continue through one evaluation creation wizard.</p>
+<ol>
+<li>Under <strong>Target</strong>, verify <code>atlas-support-v1-1</code> and the <strong>baseline version</strong> recorded in 05.</li>
+<li>Select <strong>Scope: Individual turns</strong> and <strong>Frequency: One time</strong>.</li>
+<li>Under <strong>Data → Existing dataset → Upload dataset</strong>, select <code>dev.v1.1.jsonl</code>. Save it as dataset <code>atlas-dev12-v1-1</code>, version <code>1</code>, then select it.</li>
+<li>Verify <strong>12 rows</strong>, <code>query</code>, <code>context</code>, and <code>ground_truth</code> in the preview. <code>ground_truth</code> is reference material stored as a JSON string.</li>
+<li>Open <strong>Configure agents → Configure</strong>. Put <strong>only this value</strong> in the <strong>USER</strong> field.</li>
+</ol>
+<pre><code class="language-text">{{item.query}}
+</code></pre>
+<figure class="portal-shot" id="shot-query-only-v1-1">
+  <img src="../web/assets/portal/v1.1/12-query-only-mapping.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Evaluation USER input mapped only to item.query">
+  <figcaption><strong>USER receives only the question.</strong> Match the field to the value above before saving. Do not add a reference answer or context. <a href="../web/assets/portal/v1.1/12-query-only-mapping.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p>Do not append <code>context</code> or <code>ground_truth</code> to this field. The Agent must retrieve policies through File search rather than read the answer in advance. Inspect <strong>Configure agents</strong> explicitly even if mapping appears to have been skipped automatically.</p>
+<ol>
+<li value="6">Select <strong>Save</strong> to close the mapping dialog, then <strong>Next</strong> to <strong>Criteria</strong>. Set <strong>Judge model</strong> to <strong>judge-v1-1</strong>. Use <strong>Clear selection</strong>, then select only <strong>Relevance</strong> and <strong>Task adherence</strong>.</li>
+<li>Open each evaluator and check the settings below. Select <strong>judge-v1-1</strong> for both.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Relevance</th>
+<th>Task adherence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Result metric name</td>
+<td>Relevance</td>
+<td>TaskAdherence</td>
+</tr>
+<tr>
+<td>Judge deployment</td>
+<td><code>judge-v1-1</code></td>
+<td><code>judge-v1-1</code></td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td><strong>4</strong></td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>Probability_threshold</td>
+<td>Not applicable</td>
+<td><strong>0.5</strong></td>
+</tr>
+<tr>
+<td>Query</td>
+<td><code>{{item.query}}</code></td>
+<td><code>{{item.query}}</code></td>
+</tr>
+<tr>
+<td>Response</td>
+<td><code>{{sample.output_text}}</code></td>
+<td><code>{{sample.output_text}}</code></td>
+</tr>
+<tr>
+<td>Tool definitions</td>
+<td>Not applicable</td>
+<td>Keep default <code>{{sample.tool_definitions}}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>TaskAdherence warning:</strong> This is a binary 0/1 metric. If the shared Threshold field defaults to 3, change it to <strong>1</strong>. Check <strong>0.5</strong> in the Probability_threshold numeric field.</p>
+<figure class="portal-shot" id="shot-task-adherence-v1-1">
+  <img src="../web/assets/portal/v1.1/13-task-adherence-settings.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Task-Adherence settings with judge-v1-1, Threshold 1, and Probability_threshold 0.5">
+  <figcaption><strong>Check the Judge, 1, and 0.5 separately.</strong> These are two different thresholds. Match Query and Response under Advanced settings to the table, then confirm with Update or Apply. <a href="../web/assets/portal/v1.1/13-task-adherence-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="8">Select the <strong>Criteria</strong> step's <strong>Next</strong> button, not the evaluator catalog's next-page control.</li>
+<li>Under <strong>Review</strong>, enter <code>atlas-portal-eval-v1-1</code> and recheck the Agent version, dataset, and two evaluators.</li>
+</ol>
+<figure class="portal-shot" id="shot-baseline-review-v1-1">
+  <img src="../web/assets/portal/v1.1/14-baseline-review.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Review showing the baseline Agent version, dataset, and two evaluators">
+  <figcaption><strong>Check the baseline version, data, and two evaluators.</strong> Review summarizes settings before submission; it is not a successful evaluation or a score screen. <a href="../web/assets/portal/v1.1/14-baseline-review.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="10">Select <strong>Submit</strong> once and wait for the run to finish. Do not create the same evaluation again.</li>
+</ol>
+<p class="completion-check"><strong>Done when:</strong> An evaluation definition and actual run exist, and you can inspect per-case responses, scores, or errors. Successful submission does not mean all twelve cases succeeded.</p>
+<h2 id="portal-analysis">07. Read responses and errors before scores</h2>
+<p class="step-route"><strong>Where to act:</strong> <strong>Evaluations → atlas-portal-eval-v1-1</strong>.</p>
+<ol>
+<li>In the run list, check the baseline version under <strong>Target</strong>, <strong>Status</strong>, and the pass counts and denominators for Relevance and TaskAdherence.</li>
+</ol>
+<figure class="portal-shot" id="shot-baseline-results-v1-1">
+  <img src="../web/assets/portal/v1.1/16-baseline-results.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Baseline Agent v6 showing Partial, Relevance 7/11, and TaskAdherence 8/11">
+  <figcaption><strong>Read Partial and each metric's denominator first.</strong> This baseline has Relevance 7/11 (64%) and TaskAdherence 8/11 (73%). Overall 68%, or 15/22, combines judgments from two metrics; it does not mean 22 questions. Your results may differ. <a href="../web/assets/portal/v1.1/16-baseline-results.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="2">Open that run and select <strong>Detailed metrics</strong>. Verify all <strong>12 cases</strong>. If the table shows ten rows, use <strong>Next page</strong> to inspect the other two.</li>
+<li>Inspect <strong>Error</strong> first when that column exists. A page without errors may omit it. Distinguish response-generation failures from Judge-scoring failures.</li>
+<li>For a low-<strong>Relevance</strong> row, scroll horizontally to <code>sample.output_text</code> and open <strong>View JSON</strong>. Read the question, actual response, and <strong>Relevance.reason</strong> together.</li>
+<li>Read <strong>TaskAdherence</strong> and its reason too. Following instructions and providing a sufficient business answer are different criteria.</li>
+<li>Privately record the baseline version, evaluation definition, dataset version, evaluator settings, and error cases.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Question to ask</th>
+<th>What to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Did it summarize general rules but miss the question's conditions?</td>
+<td>Look for missing calculations, condition comparisons, or necessary clarification.</td>
+</tr>
+<tr>
+<td>Did it apply policy deadlines or amounts to this case?</td>
+<td>Check whether it ended with only “contact support.”</td>
+</tr>
+<tr>
+<td>Did it ask for essential missing information?</td>
+<td>Examples include plan, monthly/annual billing, or the relevant month.</td>
+</tr>
+<tr>
+<td>Did it mark undocumented features as unconfirmed?</td>
+<td>Do not replace uncertainty with a false promise to improve a score.</td>
+</tr>
+<tr>
+<td>Did it claim to complete an approval, submission, or deletion?</td>
+<td>An advisory Agent must not claim actions it cannot perform.</td>
+</tr>
+<tr>
+<td>Does the scoring reason match the displayed answer?</td>
+<td>If not, inspect the full conversation and tool history before deciding.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Partial / provider blocking:</strong> A run detail may show <strong>Completed</strong> while the definition list shows <strong>Partial</strong>. Record successful cases and errors together. A pass rate over eleven scored cases is not a pass rate over all twelve. Distinguish provider blocks such as <code>cyber_policy</code> from an Agent refusal or ordinary wrong answer. Do not disable safeguards or rewrite questions to bypass a block.</p>
+<p class="completion-check"><strong>Done when:</strong> You have read an actual low-scoring response and its reasons, and separated instruction improvements from service errors. If errors remain, <strong>withhold an overall improvement conclusion</strong>.</p>
+<h2 id="portal-optimize">08. Optimize instructions only</h2>
+<p class="step-route"><strong>Where to act:</strong> <strong>Agents → atlas-support-v1-1 → baseline version → Optimize → Optimize my agent → Agent</strong>.</p>
+<p>The benchmark examples on the introduction screen are not your lab results.</p>
+<ol>
+<li>Under <strong>Target</strong>, verify the baseline Agent version.</li>
+<li>Select <strong>Optimization approach → Choose targets</strong>. Explicitly set the following values instead of trusting automatic selections.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instruction</td>
+<td><strong>Selected</strong></td>
+</tr>
+<tr>
+<td>Tool description</td>
+<td><strong>Unselected</strong></td>
+</tr>
+<tr>
+<td>Model / Compare across models</td>
+<td><strong>Unselected / off</strong></td>
+</tr>
+<tr>
+<td>Optimization model</td>
+<td><strong>optimizer-v1-1</strong></td>
+</tr>
+<tr>
+<td>Max candidates</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>Evaluation model</td>
+<td><strong>judge-v1-1</strong></td>
+</tr>
+</tbody>
+</table>
+<figure class="portal-shot" id="shot-optimizer-settings-v1-1">
+  <img src="../web/assets/portal/v1.1/17-optimizer-settings.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Instruction-only optimization with optimizer-v1-1, judge-v1-1, and one candidate">
+  <figcaption><strong>Change only Instruction; keep models and tools fixed.</strong> Match the generation model, evaluation model, and Max candidates 1 to the table. <a href="../web/assets/portal/v1.1/17-optimizer-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="3">Select <strong>Next → Data source → Select dataset and criteria</strong>. Do not use Generate data or production traces.</li>
+<li>Select dataset <code>atlas-dev12-v1-1</code>, version <code>1</code>.</li>
+<li>Under <strong>Criteria</strong>, turn off <strong>Custom only</strong> if enabled. Search for the two evaluators below. If a settings dialog opens, check its values and select <strong>Apply</strong>.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Optimizer evaluator</th>
+<th>Version</th>
+<th>Settings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relevance-Evaluator</td>
+<td>15</td>
+<td>Threshold <strong>4</strong></td>
+</tr>
+<tr>
+<td>Task-Adherence-Evaluator-(Preview)</td>
+<td>18</td>
+<td>Threshold <strong>1</strong>, Probability_threshold <strong>0.5</strong></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li value="6">Verify that no other evaluators were added and select <strong>Next</strong>.</li>
+<li>Under <strong>Review</strong>, verify <strong>Optimization targets: Instruction</strong>, the same dataset and Judge, and <strong>one candidate</strong>. Read <strong>Estimated cost</strong> too; it is not an actual bill or guaranteed spending cap.</li>
+</ol>
+<figure class="portal-shot" id="shot-optimizer-review-v1-1">
+  <img src="../web/assets/portal/v1.1/18-optimizer-review.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Optimizer Review summarizing Instruction, the same dataset, Judge, and candidate count">
+  <figcaption><strong>Recheck the change scope before Submit.</strong> This capture still says Estimating cost. Read your estimate when available and confirm it is authorized. If no estimate is provided, do not submit without an approved cost basis. <a href="../web/assets/portal/v1.1/18-optimizer-review.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="8">Select <strong>Submit</strong> once. Open the automatically assigned <strong>Run ID</strong> in the run list. There is no separate run-name field; keep the ID privately.</li>
+<li>Under <strong>Additional settings</strong>, verify the instruction target, models, and candidate count, then wait for completion.</li>
+<li>Under <strong>Candidate results</strong>, compare baseline and candidate scores and read score details.</li>
+</ol>
+<figure class="portal-shot" id="shot-optimizer-results-v1-1">
+  <img src="../web/assets/portal/v1.1/19-optimizer-results.v1.1.png" width="1172" height="362" loading="lazy" decoding="async" alt="Original Optimizer candidate result cards showing Task-weighted average increasing from 0.625 to 0.781">
+  <figcaption><strong>Verify the original Optimizer candidate's actual 0.625 → 0.781.</strong> This separate run used one candidate and took 6m 23s. It is not the Relevance or TaskAdherence pass rate of the manually reviewed v2 in 09. The image is cropped to result cards to exclude run identifiers; product scores are unchanged. <a href="../web/assets/portal/v1.1/19-optimizer-results.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Review candidates:</strong> Do not adopt a higher-scoring instruction that memorizes policy numbers or reference answers, promises unconfirmed features, or claims actions that were never performed. Permission bypass and requests for secrets remain prohibited. Accept only <strong>general instruction improvements</strong>, such as answer structure, evidence use, and necessary clarification.</p>
+<ol>
+<li value="11">Open the candidate's <strong>Changes / View changes</strong>. Compare baseline and original candidate instructions against the review criteria above.</li>
+</ol>
+<figure class="portal-shot" id="shot-review-candidate-v1-1">
+  <img src="../web/assets/portal/v1.1/20-review-candidate.v1.1.png" width="1038" height="622" loading="lazy" decoding="async" alt="Instruction changes comparing the baseline with the original Optimizer candidate">
+  <figcaption><strong>The Changes dialog shows the original candidate, not final v2.</strong> The Korean text on the right still includes policy examples and restrictions on calculations and follow-up questions. Green highlighting or a higher score is not a reason to Promote. Do not copy instructions from this picture; distinguish it from the reviewed file in 09. The image is cropped to the change dialog for privacy. <a href="../web/assets/portal/v1.1/20-review-candidate.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="12">Close the change dialog with <strong>Close</strong>. Do not select <strong>Promote candidate</strong>. In the next step, save the reviewed correction as a new version.</li>
+</ol>
+<p>The Optimizer's <strong>Task-weighted average (0–1)</strong> is not an individual evaluator pass rate. Higher scores on the same twelve optimization cases do not establish generalization or production quality.</p>
+<p class="completion-check"><strong>Done when:</strong> You have read the actual candidate instructions and scoring reasons and decided whether a candidate is worth retaining. Preserve errors if the job fails. Do not rerun identical settings until a favorable score appears.</p>
+<h2 id="portal-compare">09. Save the reviewed instructions as a new version and compare</h2>
+<p class="step-route"><strong>Where to act:</strong> Agent → <strong>Playground → Instructions → Save</strong>, then the existing evaluation definition → <strong>Add run / Compare runs</strong>.</p>
+<p>An Optimizer candidate can embed dates or reference answers from evaluation cases. Do not promote such an original unchanged, even if its score rises. This path uses <strong><a href="../prompts/reviewed.v1.1.txt">instruction v2 · reviewed.v1.1.txt</a></strong>, which generalizes response, retrieval, and routing improvements. It is a <strong>human-authored, reviewed correction, not the original Optimizer output</strong>. A human also removed the original's character-limit, calculation, and clarification restrictions. The reviewed instructions allow grounded calculations and specific questions for essential missing information while preserving JSON, evidence, and safety boundaries. Do not attribute the original candidate's scores to this file or describe the improvement as the Optimizer's effect alone.</p>
+<table>
+<thead>
+<tr>
+<th>Comparison condition</th>
+<th>Keep fixed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Questions and references</td>
+<td><code>atlas-dev12-v1-1</code>, same version, all twelve cases</td>
+</tr>
+<tr>
+<td>Agent input</td>
+<td>Only <code>{{item.query}}</code></td>
+</tr>
+<tr>
+<td>Agent model, policies, and tools</td>
+<td><code>agent-v1-1</code>, the same File search and policy file</td>
+</tr>
+<tr>
+<td>Judge and evaluators</td>
+<td><code>judge-v1-1</code>, Relevance 4, TaskAdherence 1 / 0.5</td>
+</tr>
+<tr>
+<td>Only intentional change</td>
+<td>Reviewed Agent instructions</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>In the Agent <strong>Playground → Version</strong>, open your recorded <strong>baseline version</strong>. Check the original FAQ instructions, model, and File search.</li>
+</ol>
+<figure class="portal-shot" id="shot-baseline-preserved-v1-1">
+  <img src="../web/assets/portal/v1.1/25-baseline-preserved.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Baseline v6 with its original FAQ instructions, model, and File search">
+  <figcaption><strong>Check the baseline before editing.</strong> The recording uses v6. The next Save creates a new version while preserving these original instructions and existing evaluation results. <a href="../web/assets/portal/v1.1/25-baseline-preserved.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="2">Replace <strong>Instructions</strong> with the complete linked instruction v2 file and select <strong>Save</strong>. Do not select <strong>Publish</strong>.</li>
+<li>Record the new Agent number as the <strong>comparison version</strong>. Verify that only instructions changed: model <code>agent-v1-1</code>, File search, and the policy file are unchanged.</li>
+</ol>
+<figure class="portal-shot" id="shot-reviewed-agent-v1-1">
+  <img src="../web/assets/portal/v1.1/21-reviewed-agent.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Reviewed Agent v7 retaining model agent-v1-1 and File search">
+  <figcaption><strong>Only instructions changed in the new version.</strong> This run's comparison version is 7, with the same model and File search. This is a saved Agent, not a published production deployment. <a href="../web/assets/portal/v1.1/21-reviewed-agent.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="4">Select <strong>Evaluations → atlas-portal-eval-v1-1 → Add run</strong>. Do not create another evaluation definition.</li>
+<li>Under <strong>Target</strong>, select the same Agent and use <strong>Pin v[number]</strong> for your recorded comparison version, not <strong>Latest available</strong>. Continue with <strong>Scope: Individual turns → Next</strong>. If <strong>Data</strong> appears, select the same <code>atlas-dev12-v1-1</code>, version <code>1</code>, under <strong>Existing dataset</strong>, then <strong>Next</strong>.</li>
+<li>Open <strong>Configure agents → Configure</strong>. Enter only <code>{{item.query}}</code> as <strong>User prompt</strong> and verify that Target uses your comparison version.</li>
+</ol>
+<figure class="portal-shot" id="shot-add-run-query-only-v1-1">
+  <img src="../web/assets/portal/v1.1/22-add-run-query-only.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Add run using v7 with only item.query in USER">
+  <figcaption><strong>Reevaluation remains query-only.</strong> Check both v7 on the left Target card and the USER input. Reusing the definition does not remove the need to inspect input mapping. <a href="../web/assets/portal/v1.1/22-add-run-query-only.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="7">Select <strong>Save → Submit</strong> and wait for completion. Reuse the definition's Judge and evaluators.</li>
+<li>Open both runs in turn. Under <strong>Detailed metrics</strong>, inspect all <strong>12 rows</strong> and compare responses, scores, reasons, and errors at the <strong>same Index</strong>. Record latency, token usage, and mean scores too.</li>
+<li>Open the definition's run list. Compare <strong>Target</strong>, status, and both evaluator pass rates and denominators.</li>
+</ol>
+<figure class="portal-shot" id="shot-evaluation-runs-v1-1">
+  <img src="../web/assets/portal/v1.1/23-evaluation-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Two runs of the same evaluation comparing Agent v6 and v7 pass rates and Partial status">
+  <figcaption><strong>Compare Target, Partial, and denominators in both rows.</strong> The rise from v6's 64% and 73% to v7's 100% and 100% is an observed pass-rate increase on eleven common valid cases, not success on all twelve submitted cases. <a href="../web/assets/portal/v1.1/23-evaluation-runs.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<p><strong>Actual results in this recording · 2026-11-04</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Instruction v1 · Agent v6</th>
+<th>Reviewed instruction v2 · Agent v7</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relevance pass rate</td>
+<td><strong>7/11 · 64%</strong></td>
+<td><strong>11/11 · 100%</strong></td>
+</tr>
+<tr>
+<td>TaskAdherence pass rate</td>
+<td><strong>8/11 · 73%</strong></td>
+<td><strong>11/11 · 100%</strong></td>
+</tr>
+<tr>
+<td>Relevance mean</td>
+<td>3.64</td>
+<td>4.91</td>
+</tr>
+<tr>
+<td>TaskAdherence mean</td>
+<td>0.73</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>P50 / P95 response latency</td>
+<td>5.4s / 7.7s</td>
+<td>4.6s / 6.8s</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li value="10"><strong>Select the baseline and comparison row checkboxes first → Compare runs</strong>. Set <strong>Baseline</strong> to the original baseline run. <strong>The portal may default to the newest run.</strong> If names are identical, match your recorded means with the Baseline column.</li>
+</ol>
+<figure class="portal-shot" id="shot-compare-runs-v1-1">
+  <img src="../web/assets/portal/v1.1/24-compare-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Statistical comparison showing baseline means, Relevance Improved, and TaskAdherence Inconclusive">
+  <figcaption><strong>Read baseline direction and statistical conclusions together.</strong> This run shows Relevance Improved by 1.27 and TaskAdherence Inconclusive. Higher observed pass rates are not proof that both metrics improved statistically. <a href="../web/assets/portal/v1.1/24-compare-runs.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="11">Read <strong>mean scores and statistical conclusions</strong>. Apply the criteria below, including the errors and actual responses you inspected, and record your conclusion.</li>
+</ol>
+<p>Both runs are <strong>Partial: the same Index 9 of twelve cases was blocked by <code>cyber_policy</code></strong>. The denominators above are the <strong>eleven common valid cases</strong>. The statistical screen reports <strong>Improved by 1.27</strong> for Relevance and <strong>Inconclusive</strong> for TaskAdherence. <strong>Both observed pass rates rose, but improvement over all twelve cases or statistical significance for both metrics was not established.</strong></p>
+<p><strong>Choose one of three conclusions.</strong> If every case is valid, neither quality metric regresses, at least one improves, and the actual answers are correct, record observed improvement on this sample. If scores are unchanged or either metric worsens, retain the baseline and investigate. <strong>If Partial, missing cases, or provider blocks remain, record that overall improvement has not been established.</strong> Higher Overall does not cancel a regression in another quality metric. Saving a teaching comparison version is not production adoption.</p>
+<p>Do not copy reference answers into instructions, remove failed cases, or overwrite baseline results to manufacture a comparison.</p>
+<p>The separate Optimizer job generated <strong>one candidate</strong> in <strong>6m 23s</strong>, with Task-weighted average <strong>0.625 → 0.781</strong>. The original still contained policy examples and restrictions and was not promoted unchanged. The table above measures the <strong>human-corrected v2 again under the same evaluation definition</strong>, not that original candidate. From a baseline with working retrieval and JSON, v2 also improved real responses, including clarifying cancellation versus downgrade intent and calculating refund deadlines.</p>
+<p class="completion-check"><strong>Done when:</strong> You have compared two actual runs under fixed conditions or recorded why no candidate was adopted. Do not publish to production or promise statistical improvement.</p>
+<h2 id="portal-finish">10. Preserve results and clean up resources</h2>
+<p class="step-route"><strong>Where to act:</strong> Foundry Portal results and your dedicated resource group in Azure Portal.</p>
+<ol>
+<li>If you plan to resume, privately record the project and Agent names, baseline/comparison versions, dataset version, evaluation and Optimizer run IDs, errors, and conclusions.</li>
+<li>Use <strong>Download results / Download JSON</strong> in the portal when downloading results. Do not publish signed download URLs, account/subscription identifiers, keys, or tokens.</li>
+<li>In Foundry Portal, open <strong>Models</strong> and inspect the lab deployments. This is the inventory to retain or clean up; do not deploy it again.</li>
+</ol>
+<figure class="portal-shot" id="shot-retained-models-v1-1">
+  <img src="../web/assets/portal/v1.1/28-retained-models.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Three role deployments and automatic embedding remaining at the end of the lab">
+  <figcaption><strong>Check the deployments remaining at the end.</strong> This demo retains three roles and automatic embedding. Decide on retention or authorized deletion below. <a href="../web/assets/portal/v1.1/28-retained-models.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="4">Switch to <strong>Azure Portal tab → Resource groups → your new group → Refresh</strong>. Verify the group name and lab resources.</li>
+</ol>
+<figure class="portal-shot" id="shot-retained-group-v1-1">
+  <img src="../web/assets/portal/v1.1/27-retained-resource-group.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Dedicated group with the Foundry resource and project remaining at the end of the lab">
+  <figcaption><strong>The group and two resources remain.</strong> This is not completed deletion. Verify that it is your own dedicated lab group before making the final decision. <a href="../web/assets/portal/v1.1/27-retained-resource-group.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+<ol>
+<li value="5">Complete <strong>one</strong> of the final actions below, verify the outcome, and finish the lab.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Final decision</th>
+<th>Action and verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Retain</strong></td>
+<td>Record cost responsibility and the next review/deletion date, then keep the group. Do not unnecessarily recreate resources or rerun evaluations.</td>
+</tr>
+<tr>
+<td><strong>Authorized deletion</strong></td>
+<td>In your own dedicated group, select <strong>Delete resource group → enter the group name → Delete</strong>. After completion, use <strong>Resource groups → Refresh</strong> to verify the group is gone. Do not separately delete shared or external resources.</td>
+</tr>
+</tbody>
+</table>
+<p>The environment in this recording was <strong>retained</strong> for review and resumption. The end of the video does not mean resources were deleted. Check the applicable pricing for File search storage, model usage, and other services.</p>
+<p><strong>Resume:</strong> Open your group in Azure Portal and select the same project in Foundry Portal. Inspect existing Agent versions and evaluation runs before performing only the necessary next action.</p>
+<p><strong>Common blockers</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>What to check in the portal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New project is missing</td>
+<td>Same organizational account and subscription; correct project in the top selector.</td>
+</tr>
+<tr>
+<td>Validation succeeded but no resource exists</td>
+<td>Group Overview, Deployments, and errors. Validation alone is not creation.</td>
+</tr>
+<tr>
+<td>File search is disabled</td>
+<td>The actual Agent model is <code>gpt-5.5 / agent-v1-1</code> for this path.</td>
+</tr>
+<tr>
+<td>Cannot find file upload under Knowledge</td>
+<td>Use <strong>Tools → File search</strong>, not Foundry IQ.</td>
+</tr>
+<tr>
+<td>Policy file appears twice</td>
+<td>Remove duplicate entries before Attach and verify one successful file.</td>
+</tr>
+<tr>
+<td>TaskAdherence fails every case</td>
+<td>Binary Threshold is <strong>1</strong>, Probability_threshold is <strong>0.5</strong>.</td>
+</tr>
+<tr>
+<td>Partial or <code>cyber_policy</code> error</td>
+<td>Preserve Error and success/failure denominators. Do not bypass safeguards or rewrite questions.</td>
+</tr>
+<tr>
+<td>A deleted model still appears</td>
+<td>Refresh the page and inspect the actual deployment list.</td>
+</tr>
+</tbody>
+</table>
+<p class="completion-check"><strong>Done when:</strong> Results and errors are preserved and retention or deletion is verified. Closing the browser is not cleanup.</p>
+<p>Official references: <a href="https://learn.microsoft.com/azure/foundry/how-to/create-projects">Create a project</a> · <a href="https://learn.microsoft.com/azure/foundry/how-to/evaluate-generative-ai-app">Evaluation</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/how-to/tools/file-search">File search</a> · <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/agent-optimizer-overview">Agent Optimizer</a>.</p></article>
+      <section class="chapter-completion no-print" data-chapter-completion aria-labelledby="current-chapter-title" hidden>
+        <div><p class="eyebrow">READ &amp; CHECK</p><h2 id="current-chapter-title"></h2><p>This records only whether you have read the current step, not a LIVE run or operational approval.</p></div>
+        <button class="primary-button" type="button" data-mark-chapter aria-pressed="false">Mark as read</button>
+      </section>
+      <nav class="chapter-pagination no-print" data-chapter-pagination aria-label="Navigate between steps" hidden>
+        <a class="chapter-link previous-chapter" data-previous-chapter rel="prev"><span>← Previous step</span><strong></strong></a>
+        <a class="chapter-link next-chapter" data-next-chapter rel="next"><span>Next step →</span><strong></strong></a>
+      </nav>
+      <footer class="document-footer">
+        <p>Microsoft Foundry Portal-only Lab v1.1 · <time datetime="2026-11-05">2026-11-05</time></p>
+        <div class="footer-links"><a href="#guide-start">Back to top ↑</a></div>
+      </footer>
+    </main>
+  </div>
+  <dialog id="reset-dialog" class="confirm-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <p class="eyebrow">LEARNING RECORD · v1.1</p>
+    <h2 id="reset-title">Reset reading progress for this document?</h2>
+    <p id="reset-description">This clears all steps marked as read in this document, in both languages. Other documents, earlier guide revisions, content, and lab files are not changed.</p>
+    <form method="dialog" class="dialog-actions">
+      <button class="secondary-button" value="cancel" autofocus>Cancel</button>
+      <button class="danger-button" value="reset">Reset reading progress</button>
+    </form>
+  </dialog>
+  <div id="announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

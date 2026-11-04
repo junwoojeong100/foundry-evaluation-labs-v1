@@ -1,6 +1,6 @@
 # Microsoft Foundry Learning Loop Lab v1 · English
 
-> **Portal-only v1.1 (한국어):** [Guide source](guide/handbook.v1.1.md) · [Web guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [Actual screen recording](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). This separate path starts with a new resource group and requires no learner commands. Existing v1 remains available below.
+> **Portal-only v1.1:** [English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) · [한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [Actual screen recording · Korean captions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). This separate path starts with a new resource group and requires no learner commands. Both guide languages use the same Korean workload, with all 25 captioned captures visible immediately after the corresponding actions. Follow the numbered steps from top to bottom. Sources: [English](guide/en/handbook.v1.1.md) · [한국어](guide/handbook.v1.1.md). Existing v1 remains available below.
 
 English is the default. See the [main README](README.md) for fixed model roles and the complete bilingual guide directory.
 

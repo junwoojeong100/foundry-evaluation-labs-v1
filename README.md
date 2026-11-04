@@ -1,6 +1,6 @@
 # Microsoft Foundry Learning Loop Lab v1
 
-> **New · portal-only v1.1 (한국어):** [Guide source](guide/handbook.v1.1.md) · [Web guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [Actual screen recording](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). Start from a new resource group and use Azure Portal + Foundry Portal only, with no learner commands. The existing v1 path below is unchanged.
+> **New · portal-only v1.1:** [English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) · [한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [Actual screen recording · Korean captions](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). Start from a new resource group and use Azure Portal + Foundry Portal only, with no learner commands. Both guide languages use the same Korean workload, with all 25 captioned captures visible immediately after the corresponding actions. Follow the numbered steps from top to bottom. Sources: [English](guide/en/handbook.v1.1.md) · [한국어](guide/handbook.v1.1.md). The existing v1 path below is unchanged.
 
 **[Start in English](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · **[한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · [한국어 README](README.ko.md)
 
@@ -51,6 +51,7 @@ The SDK helper adds a real run to the existing Microsoft Foundry definition. It 
 
 | Guide | English | 한국어 |
 |---|---|---|
+| Portal-only v1.1 · no commands | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) | [실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) |
 | Hands-on path | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html) | [실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html) |
 | Environment setup reference | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) | [환경 설정](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) |
 | Lab checklist | [Read](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) | [체크리스트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) |
@@ -67,7 +68,7 @@ English is the default. Language switching preserves the corresponding section, 
 
 Hands-on sidebars show only the ten main steps. Detailed headings and direct links remain in the body; reference documents keep their own navigation. Existing reference filenames and section links remain valid.
 
-Portal pictures illustrate UI locations; they are not a claim about your own run. English and Korean use their respective image sets, while subscription/access controls share `web/assets/portal/shared/`. Asset sources, privacy edits and illustration metadata are documented in [NOTICE](web/assets/NOTICE.txt) and the capture manifests.
+Portal pictures illustrate UI locations; they are not a claim about your own run. The original v1 English and Korean guides use their respective image sets, while subscription/access controls share `web/assets/portal/shared/`. The portal-only v1.1 guides share `web/assets/portal/v1.1/` and its Korean workload; guide translation does not create an English-language measurement. Asset sources, privacy edits and illustration metadata are documented in [NOTICE](web/assets/NOTICE.txt) and the capture manifests.
 
 ## Execution boundaries
 
@@ -88,6 +89,8 @@ python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py
 python scripts/build_guide.py --check
+python scripts/build_guide.py --source guide/en/handbook.v1.1.md --template web/template.v1.1.html --output docs/handbook.v1.1.html --language en --build-date 2026-11-05
+python scripts/build_guide.py --source guide/handbook.v1.1.md --template web/template.v1.1.html --output docs/ko/handbook.v1.1.html --language ko --build-date 2026-11-05
 python -m unittest discover -s tests -q
 ```
 
@@ -103,7 +106,7 @@ Build the allowlisted ZIP with `python scripts/package_lab.py`.
 
 Continuous integration (`.github/workflows/ci.yml`) runs these checks on Ubuntu with Python 3.11–3.14, plus macOS and Windows. Dependabot (`.github/dependabot.yml`) proposes dependency and Action updates. `requirements.lock` comes from `uv pip compile pyproject.toml --extra guide --output-file requirements.lock`, and a test checks that it still pins every direct dependency. Refresh pins only after the checks pass and the live lab still works.
 
-The guide header date is `BUILD_DATE` in `scripts/build_guide.py`; change it and its test together whenever instructions change or are re-verified. `.gitattributes` forces LF line endings because exports, prompts, and guides are checked byte for byte, including on Windows clones. `lab/azcli.py` starts Azure CLI the same way on Windows, macOS, and Linux.
+The original v1 guide header date is `BUILD_DATE` in `scripts/build_guide.py`; change it and its test together whenever its instructions change or are re-verified. The separate v1.1 builds use `--build-date`; keep that value aligned in both commands, CI, and documentation tests. `.gitattributes` forces LF line endings because exports, prompts, and guides are checked byte for byte, including on Windows clones. `lab/azcli.py` starts Azure CLI the same way on Windows, macOS, and Linux.
 
 Names and versions: the original lab edition **v1** is preserved alongside the separate portal-only **v1.1** guide. The Python package is `foundry-learning-loop-lab` **1.1.0**; the ZIP name and the `v11` in v1-generated resource names refer to that toolkit version. User-selected names in the new portal path use `v1.1` or `v1-1`. The repository includes demonstration videos, so the v1 guide's local clone uses `git clone --depth 1`.
 

@@ -68,6 +68,10 @@ DOCUMENT_LINKS = {
     document.source: posixpath.join(SITE_DIRECTORY, document.output)
     for document in DOCUMENTS
 }
+DOCUMENT_LINKS.update({
+    "guide/en/handbook.v1.1.md": "docs/handbook.v1.1.html",
+    "guide/handbook.v1.1.md": "docs/ko/handbook.v1.1.html",
+})
 
 
 def locale(language: str) -> dict:
@@ -438,13 +442,16 @@ def render_guide(
 ) -> str:
     """Return deterministic UTF-8-ready HTML without reading or writing files."""
     filename = posixpath.basename(document_id)
-    auxiliary = filename != "index.html"
+    portal = filename == "handbook.v1.1.html"
+    auxiliary = filename not in {"index.html", "handbook.v1.1.html"}
     rendered = render_markdown(
         markdown_text, relative_base=relative_base, link_map=link_map,
         output_base=output_base, language=language,
         toc_depth="2-3" if auxiliary else "2-2",
     )
     text = locale(language)["shell"]
+    if portal:
+        text = {**text, **locale(language)["portal"]}
     chapter_unit = text["CHAPTER_UNIT" if auxiliary else "STEP_UNIT"]
 
     def site_href(filename: str) -> str:
@@ -470,7 +477,7 @@ def render_guide(
         "WEB_PATH": html.escape(output_relative("web", output_base), quote=True),
         "TITLE": html.escape(rendered.title, quote=True),
         "DOCUMENT_ID": html.escape(filename, quote=True),
-        "PROGRESS_REVISION": "" if auxiliary else "end-to-end-10",
+        "PROGRESS_REVISION": "portal-v1.1" if portal else ("" if auxiliary else "end-to-end-10"),
         "CHAPTER_UNIT": chapter_unit,
         "CONTENTS_LABEL": text["REFERENCE_CONTENTS" if auxiliary else "MAIN_CONTENTS"],
         "SIDEBAR_NOTE": text["REFERENCE_NOTE" if auxiliary else "MAIN_NOTE"],
@@ -481,6 +488,8 @@ def render_guide(
         "EN_HREF": SITE_URL + posixpath.join(SITE_DIRECTORY, filename),
         "KO_HREF": SITE_URL + posixpath.join(SITE_DIRECTORY, "ko", filename),
         "DOCUMENT_LINKS": "\n".join(navigation),
+        "ORIGINAL_EN_HREF": site_href("index.html"),
+        "ORIGINAL_KO_HREF": site_href("ko/index.html"),
         "HOME_HREF": home_href if auxiliary else "#guide-start",
         "RETURN_LINK": (
             f'<a class="back-to-main no-print" href="{home_href}">{text["RETURN_LABEL"]}</a>'

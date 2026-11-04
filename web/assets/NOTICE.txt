@@ -93,6 +93,12 @@ Privacy redactions and a separate Korean caption footer were added.
 Product scores, answers, controls and statuses were not rewritten. There is
 no audio narration. The existing product UI and artwork rights still apply.
 
+Both portal-only v1.1 guide languages use these same captures and the same
+Korean workload, not separate English-language evaluation results. On
+2026-11-05, the Optimizer result and candidate-change images were cropped
+to exclude private run identifiers. Their capture manifest records the
+original hashes, crop rectangles, updated dimensions and new hashes.
+
 Source and layout references
 ============================
 

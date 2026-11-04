@@ -1,6 +1,6 @@
 # Microsoft Foundry Learning Loop Lab v1 · 한국어
 
-> **새 버전 · 포털 전용 v1.1:** [실습 원문](guide/handbook.v1.1.md) · [웹 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [실제 화면 녹화](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). **새 리소스 그룹부터 Azure Portal + Foundry Portal에서만** 진행하며 명령어를 실행하지 않습니다. 아래 기존 v1 경로는 그대로 보존합니다.
+> **새 버전 · 포털 전용 v1.1:** [한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) · [실제 화면 녹화 · 한국어 자막](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). **새 리소스 그룹부터 Azure Portal + Foundry Portal에서만** 진행하며 명령어를 실행하지 않습니다. 두 언어 모두 같은 한국어 실습 데이터를 사용하고, 해당 조작 바로 뒤에 캡처 25장을 모두 표시합니다. 위에서 아래로 번호 순서대로 따라갑니다. 원문: [국문](guide/handbook.v1.1.md) · [English](guide/en/handbook.v1.1.md). 아래 기존 v1 경로는 그대로 보존합니다.
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 
@@ -51,6 +51,7 @@ SDK helper는 기존 Microsoft Foundry 정의에 실제 run을 추가합니다. 
 
 | 내용 | 한국어 | English |
 |---|---|---|
+| 포털 전용 v1.1 · 명령어 없음 | [시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) |
 | 실습 가이드 | [시작](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html) | [Start](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/index.html) |
 | 환경 설정 참고 | [환경 설정](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/admin.html) | [Environment setup](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/admin.html) |
 | 실습 체크리스트 | [체크리스트](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/facilitator.html) | [Lab checklist](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/facilitator.html) |
@@ -67,7 +68,7 @@ SDK helper는 기존 Microsoft Foundry 정의에 실제 run을 추가합니다. 
 
 실습 가이드의 왼쪽 목차는 주요 10단계만 표시합니다. 상세 제목과 직접 링크는 본문에 유지하며 참고 문서의 목차는 별도로 제공합니다. 기존 참고 문서의 파일 이름과 절 링크도 유지합니다.
 
-포털 그림은 조작 위치를 설명하는 자료이며 자신의 실행 결과를 뜻하지 않습니다. 영어·한국어는 해당 언어의 그림을 사용하고 구독·권한의 공통 화면만 `web/assets/portal/shared/`를 공유합니다. 자산 출처·개인정보 가림·그림 명세는 [NOTICE](web/assets/NOTICE.txt)와 이미지 manifest에서 확인합니다.
+포털 그림은 조작 위치를 설명하는 자료이며 자신의 실행 결과를 뜻하지 않습니다. 기존 v1의 영어·한국어는 해당 언어의 그림을 사용하고 구독·권한의 공통 화면만 `web/assets/portal/shared/`를 공유합니다. 포털 전용 v1.1은 두 언어 모두 `web/assets/portal/v1.1/`와 같은 한국어 실습 데이터를 사용하며, 가이드 번역이 별도의 영어 평가 실측을 뜻하지 않습니다. 자산 출처·개인정보 가림·그림 명세는 [NOTICE](web/assets/NOTICE.txt)와 이미지 manifest에서 확인합니다.
 
 ## 실행 경계
 
@@ -88,6 +89,8 @@ python scripts/build_datasets.py --language en --check
 python scripts/build_datasets.py --language ko --check
 python scripts/build_guide.py
 python scripts/build_guide.py --check
+python scripts/build_guide.py --source guide/en/handbook.v1.1.md --template web/template.v1.1.html --output docs/handbook.v1.1.html --language en --build-date 2026-11-05
+python scripts/build_guide.py --source guide/handbook.v1.1.md --template web/template.v1.1.html --output docs/ko/handbook.v1.1.html --language ko --build-date 2026-11-05
 python -m unittest discover -s tests -q
 ```
 
@@ -103,7 +106,7 @@ ZIP은 `python scripts/package_lab.py`로 만듭니다.
 
 CI(`.github/workflows/ci.yml`)는 이 검사를 Python 3.11–3.14의 Ubuntu와 macOS·Windows에서 실행하고, Dependabot(`.github/dependabot.yml`)이 의존성·Action 갱신을 제안합니다. `requirements.lock`은 `uv pip compile pyproject.toml --extra guide --output-file requirements.lock`으로 만들며, 테스트가 직접 의존성이 모두 고정되어 있는지 확인합니다. 핀은 검사가 통과하고 실제 실습도 정상일 때만 갱신합니다.
 
-가이드 머리글의 날짜는 `scripts/build_guide.py`의 `BUILD_DATE`입니다. 안내가 바뀌거나 다시 검증할 때 이 값과 해당 테스트를 함께 바꿉니다. `.gitattributes`는 내보내기 파일·프롬프트·가이드를 바이트 단위로 검사하므로 Windows clone을 포함한 모든 체크아웃에서 LF 줄바꿈을 강제합니다. `lab/azcli.py`는 Windows·macOS·Linux에서 같은 방식으로 Azure CLI를 시작합니다.
+기존 v1 가이드 머리글의 날짜는 `scripts/build_guide.py`의 `BUILD_DATE`입니다. 해당 안내가 바뀌거나 다시 검증할 때 이 값과 테스트를 함께 바꿉니다. 별도 v1.1 빌드는 `--build-date`를 사용하며 두 생성 명령·CI·문서 테스트의 날짜를 함께 맞춥니다. `.gitattributes`는 내보내기 파일·프롬프트·가이드를 바이트 단위로 검사하므로 Windows clone을 포함한 모든 체크아웃에서 LF 줄바꿈을 강제합니다. `lab/azcli.py`는 Windows·macOS·Linux에서 같은 방식으로 Azure CLI를 시작합니다.
 
 이름과 버전: 기존 실습 **v1**과 별도의 포털 전용 **v1.1**을 함께 제공합니다. Python 패키지는 `foundry-learning-loop-lab` **1.1.0**이며, ZIP 이름과 v1에서 생성하는 리소스 이름의 `v11`은 이 도구 버전을 뜻합니다. 새 포털 경로에서 직접 정하는 이름에는 `v1.1` 또는 `v1-1`을 붙입니다. 시연 영상이 포함되어 있어 v1 가이드의 로컬 clone은 `git clone --depth 1`을 사용합니다.
 

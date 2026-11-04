@@ -48,6 +48,15 @@
       "RETURN_LABEL": "← Back to the hands-on guide",
       "FALLBACK_TOC": "Read the guide"
     },
+    "portal": {
+      "SITE_TITLE": "Microsoft Foundry Portal-only Lab v1.1",
+      "DESCRIPTION": "A ten-step evaluation and optimization lab using only Azure Portal and Microsoft Foundry Portal, with actual screenshots and no learner commands.",
+      "BRAND_SUBTITLE": "Portal-only lab v1.1",
+      "RELATED_DOCUMENTS": "Existing v1 guides",
+      "DOCUMENT_LABEL": "Portal only · v1.1",
+      "DOCUMENT_DATE": "Reviewed",
+      "MAIN_NOTE": "Start v1.1 in a new resource group. Leave the existing v1 environment unchanged."
+    },
     "source": {
       "LABEL": "Actual implementation · read only",
       "NOTE": "Read-only source, not another command to run. The complete named function or object is shown as written, including its original messages; dependencies and imports are in the linked file. Run the lab command only once.",
@@ -155,6 +164,15 @@
       "REFERENCE_NOTE": "본문에서 연결한 단계에 사용하는 참고 자료입니다. 환경 준비·평가·개선·정리는 모두 본인이 수행합니다.",
       "RETURN_LABEL": "← 실습 가이드로 돌아가기",
       "FALLBACK_TOC": "본문 읽기"
+    },
+    "portal": {
+      "SITE_TITLE": "Microsoft Foundry 포털 전용 실습 v1.1",
+      "DESCRIPTION": "Azure Portal과 Microsoft Foundry Portal만 사용하는 평가·최적화 실습 v1.1입니다. 실제 화면과 함께 10단계로 진행하며 명령어를 실행하지 않습니다.",
+      "BRAND_SUBTITLE": "포털 전용 실습 v1.1",
+      "RELATED_DOCUMENTS": "기존 v1 가이드",
+      "DOCUMENT_LABEL": "포털 전용 · v1.1",
+      "DOCUMENT_DATE": "검토 기준일",
+      "MAIN_NOTE": "v1.1은 새 리소스 그룹에서 시작합니다. 기존 v1 환경은 변경하지 않습니다."
     },
     "source": {
       "LABEL": "실제 구현 코드 · 읽기 전용",

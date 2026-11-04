@@ -1535,6 +1535,11 @@ class DocumentationTests(unittest.TestCase):
 
 
 class PortalV11GuideTests(unittest.TestCase):
+    GUIDES = (
+        ("en", "guide/en/handbook.v1.1.md", "handbook.v1.1.html"),
+        ("ko", "guide/handbook.v1.1.md", "ko/handbook.v1.1.html"),
+    )
+
     def test_versioned_captures_match_their_provenance(self):
         directory = ROOT / "web/assets/portal/v1.1"
         text = (directory / "captures.v1.1.json").read_text(encoding="utf-8")
@@ -1563,59 +1568,117 @@ class PortalV11GuideTests(unittest.TestCase):
     def test_portal_guide_is_current_and_has_no_runnable_learner_commands(self):
         from scripts.build_guide import main
 
-        source = (ROOT / "guide/handbook.v1.1.md").read_text(encoding="utf-8")
-        with redirect_stdout(io.StringIO()):
-            self.assertEqual(main([
-                "--source", str(ROOT / "guide/handbook.v1.1.md"),
-                "--template", str(ROOT / "web/template.v1.1.html"),
-                "--output", str(SITE / "ko/handbook.v1.1.html"),
-                "--language", "ko", "--build-date", "2026-11-04", "--check",
-            ]), 0)
-        rendered = (SITE / "ko/handbook.v1.1.html").read_text(encoding="utf-8")
-        self.assertNotRegex(source, r"```(?:bash|sh|shell|powershell|python|javascript|console)\b")
-        self.assertNotIn("<!-- source-code:", source)
-        self.assertNotIn('class="terminal-command"', rendered)
         baseline = (ROOT / "prompts/baseline.v1.1.txt").read_text(encoding="utf-8").strip()
-        self.assertIn("```text\n" + baseline + "\n```", source)
+        for language, source_path, output_path in self.GUIDES:
+            with self.subTest(language=language):
+                source = (ROOT / source_path).read_text(encoding="utf-8")
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(main([
+                        "--source", str(ROOT / source_path),
+                        "--template", str(ROOT / "web/template.v1.1.html"),
+                        "--output", str(SITE / output_path),
+                        "--language", language, "--build-date", "2026-11-05", "--check",
+                    ]), 0)
+                rendered = (SITE / output_path).read_text(encoding="utf-8")
+                self.assertNotRegex(source, r"```(?:bash|sh|shell|powershell|python|javascript|console)\b")
+                self.assertNotIn("<!-- source-code:", source)
+                self.assertNotIn('class="terminal-command"', rendered)
+                self.assertIn("```text\n" + baseline + "\n```", source)
 
     def test_portal_action_numbers_continue_after_tables_and_code(self):
-        source = (ROOT / "guide/handbook.v1.1.md").read_text(encoding="utf-8")
-        rendered = (SITE / "ko/handbook.v1.1.html").read_text(encoding="utf-8")
-        article = re.search(r"<article\b[^>]*>(.*?)</article>", rendered, re.S).group(1)
-        expected = [int(value) for value in re.findall(r"^(\d+)\. ", source, re.M)]
-        actual = []
-        for attributes, items in re.findall(r"<ol\b([^>]*)>(.*?)</ol>", article, re.S):
-            start = re.search(r'\bstart="(\d+)"', attributes)
-            number = int(start.group(1)) if start else 1
-            for attributes in re.findall(r"<li\b([^>]*)>", items):
-                value = re.search(r'\bvalue="(\d+)"', attributes)
-                number = int(value.group(1)) if value else number
-                actual.append(number)
-                number += 1
-        self.assertEqual(actual, expected)
+        for language, source_path, output_path in self.GUIDES:
+            with self.subTest(language=language):
+                source = (ROOT / source_path).read_text(encoding="utf-8")
+                rendered = (SITE / output_path).read_text(encoding="utf-8")
+                article = re.search(r"<article\b[^>]*>(.*?)</article>", rendered, re.S).group(1)
+                expected = [int(value) for value in re.findall(r"^(\d+)\. ", source, re.M)]
+                for chapter in re.split(r"^## .*", source, flags=re.M)[1:]:
+                    numbers = [int(value) for value in re.findall(r"^(\d+)\. ", chapter, re.M)]
+                    self.assertEqual(numbers, list(range(1, len(numbers) + 1)))
+                actual = []
+                for attributes, items in re.findall(r"<ol\b([^>]*)>(.*?)</ol>", article, re.S):
+                    start = re.search(r'\bstart="(\d+)"', attributes)
+                    number = int(start.group(1)) if start else 1
+                    for attributes in re.findall(r"<li\b([^>]*)>", items):
+                        value = re.search(r'\bvalue="(\d+)"', attributes)
+                        number = int(value.group(1)) if value else number
+                        actual.append(number)
+                        number += 1
+                self.assertEqual(actual, expected)
+
+    def test_portal_screens_are_visible_and_follow_the_action_flow(self):
+        for language, _, output_path in self.GUIDES:
+            with self.subTest(language=language):
+                rendered = (SITE / output_path).read_text(encoding="utf-8")
+                page = LearningPathParser()
+                page.feed(rendered)
+                self.assertEqual(page.hidden_required_actions, [])
+                article = re.search(r"<article\b[^>]*>(.*?)</article>", rendered, re.S).group(1)
+                self.assertNotIn("<details", article)
+                self.assertNotRegex(article, r"보충\s*화면|Supporting screens?")
+                figures = [identifier for identifier, _ in page.step_figures]
+                for sequence in (
+                    ("shot-create-agent-v1-1", "shot-policy-upload-v1-1", "shot-agent-retrieval-v1-1"),
+                    ("shot-optimizer-settings-v1-1", "shot-optimizer-review-v1-1",
+                     "shot-optimizer-results-v1-1", "shot-review-candidate-v1-1"),
+                    ("shot-baseline-preserved-v1-1", "shot-reviewed-agent-v1-1",
+                     "shot-add-run-query-only-v1-1", "shot-evaluation-runs-v1-1",
+                     "shot-compare-runs-v1-1"),
+                    ("shot-retained-models-v1-1", "shot-retained-group-v1-1"),
+                ):
+                    positions = [figures.index(identifier) for identifier in sequence]
+                    self.assertEqual(positions, sorted(positions))
 
     def test_portal_steps_and_rebased_links_are_complete(self):
-        page = LearningPathParser()
-        path = SITE / "ko/handbook.v1.1.html"
-        page.feed(path.read_text(encoding="utf-8"))
-        self.assertEqual(len(page.chapters), 10)
-        self.assertEqual(page.toc_links, ["#" + chapter for chapter in page.chapters])
-        self.assertEqual(page.duplicate_ids, set())
-        self.assertEqual(page.completion_checks, page.chapters)
-        for href in page.links:
-            link = urlsplit(href)
-            if link.scheme or link.netloc:
-                continue
-            target = (path.parent / unquote(link.path)).resolve() if link.path else path
-            with self.subTest(href=href):
-                self.assertTrue(target.is_file(), href)
-                if link.fragment and target.suffix == ".html":
-                    linked = LinkParser()
-                    linked.feed(target.read_text(encoding="utf-8"))
-                    self.assertIn(unquote(link.fragment), linked.ids, href)
         packaged = {item.relative_to(ROOT).as_posix() for item in package_files(ROOT)}
-        self.assertIn("docs/ko/handbook.v1.1.html", packaged)
+        chapters = []
+        for language, _, output_path in self.GUIDES:
+            with self.subTest(language=language):
+                page = LearningPathParser()
+                path = SITE / output_path
+                page.feed(path.read_text(encoding="utf-8"))
+                chapters.append(page.chapters)
+                self.assertEqual(len(page.chapters), 10)
+                self.assertEqual(page.toc_links, ["#" + chapter for chapter in page.chapters])
+                self.assertEqual(page.duplicate_ids, set())
+                self.assertEqual(page.completion_checks, page.chapters)
+                self.assertIn("docs/" + output_path, packaged)
+                for href in page.links:
+                    link = urlsplit(href)
+                    if link.scheme or link.netloc:
+                        continue
+                    target = (path.parent / unquote(link.path)).resolve() if link.path else path
+                    with self.subTest(href=href):
+                        self.assertTrue(target.is_file(), href)
+                        if link.fragment and target.suffix == ".html":
+                            linked = LinkParser()
+                            linked.feed(target.read_text(encoding="utf-8"))
+                            self.assertIn(unquote(link.fragment), linked.ids, href)
+        self.assertEqual(chapters[0], chapters[1])
         self.assertIn("docs/media/portal.v1.1.html", packaged)
+
+    def test_all_portal_captures_are_captioned_and_linked_in_both_languages(self):
+        manifest = json.loads((ROOT / "web/assets/portal/v1.1/captures.v1.1.json").read_text())
+        captures = {entry["file"]: entry for entry in manifest["screenshots"]}
+        for language, _, output_path in self.GUIDES:
+            with self.subTest(language=language):
+                page = PortalFigureParser()
+                page.feed((SITE / output_path).read_text(encoding="utf-8"))
+                self.assertEqual(len(page.figures), len(captures))
+                filenames = []
+                for figure in page.figures:
+                    self.assertEqual(len(figure["images"]), 1)
+                    image = figure["images"][0]
+                    name = Path(image["src"]).name
+                    filenames.append(name)
+                    self.assertIn(name, captures)
+                    self.assertTrue(image.get("alt", "").strip())
+                    self.assertEqual(image.get("loading"), "lazy")
+                    self.assertEqual(image.get("width"), str(captures[name]["width"]))
+                    self.assertEqual(image.get("height"), str(captures[name]["height"]))
+                    self.assertIn(image["src"], figure["links"])
+                    self.assertTrue(figure["caption"].strip())
+                self.assertEqual(set(filenames), set(captures))
 
     def test_reviewed_instructions_do_not_embed_case_answers(self):
         prompt = (ROOT / "prompts/reviewed.v1.1.txt").read_text(encoding="utf-8")

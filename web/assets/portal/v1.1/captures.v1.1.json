@@ -6,7 +6,7 @@
   "tool": "playwright.browser_run_code_unsafe; CDP Page.captureScreenshot",
   "data_language": "ko",
   "ui_language": "en-US",
-  "edits": "Privacy redactions only; no product text, score, answer or status replacement.",
+  "edits": "Privacy redactions and privacy crops only; no product text, score, answer or status replacement.",
   "purpose": "Actual v1.1 portal execution and same-resource verification.",
   "screenshots": [
     {
@@ -235,30 +235,42 @@
     },
     {
       "file": "19-optimizer-results.v1.1.png",
-      "width": 1440,
-      "height": 1000,
-      "sha256": "ae50675b935e6aa80f674a656af505606b829881e5bb76425974698b75ef5b92",
+      "width": 1172,
+      "height": 362,
+      "sha256": "958739ce050f82391fe0d398314232d41f1fb4dde9598dc5d267eeac470ec689",
+      "privacy_crop": {
+        "date": "2026-11-05",
+        "source_sha256": "ae50675b935e6aa80f674a656af505606b829881e5bb76425974698b75ef5b92",
+        "box_xyxy": [244, 128, 1416, 490]
+      },
       "capture_session_date": "2026-11-04",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/agents/{agent}/optimization/{run}",
       "redactions": [
         "browser chrome and session URLs excluded",
         "identifying profile and creator text obscured where displayed",
-        "subscription and connection fields masked where displayed"
+        "subscription and connection fields masked where displayed",
+        "optimizer run identifier and evaluation-run links excluded by crop"
       ]
     },
     {
       "file": "20-review-candidate.v1.1.png",
-      "width": 1440,
-      "height": 1000,
-      "sha256": "12646decabd01996f436d21a5dc7362c4b78ef8a1e67890493f6aa1b72f7de9f",
+      "width": 1038,
+      "height": 622,
+      "sha256": "dd7bff8f6254c0c2c7c21c4e8e4b65f3b26682db12cb6ff17f9d7508564e36a7",
+      "privacy_crop": {
+        "date": "2026-11-05",
+        "source_sha256": "12646decabd01996f436d21a5dc7362c4b78ef8a1e67890493f6aa1b72f7de9f",
+        "box_xyxy": [201, 189, 1239, 811]
+      },
       "capture_session_date": "2026-11-04",
       "portal_origin": "https://ai.azure.com",
       "route": "/build/agents/{agent}/optimization/{run}",
       "redactions": [
         "browser chrome and session URLs excluded",
         "identifying profile and creator text obscured where displayed",
-        "subscription and connection fields masked where displayed"
+        "subscription and connection fields masked where displayed",
+        "background identifiers excluded by cropping to the candidate-change dialog"
       ]
     },
     {

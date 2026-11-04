@@ -98,6 +98,34 @@ class GuideBuildTests(unittest.TestCase):
         self.assertNotRegex(rendered, r"\{\{[A-Z_]+\}\}")
         self.assertIn("<title>임시 가이드 · Microsoft Foundry Lab Guide</title>", rendered)
 
+    def test_portal_shell_localizes_without_linking_to_the_v1_language_counterpart(self) -> None:
+        template = (ROOT / "web/template.v1.1.html").read_text(encoding="utf-8")
+        for language, output_base, counterpart in (
+            ("en", "docs", "ko/handbook.v1.1.html"),
+            ("ko", "docs/ko", "../handbook.v1.1.html"),
+        ):
+            with self.subTest(language=language):
+                rendered = build_guide.render_guide(
+                    "# Portal v1.1\n\n## First step {#portal-setup}\n",
+                    template, document_id="handbook.v1.1.html",
+                    output_base=output_base, language=language, build_date="2026-11-05",
+                )
+                page = PageInspector()
+                page.feed(rendered)
+                self.assertNotRegex(rendered, r"\{\{[A-Z][A-Z_0-9]*\}\}")
+                self.assertIn(("html", {"lang": language}), page.elements)
+                self.assertIn('data-progress-revision="portal-v1.1"', rendered)
+                self.assertNotIn("GitHub Codespaces", rendered)
+                links = [
+                    attrs for tag, attrs in page.elements
+                    if tag == "a" and "data-language-link" in attrs
+                ]
+                self.assertEqual(len(links), 2)
+                current = next(link for link in links if link.get("aria-current") == "page")
+                self.assertEqual(current["hreflang"], language)
+                other = next(link for link in links if "aria-current" not in link)
+                self.assertEqual(other["href"], counterpart)
+
     def test_title_is_escaped_and_inline_markup_is_not_in_the_title(self) -> None:
         rendered = build_guide.render_guide('# 평가 & <em>검증</em> "안내"\n\n## 본문', self.template)
         self.assertIn("<title>평가 &amp; 검증 &quot;안내&quot; · Microsoft Foundry Lab Guide</title>", rendered)
