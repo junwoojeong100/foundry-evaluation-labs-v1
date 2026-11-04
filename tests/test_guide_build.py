@@ -416,7 +416,7 @@ python -m lab --help
                 self.assertEqual(raised.exception.code, 2)
 
     def test_single_document_date_override_round_trips_and_check_is_read_only(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
             source = Path(directory) / "handbook.v1.1.md"
             template = Path(directory) / "template.v1.1.html"
             output = Path(directory) / "handbook.v1.1.html"
