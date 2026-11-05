@@ -17,7 +17,7 @@
 
 **This is a teaching comparison.** The baseline is a **basic FAQ draft** with working policy retrieval and valid JSON. Its short, general summaries intentionally leave room for better case-specific calculations and clarification. After optimizing instructions, compare **Relevance and TaskAdherence separately**. Do not change questions, reference answers, models, or evaluation criteria to raise scores. This demonstration is not evidence of production performance or improvement on unseen questions.
 
-The pictures are actual portal captures with private fields redacted. Historical scores are not your results or guaranteed targets.
+The pictures come from existing portal recordings and captures. Some are cropped to make the current control easier to read, with private fields redacted. Product scores, answers, and statuses are unchanged. Historical scores are not your results or guaranteed targets.
 
 **How to proceed:** Follow 01 through 10 from top to bottom: **perform the numbered actions → check the screen directly below → continue to the next number**. Use **View full-size image** to read small text. Both guide languages use the **same Korean policies, questions, Agent instructions, and recorded responses**. Only the guide language changes; no separate English-language evaluation was run or is claimed. Paste the supplied Korean content unchanged rather than mixing in the original v1 English dataset.
 
@@ -60,10 +60,25 @@ Do not edit the files or remove selected questions. These versioned files preser
   <figcaption><strong>Check the subscription, new group name, and region.</strong> This creates a new group rather than selecting an existing one. <a href="../../web/assets/portal/v1.1/01-resource-group-basics.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-3. Under **Tags**, add name `lab-version` with value `v1.1`.
+3. Open **Tags** and locate the **Name** and **Value** fields.
    {: value="3"}
-4. Select **Review + create → Create**.
-5. Open the new group. Under **Overview**, verify its name and that it has no lab resources yet.
+
+<figure class="portal-shot" id="shot-resource-group-tags-v1-1">
+  <img src="../../web/assets/portal/v1.1/29-resource-group-tags.v1.1.png" width="830" height="310" loading="lazy" decoding="async" alt="Empty Name and Value fields on the Tags tab">
+  <figcaption><strong>Enter the name on the left and value on the right.</strong> This capture is before entry; fill both fields in the next numbered action. <a href="../../web/assets/portal/v1.1/29-resource-group-tags.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+4. Enter `lab-version` as **Name** and `v1.1` as **Value**, then select **Review + create**.
+   {: value="4"}
+
+<figure class="portal-shot" id="shot-resource-group-review-v1-1">
+  <img src="../../web/assets/portal/v1.1/30-resource-group-review.v1.1.png" width="920" height="650" loading="lazy" decoding="async" alt="Pre-creation review showing the new group name, North Central US, and lab-version v1.1">
+  <figcaption><strong>Check the group name, region, and tag before submission.</strong> The name must match your entry. This is review, not completed creation. <a href="../../web/assets/portal/v1.1/30-resource-group-review.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+5. Check the values and validation result, then select **Create** at the bottom once.
+   {: value="5"}
+6. Open the new group. Under **Overview**, verify its name and that it has no lab resources yet.
 
 <figure class="portal-shot" id="shot-empty-group-v1-1">
   <img src="../../web/assets/portal/v1.1/02-empty-resource-group.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="New resource group showing zero resources and No deployments">
@@ -145,8 +160,23 @@ Use **different deployment names**, even when two roles use the same model. The 
 
 5. Check Capacity and select **Deploy**.
    {: value="5"}
-6. Follow the same route to deploy the Judge and Optimizer.
-7. Open **Models** in the left navigation. Verify each deployment's name, model, version, and **Succeeded** status.
+6. In **Catalog → Models**, open `gpt-6-luna` and select **Deploy → Custom settings**. Set name `judge-v1-1`, **Global Standard**, version **2026-09-22**, automatic upgrades **Opt out**, and Capacity **100000 TPM**.
+
+<figure class="portal-shot" id="shot-judge-model-settings-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/31-judge-model-settings.v1.1.png" width="592" height="1000" loading="lazy" decoding="async" alt="Judge deployment panel with judge-v1-1, gpt-6-luna, a pinned version, and 100000 TPM">
+  <figcaption><strong>Use a separate model and name for the Judge.</strong> Only the deployment panel is shown. The numeric field's 100000 is this deployment's TPM, not the maximum quota shown to its right. <a href="../../web/assets/portal/v1.1/31-judge-model-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+7. Select **Deploy** for the Judge. Then open `gpt-5.5` in Catalog and choose **Deploy → Custom settings**. Set name `optimizer-v1-1`, **Global Standard**, version **2026-04-24**, automatic upgrades **Opt out**, and Capacity **150000 TPM**.
+   {: value="7"}
+
+<figure class="portal-shot" id="shot-optimizer-model-settings-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/32-optimizer-model-settings.v1.1.png" width="592" height="1000" loading="lazy" decoding="async" alt="Optimizer deployment panel with optimizer-v1-1, gpt-5.5, a pinned version, and 150000 TPM">
+  <figcaption><strong>The model matches the Agent, but the name is optimizer-v1-1.</strong> Create the Optimizer deployment rather than reusing the Agent deployment. <a href="../../web/assets/portal/v1.1/32-optimizer-model-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+8. Select **Deploy** for the Optimizer. Open **Models** in the left navigation, compare all three names, models, and versions, and wait until all show **Succeeded**.
+   {: value="8"}
 
 <figure class="portal-shot" id="shot-models-succeeded-v1-1">
   <img src="../../web/assets/portal/v1.1/08-models-succeeded.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="agent-v1-1, judge-v1-1, and optimizer-v1-1 deployments showing Succeeded">
@@ -191,11 +221,30 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 구체적인 평가 문항, 날짜, 정답 예시를 지침에 저장하지 않습니다.
 ```
 
+<figure class="portal-shot" id="shot-baseline-instructions-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/33-baseline-instructions.v1.1.png" width="460" height="195" loading="lazy" decoding="async" alt="Beginning of the baseline instructions in the Playground Instructions field">
+  <figcaption><strong>Paste the entire block above into Instructions.</strong> This focused view shows the input location and only part of its content. Do not copy a few sentences from the image. Do not select Improve instructions. <a href="../../web/assets/portal/v1.1/33-baseline-instructions.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 5. If **Tools** includes a default **Web search** tool, use that tool's menu → **Remove**. Keep the uploaded policies as the fixed source.
    {: value="5"}
-6. Select **Tools → Add → Add tools → File search → Add tool**.
-7. In **Attach files**, enter `atlas-policy-v1-1` as the **Vector index name**.
+6. Select **Tools → Add → Add tools** to open **Select a tool**.
+
+<figure class="portal-shot" id="shot-select-file-search-v1-1">
+  <img src="../../web/assets/portal/v1.1/34-select-file-search.v1.1.png" width="1200" height="800" loading="lazy" decoding="async" alt="File search at the top left of Select a tool and Add tool at the bottom right">
+  <figcaption><strong>Select File search at the top left.</strong> Do not choose Azure AI search or Web search. Selecting a tool enables Add tool at the bottom right. <a href="../../web/assets/portal/v1.1/34-select-file-search.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+7. Select **File search → Add tool**. Under **Attach files**, set **Index option** to **Create a new index** and **Vector index name** to `atlas-policy-v1-1`.
+   {: value="7"}
+
+<figure class="portal-shot" id="shot-create-vector-index-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/35-create-vector-index.v1.1.png" width="690" height="253" loading="lazy" decoding="async" alt="Attach files with Create a new index, atlas-policy-v1-1, and browse for files">
+  <figcaption><strong>Name the new index, then use browse for files.</strong> The crop shows only entry and file-selection controls, not a completed upload or connection. <a href="../../web/assets/portal/v1.1/35-create-vector-index.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 8. Under **browse for files**, select **only** `documents.v1.1.json`. When upload status is **Success**, select **Attach**.
+   {: value="8"}
 9. Verify that **File search** is connected under Tools and select **Save**.
 10. Open the **Tools → File search** card. Confirm that `atlas-policy-v1-1` contains one **Completed** policy file.
 
@@ -223,14 +272,42 @@ The starting Agent does not fail every question. Keep basic retrieval and JSON w
 
 ## 06. Run the baseline evaluation on twelve cases {#portal-evaluation}
 
-**Where to act:** Agent → **Evaluation → Automatic Evaluation → Create**. Continue through one evaluation creation wizard.
+**Where to act:** Agent → **Evaluation → Automatic Evaluation**. Continue through one evaluation creation wizard.
 {: .step-route}
 
-1. Under **Target**, verify `atlas-support-v1-1` and the **baseline version** recorded in 05.
-2. Select **Scope: Individual turns** and **Frequency: One time**.
-3. Under **Data → Existing dataset → Upload dataset**, select `dev.v1.1.jsonl`. Save it as dataset `atlas-dev12-v1-1`, version `1`, then select it.
-4. Verify **12 rows**, `query`, `context`, and `ground_truth` in the preview. `ground_truth` is reference material stored as a JSON string.
-5. Open **Configure agents → Configure**. Put **only this value** in the **USER** field.
+1. Open the Agent's **Evaluation → Automatic Evaluation** tab. Locate **Create** on the right.
+
+<figure class="portal-shot" id="shot-open-automatic-evaluation-v1-1">
+  <img src="../../web/assets/portal/v1.1/36-open-automatic-evaluation.v1.1.png" width="1174" height="209" loading="lazy" decoding="async" alt="Agent Evaluation and Automatic Evaluation tabs with Create on the right">
+  <figcaption><strong>Start with Create under Automatic Evaluation.</strong> Do not choose the Create evaluator banner button or Human Evaluation. <a href="../../web/assets/portal/v1.1/36-open-automatic-evaluation.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+2. Select **Create**. Under **Target**, choose `atlas-support-v1-1` and use **Version → Pin v[number]** for the **baseline version** recorded in 05. Select **Next**, then **Scope: Individual turns**.
+   {: value="2"}
+
+<figure class="portal-shot" id="shot-individual-turns-v1-1">
+  <img src="../../web/assets/portal/v1.1/37-individual-turns.v1.1.png" width="1184" height="499" loading="lazy" decoding="async" alt="Individual turns selected in the evaluation Scope step with Next">
+  <figcaption><strong>Evaluate each question-response pair independently.</strong> Select Individual turns, not Full conversations. <a href="../../web/assets/portal/v1.1/37-individual-turns.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+3. Continue with **Next → Frequency: One time → Next**. Open **Data → Existing dataset → Upload new dataset**. Enter `atlas-dev12-v1-1` as **New dataset name**, use **Choose file** for `dev.v1.1.jsonl`, and select **Upload**.
+   {: value="3"}
+
+<figure class="portal-shot" id="shot-upload-evaluation-dataset-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/38-upload-evaluation-dataset.v1.1.png" width="520" height="394" loading="lazy" decoding="async" alt="Upload new dataset with atlas-dev12-v1-1 and dev.v1.1.jsonl while upload is processing">
+  <figcaption><strong>Match the dataset name and selected file.</strong> Upload is still processing in this capture. Do not submit again; wait for the dataset to appear in the list. <a href="../../web/assets/portal/v1.1/38-upload-evaluation-dataset.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+4. Select `atlas-dev12-v1-1`, version `1`, in the list. Verify the preview's `query`, `context`, and `ground_truth` columns. `ground_truth` is reference material stored as a JSON string. **Top 5 rows is a preview limit**, not the dataset's size. Verify all **12 rows** after execution in 07.
+   {: value="4"}
+
+<figure class="portal-shot" id="shot-evaluation-dataset-preview-v1-1">
+  <img src="../../web/assets/portal/v1.1/39-evaluation-dataset-preview.v1.1.png" width="1184" height="859" loading="lazy" decoding="async" alt="Selected existing dataset atlas-dev12-v1-1 version 1 and preview columns context, ground_truth, and query">
+  <figcaption><strong>Check the selected name, version, and preview columns.</strong> Do not upload again. Displaying three columns does not mean all three belong in the Agent input. <a href="../../web/assets/portal/v1.1/39-evaluation-dataset-preview.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+5. Open **Next → Configure agents → Configure**. Put **only this value** in the **USER** field.
+   {: value="5"}
 
 ```text
 {{item.query}}
@@ -245,7 +322,7 @@ Do not append `context` or `ground_truth` to this field. The Agent must retrieve
 
 6. Select **Save** to close the mapping dialog, then **Next** to **Criteria**. Set **Judge model** to **judge-v1-1**. Use **Clear selection**, then select only **Relevance** and **Task adherence**.
    {: value="6"}
-7. Open each evaluator and check the settings below. Select **judge-v1-1** for both.
+7. Open **Relevance** first. Match its column below: Judge **judge-v1-1**, Threshold **4**, and the input mappings.
 
 | Setting | Relevance | Task adherence |
 |---|---|---|
@@ -257,6 +334,14 @@ Do not append `context` or `ground_truth` to this field. The Agent must retrieve
 | Response | `{{sample.output_text}}` | `{{sample.output_text}}` |
 | Tool definitions | Not applicable | Keep default `{{sample.tool_definitions}}` |
 
+<figure class="portal-shot" id="shot-relevance-settings-v1-1">
+  <img src="../../web/assets/portal/v1.1/40-relevance-settings.v1.1.png" width="1038" height="447" loading="lazy" decoding="async" alt="Relevance settings with Judge judge-v1-1 and Threshold 4">
+  <figcaption><strong>Relevance uses Threshold 4.</strong> Check Query and Response under Advanced settings against the table too. Apply with Update in the next action. <a href="../../web/assets/portal/v1.1/40-relevance-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+8. Select **Update** for Relevance, then open **Task adherence**. Check Judge **judge-v1-1**, Threshold **1**, Probability_threshold **0.5**, and the table's input mappings.
+   {: value="8"}
+
 **TaskAdherence warning:** This is a binary 0/1 metric. If the shared Threshold field defaults to 3, change it to **1**. Check **0.5** in the Probability_threshold numeric field.
 
 <figure class="portal-shot" id="shot-task-adherence-v1-1">
@@ -264,17 +349,17 @@ Do not append `context` or `ground_truth` to this field. The Agent must retrieve
   <figcaption><strong>Check the Judge, 1, and 0.5 separately.</strong> These are two different thresholds. Match Query and Response under Advanced settings to the table, then confirm with Update or Apply. <a href="../../web/assets/portal/v1.1/13-task-adherence-settings.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-8. Select the **Criteria** step's **Next** button, not the evaluator catalog's next-page control.
-   {: value="8"}
-9. Under **Review**, enter `atlas-portal-eval-v1-1` and recheck the Agent version, dataset, and two evaluators.
+9. Apply with **Update / Apply**, then select the **Criteria** step's **Next** button, not the evaluator catalog's next-page control.
+   {: value="9"}
+10. Under **Review**, enter `atlas-portal-eval-v1-1` and recheck the Agent version, dataset, and two evaluators.
 
 <figure class="portal-shot" id="shot-baseline-review-v1-1">
   <img src="../../web/assets/portal/v1.1/14-baseline-review.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Review showing the baseline Agent version, dataset, and two evaluators">
   <figcaption><strong>Check the baseline version, data, and two evaluators.</strong> Review summarizes settings before submission; it is not a successful evaluation or a score screen. <a href="../../web/assets/portal/v1.1/14-baseline-review.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-10. Select **Submit** once and wait for the run to finish. Do not create the same evaluation again.
-   {: value="10"}
+11. Select **Submit** once and wait for the run to finish. Do not create the same evaluation again.
+    {: value="11"}
 
 **Done when:** An evaluation definition and actual run exist, and you can inspect per-case responses, scores, or errors. Successful submission does not mean all twelve cases succeeded.
 {: .completion-check}
@@ -291,12 +376,26 @@ Do not append `context` or `ground_truth` to this field. The Agent must retrieve
   <figcaption><strong>Read Partial and each metric's denominator first.</strong> This baseline has Relevance 7/11 (64%) and TaskAdherence 8/11 (73%). Overall 68%, or 15/22, combines judgments from two metrics; it does not mean 22 questions. Your results may differ. <a href="../../web/assets/portal/v1.1/16-baseline-results.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-2. Open that run and select **Detailed metrics**. Verify all **12 cases**. If the table shows ten rows, use **Next page** to inspect the other two.
+2. Open that run and select **Detailed metrics**. Inspect the first page's **Index 0–9**, scores, and errors.
    {: value="2"}
+
+<figure class="portal-shot" id="shot-baseline-detailed-metrics-v1-1">
+  <img src="../../web/assets/portal/v1.1/41-baseline-detailed-metrics.v1.1.png" width="1174" height="752" loading="lazy" decoding="async" alt="Baseline Detailed metrics Index 0 through 9 with Relevance failures and Index 9 Error">
+  <figcaption><strong>Read individual cases, not just averages.</strong> This first page has ten rows and Next at the bottom right. Only conversation/trace identifier cells are masked; questions, scores, and Error are unchanged. <a href="../../web/assets/portal/v1.1/41-baseline-detailed-metrics.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 3. Inspect **Error** first when that column exists. A page without errors may omit it. Distinguish response-generation failures from Judge-scoring failures.
-4. For a low-**Relevance** row, scroll horizontally to `sample.output_text` and open **View JSON**. Read the question, actual response, and **Relevance.reason** together.
-5. Read **TaskAdherence** and its reason too. Following instructions and providing a sufficient business answer are different criteria.
+   {: value="3"}
+4. For a low-**Relevance** row, scroll horizontally to `sample.output_text` and open **View JSON**. Read the question, actual response, **Relevance.reason**, **TaskAdherence**, and its reason, then close the dialog. Following instructions and providing a sufficient business answer are different criteria.
+5. Use **Next** at the table's bottom right. Inspect **Index 10 and 11** too, covering scores and errors for all **12 submitted rows**.
+
+<figure class="portal-shot" id="shot-baseline-final-cases-v1-1">
+  <img src="../../web/assets/portal/v1.1/42-baseline-final-cases.v1.1.png" width="1174" height="400" loading="lazy" decoding="async" alt="Detailed metrics next page with Index 10 and 11 and Relevance scores 2 and 3">
+  <figcaption><strong>The final two rows belong to the same evaluation.</strong> This baseline scores 2 and 3 on Relevance at Index 10 and 11. Both pages cover twelve submitted cases, but one error leaves eleven scored cases. <a href="../../web/assets/portal/v1.1/42-baseline-final-cases.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
 6. Privately record the baseline version, evaluation definition, dataset version, evaluator settings, and error cases.
+   {: value="6"}
 
 | Question to ask | What to inspect |
 |---|---|
@@ -314,13 +413,20 @@ Do not append `context` or `ground_truth` to this field. The Agent must retrieve
 
 ## 08. Optimize instructions only {#portal-optimize}
 
-**Where to act:** **Agents → atlas-support-v1-1 → baseline version → Optimize → Optimize my agent → Agent**.
+**Where to act:** **Agents → atlas-support-v1-1 → baseline version → Playground → Optimize at the bottom left**.
 {: .step-route}
 
 The benchmark examples on the introduction screen are not your lab results.
 
-1. Under **Target**, verify the baseline Agent version.
-2. Select **Optimization approach → Choose targets**. Explicitly set the following values instead of trusting automatic selections.
+1. Open **Optimize** at the bottom left of the **Playground**.
+
+<figure class="portal-shot" id="shot-optimize-agent-menu-v1-1" data-capture-layout="dialog">
+  <img src="../../web/assets/portal/v1.1/43-optimize-agent-menu.v1.1.png" width="306" height="265" loading="lazy" decoding="async" alt="Optimize menu with Agent, Cost, and Prompt options">
+  <figcaption><strong>Continue with Agent at the top.</strong> This is not Cost, Prompt, or Improve instructions beneath the Instructions field. <a href="../../web/assets/portal/v1.1/43-optimize-agent-menu.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+2. Select **Agent**. If an introduction appears, continue with **Optimize my agent**. Under **Target**, check the baseline version, then select **Optimization approach → Choose targets** and set the values below.
+   {: value="2"}
 
 | Field | Setting |
 |---|---|
@@ -338,13 +444,25 @@ The benchmark examples on the introduction screen are not your lab results.
 
 3. Select **Next → Data source → Select dataset and criteria**. Do not use Generate data or production traces.
    {: value="3"}
-4. Select dataset `atlas-dev12-v1-1`, version `1`.
-5. Under **Criteria**, turn off **Custom only** if enabled. Search for the two evaluators below. If a settings dialog opens, check its values and select **Apply**.
+4. Search the right-hand **Dataset** field for `atlas-dev12-v1-1`. Check the result's name and version `1`.
+
+<figure class="portal-shot" id="shot-optimizer-dataset-search-v1-1">
+  <img src="../../web/assets/portal/v1.1/44-optimizer-dataset-search.v1.1.png" width="1148" height="338" loading="lazy" decoding="async" alt="Select dataset and criteria with atlas-dev12-v1-1 version 1 and an unselected row radio button">
+  <figcaption><strong>Find the same dataset used for the baseline.</strong> The row is not selected yet, so Next is disabled. Select its radio button in the next action. Do not upload a new file or use generated data. <a href="../../web/assets/portal/v1.1/44-optimizer-dataset-search.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+5. Select the dataset row's **radio button → Next**. Under **Criteria**, turn off **Custom only** if enabled. Search for the two evaluators below. If a settings dialog opens, check its values and select **Apply**.
+   {: value="5"}
 
 | Optimizer evaluator | Version | Settings |
 |---|---|---|
 | Relevance-Evaluator | 15 | Threshold **4** |
 | Task-Adherence-Evaluator-(Preview) | 18 | Threshold **1**, Probability_threshold **0.5** |
+
+<figure class="portal-shot" id="shot-optimizer-evaluator-selection-v1-1">
+  <img src="../../web/assets/portal/v1.1/45-optimizer-evaluator-selection.v1.1.png" width="1148" height="287" loading="lazy" decoding="async" alt="Optimizer Criteria with Custom only off and selected Task-Adherence and Relevance chips">
+  <figcaption><strong>Verify both selections in the chips above the list.</strong> Both remain selected even while the search shows only Relevance. Do not add other evaluators. <a href="../../web/assets/portal/v1.1/45-optimizer-evaluator-selection.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
 
 6. Verify that no other evaluators were added and select **Next**.
    {: value="6"}
@@ -416,8 +534,22 @@ An Optimizer candidate can embed dates or reference answers from evaluation case
 
 4. Select **Evaluations → atlas-portal-eval-v1-1 → Add run**. Do not create another evaluation definition.
    {: value="4"}
-5. Under **Target**, select the same Agent and use **Pin v[number]** for your recorded comparison version, not **Latest available**. Continue with **Scope: Individual turns → Next**. If **Data** appears, select the same `atlas-dev12-v1-1`, version `1`, under **Existing dataset**, then **Next**.
-6. Open **Configure agents → Configure**. Enter only `{{item.query}}` as **User prompt** and verify that Target uses your comparison version.
+
+<figure class="portal-shot" id="shot-add-run-target-version-v1-1">
+  <img src="../../web/assets/portal/v1.1/46-add-run-target-version.v1.1.png" width="1184" height="264" loading="lazy" decoding="async" alt="Add run with atlas-support-v1-1 selected and Version still set to Latest available">
+  <figcaption><strong>Pin the comparison version using the Version dropdown.</strong> This initial Add run screen still says Latest available. Do not submit that default unchanged. <a href="../../web/assets/portal/v1.1/46-add-run-target-version.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+5. Under **Target**, select the same Agent and use **Pin v[number]** for your recorded comparison version, not **Latest available**. Continue with **Next → Scope: Individual turns → Next**. Under **Data → Existing dataset**, select the same `atlas-dev12-v1-1`, version `1`.
+   {: value="5"}
+
+<figure class="portal-shot" id="shot-add-run-existing-dataset-v1-1">
+  <img src="../../web/assets/portal/v1.1/47-add-run-existing-dataset.v1.1.png" width="1184" height="608" loading="lazy" decoding="async" alt="The existing atlas-dev12-v1-1 version 1 selected again for Add run">
+  <figcaption><strong>Reselect the same registered version.</strong> Do not use Upload new dataset or Synthetic generation. Wait for the preview to load and Next to become enabled. <a href="../../web/assets/portal/v1.1/47-add-run-existing-dataset.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+6. Open **Next → Configure agents → Configure**. Enter only `{{item.query}}` as **User prompt** and verify that Target uses your comparison version.
+   {: value="6"}
 
 <figure class="portal-shot" id="shot-add-run-query-only-v1-1">
   <img src="../../web/assets/portal/v1.1/22-add-run-query-only.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Add run using v7 with only item.query in USER">
@@ -426,8 +558,15 @@ An Optimizer candidate can embed dates or reference answers from evaluation case
 
 7. Select **Save → Submit** and wait for completion. Reuse the definition's Judge and evaluators.
    {: value="7"}
-8. Open both runs in turn. Under **Detailed metrics**, inspect all **12 rows** and compare responses, scores, reasons, and errors at the **same Index**. Record latency, token usage, and mean scores too.
-9. Open the definition's run list. Compare **Target**, status, and both evaluator pass rates and denominators.
+8. Open the **comparison-version run** and its first **Detailed metrics** page. Compare responses, scores, reasons, and errors at the **same Index** with your baseline records from 07. Record latency, token usage, and means too.
+
+<figure class="portal-shot" id="shot-reviewed-detailed-metrics-v1-1">
+  <img src="../../web/assets/portal/v1.1/48-reviewed-detailed-metrics.v1.1.png" width="1174" height="752" loading="lazy" decoding="async" alt="Reviewed v7 first-page passing rows with Index 9 still showing Error">
+  <figcaption><strong>Inspect both better valid responses and the remaining error.</strong> The 100% summaries cover eleven valid cases. Index 9 still has Error; only identifier cells were masked. <a href="../../web/assets/portal/v1.1/48-reviewed-detailed-metrics.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+9. Use **Next** to inspect the final two rows. After comparing all **12 rows**, open the definition's run list. Check **Target**, status, and both evaluator pass rates and denominators.
+   {: value="9"}
 
 <figure class="portal-shot" id="shot-evaluation-runs-v1-1">
   <img src="../../web/assets/portal/v1.1/23-evaluation-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Two runs of the same evaluation comparing Agent v6 and v7 pass rates and Partial status">
@@ -444,16 +583,24 @@ An Optimizer candidate can embed dates or reference answers from evaluation case
 | TaskAdherence mean | 0.73 | 1.00 |
 | P50 / P95 response latency | 5.4s / 7.7s | 4.6s / 6.8s |
 
-10. **Select the baseline and comparison row checkboxes first → Compare runs**. Set **Baseline** to the original baseline run. **The portal may default to the newest run.** If names are identical, match your recorded means with the Baseline column.
+10. Select the **left-hand row checkbox** for both baseline and comparison. Verify **2 runs selected**.
     {: value="10"}
+
+<figure class="portal-shot" id="shot-select-comparison-runs-v1-1">
+  <img src="../../web/assets/portal/v1.1/49-select-comparison-runs.v1.1.png" width="2348" height="660" loading="lazy" decoding="async" alt="Selected Agent v6 and v7 row checkboxes and 2 runs selected">
+  <figcaption><strong>Select row checkboxes, not the name links.</strong> Match Target versions 6 and 7 with both selection marks. Both runs still show Partial. <a href="../../web/assets/portal/v1.1/49-select-comparison-runs.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
+</figure>
+
+11. When **Compare runs** above the list becomes enabled, select it. Set **Baseline** to the original baseline run. **The portal may default to the newest run.** If names are identical, match your recorded means with the Baseline column.
+    {: value="11"}
 
 <figure class="portal-shot" id="shot-compare-runs-v1-1">
   <img src="../../web/assets/portal/v1.1/24-compare-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="Statistical comparison showing baseline means, Relevance Improved, and TaskAdherence Inconclusive">
   <figcaption><strong>Read baseline direction and statistical conclusions together.</strong> This run shows Relevance Improved by 1.27 and TaskAdherence Inconclusive. Higher observed pass rates are not proof that both metrics improved statistically. <a href="../../web/assets/portal/v1.1/24-compare-runs.v1.1.png" target="_blank" rel="noopener">View full-size image</a></figcaption>
 </figure>
 
-11. Read **mean scores and statistical conclusions**. Apply the criteria below, including the errors and actual responses you inspected, and record your conclusion.
-    {: value="11"}
+12. Read **mean scores and statistical conclusions**. Apply the criteria below, including the errors and actual responses you inspected, and record your conclusion.
+    {: value="12"}
 
 Both runs are **Partial: the same Index 9 of twelve cases was blocked by `cyber_policy`**. The denominators above are the **eleven common valid cases**. The statistical screen reports **Improved by 1.27** for Relevance and **Inconclusive** for TaskAdherence. **Both observed pass rates rose, but improvement over all twelve cases or statistical significance for both metrics was not established.**
 

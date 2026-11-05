@@ -1565,6 +1565,50 @@ class PortalV11GuideTests(unittest.TestCase):
             with self.subTest(versioned=versioned):
                 self.assertEqual((ROOT / original).read_bytes(), (ROOT / versioned).read_bytes())
 
+    def test_extracted_captures_have_traceable_sources_and_valid_crop_rectangles(self):
+        manifest = json.loads(
+            (ROOT / "web/assets/portal/v1.1/captures.v1.1.json").read_text(encoding="utf-8")
+        )
+        videos = json.loads((SITE / "media/chapters.v1.1.json").read_text(encoding="utf-8"))
+        kinds = set()
+        video_hashes = {}
+        for entry in manifest["screenshots"]:
+            if "source" not in entry:
+                continue
+            with self.subTest(capture=entry["file"]):
+                source = entry["source"]
+                kinds.add(source["kind"])
+                self.assertRegex(source["sha256"], r"^[0-9a-f]{64}$")
+                if source["kind"] == "video_frame":
+                    path = (ROOT / source["file"]).resolve()
+                    self.assertTrue(path.is_relative_to(ROOT))
+                    self.assertTrue(path.is_file())
+                    if path not in video_hashes:
+                        video_hashes[path] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    self.assertEqual(source["sha256"], video_hashes[path])
+                    metadata = videos[path.stem]
+                    self.assertEqual(
+                        (source["width"], source["height"]), (metadata["width"], metadata["height"]),
+                    )
+                    self.assertGreaterEqual(source["timestamp_seconds"], 0)
+                    self.assertLess(source["timestamp_seconds"], metadata["duration"])
+                else:
+                    self.assertEqual(source["kind"], "recording_frame")
+                    self.assertIn(source["recording"], (
+                        "azure-v1-1", "foundry-v1-1", "foundry-balanced-v1-1",
+                    ))
+                    self.assertRegex(source["frame"], r"^\d{7}\.v1\.1\.jpg$")
+                crop = entry["crop"]
+                self.assertEqual(crop["coordinate_space"], "source_pixels")
+                x1, y1, x2, y2 = crop["box"]
+                self.assertEqual((x2 - x1, y2 - y1), (entry["width"], entry["height"]))
+                for rectangle in (crop, *entry.get("privacy_masks", [])):
+                    self.assertEqual(rectangle["coordinate_space"], "source_pixels")
+                    left, top, right, bottom = rectangle["box"]
+                    self.assertTrue(0 <= left < right <= source["width"])
+                    self.assertTrue(0 <= top < bottom <= source["height"])
+        self.assertEqual(kinds, {"video_frame", "recording_frame"})
+
     def test_portal_guide_is_current_and_has_no_runnable_learner_commands(self):
         from scripts.build_guide import main
 
@@ -1618,16 +1662,71 @@ class PortalV11GuideTests(unittest.TestCase):
                 self.assertNotRegex(article, r"보충\s*화면|Supporting screens?")
                 figures = [identifier for identifier, _ in page.step_figures]
                 for sequence in (
-                    ("shot-create-agent-v1-1", "shot-policy-upload-v1-1", "shot-agent-retrieval-v1-1"),
-                    ("shot-optimizer-settings-v1-1", "shot-optimizer-review-v1-1",
+                    ("shot-create-agent-v1-1", "shot-baseline-instructions-v1-1",
+                     "shot-select-file-search-v1-1", "shot-create-vector-index-v1-1",
+                     "shot-policy-upload-v1-1", "shot-agent-retrieval-v1-1"),
+                    ("shot-open-automatic-evaluation-v1-1", "shot-individual-turns-v1-1",
+                     "shot-upload-evaluation-dataset-v1-1", "shot-evaluation-dataset-preview-v1-1",
+                     "shot-query-only-v1-1", "shot-relevance-settings-v1-1",
+                     "shot-task-adherence-v1-1", "shot-baseline-review-v1-1"),
+                    ("shot-optimize-agent-menu-v1-1", "shot-optimizer-settings-v1-1",
+                     "shot-optimizer-dataset-search-v1-1", "shot-optimizer-evaluator-selection-v1-1",
+                     "shot-optimizer-review-v1-1",
                      "shot-optimizer-results-v1-1", "shot-review-candidate-v1-1"),
                     ("shot-baseline-preserved-v1-1", "shot-reviewed-agent-v1-1",
-                     "shot-add-run-query-only-v1-1", "shot-evaluation-runs-v1-1",
+                     "shot-add-run-target-version-v1-1", "shot-add-run-existing-dataset-v1-1",
+                     "shot-add-run-query-only-v1-1", "shot-reviewed-detailed-metrics-v1-1",
+                     "shot-evaluation-runs-v1-1", "shot-select-comparison-runs-v1-1",
                      "shot-compare-runs-v1-1"),
                     ("shot-retained-models-v1-1", "shot-retained-group-v1-1"),
                 ):
                     positions = [figures.index(identifier) for identifier in sequence]
                     self.assertEqual(positions, sorted(positions))
+
+    def test_intermediate_screens_follow_their_matching_numbered_actions(self):
+        expected = {
+            "shot-resource-group-tags-v1-1": ("portal-resource-group", 3),
+            "shot-resource-group-review-v1-1": ("portal-resource-group", 4),
+            "shot-judge-model-settings-v1-1": ("portal-models", 6),
+            "shot-optimizer-model-settings-v1-1": ("portal-models", 7),
+            "shot-baseline-instructions-v1-1": ("portal-agent", 4),
+            "shot-select-file-search-v1-1": ("portal-agent", 6),
+            "shot-create-vector-index-v1-1": ("portal-agent", 7),
+            "shot-open-automatic-evaluation-v1-1": ("portal-evaluation", 1),
+            "shot-individual-turns-v1-1": ("portal-evaluation", 2),
+            "shot-upload-evaluation-dataset-v1-1": ("portal-evaluation", 3),
+            "shot-evaluation-dataset-preview-v1-1": ("portal-evaluation", 4),
+            "shot-relevance-settings-v1-1": ("portal-evaluation", 7),
+            "shot-baseline-detailed-metrics-v1-1": ("portal-analysis", 2),
+            "shot-baseline-final-cases-v1-1": ("portal-analysis", 5),
+            "shot-optimize-agent-menu-v1-1": ("portal-optimize", 1),
+            "shot-optimizer-dataset-search-v1-1": ("portal-optimize", 4),
+            "shot-optimizer-evaluator-selection-v1-1": ("portal-optimize", 5),
+            "shot-add-run-target-version-v1-1": ("portal-compare", 4),
+            "shot-add-run-existing-dataset-v1-1": ("portal-compare", 5),
+            "shot-reviewed-detailed-metrics-v1-1": ("portal-compare", 8),
+            "shot-select-comparison-runs-v1-1": ("portal-compare", 10),
+        }
+        tokens = re.compile(
+            r'^## .* \{#(?P<chapter>[-\w]+)\}'
+            r'|^(?P<action>\d+)\. '
+            r'|<figure class="portal-shot" id="(?P<figure>[^"]+)"[^>]*>',
+            re.M,
+        )
+        for language, source_path, _ in self.GUIDES:
+            with self.subTest(language=language):
+                chapter = action = None
+                positions = {}
+                for match in tokens.finditer((ROOT / source_path).read_text(encoding="utf-8")):
+                    if match["chapter"]:
+                        chapter, action = match["chapter"], None
+                    elif match["action"]:
+                        action = int(match["action"])
+                    else:
+                        positions[match["figure"]] = (chapter, action)
+                self.assertEqual(
+                    {identifier: positions.get(identifier) for identifier in expected}, expected,
+                )
 
     def test_portal_steps_and_rebased_links_are_complete(self):
         packaged = {item.relative_to(ROOT).as_posix() for item in package_files(ROOT)}

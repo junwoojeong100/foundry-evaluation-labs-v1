@@ -99,6 +99,15 @@ Korean workload, not separate English-language evaluation results. On
 to exclude private run identifiers. Their capture manifest records the
 original hashes, crop rectangles, updated dimensions and new hashes.
 
+Additional intermediate-action images were extracted from the same existing
+recordings for the sequential guides. Each new image records its source-video
+timestamp or source-recording frame and SHA-256, source dimensions, focus crop
+and any opaque privacy-mask rectangles in the capture manifest. Crops isolate
+the current control, not a different result. Creator and conversation/trace
+identifier cells are masked where needed; questions, scores and error statuses
+are unchanged. Upload-in-progress and unselected/default states are identified
+as such in the captions, not presented as completed configuration.
+
 Source and layout references
 ============================
 

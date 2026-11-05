@@ -17,7 +17,7 @@
 
 **교육용 비교입니다.** 기준선은 정책 검색과 정상 JSON이 동작하는 **기본 FAQ 초안**입니다. 다만 짧은 일반 정책 요약에 머물러 복잡한 조건 계산과 누락 정보 확인이 부족하도록 설계했습니다. Optimizer가 지침을 고친 뒤 **Relevance와 TaskAdherence를 각각 비교**합니다. 질문·정답·모델·평가 기준을 바꿔 점수를 올리지 않습니다. 이 데모를 일반적인 운영 성능이나 미지의 질문에 대한 개선 증거로 해석하지 않습니다.
 
-그림은 개인정보를 가린 실제 포털 화면입니다. 화면 속 과거 점수는 자신의 실행 결과나 보장된 목표 점수가 아닙니다.
+그림은 기존 녹화·캡처에서 가져온 실제 포털 화면입니다. 클릭·입력할 곳이 잘 보이도록 일부 화면을 잘랐으며 개인정보를 가렸습니다. 제품의 점수·답변·상태는 바꾸지 않았습니다. 화면 속 과거 점수는 자신의 실행 결과나 보장된 목표 점수가 아닙니다.
 
 **진행 방법:** 01부터 10까지 위에서 아래로 진행합니다. **번호대로 조작 → 바로 아래 화면과 대조 → 다음 번호** 순서입니다. 작은 글씨는 각 그림의 **원본 크기로 보기**로 확인합니다. 국문·영문 가이드는 같은 한국어 정책·질문·지침·실측 화면을 사용합니다. 가이드 언어만 바꾸며, 별도의 영어 데이터 평가 결과를 주장하지 않습니다.
 
@@ -60,10 +60,25 @@
   <figcaption><strong>구독·새 그룹 이름·지역을 확인합니다.</strong> 기존 그룹을 선택하는 화면이 아니라 새 그룹의 생성 화면입니다. <a href="../web/assets/portal/v1.1/01-resource-group-basics.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-3. **Tags**에서 이름 `lab-version`, 값 `v1.1`을 추가합니다.
+3. **Tags** 탭을 엽니다. **Name**과 **Value** 입력란을 찾습니다.
    {: value="3"}
-4. **Review + create → Create**를 선택합니다.
-5. 생성한 그룹을 엽니다. **Overview**에서 그룹 이름을 확인하고, 아직 실습 자원이 없는지 확인합니다.
+
+<figure class="portal-shot" id="shot-resource-group-tags-v1-1">
+  <img src="../web/assets/portal/v1.1/29-resource-group-tags.v1.1.png" width="830" height="310" loading="lazy" decoding="async" alt="Tags 탭의 비어 있는 Name과 Value 입력란">
+  <figcaption><strong>왼쪽 Name, 오른쪽 Value에 입력합니다.</strong> 아직 값을 넣기 전 화면입니다. 다음 번호에서 두 칸을 채웁니다. <a href="../web/assets/portal/v1.1/29-resource-group-tags.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+4. **Name**에 `lab-version`, **Value**에 `v1.1`을 입력하고 **Review + create**를 선택합니다.
+   {: value="4"}
+
+<figure class="portal-shot" id="shot-resource-group-review-v1-1">
+  <img src="../web/assets/portal/v1.1/30-resource-group-review.v1.1.png" width="920" height="650" loading="lazy" decoding="async" alt="생성 전 검토 화면의 새 그룹 이름, North Central US, lab-version v1.1">
+  <figcaption><strong>그룹 이름·지역·태그를 제출 전에 확인합니다.</strong> 이름은 자신이 입력한 값이어야 합니다. 이 화면은 검토 단계이며 아직 생성 완료가 아닙니다. <a href="../web/assets/portal/v1.1/30-resource-group-review.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+5. 입력값과 검증 결과를 확인하고 화면 아래 **Create**를 한 번 선택합니다.
+   {: value="5"}
+6. 생성한 그룹을 엽니다. **Overview**에서 그룹 이름을 확인하고, 아직 실습 자원이 없는지 확인합니다.
 
 <figure class="portal-shot" id="shot-empty-group-v1-1">
   <img src="../web/assets/portal/v1.1/02-empty-resource-group.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="자원 0개와 No deployments가 표시된 새 리소스 그룹">
@@ -145,8 +160,23 @@
 
 5. Capacity를 확인하고 **Deploy**합니다.
    {: value="5"}
-6. 같은 경로로 Judge와 Optimizer도 배포합니다.
-7. 왼쪽 **Models**에서 세 배포의 이름·모델·버전·**Succeeded**를 확인합니다.
+6. **Catalog → Models**에서 `gpt-6-luna`를 열고 **Deploy → Custom settings**를 선택합니다. 이름 `judge-v1-1`, **Global Standard**, 버전 **2026-09-22**, 자동 업그레이드 **Opt out**, Capacity **100000 TPM**을 설정합니다.
+
+<figure class="portal-shot" id="shot-judge-model-settings-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/31-judge-model-settings.v1.1.png" width="592" height="1000" loading="lazy" decoding="async" alt="Judge 배포 패널의 judge-v1-1, gpt-6-luna, 고정 버전과 100000 TPM">
+  <figcaption><strong>Judge는 별도 모델·이름으로 설정합니다.</strong> 배포 패널만 확대했습니다. 숫자 입력란의 100000은 이 배포의 TPM이며 오른쪽 최대 할당량과 다릅니다. <a href="../web/assets/portal/v1.1/31-judge-model-settings.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+7. **Deploy**로 Judge를 배포합니다. 이어서 Catalog의 `gpt-5.5`에서 **Deploy → Custom settings**를 엽니다. 이름 `optimizer-v1-1`, **Global Standard**, 버전 **2026-04-24**, 자동 업그레이드 **Opt out**, Capacity **150000 TPM**을 설정합니다.
+   {: value="7"}
+
+<figure class="portal-shot" id="shot-optimizer-model-settings-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/32-optimizer-model-settings.v1.1.png" width="592" height="1000" loading="lazy" decoding="async" alt="Optimizer 배포 패널의 optimizer-v1-1, gpt-5.5, 고정 버전과 150000 TPM">
+  <figcaption><strong>Agent와 모델이 같아도 이름은 optimizer-v1-1입니다.</strong> 이전 배포를 재사용하는 대신 Optimizer용 배포를 만듭니다. <a href="../web/assets/portal/v1.1/32-optimizer-model-settings.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+8. **Deploy**로 Optimizer를 배포합니다. 왼쪽 **Models**에서 세 배포의 이름·모델·버전을 대조하고 모두 **Succeeded**가 될 때까지 기다립니다.
+   {: value="8"}
 
 <figure class="portal-shot" id="shot-models-succeeded-v1-1">
   <img src="../web/assets/portal/v1.1/08-models-succeeded.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="agent-v1-1, judge-v1-1, optimizer-v1-1이 Succeeded인 배포 목록">
@@ -191,11 +221,30 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 구체적인 평가 문항, 날짜, 정답 예시를 지침에 저장하지 않습니다.
 ```
 
+<figure class="portal-shot" id="shot-baseline-instructions-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/33-baseline-instructions.v1.1.png" width="460" height="195" loading="lazy" decoding="async" alt="Playground의 Instructions 입력란에 표시된 기준선 지침 시작 부분">
+  <figcaption><strong>Instructions 입력란에 위 본문 전체를 넣습니다.</strong> 입력 위치만 확대한 화면이라 지침 일부만 보입니다. 그림의 일부 문장을 복사하지 말고 위 블록 전체를 사용합니다. Improve instructions는 누르지 않습니다. <a href="../web/assets/portal/v1.1/33-baseline-instructions.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 5. **Tools**에 기본 **Web search**가 있으면 해당 도구 메뉴의 **Remove**로 제거합니다. 정책 근거는 업로드한 자료로 고정합니다.
    {: value="5"}
-6. **Tools → Add → Add tools → File search → Add tool**을 선택합니다.
-7. **Attach files**가 열리면 **Vector index name**에 `atlas-policy-v1-1`을 입력합니다.
+6. **Tools → Add → Add tools**를 선택해 **Select a tool** 창을 엽니다.
+
+<figure class="portal-shot" id="shot-select-file-search-v1-1">
+  <img src="../web/assets/portal/v1.1/34-select-file-search.v1.1.png" width="1200" height="800" loading="lazy" decoding="async" alt="Select a tool 창 왼쪽 첫 번째의 File search와 오른쪽 아래 Add tool">
+  <figcaption><strong>왼쪽 첫 번째 File search를 선택합니다.</strong> Azure AI search나 Web search가 아닙니다. 도구를 고르면 오른쪽 아래 Add tool을 사용할 수 있습니다. <a href="../web/assets/portal/v1.1/34-select-file-search.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+7. **File search → Add tool**을 선택합니다. **Attach files**의 **Index option**은 **Create a new index**, **Vector index name**은 `atlas-policy-v1-1`로 설정합니다.
+   {: value="7"}
+
+<figure class="portal-shot" id="shot-create-vector-index-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/35-create-vector-index.v1.1.png" width="690" height="253" loading="lazy" decoding="async" alt="Attach files 창의 Create a new index, atlas-policy-v1-1과 browse for files">
+  <figcaption><strong>새 인덱스 이름을 입력한 뒤 browse for files를 사용합니다.</strong> 입력·파일 선택 영역만 잘랐습니다. 이 그림은 파일 업로드나 연결 완료를 뜻하지 않습니다. <a href="../web/assets/portal/v1.1/35-create-vector-index.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 8. **browse for files**에서 `documents.v1.1.json` **한 개만** 선택합니다. 업로드 상태가 **Success**이면 **Attach**합니다.
+   {: value="8"}
 9. Tools에 **File search**가 연결되었는지 확인하고 **Save**합니다.
 10. **Tools → File search** 카드를 엽니다. `atlas-policy-v1-1`에 정책 파일 한 개가 **Completed**인지 확인합니다.
 
@@ -223,14 +272,42 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 
 ## 06. 12문항으로 기준선 평가 실행하기 {#portal-evaluation}
 
-**조작 위치:** Agent의 **Evaluation → Automatic Evaluation → Create**. 아래 순서는 하나의 평가 생성 화면에서 이어집니다.
+**조작 위치:** Agent의 **Evaluation → Automatic Evaluation**. 아래 순서는 하나의 평가 생성 화면에서 이어집니다.
 {: .step-route}
 
-1. **Target**에서 `atlas-support-v1-1`과 05에서 기록한 **기준선 버전**을 확인합니다.
-2. **Scope: Individual turns**, **Frequency: One time**으로 진행합니다.
-3. **Data → Existing dataset → Upload dataset**에서 `dev.v1.1.jsonl`을 선택합니다. 데이터셋 이름은 `atlas-dev12-v1-1`, 버전은 `1`로 저장한 뒤 선택합니다.
-4. 미리보기에서 **12행**, `query`, `context`, `ground_truth`를 확인합니다. `ground_truth`는 정답 참고 자료이며 JSON 문자열입니다.
-5. **Configure agents → Configure**를 엽니다. **USER** 입력란에 아래 값 **한 개만** 넣습니다.
+1. Agent의 **Evaluation → Automatic Evaluation** 탭을 엽니다. 오른쪽 **Create** 버튼을 찾습니다.
+
+<figure class="portal-shot" id="shot-open-automatic-evaluation-v1-1">
+  <img src="../web/assets/portal/v1.1/36-open-automatic-evaluation.v1.1.png" width="1174" height="209" loading="lazy" decoding="async" alt="Agent의 Evaluation과 Automatic Evaluation 탭, 오른쪽 Create 버튼">
+  <figcaption><strong>Automatic Evaluation의 Create로 시작합니다.</strong> 위쪽 Create evaluator 안내 버튼이나 Human Evaluation이 아닙니다. <a href="../web/assets/portal/v1.1/36-open-automatic-evaluation.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+2. **Create**를 선택합니다. **Target**에서 `atlas-support-v1-1`을 선택하고 **Version → Pin v숫자**로 05에서 기록한 **기준선 버전**을 고정합니다. **Next** 후 **Scope**에서 **Individual turns**를 선택합니다.
+   {: value="2"}
+
+<figure class="portal-shot" id="shot-individual-turns-v1-1">
+  <img src="../web/assets/portal/v1.1/37-individual-turns.v1.1.png" width="1184" height="499" loading="lazy" decoding="async" alt="평가 생성 Scope에서 선택된 Individual turns와 Next">
+  <figcaption><strong>한 질문·한 응답 단위로 평가합니다.</strong> Full conversations가 아니라 Individual turns를 선택한 상태입니다. <a href="../web/assets/portal/v1.1/37-individual-turns.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+3. **Next → Frequency: One time → Next**로 진행합니다. **Data → Existing dataset → Upload new dataset**을 엽니다. **New dataset name**에 `atlas-dev12-v1-1`을 입력하고 **Choose file**로 `dev.v1.1.jsonl`을 선택한 뒤 **Upload**합니다.
+   {: value="3"}
+
+<figure class="portal-shot" id="shot-upload-evaluation-dataset-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/38-upload-evaluation-dataset.v1.1.png" width="520" height="394" loading="lazy" decoding="async" alt="Upload new dataset 창의 atlas-dev12-v1-1 이름과 dev.v1.1.jsonl 업로드 진행 상태">
+  <figcaption><strong>데이터셋 이름과 선택한 파일을 대조합니다.</strong> 그림은 Upload 처리 중입니다. 다시 누르지 말고 완료되어 목록에 나타날 때까지 기다립니다. <a href="../web/assets/portal/v1.1/38-upload-evaluation-dataset.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+4. 목록에서 `atlas-dev12-v1-1`, 버전 `1`을 선택합니다. 미리보기의 `query`, `context`, `ground_truth` 열을 확인합니다. `ground_truth`는 JSON 문자열인 정답 참고 자료입니다. **Top 5 rows는 미리보기 제한**이며 전체 문항 수가 아닙니다. 실제 전체 **12행**은 실행 후 07에서 확인합니다.
+   {: value="4"}
+
+<figure class="portal-shot" id="shot-evaluation-dataset-preview-v1-1">
+  <img src="../web/assets/portal/v1.1/39-evaluation-dataset-preview.v1.1.png" width="1184" height="859" loading="lazy" decoding="async" alt="Existing dataset의 선택된 atlas-dev12-v1-1 버전 1과 context, ground_truth, query 미리보기">
+  <figcaption><strong>선택한 행의 이름·버전과 미리보기 열을 확인합니다.</strong> 파일을 다시 업로드하지 않습니다. 이 세 열을 모두 Agent의 입력에 넣으라는 뜻은 아닙니다. <a href="../web/assets/portal/v1.1/39-evaluation-dataset-preview.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+5. **Next → Configure agents → Configure**를 엽니다. **USER** 입력란에 아래 값 **한 개만** 넣습니다.
+   {: value="5"}
 
 ```text
 {{item.query}}
@@ -245,7 +322,7 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 
 6. **Save**로 매핑 창을 닫고 **Next**로 **Criteria**에 이동합니다. **Judge model**을 **judge-v1-1**로 설정합니다. **Clear selection** 후 **Relevance**, **Task adherence** 두 개만 선택합니다.
    {: value="6"}
-7. 각 평가기를 열어 다음 설정을 확인합니다. Judge는 둘 다 **judge-v1-1**을 선택합니다.
+7. 먼저 **Relevance**의 설정을 엽니다. 아래 표의 Relevance 열대로 Judge **judge-v1-1**, Threshold **4**와 입력 매핑을 설정합니다.
 
 | 설정 | Relevance | Task adherence |
 |---|---|---|
@@ -257,6 +334,14 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 | Response | `{{sample.output_text}}` | `{{sample.output_text}}` |
 | Tool definitions | 해당 없음 | 기본 `{{sample.tool_definitions}}` 유지 |
 
+<figure class="portal-shot" id="shot-relevance-settings-v1-1">
+  <img src="../web/assets/portal/v1.1/40-relevance-settings.v1.1.png" width="1038" height="447" loading="lazy" decoding="async" alt="Relevance 설정의 Judge judge-v1-1과 Threshold 4">
+  <figcaption><strong>Relevance의 임계값은 4입니다.</strong> Advanced settings에서 Query·Response도 표와 대조합니다. 다음 번호에서 Update로 반영합니다. <a href="../web/assets/portal/v1.1/40-relevance-settings.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+8. **Update**로 Relevance 설정을 반영한 뒤 **Task adherence** 설정을 엽니다. Judge **judge-v1-1**, Threshold **1**, Probability_threshold **0.5**와 표의 입력 매핑을 확인합니다.
+   {: value="8"}
+
 **TaskAdherence 주의:** 이진 0/1 지표입니다. 화면의 공통 Threshold 입력칸에 기본값 3이 보여도 **1**로 바꿉니다. Probability_threshold는 숫자 입력칸의 **0.5**를 확인합니다.
 
 <figure class="portal-shot" id="shot-task-adherence-v1-1">
@@ -264,17 +349,17 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
   <figcaption><strong>Judge·1·0.5를 각각 확인합니다.</strong> 서로 다른 두 임계값을 혼동하지 않습니다. Advanced settings의 Query와 Response도 위 표와 대조한 뒤 Update 또는 Apply로 반영합니다. <a href="../web/assets/portal/v1.1/13-task-adherence-settings.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-8. **Criteria** 단계의 **Next**를 선택합니다. 평가기 목록의 다음 페이지 버튼과 혼동하지 않습니다.
-   {: value="8"}
-9. **Review**에서 이름 `atlas-portal-eval-v1-1`을 입력하고 Agent 버전·데이터·평가기 두 개를 다시 확인합니다.
+9. **Update / Apply**로 설정을 반영한 뒤 **Criteria** 단계의 **Next**를 선택합니다. 평가기 목록의 다음 페이지 버튼과 혼동하지 않습니다.
+   {: value="9"}
+10. **Review**에서 이름 `atlas-portal-eval-v1-1`을 입력하고 Agent 버전·데이터·평가기 두 개를 다시 확인합니다.
 
 <figure class="portal-shot" id="shot-baseline-review-v1-1">
   <img src="../web/assets/portal/v1.1/14-baseline-review.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="기준선 Agent 버전과 데이터셋, 두 평가기를 확인하는 Review 화면">
   <figcaption><strong>기준선 버전·데이터·평가기 두 개를 확인합니다.</strong> Review는 제출 전 설정 요약이지 평가 성공이나 점수 화면이 아닙니다. <a href="../web/assets/portal/v1.1/14-baseline-review.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-10. **Submit**을 한 번 선택합니다. 목록에서 상태가 끝날 때까지 기다립니다. 같은 평가를 다시 만들지 않습니다.
-   {: value="10"}
+11. **Submit**을 한 번 선택합니다. 목록에서 상태가 끝날 때까지 기다립니다. 같은 평가를 다시 만들지 않습니다.
+    {: value="11"}
 
 **완료 기준:** 평가 정의와 실제 run이 생성되었으며, run에서 문항별 응답·점수 또는 오류를 확인할 수 있습니다. 제출 성공만으로 12문항 평가 성공이라고 판단하지 않습니다.
 {: .completion-check}
@@ -291,12 +376,26 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
   <figcaption><strong>Partial과 각 지표의 분모를 먼저 읽습니다.</strong> 이 기준선의 Relevance는 7/11(64%), TaskAdherence는 8/11(73%)입니다. Overall 68%의 15/22는 두 지표의 판정 합계이며 문항 22개를 뜻하지 않습니다. 자신의 실행은 다른 결과가 나올 수 있습니다. <a href="../web/assets/portal/v1.1/16-baseline-results.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-2. 해당 run을 열고 **Detailed metrics**로 이동합니다. 전체 **12문항**이 있는지 확인합니다. 10행만 보이면 **Next page**로 나머지 2행도 확인합니다.
+2. 해당 run을 열고 **Detailed metrics**로 이동합니다. 첫 페이지의 **Index 0–9**와 각 행의 점수·오류를 확인합니다.
    {: value="2"}
+
+<figure class="portal-shot" id="shot-baseline-detailed-metrics-v1-1">
+  <img src="../web/assets/portal/v1.1/41-baseline-detailed-metrics.v1.1.png" width="1174" height="752" loading="lazy" decoding="async" alt="기준선 Detailed metrics 첫 페이지의 Index 0부터 9, Relevance 실패 행과 Index 9 Error">
+  <figcaption><strong>전체 평균 대신 문항별 행을 읽습니다.</strong> 첫 페이지에는 10행과 오른쪽 아래 Next가 있습니다. 대화·추적 식별자 셀만 가렸으며 질문·점수·Error는 그대로입니다. <a href="../web/assets/portal/v1.1/41-baseline-detailed-metrics.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 3. **Error** 열이 있으면 먼저 확인합니다. 오류 없는 페이지에서는 이 열이 표시되지 않을 수 있습니다. 응답 생성 실패와 Judge 채점 실패를 구분합니다.
-4. 낮은 **Relevance** 행에서 가로로 스크롤해 `sample.output_text`의 **View JSON**을 엽니다. 질문, 실제 답변, **Relevance.reason**을 함께 읽습니다.
-5. **TaskAdherence**와 그 이유도 읽습니다. 지침 준수와 업무상 충분한 답변은 다른 기준입니다.
+   {: value="3"}
+4. 낮은 **Relevance** 행에서 가로로 스크롤해 `sample.output_text`의 **View JSON**을 엽니다. 질문, 실제 답변, **Relevance.reason**, **TaskAdherence**와 그 이유를 함께 읽고 창을 닫습니다. 지침 준수와 업무상 충분한 답변은 다른 기준입니다.
+5. 표 오른쪽 아래 **Next**로 다음 페이지를 엽니다. **Index 10·11**도 확인해 제출한 전체 **12행**의 점수·오류를 빠짐없이 읽습니다.
+
+<figure class="portal-shot" id="shot-baseline-final-cases-v1-1">
+  <img src="../web/assets/portal/v1.1/42-baseline-final-cases.v1.1.png" width="1174" height="400" loading="lazy" decoding="async" alt="Detailed metrics 다음 페이지의 Index 10과 11 및 Relevance 2점과 3점">
+  <figcaption><strong>나머지 두 행도 평가 대상입니다.</strong> 이 기준선의 Index 10·11은 Relevance 2·3점입니다. 첫 페이지와 합쳐 12문항이지만, 오류 한 건을 제외한 채점 분모는 11입니다. <a href="../web/assets/portal/v1.1/42-baseline-final-cases.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
 6. 기준선 버전, 평가 정의, 데이터셋 버전, 두 평가기의 설정, 오류 문항을 자신의 비공개 기록에 남깁니다.
+   {: value="6"}
 
 | 확인할 질문 | 판단 |
 |---|---|
@@ -314,13 +413,20 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 
 ## 08. Instruction만 최적화하기 {#portal-optimize}
 
-**조작 위치:** **Agents → atlas-support-v1-1 → 기준선 버전 → Optimize → Optimize my agent → Agent**.
+**조작 위치:** **Agents → atlas-support-v1-1 → 기준선 버전 → Playground → 왼쪽 아래 Optimize**.
 {: .step-route}
 
 첫 소개 화면의 예시 benchmark는 자신의 실습 결과가 아닙니다.
 
-1. **Target**에서 기준선 Agent 버전을 확인합니다.
-2. **Optimization approach → Choose targets**를 선택합니다. 자동 선택 상태를 믿지 말고 아래처럼 설정합니다.
+1. **Playground** 왼쪽 아래 **Optimize** 메뉴를 엽니다.
+
+<figure class="portal-shot" id="shot-optimize-agent-menu-v1-1" data-capture-layout="dialog">
+  <img src="../web/assets/portal/v1.1/43-optimize-agent-menu.v1.1.png" width="306" height="265" loading="lazy" decoding="async" alt="Optimize 메뉴의 Agent, Cost, Prompt 선택지">
+  <figcaption><strong>맨 위 Agent로 진행합니다.</strong> Cost나 Prompt, Instructions 아래의 Improve instructions와는 다른 경로입니다. <a href="../web/assets/portal/v1.1/43-optimize-agent-menu.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+2. **Agent**를 선택합니다. 소개 화면이 나오면 **Optimize my agent**로 진행합니다. **Target**에서 기준선 버전을 확인하고 **Optimization approach → Choose targets**를 선택해 아래처럼 설정합니다.
+   {: value="2"}
 
 | 항목 | 설정 |
 |---|---|
@@ -338,13 +444,25 @@ route는 answer, clarify, escalate, refuse 중 하나입니다. needs_human은 r
 
 3. **Next → Data source → Select dataset and criteria**를 선택합니다. Generate data나 production traces는 사용하지 않습니다.
    {: value="3"}
-4. **Dataset**에서 `atlas-dev12-v1-1`, 버전 `1`을 선택합니다.
-5. **Criteria**의 **Custom only**가 켜져 있으면 끕니다. 검색으로 다음 두 평가기를 선택합니다. 선택할 때 설정 창이 열리면 값을 확인하고 **Apply**합니다.
+4. 오른쪽 **Dataset** 검색란에 `atlas-dev12-v1-1`을 입력합니다. 결과의 이름·버전 `1`을 확인합니다.
+
+<figure class="portal-shot" id="shot-optimizer-dataset-search-v1-1">
+  <img src="../web/assets/portal/v1.1/44-optimizer-dataset-search.v1.1.png" width="1148" height="338" loading="lazy" decoding="async" alt="Select dataset and criteria와 atlas-dev12-v1-1 버전 1 검색 결과의 선택 원">
+  <figcaption><strong>기준선과 같은 데이터셋 행을 찾습니다.</strong> 그림에서는 아직 오른쪽 행을 선택하지 않아 Next가 비활성입니다. 다음 번호에서 행 앞의 원을 선택합니다. 새 파일이나 자동 생성 데이터는 사용하지 않습니다. <a href="../web/assets/portal/v1.1/44-optimizer-dataset-search.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+5. 해당 데이터셋 행 앞의 **원 → Next**를 선택합니다. **Criteria**의 **Custom only**가 켜져 있으면 끕니다. 검색으로 다음 두 평가기를 선택합니다. 설정 창이 열리면 값을 확인하고 **Apply**합니다.
+   {: value="5"}
 
 | Optimizer 화면의 평가기 | 버전 | 설정 |
 |---|---|---|
 | Relevance-Evaluator | 15 | Threshold **4** |
 | Task-Adherence-Evaluator-(Preview) | 18 | Threshold **1**, Probability_threshold **0.5** |
+
+<figure class="portal-shot" id="shot-optimizer-evaluator-selection-v1-1">
+  <img src="../web/assets/portal/v1.1/45-optimizer-evaluator-selection.v1.1.png" width="1148" height="287" loading="lazy" decoding="async" alt="Custom only를 끄고 Task-Adherence와 Relevance 두 선택 칩이 표시된 Optimizer Criteria">
+  <figcaption><strong>선택된 두 평가기는 목록 위 칩으로 확인합니다.</strong> 검색어가 Relevance여도 위쪽에는 두 개가 남아 있어야 합니다. 다른 평가기를 추가하지 않습니다. <a href="../web/assets/portal/v1.1/45-optimizer-evaluator-selection.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
 
 6. 다른 평가기가 추가되지 않았는지 확인하고 **Next**를 선택합니다.
    {: value="6"}
@@ -416,8 +534,22 @@ Optimizer 후보에는 평가 문항의 날짜·정답 예시가 그대로 들�
 
 4. **Evaluations → atlas-portal-eval-v1-1 → Add run**을 선택합니다. 새 평가 정의를 만들지 않습니다.
    {: value="4"}
-5. **Target**에서 같은 Agent를 선택하고 Version을 **Pin v숫자**로 기록한 비교 버전에 고정합니다. **Latest available**로 두지 않습니다. **Scope: Individual turns → Next**로 진행합니다. **Data**가 나오면 **Existing dataset**에서 같은 `atlas-dev12-v1-1`, 버전 `1`을 선택하고 **Next**합니다.
-6. **Configure agents → Configure**를 엽니다. **User prompt**에 `{{item.query}}`만 입력하고, Target이 비교 버전인지 확인합니다.
+
+<figure class="portal-shot" id="shot-add-run-target-version-v1-1">
+  <img src="../web/assets/portal/v1.1/46-add-run-target-version.v1.1.png" width="1184" height="264" loading="lazy" decoding="async" alt="Add run의 선택된 atlas-support-v1-1과 아직 Latest available인 Version 드롭다운">
+  <figcaption><strong>Version 드롭다운에서 비교 버전을 고정해야 합니다.</strong> 그림은 Add run 진입 직후라 아직 Latest available입니다. 이 기본값을 그대로 제출하지 않습니다. <a href="../web/assets/portal/v1.1/46-add-run-target-version.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+5. **Target**에서 같은 Agent를 선택하고 Version을 **Pin v숫자**로 기록한 비교 버전에 고정합니다. **Latest available**로 두지 않습니다. **Next → Scope: Individual turns → Next**로 진행합니다. **Data → Existing dataset**에서 같은 `atlas-dev12-v1-1`, 버전 `1`을 선택합니다.
+   {: value="5"}
+
+<figure class="portal-shot" id="shot-add-run-existing-dataset-v1-1">
+  <img src="../web/assets/portal/v1.1/47-add-run-existing-dataset.v1.1.png" width="1184" height="608" loading="lazy" decoding="async" alt="Add run의 Existing dataset에서 다시 선택한 atlas-dev12-v1-1 버전 1">
+  <figcaption><strong>이미 등록한 같은 버전을 다시 선택합니다.</strong> Upload new dataset이나 Synthetic generation은 사용하지 않습니다. 미리보기 로드가 끝나 Next가 활성화될 때까지 기다립니다. <a href="../web/assets/portal/v1.1/47-add-run-existing-dataset.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+6. **Next → Configure agents → Configure**를 엽니다. **User prompt**에 `{{item.query}}`만 입력하고, Target이 비교 버전인지 확인합니다.
+   {: value="6"}
 
 <figure class="portal-shot" id="shot-add-run-query-only-v1-1">
   <img src="../web/assets/portal/v1.1/22-add-run-query-only.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="기존 평가의 Add run에서 v7을 선택하고 USER에 item.query만 입력한 화면">
@@ -426,8 +558,15 @@ Optimizer 후보에는 평가 문항의 날짜·정답 예시가 그대로 들�
 
 7. **Save → Submit**하고 실행이 끝날 때까지 기다립니다. Judge·평가기는 기존 정의를 재사용합니다.
    {: value="7"}
-8. 두 run을 차례로 열어 **Detailed metrics**의 전체 **12행**, **같은 Index**의 응답·점수·이유·오류를 비교합니다. 지연·토큰 사용과 평균 점수도 기록합니다.
-9. 평가 정의의 실행 목록으로 이동합니다. 두 행의 **Target**, 상태, Relevance·TaskAdherence 통과율과 분모를 대조합니다.
+8. **비교 버전 run**을 열고 **Detailed metrics** 첫 페이지를 확인합니다. 07에서 기록한 기준선의 **같은 Index**와 응답·점수·이유·오류를 대조하고 지연·토큰 사용·평균도 기록합니다.
+
+<figure class="portal-shot" id="shot-reviewed-detailed-metrics-v1-1">
+  <img src="../web/assets/portal/v1.1/48-reviewed-detailed-metrics.v1.1.png" width="1174" height="752" loading="lazy" decoding="async" alt="검토수정본 v7의 첫 페이지 통과 행과 여전히 Error인 Index 9">
+  <figcaption><strong>정상 행의 개선과 남은 오류를 함께 확인합니다.</strong> 위의 100%는 유효 11문항의 결과입니다. 같은 Index 9의 Error가 사라진 것이 아니며 식별자 셀만 가렸습니다. <a href="../web/assets/portal/v1.1/48-reviewed-detailed-metrics.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+9. **Next**로 마지막 두 행까지 확인합니다. 전체 **12행**을 대조한 뒤 평가 정의의 실행 목록으로 이동합니다. 두 행의 **Target**, 상태, Relevance·TaskAdherence 통과율과 분모를 확인합니다.
+   {: value="9"}
 
 <figure class="portal-shot" id="shot-evaluation-runs-v1-1">
   <img src="../web/assets/portal/v1.1/23-evaluation-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="동일 평가 정의에서 Agent v6과 v7의 두 지표 통과율 및 Partial 상태를 비교한 목록">
@@ -444,16 +583,24 @@ Optimizer 후보에는 평가 문항의 날짜·정답 예시가 그대로 들�
 | TaskAdherence 평균 | 0.73 | 1.00 |
 | P50 / P95 응답 지연 | 5.4s / 7.7s | 4.6s / 6.8s |
 
-10. 기준선·비교 run의 **행 체크박스 두 개를 먼저 선택 → Compare runs**를 누릅니다. 통계 화면의 **Baseline**을 처음 기준선 run으로 지정합니다. **자동으로 최신 run이 기준선이 될 수 있습니다.** 이름이 같으면 기록한 평균 점수와 Baseline 열의 값을 대조합니다.
+10. 기준선·비교 run의 **행 왼쪽 체크박스 두 개**를 선택합니다. **2 runs selected**를 확인합니다.
     {: value="10"}
+
+<figure class="portal-shot" id="shot-select-comparison-runs-v1-1">
+  <img src="../web/assets/portal/v1.1/49-select-comparison-runs.v1.1.png" width="2348" height="660" loading="lazy" decoding="async" alt="Agent v6과 v7 두 행의 선택된 체크박스와 2 runs selected">
+  <figcaption><strong>이름 링크가 아니라 행의 체크박스를 선택합니다.</strong> Target 숫자 6·7과 두 선택 표시를 대조합니다. 두 행 모두 Partial인 사실도 유지됩니다. <a href="../web/assets/portal/v1.1/49-select-comparison-runs.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
+</figure>
+
+11. 목록 위 **Compare runs**가 활성화되면 누릅니다. 통계 화면의 **Baseline**을 처음 기준선 run으로 지정합니다. **자동으로 최신 run이 기준선이 될 수 있습니다.** 이름이 같으면 기록한 평균 점수와 Baseline 열의 값을 대조합니다.
+    {: value="11"}
 
 <figure class="portal-shot" id="shot-compare-runs-v1-1">
   <img src="../web/assets/portal/v1.1/24-compare-runs.v1.1.png" width="1440" height="1000" loading="lazy" decoding="async" alt="기준선 방향과 평균 점수, Relevance Improved 및 TaskAdherence Inconclusive를 표시한 통계 비교">
   <figcaption><strong>Baseline 방향과 통계 판정을 함께 읽습니다.</strong> 이 실행은 Relevance가 Improved by 1.27, TaskAdherence가 Inconclusive입니다. 두 통과율의 상승을 두 지표 모두의 통계적 유의성으로 해석하지 않습니다. <a href="../web/assets/portal/v1.1/24-compare-runs.v1.1.png" target="_blank" rel="noopener">원본 크기로 보기</a></figcaption>
 </figure>
 
-11. **평균 점수와 통계 판정**을 읽고, 앞서 확인한 오류와 실제 답변을 포함해 아래 기준으로 결론을 기록합니다.
-    {: value="11"}
+12. **평균 점수와 통계 판정**을 읽고, 앞서 확인한 오류와 실제 답변을 포함해 아래 기준으로 결론을 기록합니다.
+    {: value="12"}
 
 두 run 모두 **12문항 중 같은 Index 9 한 건이 `cyber_policy`로 차단된 Partial**입니다. 위 분모는 공통 유효 문항 **11개**입니다. 통계 화면은 Relevance를 **Improved by 1.27**, TaskAdherence를 **Inconclusive**로 판정했습니다. **두 관측 통과율의 상승은 확인했지만, 전체 12문항의 개선이나 두 지표 모두의 통계적 유의성을 입증한 것은 아닙니다.**
 

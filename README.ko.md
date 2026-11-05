@@ -1,6 +1,6 @@
 # Microsoft Foundry Learning Loop Lab v1 · 한국어
 
-> **새 버전 · 포털 전용 v1.1:** [한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) · [실제 화면 녹화 · 한국어 자막](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). **새 리소스 그룹부터 Azure Portal + Foundry Portal에서만** 진행하며 명령어를 실행하지 않습니다. 두 언어 모두 같은 한국어 실습 데이터를 사용하고, 해당 조작 바로 뒤에 캡처 25장을 모두 표시합니다. 위에서 아래로 번호 순서대로 따라갑니다. 원문: [국문](guide/handbook.v1.1.md) · [English](guide/en/handbook.v1.1.md). 아래 기존 v1 경로는 그대로 보존합니다.
+> **새 버전 · 포털 전용 v1.1:** [한국어 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/handbook.v1.1.html) · [English guide](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/handbook.v1.1.html) · [실제 화면 녹화 · 한국어 자막](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/media/portal.v1.1.html). **새 리소스 그룹부터 Azure Portal + Foundry Portal에서만** 진행하며 명령어를 실행하지 않습니다. 두 언어 모두 같은 한국어 실습 데이터를 사용하고, 기존 녹화의 입력·선택 중간 화면을 포함한 캡처 46장을 해당 조작 바로 뒤에 모두 표시합니다. 위에서 아래로 번호 순서대로 따라갑니다. 원문: [국문](guide/handbook.v1.1.md) · [English](guide/en/handbook.v1.1.md). 아래 기존 v1 경로는 그대로 보존합니다.
 
 **[한국어 실습](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/docs/ko/index.html)** · **[English — 기본 가이드](https://junwoojeong100.github.io/foundry-evaluation-labs-v1/)** · [English README](README.md)
 

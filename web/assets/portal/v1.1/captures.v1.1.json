@@ -6,7 +6,7 @@
   "tool": "playwright.browser_run_code_unsafe; CDP Page.captureScreenshot",
   "data_language": "ko",
   "ui_language": "en-US",
-  "edits": "Privacy redactions and privacy crops only; no product text, score, answer or status replacement.",
+  "edits": "Privacy redactions and focused crops; no product text, score, answer or status replacement.",
   "purpose": "Actual v1.1 portal execution and same-resource verification.",
   "screenshots": [
     {
@@ -241,7 +241,12 @@
       "privacy_crop": {
         "date": "2026-11-05",
         "source_sha256": "ae50675b935e6aa80f674a656af505606b829881e5bb76425974698b75ef5b92",
-        "box_xyxy": [244, 128, 1416, 490]
+        "box_xyxy": [
+          244,
+          128,
+          1416,
+          490
+        ]
       },
       "capture_session_date": "2026-11-04",
       "portal_origin": "https://ai.azure.com",
@@ -261,7 +266,12 @@
       "privacy_crop": {
         "date": "2026-11-05",
         "source_sha256": "12646decabd01996f436d21a5dc7362c4b78ef8a1e67890493f6aa1b72f7de9f",
-        "box_xyxy": [201, 189, 1239, 811]
+        "box_xyxy": [
+          201,
+          189,
+          1239,
+          811
+        ]
       },
       "capture_session_date": "2026-11-04",
       "portal_origin": "https://ai.azure.com",
@@ -369,6 +379,708 @@
         "browser chrome and session URLs excluded",
         "identifying profile and creator text obscured where displayed",
         "subscription and connection fields masked where displayed"
+      ]
+    },
+    {
+      "file": "29-resource-group-tags.v1.1.png",
+      "width": 830,
+      "height": 310,
+      "sha256": "5f51e4e54bba1a98d2b1d8730b26f89323ba1a069b6d4523034958204cb73504",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/create/tags",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "d807c82d8e009a6a71274cf77e075f26b087f7e5d23e2a6b28d9fbcb3aeaa420",
+        "width": 1440,
+        "height": 1000,
+        "recording": "azure-v1-1",
+        "frame": "0000060.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          20,
+          80,
+          850,
+          390
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "30-resource-group-review.v1.1.png",
+      "width": 920,
+      "height": 650,
+      "sha256": "6e2588d1285bc2692d3b36b5a7372ea92b126dbe13d128c958cf6b1a40d0ded7",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://portal.azure.com",
+      "route": "/resourceGroups/{lab-resource-group}/create/review",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 15
+      },
+      "crop": {
+        "box": [
+          20,
+          70,
+          940,
+          720
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "31-judge-model-settings.v1.1.png",
+      "width": 592,
+      "height": 1000,
+      "sha256": "c5fc83c2921a4d1e0fea0038f326586cbc5792bad7464bee7c9696f6427df3ce",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/models/deploy",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 66
+      },
+      "crop": {
+        "box": [
+          848,
+          0,
+          1440,
+          1000
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "32-optimizer-model-settings.v1.1.png",
+      "width": 592,
+      "height": 1000,
+      "sha256": "ec2147aaaec0bba9f840f661429f2b21bf40677d254362ed9eb148c0ba679840",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/models/deploy",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 84
+      },
+      "crop": {
+        "box": [
+          848,
+          0,
+          1440,
+          1000
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "33-baseline-instructions.v1.1.png",
+      "width": 460,
+      "height": 195,
+      "sha256": "6046d7ad9447e57ac283d15c381bad5de282a933da5f21008ea29a830106f555",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 180
+      },
+      "crop": {
+        "box": [
+          244,
+          285,
+          704,
+          480
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "34-select-file-search.v1.1.png",
+      "width": 1200,
+      "height": 800,
+      "sha256": "8779978d2875dd530bc135c6995fa9713529d2fc18f389b7adf401f49e0f8e12",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build/tools",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "f555e7fcebb4bf25d098a5a5e6ecc2cc9ca1bffa918fc72ca2c711015fa62038",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-v1-1",
+        "frame": "0000974.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          120,
+          100,
+          1320,
+          900
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "35-create-vector-index.v1.1.png",
+      "width": 690,
+      "height": 253,
+      "sha256": "c4b090f2fcebed9de4fd7aded77b5a5254256d53fefbe866e1839396d366c3e0",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build/file-search",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "5f736c31f07b58479369a53032cafcefaad5d2b922938c383b996fbfc660d391",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-v1-1",
+        "frame": "0001130.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          375,
+          163,
+          1065,
+          416
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "36-open-automatic-evaluation.v1.1.png",
+      "width": 1174,
+      "height": 209,
+      "sha256": "7f91d90c7aa2234abcfd000381f2be796a97e2f0e1e5072bad8b9c6b2f25b97e",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/evaluation",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "8e56950642c8fd2bc4e6de09bf71c207477157db0a77f44993a63fd92b2a6174",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000050.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          99,
+          1418,
+          308
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "37-individual-turns.v1.1.png",
+      "width": 1184,
+      "height": 499,
+      "sha256": "97aaee06f2493f96e117f1fc6ecfb8205d37751b59d1aec087a186672348f39a",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "f61dff839238264d7bbf5a3e1ca579612d5e8e7089cb20bc05f404a6db5f3dac",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000056.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          106,
+          1428,
+          605
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "38-upload-evaluation-dataset.v1.1.png",
+      "width": 520,
+      "height": 394,
+      "sha256": "21419a262d259ac992c6f1cda347633e310292be1a78584d8721f9843558a0e9",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "b113952faaf5afbf529903de7ca7cbdbaec75100c50a53b1079e11a6e0dad6c0",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-v1-1",
+        "frame": "0001451.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          460,
+          303,
+          980,
+          697
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "39-evaluation-dataset-preview.v1.1.png",
+      "width": 1184,
+      "height": 859,
+      "sha256": "41a8937adc2c534c462f857c5c4cf1b70258605fdf2cdcc4b7786c04c1c52297",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "843c042579cb4045b514410fd8b150f0d47783ca3418c62ff550679452a21ad5",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000080.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          106,
+          1428,
+          965
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            1095,
+            233,
+            1245,
+            276
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "40-relevance-settings.v1.1.png",
+      "width": 1038,
+      "height": 447,
+      "sha256": "1aa80295e3b0a6c4453c2a9d49964065ca20dee21f90312a634a3003a73bb1a5",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/submit",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "6b1c5e68413905b4e8b7f361a31211044d4c2fd477f9ccc03c383913127eff71",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000088.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          201,
+          277,
+          1239,
+          724
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "41-baseline-detailed-metrics.v1.1.png",
+      "width": 1174,
+      "height": 752,
+      "sha256": "9d62bbad1d788ba515f006ecb7d6b0e8d422616f66dd84eddfd14ca7f31efb7c",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/runs/{baseline}/metrics",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 171
+      },
+      "crop": {
+        "box": [
+          244,
+          225,
+          1418,
+          977
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            725,
+            471,
+            1206,
+            921
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "42-baseline-final-cases.v1.1.png",
+      "width": 1174,
+      "height": 400,
+      "sha256": "361617045ff2bb8814b61e8adfeb12b016db5a24ab658933d59172e193e2df1c",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/runs/{baseline}/metrics",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 174
+      },
+      "crop": {
+        "box": [
+          244,
+          450,
+          1418,
+          850
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            725,
+            704,
+            1206,
+            795
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "43-optimize-agent-menu.v1.1.png",
+      "width": 306,
+      "height": 265,
+      "sha256": "374cfc7d2d6bff84837623cf4edbafd80f16a2dbdd022bc52c97c41ec2e622bf",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/build/optimize",
+      "source": {
+        "kind": "video_frame",
+        "sha256": "fe45318948fe640b858ee67d960765e836a096ba6d8fab855528896c6aa90a34",
+        "width": 1440,
+        "height": 1080,
+        "file": "docs/media/Foundry-Portal-Walkthrough-KO.v1.1.mp4",
+        "timestamp_seconds": 180
+      },
+      "crop": {
+        "box": [
+          235,
+          730,
+          541,
+          995
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "44-optimizer-dataset-search.v1.1.png",
+      "width": 1148,
+      "height": 338,
+      "sha256": "28b1891499aecee3f3942dc0eccff87442ab79858c1662528272a3310af93952",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimize/new",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "fb61fbb3e919da7228afdebb1153350bdf7736d0c80ef608d1c63355cb2e522e",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000260.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          140,
+          72,
+          1288,
+          410
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            989,
+            198,
+            1112,
+            242
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "45-optimizer-evaluator-selection.v1.1.png",
+      "width": 1148,
+      "height": 287,
+      "sha256": "7bc1d8c59f823dda783d2752b4d7c0d6152b3d6ef3fbddfc1018602bc2179e2b",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/agents/{agent}/optimize/new",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "f35e445112fc7214ef34d14966bc470e7db4a93f9adc33f729d8577f4ceaaf7e",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000269.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          140,
+          72,
+          1288,
+          359
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "46-add-run-target-version.v1.1.png",
+      "width": 1184,
+      "height": 264,
+      "sha256": "90796557b82cbcf7a2365c2eafd47ab5a802e1decfa9f6aec3408dcf7f034690",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/add-run",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "d7bb361787c524172019dd3aea728d08c6827e399c5af27cecefa465fd25047a",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000372.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          106,
+          1428,
+          370
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
+      ]
+    },
+    {
+      "file": "47-add-run-existing-dataset.v1.1.png",
+      "width": 1184,
+      "height": 608,
+      "sha256": "eec97ca0d44669a30b359a364856fb38817f024960bd0d6dc1fea6f8e0d1db0f",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/add-run",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "c6e1abaaa1d49db32cdd4f96b6ef6cac044903033631f6cb408d19ce8eadf28d",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000402.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          106,
+          1428,
+          714
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            1095,
+            233,
+            1245,
+            276
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "48-reviewed-detailed-metrics.v1.1.png",
+      "width": 1174,
+      "height": 752,
+      "sha256": "f320d95543cdb3a9c8354ecbb5c6ac3cc3205cd069e7a2ada155dbc68c446c25",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/runs/{reviewed}/metrics",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "819b812c60c57a2dd96bea496560a4152c506ab4a1ff6783d35420db577fedbf",
+        "width": 1440,
+        "height": 1000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000484.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          244,
+          225,
+          1418,
+          977
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop.",
+        "Opaque masks hide creator metadata or conversation/trace identifier cells; questions, scores and statuses are unchanged."
+      ],
+      "privacy_masks": [
+        {
+          "box": [
+            725,
+            471,
+            1206,
+            921
+          ],
+          "coordinate_space": "source_pixels"
+        }
+      ]
+    },
+    {
+      "file": "49-select-comparison-runs.v1.1.png",
+      "width": 2348,
+      "height": 660,
+      "sha256": "ea2e003fb2554178e502676f801a7acacd1cc3eac2eb97f1e1b128a3eb5d6c6b",
+      "capture_session_date": "2026-11-04",
+      "portal_origin": "https://ai.azure.com",
+      "route": "/build/evaluations/{evaluation}/runs",
+      "source": {
+        "kind": "recording_frame",
+        "sha256": "b88b2d10acf3d7c0c207eb17ef84be5775b9c86422a2420ae1160b1bc81ece03",
+        "width": 2880,
+        "height": 2000,
+        "recording": "foundry-balanced-v1-1",
+        "frame": "0000500.v1.1.jpg"
+      },
+      "crop": {
+        "box": [
+          488,
+          470,
+          2836,
+          1130
+        ],
+        "coordinate_space": "source_pixels",
+        "purpose": "Focus on the current action; exclude unrelated portal panels and recording captions."
+      },
+      "redactions": [
+        "Browser chrome, session URLs and unrelated account metadata excluded by crop."
       ]
     }
   ]
